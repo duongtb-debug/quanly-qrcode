@@ -96,7 +96,7 @@
 
             <div class="p-2.5 bg-slate-100/60 border-b border-slate-200 text-xs">
                 <div class="relative w-full">
-                    <input type="text" id="searchDeviceInput" oninput="renderDeviceTableOnly()" placeholder="Nhập mã định danh, tên thiết bị hoặc quét mã để lọc nhanh..." class="w-full border border-slate-300 rounded-lg pl-8 pr-3 py-2 bg-white focus:outline-none font-bold text-blue-700">
+                    <input type="text" id="searchDeviceInput" oninput="renderDeviceTableOnly()" placeholder="Nhập mã định danh, tên thiết bị để lọc nhanh..." class="w-full border border-slate-300 rounded-lg pl-8 pr-3 py-2 bg-white focus:outline-none font-bold text-blue-700">
                     <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-3 text-slate-400"></i>
                 </div>
             </div>
@@ -107,7 +107,7 @@
                         <tr class="border-b border-slate-200 bg-slate-50 text-slate-500 font-bold sticky top-0 z-10">
                             <th class="p-2.5 pl-4">Mã Số / Tên Thiết Bị</th>
                             <th class="p-2.5">Đơn Vị Quản Lý</th>
-                            <th class="p-2.5 text-center">Mã QR Quét Thử</th>
+                            <th class="p-2.5 text-center">Mã QR (Bấm để xem)</th>
                             <th class="p-2.5">Nhân Sự Phụ Trách</th>
                             <th class="p-2.5 text-center">Trạng Thái</th>
                             <th class="p-2.5 text-right pr-4">Hành Động</th>
@@ -187,7 +187,7 @@
 
     <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
         <div class="bg-emerald-700 text-white font-bold p-3 text-sm flex items-center justify-between">
-            <span><i class="fa-solid fa-users-gear mr-1.5 text-slate-300"></i> Quản Lý Hồ Sơ Nhân SỰ & Sơ Đồ Phòng Ban</span>
+            <span><i class="fa-solid fa-users-gear mr-1.5 text-slate-300"></i> Quản Lý Hồ Sơ Nhân Sự & Sơ Đồ Phòng Ban</span>
             <span class="text-xs bg-emerald-600 px-2 py-0.5 rounded font-mono" id="count-user">0 nhân sự</span>
         </div>
         <div class="p-4 grid grid-cols-1 lg:grid-cols-12 gap-5 border-b border-slate-100 bg-slate-50/50 text-xs">
@@ -214,11 +214,9 @@
                 </form>
             </div>
         </div>
-
         <div class="px-4 bg-slate-50 border-b flex flex-wrap gap-2 text-xs" id="deptTabsContainer">
             <button onclick="filterUserByDept('all')" id="tab-dept-all" class="px-3 py-2.5 tab-active cursor-pointer">Tất Cả Nhân Sự</button>
         </div>
-        
         <div class="overflow-x-auto text-xs bg-white">
             <table class="w-full text-left border-collapse">
                 <thead>
@@ -319,16 +317,6 @@
         let depts = [], users = [], devices = [], repairs = [], tasks = [];
         let activeUserDeptFilter = 'all';
 
-        function checkIncomingQRQuery() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const qrCodeScanned = urlParams.get('scan_id') || urlParams.get('id');
-            if (qrCodeScanned) {
-                document.getElementById('searchDeviceInput').value = qrCodeScanned.trim();
-                renderDeviceTableOnly();
-                document.getElementById('searchDeviceInput').scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-
         window.switchEnvironment = function(env) {
             currentEnv = env;
             localStorage.setItem('vinapaco_current_env', env);
@@ -368,7 +356,6 @@
                 updateDropdownOptions();
                 renderAllTables();
                 autoGenDeviceId();
-                checkIncomingQRQuery();
             });
         }
 
@@ -379,13 +366,12 @@
             set(ref(db, nodeKey), { depts, users, devices, repairs, tasks }).then(() => { fetchCloudData(); });
         }
 
-        // HÀM TẠO LIÊN KẾT ĐỘNG CHO MÃ QR TRÊN TỪNG DÒNG
-        function makeDynamicLink(id) {
-            const baseWebUrl = window.location.href.split('?')[0];
-            return `${baseWebUrl}?scan_id=${id}`;
+        // ĐỊNH DẠNG CHUỖI VĂN BẢN TRONG MÃ QR ĐỂ HIỂN THỊ THÔNG TIN KHI QUÉT ĐIỆN THOẠI
+        function makeQRTextContent(dev) {
+            return `TỔNG CÔNG TY GIẤY VIỆT NAM\n-------------------------\nMã Định Danh: ${dev.id}\nTên Thiết Bị: ${dev.name}\nChủng Loại: ${dev.cat}\nĐơn Vị: ${dev.dept}\nPhụ Trách: ${dev.user || 'Trong kho'}\nTrạng Thái: ${dev.status || 'Hoạt động tốt'}`;
         }
 
-        // THỰC THI DỰNG MÃ QR BẰNG CANVAS (NỘI BỘ - SIÊU TỐC KHÔNG LO LỖI ẢNH TRỐNG)
+        // HÀM VẼ QR CODE TRỰC TIẾP LÊN KHỐI CANVAS
         window.generateLocalQR = function(canvasId, text, size = 120) {
             setTimeout(() => {
                 const canvas = document.getElementById(canvasId);
@@ -397,7 +383,8 @@
 
         window.previewAndSelectQR = function(id) {
             const dev = devices.find(d => d.id === id);
-            const qrText = makeDynamicLink(dev.id);
+            if(!dev) return;
+            const qrText = makeQRTextContent(dev);
             
             document.getElementById('webPreviewEmptyText').classList.add('hidden');
             document.getElementById('webPreviewQRBox').classList.remove('hidden');
@@ -540,7 +527,6 @@
                 tUser.innerHTML += `<option value="${u.name}">${u.name} (${u.title})</option>`;
             });
 
-            // Cập nhật hệ thống Tab phòng ban nhân sự dynamically
             const container = document.getElementById('deptTabsContainer');
             container.innerHTML = `<button onclick="filterUserByDept('all')" id="tab-dept-all" class="px-3 py-2.5 cursor-pointer">Tất Cả Nhân Sự</button>`;
             depts.forEach(d => {
@@ -564,7 +550,7 @@
             }).forEach(d => {
                 let bc = d.status === "Trong kho" ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700";
                 const rowCanvasId = `canvas-${d.id}`;
-                const qrText = makeDynamicLink(d.id);
+                const qrText = makeQRTextContent(d);
 
                 dtbBody.innerHTML += `<tr class="border-b text-slate-600 hover:bg-slate-50">
                     <td class="p-2.5 pl-4 font-mono font-bold text-slate-900">${d.id}<span class="block text-slate-400 font-sans font-medium text-xs">${d.name}</span></td>
