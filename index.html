@@ -483,17 +483,14 @@
             const header = document.getElementById('mainHeader');
             const topBar = document.getElementById('headerTopBar');
             
-            // Xóa class theme cũ
             body.className = "text-slate-800 font-sans min-h-screen p-4 md:p-6 space-y-6 transition-colors duration-300 ";
             header.className = "rounded-2xl shadow-sm border p-6 text-center relative overflow-hidden transition-all duration-300 ";
             
-            // Reset các nút lựa chọn giao diện về trạng thái unselected
             ['default', 'modern', 'minimal', 'luxury'].forEach(t => {
                 const btn = document.getElementById(`themeBtn-${t}`);
                 if(btn) btn.className = "px-2.5 py-1 rounded-lg font-bold border cursor-pointer bg-white text-slate-700 border-slate-300 hover:bg-slate-100 shadow-xs";
             });
             
-            // Kích hoạt style riêng biệt theo từng lựa chọn tùy ý
             if(themeName === 'modern') {
                 body.className += "bg-slate-900 text-slate-100";
                 header.className += "bg-slate-800 border-slate-700 shadow-lg";
@@ -524,7 +521,7 @@
                 setElementsStyleByGroup('bg-slate-700', 'bg-amber-600 text-stone-950 font-black');
                 setElementsStyleByGroup('text-slate-900', 'text-amber-400');
             } 
-            else { // Mặc định (Default)
+            else { 
                 body.className += "bg-slate-100 text-slate-800";
                 header.className += "bg-white border-slate-200";
                 topBar.className = "absolute inset-x-0 top-0 h-1.5 bg-blue-600 transition-colors duration-300";
@@ -539,7 +536,6 @@
         }
 
         function setElementsStyleByGroup(oldClassPattern, newClasses) {
-            // Đồng bộ nhanh background của các khối card nội dung chính
             const cards = ['block-dept', 'block-user', 'block-device', 'block-pomo', 'block-inventory', 'block-repair', 'block-task', 'statCard-1', 'statCard-2', 'statCard-3', 'statCard-4'];
             cards.forEach(id => {
                 const el = document.getElementById(id);
@@ -557,7 +553,7 @@
             });
         }
 
-        // TẢI CACHE TỪ LOCALSTORAGE TRƯỚC ĐỂ LOAD WEB TRONG 0.1 GIÂY
+        // TẢI CACHE TỪ LOCALSTORAGE
         function loadLocalCache() {
             const cached = localStorage.getItem('vinapaco_local_cache');
             if (cached) {
@@ -576,7 +572,6 @@
                 }
             }
             
-            // Đọc trạng thái giao diện tùy chỉnh đã lưu
             const savedTheme = localStorage.getItem('vinapaco_app_theme') || 'default';
             setTimeout(() => { changeAppTheme(savedTheme); }, 150);
         }
@@ -589,7 +584,7 @@
             previewInventoryReport();
         }
 
-        // CHỈ GỌI LÊN CLOUD ĐỂ ĐỒNG BỘ ĐÚNG 1 LẦN KHI CẦN THIẾT
+        // CLOUD SYNC
         function fetchCloudData() {
             get(ref(db, 'root')).then((snapshot) => {
                 const data = snapshot.val() || {};
@@ -603,17 +598,16 @@
                 localStorage.setItem('vinapaco_local_cache', JSON.stringify({ depts, users, devices, tasks, repairs, accountConfig }));
                 refreshUI();
             }).catch(err => {
-                console.error("Lỗi đồng bộ hạn mức Firebase:", err);
+                console.error("Lỗi đồng bộ Firebase:", err);
             });
         }
 
-        // KHỞI ĐỘNG HỆ THỐNG
         loadLocalCache();   
         fetchCloudData();   
 
         window.triggerManualFetch = function() {
             fetchCloudData();
-            alert("🔄 Đã lấy bản đồng bộ mới nhất từ Đám mây và ghi đè vào bộ nhớ đệm Local thành công!");
+            alert("🔄 Đã lấy bản đồng bộ mới nhất từ Đám mây và cập nhật thành công!");
         }
 
         function pushDataToCloud() {
@@ -796,7 +790,7 @@
                         </table>
                     </div>
                     <div class="mb-4">
-                        <p class="font-bold">IV. KẾ T LUẬN VÀ KIẾN NGHỊ:</p>
+                        <p class="font-bold">IV. KẾT LUẬN VÀ KIẾN NGHỊ:</p>
                         <p class="pl-3">${conclusion}</p>
                     </div>
                     <div class="grid grid-cols-3 text-center font-bold mt-6 text-[12px]">
@@ -810,22 +804,59 @@
         window.previewInventoryReport = function() { document.getElementById('previewContainer').innerHTML = generateInventoryHTML(); }
         window.printInventoryReport = function() { document.getElementById('printInventoryZone').innerHTML = generateInventoryHTML(); window.print(); }
 
-        // NGHIỆP VỤ NHẬP LIỆU GỐC
+        // --- CƠ CHẾ CHỐNG NHẬP TRÙNG DỮ LIỆU ---
         window.addDept = function(e) {
             e.preventDefault(); if(!hasRight('dept')) return alert("Từ chối phân quyền!");
             const name = document.getElementById('deptName').value.trim();
+            
+            // Chống trùng tên phòng ban
+            const isDuplicate = depts.some(d => d.name.toLowerCase().replace(/\s+/g, '') === name.toLowerCase().replace(/\s+/g, ''));
+            if(isDuplicate) {
+                alert(`⚠️ Lỗi: Phòng ban/Đơn vị "${name}" đã tồn tại trên hệ thống! Vui lòng không nhập trùng.`);
+                return;
+            }
+
             depts.push({ id: Date.now().toString(), name }); pushDataToCloud();
             document.getElementById('deptName').value = "";
         }
+
         window.addUser = function(e) {
             e.preventDefault();
-            const name = document.getElementById('userName').value.trim(), title = document.getElementById('userTitle').value.trim(), dept = document.getElementById('userDept').value;
+            const name = document.getElementById('userName').value.trim();
+            const title = document.getElementById('userTitle').value.trim();
+            const dept = document.getElementById('userDept').value;
+            
+            // Chống trùng Nhân sự trong cùng một phòng ban
+            const isDuplicate = users.some(u => 
+                u.name.toLowerCase().replace(/\s+/g, '') === name.toLowerCase().replace(/\s+/g, '') && 
+                u.dept === dept
+            );
+            if(isDuplicate) {
+                alert(`⚠️ Lỗi: Nhân sự "${name}" đã được đăng ký tại bộ phận "${dept}" rồi!`);
+                return;
+            }
+
             users.push({ id: Date.now().toString(), name, title, dept }); pushDataToCloud();
             document.getElementById('userName').value = ""; document.getElementById('userTitle').value = "";
         }
+
         window.addDevice = function(e) {
             e.preventDefault(); if(!hasRight('device')) return alert("Từ chối phân quyền!");
-            const id = document.getElementById('deviceId').value, name = document.getElementById('deviceName').value.trim(), cat = document.getElementById('deviceCategory').value, dept = document.getElementById('deviceDept').value;
+            const id = document.getElementById('deviceId').value;
+            const name = document.getElementById('deviceName').value.trim();
+            const cat = document.getElementById('deviceCategory').value;
+            const dept = document.getElementById('deviceDept').value;
+            
+            // Chống trùng lặp thiết bị cùng tên trong cùng đơn vị phụ trách
+            const isDuplicate = devices.some(d => 
+                d.name.toLowerCase().replace(/\s+/g, '') === name.toLowerCase().replace(/\s+/g, '') && 
+                d.dept === dept
+            );
+            if(isDuplicate) {
+                alert(`⚠️ Lỗi: Thiết bị "${name}" đã có hồ sơ quản lý tại bộ phận "${dept}". Vui lòng kiểm tra lại!`);
+                return;
+            }
+
             devices.push({ id, name, cat, dept, status: "Hoạt động tốt" }); pushDataToCloud();
             document.getElementById('deviceName').value = "";
         }
@@ -834,6 +865,7 @@
             e.preventDefault(); if(!hasRight('action')) return alert("Từ chối phân quyền!");
             const devId = document.getElementById('repairDevice').value, desc = document.getElementById('repairDesc').value.trim(), user = document.getElementById('repairUser').value, cost = parseFloat(document.getElementById('repairCost').value) || 0;
             const tDev = devices.find(d => d.id === devId);
+            
             repairs.push({ id: Date.now().toString(), devId, devName: tDev?tDev.name:'', desc, user, cost });
             if(tDev) tDev.status = "Hoạt động tốt";
             pushDataToCloud();
@@ -843,6 +875,17 @@
         window.addTask = function(e) {
             e.preventDefault(); if(!hasRight('action')) return alert("Từ chối phân quyền!");
             const name = document.getElementById('taskName').value.trim(), device = document.getElementById('taskDevice').value, user = document.getElementById('taskUser').value, priority = document.getElementById('taskPriority').value, start = document.getElementById('taskTimeStart').value, duration = parseInt(document.getElementById('taskDuration').value) || 30;
+            
+            // Chống trùng lặp lịch trình giống hệt nhau
+            const isDuplicate = tasks.some(t => 
+                t.name.toLowerCase().replace(/\s+/g, '') === name.toLowerCase().replace(/\s+/g, '') && 
+                t.start === start && t.user === user
+            );
+            if(isDuplicate) {
+                alert("⚠️ Lỗi: Công việc này vào khung giờ này đã được phân công cho nhân sự! Tránh nhập trùng lịch.");
+                return;
+            }
+
             tasks.push({ id: Date.now().toString(), name, device, user, priority, start, duration, status: "Chưa hoàn thành" });
             pushDataToCloud();
             document.getElementById('taskName').value = "";
@@ -854,9 +897,10 @@
             if(t) { t.status = (t.status === "Chưa hoàn thành") ? "Đã hoàn thành" : "Chưa hoàn thành"; pushDataToCloud(); }
         }
 
+        // --- BẢO VỆ PHÂN QUYỀN SỬA / XÓA ---
         window.deleteItem = function(type, id) {
-            if(currentRole !== "admin") return alert("Chỉ tài khoản Admin tối cao mới được quyền xóa!");
-            if(confirm("Bạn có chắc chắn muốn xóa bản ghi này?")) {
+            if(currentRole !== "admin") return alert("🛡️ Nghiêm cấm: Chỉ tài khoản Admin cấp cao nhất mới có quyền xóa bỏ dữ liệu gốc!");
+            if(confirm("Bạn có chắc chắn muốn xóa bản ghi này? Hành động này sẽ đồng bộ trực tiếp lên Firebase.")) {
                 if(type === 'dept') depts = depts.filter(item => item.id !== id);
                 if(type === 'user') users = users.filter(item => item.id !== id);
                 if(type === 'device') devices = devices.filter(item => item.id !== id);
@@ -867,6 +911,7 @@
         }
 
         window.changeDeviceStatus = function(id) {
+            if(!hasRight('device')) return alert("🛡️ Từ chối: Bạn không có quyền Sửa/Thay đổi trạng thái thiết bị!");
             const dev = devices.find(d => d.id === id);
             if(dev) {
                 dev.status = (dev.status === "Hoạt động tốt") ? "Đang hỏng" : "Hoạt động tốt";
