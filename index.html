@@ -296,23 +296,27 @@
         <div id="title-repair" class="bg-purple-700 text-white font-bold p-3 text-sm flex items-center gap-2">
             <i class="fa-solid fa-screwdriver-wrench"></i> Mẫu Nhật Ký Bảo Trì & Sửa Chữa Thiết Bị Toàn Hệ Thống
         </div>
-        <form onsubmit="addRepair(event)" class="p-4 grid grid-cols-1 md:grid-cols-4 gap-3 items-end text-xs border-b border-slate-100 bg-slate-50/50">
+        <form onsubmit="addRepair(event)" class="p-4 grid grid-cols-1 md:grid-cols-5 gap-3 items-end text-xs border-b border-slate-100 bg-slate-50/50">
             <div>
                 <label class="block font-bold text-slate-500 mb-1">1. Thiết bị đang sự cố</label>
                 <select id="repairDevice" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-purple-500"></select>
             </div>
             <div>
-                <label class="block font-bold text-slate-500 mb-1">2. Hiện trạng hư hỏng / Cách xử lý</label>
-                <input type="text" id="repairDesc" required placeholder="Mô tả lỗi..." class="w-full border border-slate-300 rounded-lg p-2 focus:outline-purple-500 bg-white">
+                <label class="block font-bold text-slate-500 mb-1">2. Hiện trạng hư hỏng</label>
+                <input type="text" id="repairErrorDesc" required placeholder="Ví dụ: Kêu to, hỏng nguồn..." class="w-full border border-slate-300 rounded-lg p-2 focus:outline-purple-500 bg-white">
             </div>
             <div>
-                <label class="block font-bold text-slate-500 mb-1">3. Kỹ thuật phụ trách</label>
+                <label class="block font-bold text-slate-500 mb-1">3. Cách khắc phục / xử lý</label>
+                <input type="text" id="repairSolutionDesc" required placeholder="Ví dụ: Thay thế linh kiện..." class="w-full border border-slate-300 rounded-lg p-2 focus:outline-purple-500 bg-white">
+            </div>
+            <div>
+                <label class="block font-bold text-slate-500 mb-1">4. Kỹ thuật phụ trách</label>
                 <select id="repairUser" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-purple-500">
-                    <option value="">-- Vui lòng chọn thiết bị trước --</option>
+                    <option value="">-- Chưa có nhân sự --</option>
                 </select>
             </div>
             <div>
-                <label class="block font-bold text-slate-500 mb-1">4. Chi phí vật tư phát sinh (VNĐ)</label>
+                <label class="block font-bold text-slate-500 mb-1">5. Chi phí vật tư phát sinh (VNĐ)</label>
                 <div class="flex gap-2">
                     <input type="number" id="repairCost" required value="0" class="w-full border border-slate-300 rounded-lg p-2 focus:outline-purple-500 bg-white">
                     <button type="submit" id="btn_repair" class="px-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition cursor-pointer shadow-sm whitespace-nowrap">Lưu Hồ Sơ Sữa Chữa</button>
@@ -324,7 +328,8 @@
                 <thead>
                     <tr class="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">
                         <th class="p-3">Thiết Bị</th>
-                        <th class="p-3">Chi Tiết Sự Cố</th>
+                        <th class="p-3">Hiện Trạng Hư Hỏng</th>
+                        <th class="p-3">Cách Khắc Phục</th>
                         <th class="p-3">Kỹ Thuật</th>
                         <th class="p-3">Chi Phí</th>
                         <th class="p-3 text-right">Hành động</th>
@@ -488,7 +493,6 @@
         }
         initMiniCalendar();
 
-        // GIAO DIỆN TÙY Ý (THEME SWITCHER)
         window.changeAppTheme = function(themeName) {
             const body = document.getElementById('mainBody');
             const header = document.getElementById('mainHeader');
@@ -592,7 +596,6 @@
             document.getElementById('deviceId').value = `TB-${maxNum + 1}`;
         }
 
-        // MỞ ĐĂNG NHẬP VÀ FOCUS
         window.openLoginModal = function() {
             if(currentRole !== "guest") {
                 currentRole = "guest"; currentLoggedUser = "";
@@ -607,9 +610,8 @@
         }
         window.closeLoginModal = function() { document.getElementById('loginModal').classList.add('hidden'); }
         
-        // HÀM XỬ LÝ ĐĂNG NHẬP KHI BẤM VÀO HỆ THỐNG HOẶC ẤN ENTER
         window.submitLoginAdmin = function(e) {
-            if(e) e.preventDefault(); // Ngăn trang reload khi dùng form submit
+            if(e) e.preventDefault();
             const u = document.getElementById('loginUser').value.trim(), p = document.getElementById('loginPass').value;
             if(u === accountConfig.admin_user && p === accountConfig.admin_pass) {
                 currentRole = "admin"; currentLoggedUser = u; closeLoginModal(); renderAllTables();
@@ -829,16 +831,31 @@
             document.getElementById('deviceName').focus();
         }
 
-        // --- HÀNH ĐỘNG KHÁC ---
+        // --- FORM NHẬT KÝ BẢO TRÌ ---
         window.addRepair = function(e) {
             e.preventDefault(); if(!hasRight('action')) return alert("Từ chối phân quyền!");
-            const devId = document.getElementById('repairDevice').value, desc = document.getElementById('repairDesc').value.trim(), user = document.getElementById('repairUser').value, cost = parseFloat(document.getElementById('repairCost').value) || 0;
+            const devId = document.getElementById('repairDevice').value;
+            const errorDesc = document.getElementById('repairErrorDesc').value.trim();
+            const solutionDesc = document.getElementById('repairSolutionDesc').value.trim();
+            const user = document.getElementById('repairUser').value;
+            const cost = parseFloat(document.getElementById('repairCost').value) || 0;
             const tDev = devices.find(d => d.id === devId);
             
-            repairs.push({ id: Date.now().toString(), devId, devName: tDev?tDev.name:'', desc, user, cost });
+            repairs.push({ 
+                id: Date.now().toString(), 
+                devId, 
+                devName: tDev ? tDev.name : '', 
+                errorDesc, 
+                solutionDesc, 
+                user, 
+                cost 
+            });
             if(tDev) tDev.status = "Hoạt động tốt";
             pushDataToCloud();
-            document.getElementById('repairDesc').value = ""; document.getElementById('repairCost').value = "0";
+            
+            document.getElementById('repairErrorDesc').value = ""; 
+            document.getElementById('repairSolutionDesc').value = ""; 
+            document.getElementById('repairCost').value = "0";
             document.getElementById('repairDevice').focus(); 
         }
 
@@ -886,28 +903,44 @@
             setTimeout(() => { window.print(); }, 300);
         }
 
+        // --- MỞ KHÓA LIÊN KẾT: THAY ĐỔI ĐỂ HIỂN THỊ TOÀN BỘ NHÂN SỰ ---
         document.getElementById('repairDevice').addEventListener('change', (e) => {
-            const matchedDev = devices.find(d => d.id === e.target.value);
-            const uSelect = document.getElementById('repairUser'); uSelect.innerHTML = "";
-            if(matchedDev) {
-                const filteredUsers = users.filter(u => u.dept === matchedDev.dept);
-                if(filteredUsers.length === 0) {
-                    uSelect.innerHTML = `<option value="Chưa cấu hình">-- Không có nhân sự cùng bộ phận --</option>`;
-                } else {
-                    filteredUsers.forEach(u => { uSelect.innerHTML += `<option value="${u.name}">${u.name} (${u.title})</option>`; });
-                }
-            } else { uSelect.innerHTML = `<option value="">-- Vui lòng chọn thiết bị trước --</option>`; }
+            const uSelect = document.getElementById('repairUser'); 
+            uSelect.innerHTML = "";
+            if(users.length === 0) {
+                uSelect.innerHTML = `<option value="Chưa cấu hình">-- Chưa có nhân sự trên hệ thống --</option>`;
+            } else {
+                users.forEach(u => { 
+                    uSelect.innerHTML += `<option value="${u.name}">${u.name} (${u.title} - ${u.dept})</option>`; 
+                });
+            }
         });
 
         function updateDropdownOptions() {
-            const uDept = document.getElementById('userDept'), dDept = document.getElementById('deviceDept'), rDev = document.getElementById('repairDevice'), tDev = document.getElementById('taskDevice'), tUsr = document.getElementById('taskUser');
+            const uDept = document.getElementById('userDept'), dDept = document.getElementById('deviceDept'), rDev = document.getElementById('repairDevice'), tDev = document.getElementById('taskDevice'), tUsr = document.getElementById('taskUser'), rUser = document.getElementById('repairUser');
             const currentRDev = rDev.value;
-            uDept.innerHTML = '<option value="">-- Chọn đơn vị --</option>'; dDept.innerHTML = '<option value="">-- Chọn phòng ban --</option>'; rDev.innerHTML = '<option value="">-- Chọn thiết bị --</option>'; tDev.innerHTML = '<option value="Không có">-- Không có thiết bị liên kết --</option>'; tUsr.innerHTML = '<option value="Chưa giao">-- Chưa giao nhân sự phụ trách --</option>';
+            const currentRUser = rUser.value;
+
+            uDept.innerHTML = '<option value="">-- Chọn đơn vị --</option>'; 
+            dDept.innerHTML = '<option value="">-- Chọn phòng ban --</option>'; 
+            rDev.innerHTML = '<option value="">-- Chọn thiết bị --</option>'; 
+            tDev.innerHTML = '<option value="Không có">-- Không có thiết bị liên kết --</option>'; 
+            tUsr.innerHTML = '<option value="Chưa giao">-- Chưa giao nhân sự phụ trách --</option>';
+            rUser.innerHTML = '';
             
             depts.forEach(d => { uDept.innerHTML += `<option value="${d.name}">${d.name}</option>`; dDept.innerHTML += `<option value="${d.name}">${d.name}</option>`; });
             devices.forEach(dev => { rDev.innerHTML += `<option value="${dev.id}">${dev.id} - ${dev.name}</option>`; tDev.innerHTML += `<option value="${dev.name}">${dev.name}</option>`; });
-            users.forEach(u => { tUsr.innerHTML += `<option value="${u.name}">${u.name}</option>`; });
+            users.forEach(u => { 
+                tUsr.innerHTML += `<option value="${u.name}">${u.name}</option>`; 
+                rUser.innerHTML += `<option value="${u.name}">${u.name} (${u.title} - ${u.dept})</option>`;
+            });
+            
+            if(!users.length) {
+                rUser.innerHTML = '<option value="Chưa cấu hình">-- Chưa có nhân sự trên hệ thống --</option>';
+            }
+
             if(currentRDev && devices.some(d => d.id === currentRDev)) { rDev.value = currentRDev; }
+            if(currentRUser && users.some(u => u.name === currentRUser)) { rUser.value = currentRUser; }
         }
 
         function calculateStats() {
@@ -934,21 +967,18 @@
         }, 1000);
 
         function renderAllTables() {
-            // Render Phòng Ban
             const dtb = document.getElementById('deptTableBody'); dtb.innerHTML = '';
             depts.forEach(d => { 
                 dtb.innerHTML += `<tr class="border-b text-slate-700 hover:bg-slate-50"><td class="p-2 font-medium">${d.name}</td><td class="p-2 text-right space-x-2"><button onclick="startEditDept('${d.id}')" class="text-amber-600 hover:text-amber-800 font-bold cursor-pointer" title="Sửa">📝</button><button onclick="deleteItem('dept','${d.id}')" class="text-rose-600 hover:text-rose-800 font-bold cursor-pointer" title="Xóa">🗑️</button></td></tr>`; 
             });
             if(!depts.length) dtb.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-slate-400 italic">Chưa có dữ liệu</td></tr>`;
 
-            // Render Nhân Sự
             const utb = document.getElementById('userTableBody'); utb.innerHTML = '';
             users.forEach(u => { 
                 utb.innerHTML += `<tr class="border-b text-slate-700 hover:bg-slate-50"><td class="p-2 font-medium">${u.name}<span class="block text-[10px] text-slate-400 font-normal">${u.title}</span></td><td class="p-2 text-slate-500">${u.dept}</td><td class="p-2 text-right space-x-2"><button onclick="startEditUser('${u.id}')" class="text-amber-600 hover:text-amber-800 font-bold cursor-pointer" title="Sửa">📝</button><button onclick="deleteItem('user','${u.id}')" class="text-rose-600 hover:text-rose-800 font-bold cursor-pointer" title="Xóa">🗑️</button></td></tr>`; 
             });
             if(!users.length) utb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 italic">Chưa có dữ liệu</td></tr>`;
 
-            // Render Thiết Bị
             const dtbBody = document.getElementById('deviceTableBody'); dtbBody.innerHTML = '';
             devices.forEach(d => {
                 const statusColor = d.status === "Hoạt động tốt" ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800";
@@ -956,14 +986,22 @@
             });
             if(!devices.length) dtbBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 italic">Chưa có dữ liệu</td></tr>`;
 
-            // Render Nhật Ký Bảo Trì
             const rtb = document.getElementById('repairTableBody'); rtb.innerHTML = '';
             repairs.forEach(r => {
-                rtb.innerHTML += `<tr class="border-b text-slate-700 hover:bg-slate-50"><td class="p-3 font-mono font-bold text-orange-600">${r.devId}</td><td class="p-3 font-medium">${r.desc}</td><td class="p-3 text-slate-500">${r.user}</td><td class="p-3 font-bold text-purple-700">${r.cost.toLocaleString()} đ</td><td class="p-3 text-right"><button onclick="deleteItem('repair','${r.id}')" class="text-rose-600 hover:text-rose-800 font-bold cursor-pointer">🗑️</button></td></tr>`;
+                const errorText = r.errorDesc || r.desc || '---';
+                const solutionText = r.solutionDesc || '---';
+                
+                rtb.innerHTML += `<tr class="border-b text-slate-700 hover:bg-slate-50">
+                    <td class="p-3 font-mono font-bold text-orange-600">${r.devId}</td>
+                    <td class="p-3 font-medium text-rose-600">${errorText}</td>
+                    <td class="p-3 font-medium text-emerald-700">${solutionText}</td>
+                    <td class="p-3 text-slate-500">${r.user}</td>
+                    <td class="p-3 font-bold text-purple-700">${r.cost.toLocaleString()} đ</td>
+                    <td class="p-3 text-right"><button onclick="deleteItem('repair','${r.id}')" class="text-rose-600 hover:text-rose-800 font-bold cursor-pointer">🗑️</button></td>
+                </tr>`;
             });
-            if(!repairs.length) rtb.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400 italic">Chưa có hồ sơ sửa chữa nào được lưu</td></tr>`;
+            if(!repairs.length) rtb.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">Chưa có hồ sơ sửa chữa nào được lưu</td></tr>`;
 
-            // Render Kế Hoạch Đếm Ngược
             const ttb = document.getElementById('taskTableBody'); ttb.innerHTML = '';
             tasks.forEach(t => {
                 const isDone = t.status === "Đã hoàn thành";
