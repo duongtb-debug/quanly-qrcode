@@ -366,16 +366,17 @@
             set(ref(db, nodeKey), { depts, users, devices, repairs, tasks }).then(() => { fetchCloudData(); });
         }
 
-        // ĐỊNH DẠNG BẢO MẬT VĂN BẢN TRONG QR: KHÓA CHẾ ĐỘ HIỂN THỊ CHỮ, TRÁNH BỊ ÉP SANG TRANG WEB
+        // TỐI GIẢN CHỮ ĐỂ Ô VUÔNG QR THƯA HƠN -> CAMERA ĐIỆN THOẠI QUÉT NHẠY 100% KHÔNG BỊ TRỄ
         function makeQRTextContent(dev) {
-            return `TEXT:\nTHÔNG TIN TÀI SẢN\nTên thiết bị: ${dev.name}\nMã định danh: ${dev.id}\nChủng loại: ${dev.cat}\nĐơn vị quản lý: ${dev.dept}\nNhân sự phụ trách: ${dev.user || 'Lưu kho'}\nTrạng thái hiện tại: ${dev.status || 'Tốt'}`;
+            return `MA THIET BI: ${dev.id}\nTEN: ${dev.name}\nPHONG BAN: ${dev.dept}\nPHU TRACH: ${dev.user || 'Kho'}`;
         }
 
         window.generateLocalQR = function(canvasId, text, size = 120) {
             setTimeout(() => {
                 const canvas = document.getElementById(canvasId);
                 if (canvas) {
-                    new QRious({ element: canvas, value: text, size: size, level: 'H' });
+                    // level: 'L' giúp mã QR giảm tối đa các ô thừa, thưa và nhạy nhất đối với camera phân xưởng
+                    new QRious({ element: canvas, value: text, size: size, level: 'L' });
                 }
             }, 50);
         }
@@ -393,13 +394,13 @@
             document.getElementById('wpId').innerText = dev.id;
             document.getElementById('wpDept').innerText = "ĐV: " + dev.dept;
             document.getElementById('wpUser').innerText = "Phụ trách: " + (dev.user || "Trong kho");
-            generateLocalQR('wpCanvas', qrText, 140);
+            generateLocalQR('wpCanvas', qrText, 150);
 
             document.getElementById('qrPrintTitle').innerText = dev.name;
             document.getElementById('qrPrintId').innerText = dev.id;
             document.getElementById('qrPrintDept').innerText = "ĐV: " + dev.dept;
             document.getElementById('qrPrintUser').innerText = "Phụ trách: " + (dev.user || "Trong kho");
-            generateLocalQR('qrPrintCanvas', qrText, 130);
+            generateLocalQR('qrPrintCanvas', qrText, 140);
         }
 
         function autoGenDeviceId() {
