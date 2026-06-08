@@ -125,7 +125,7 @@
                     <input type="text" id="deviceName" required placeholder="Ví dụ: Máy nghiền bột thủy lực..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
                 </div>
                 <div class="sm:col-span-4">
-                    <label class="block font-bold text-slate-500 mb-1">Chủng loại nhóm tài sản linh hoạt</label>
+                    <label class="block font-bold text-slate-500 mb-1">Chủng loại nhóm tài sản</label>
                     <select id="deviceCategory" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-blue-800">
                         <option value="Dây chuyền chuẩn bị bột giấy">Dây chuyền chuẩn bị bột giấy</option>
                         <option value="Máy xeo giấy công nghiệp">Máy xeo giấy công nghiệp</option>
@@ -199,8 +199,7 @@
             <i class="fa-solid fa-triangle-exclamation text-xl animate-bounce"></i> 
             <span>Hệ Thống Tự Động Cảnh Báo Đến Thời Hạn Bảo Dưỡng Thiết Bị (Chu Kỳ 6 Tháng)</span>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-sm" id="maintenanceAlertZone">
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-sm" id="maintenanceAlertZone"></div>
     </section>
 
     <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
@@ -386,10 +385,8 @@
         let depts = [], users = [], devices = [], repairs = [], tasks = [], systemAccounts = [];
         let activeUserDeptFilter = 'all', loggedInUser = null, currentAuthTab = 'login';
 
-        // LÀM VIỆC / NGHỈ NGƠI POMODORO VARIABLE
         let pomoInterval = null, pomoTimeLeft = 25 * 60, pomoIsRunning = false, pomoCurrentMode = 'work';
 
-        // DANH SÁCH CA DAO TỤC NGỮ PHONG PHÚ
         const localQuotesList = [
             "Ăn quả nhớ kẻ trồng cây, ăn khoai nhớ kẻ đâm cỏ ngày xưa.",
             "Muốn lành nghề thì phải bền chí, muốn chuyên nghiệp phải chịu khó rèn tai.",
@@ -399,7 +396,6 @@
             "Đường đi gian khổ không sờn lòng, kỷ luật lao động giữ an toàn cho nhà máy."
         ];
 
-        // KHỞI TẠO TÀI KHOẢN GỐC CHỐNG LOGOUT
         if(!localStorage.getItem('vinapaco_accounts_v3')) {
             localStorage.setItem('vinapaco_accounts_v3', JSON.stringify([{ username: 'admin', pass: 'vinapaco2026', role: 'Admin' }]));
         }
@@ -408,7 +404,6 @@
         const savedUser = localStorage.getItem('vinapaco_logged_in_user');
         if(savedUser) { loggedInUser = JSON.parse(savedUser); }
 
-        // ĐỒNG HỒ & CA DAO TỤC NGỮ
         setInterval(() => {
             const d = new Date();
             document.getElementById('liveClockText').innerText = d.toLocaleTimeString('vi-VN');
@@ -420,7 +415,6 @@
             document.getElementById('txtVietnameseQuote').innerText = `"${rand}"`;
         }
 
-        // TÍNH NĂNG NHẮC NHỞ LÀM VIỆC NGHỈ NGƠI POMODORO
         window.togglePomoTimer = function() {
             if (pomoIsRunning) {
                 clearInterval(pomoInterval);
@@ -460,7 +454,6 @@
             document.getElementById('btnStartPomo').innerText = "Bắt Đầu";
         }
 
-        // ĐĂNG NHẬP / PHÂN QUYỀN TRỰC DIỆN
         window.switchAuthTab = function(tab) {
             currentAuthTab = tab;
             const tabL = document.getElementById('tabAuthLogin'), tabR = document.getElementById('tabAuthRegister');
@@ -521,7 +514,9 @@
             document.getElementById('adminUserManagementBlock').className = (role === 'Admin') ? "bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col" : "hidden";
             if(role === 'Admin') renderAccountSubTable();
             ['formDeviceAction', 'formRepairAction', 'formUserAction', 'formTaskAction'].forEach(id => {
-                document.getElementById(id).className = (role === 'Admin' || role === 'Kỹ thuật') ? document.getElementById(id).className.replace('hidden', '').trim() : "hidden";
+                if(document.getElementById(id)) {
+                    document.getElementById(id).className = (role === 'Admin' || role === 'Kỹ thuật') ? document.getElementById(id).className.replace('hidden', '').trim() : "hidden";
+                }
             });
         }
 
@@ -539,7 +534,6 @@
         window.changeRoleDirectly = function(uname, role) { systemAccounts.forEach(a => { if(a.username === uname) a.role = role; }); localStorage.setItem('vinapaco_accounts_v3', JSON.stringify(systemAccounts)); }
         window.deleteAccountSub = function(uname) { systemAccounts = systemAccounts.filter(a => a.username !== uname); localStorage.setItem('vinapaco_accounts_v3', JSON.stringify(systemAccounts)); renderAccountSubTable(); }
 
-        // ĐỒNG BỘ DỮ LIỆU CLOUD CLOUD FIRESTORE/RTDB
         window.switchEnvironment = function(env) { currentEnv = env; localStorage.setItem('vinapaco_current_env', env); updateEnvButtonsUI(); fetchCloudData(); }
         function updateEnvButtonsUI() {
             const l = document.getElementById('envBtn-live'), d = document.getElementById('envBtn-demo');
@@ -559,16 +553,18 @@
         window.triggerManualFetch = function() { fetchCloudData(); }
         function pushDataToCloud() { set(ref(db, currentEnv === 'live' ? 'root' : 'demo_root'), { depts, users, devices, repairs, tasks }).then(() => fetchCloudData()); }
 
-        // SỬA TẬN GỐC LỖI HIỂN THỊ MÃ QR TỰ ĐỘNG LÊN DANH MỤC TƯỜNG MINH
         function makeQRTextContent(dev) { return `ID:${dev.id}\nN:${dev.name}\nD:${dev.dept}\nU:${dev.user || 'Kho'}`; }
         
+        // GIẢI PHÁP SỬA LỖI TẬN GỐC: ÉP BUỘC CLEAR ĐỂ KHÔNG BỊ TRÙNG VÀ KIỂM TRA PHẦN TỬ TỒN TẠI TRONG DOM CHẮC CHẮN
         window.generateLocalQR = function(containerId, text, size = 130) {
             const container = document.getElementById(containerId);
             if (container) {
                 container.innerHTML = ""; 
-                new QRCode(container, { text: text, width: size, height: size, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.L });
-                const img = container.querySelector('img');
-                if (img) img.style.imageRendering = 'pixelated';
+                try {
+                    new QRCode(container, { text: text, width: size, height: size, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.L });
+                    const img = container.querySelector('img');
+                    if (img) img.style.imageRendering = 'pixelated';
+                } catch(err) { console.error("Lỗi sinh mã QR:", err); }
             }
         }
 
@@ -582,6 +578,7 @@
             document.getElementById('wpId').innerText = dev.id;
             document.getElementById('wpDept').innerText = "ĐV: " + dev.dept;
             document.getElementById('wpUser').innerText = "Phụ trách: " + (dev.user || "Trong kho");
+            
             setTimeout(() => {
                 generateLocalQR('wpCanvas', text, 140);
                 document.getElementById('qrPrintTitle').innerText = dev.name;
@@ -598,7 +595,6 @@
             document.getElementById('deviceId').value = `TB-${max + 1}`;
         }
 
-        // ĐIỀU HƯỚNG INPUT NGHIỆP VỤ
         window.updateUserDropdownByDept = function() {
             const dDept = document.getElementById('deviceDept').value, dUser = document.getElementById('deviceUser');
             dUser.innerHTML = '<option value="Chưa cấp phát">-- Giữ lưu kho --</option>';
@@ -625,19 +621,20 @@
 
         function updateDropdownOptions() {
             const ud = document.getElementById('userDept'), dd = document.getElementById('deviceDept'), rd = document.getElementById('repairDeviceId'), ru = document.getElementById('repairUser'), td = document.getElementById('taskDeviceId'), tu = document.getElementById('taskUser');
-            ud.innerHTML = ''; dd.innerHTML = '<option value="">-- Chọn đơn vị --</option>'; rd.innerHTML = ''; ru.innerHTML = ''; td.innerHTML = '<option value="Không">Không</option>'; tu.innerHTML = '';
-            depts.forEach(d => { ud.innerHTML += `<option value="${d.name}">${d.name}</option>`; dd.innerHTML += `<option value="${d.name}">${d.name}</option>`; });
-            devices.forEach(d => { rd.innerHTML += `<option value="${d.id}">${d.id} - ${d.name}</option>`; td.innerHTML += `<option value="${d.id}">${d.id}</option>`; });
-            users.forEach(u => { ru.innerHTML += `<option value="${u.name}">${u.name}</option>`; tu.innerHTML += `<option value="${u.name}">${u.name}</option>`; });
+            if(ud) ud.innerHTML = ''; if(dd) dd.innerHTML = '<option value="">-- Chọn đơn vị --</option>'; if(rd) rd.innerHTML = ''; if(ru) ru.innerHTML = ''; if(td) td.innerHTML = '<option value="Không">Không</option>'; if(tu) tu.innerHTML = '';
+            depts.forEach(d => { if(ud) ud.innerHTML += `<option value="${d.name}">${d.name}</option>`; if(dd) dd.innerHTML += `<option value="${d.name}">${d.name}</option>`; });
+            devices.forEach(d => { if(rd) rd.innerHTML += `<option value="${d.id}">${d.id} - ${d.name}</option>`; if(td) td.innerHTML += `<option value="${d.id}">${d.id}</option>`; });
+            users.forEach(u => { if(ru) ru.innerHTML += `<option value="${u.name}">${u.name}</option>`; if(tu) tu.innerHTML += `<option value="${u.name}">${u.name}</option>`; });
 
             const container = document.getElementById('deptTabsContainer');
-            container.innerHTML = `<button onclick="filterUserByDept('all')" id="tab-dept-all" class="px-3 py-2 cursor-pointer">Tất Cả</button>`;
-            depts.forEach(d => { const clean = btoa(encodeURIComponent(d.name)).replace(/=/g,''); container.innerHTML += `<button onclick="filterUserByDept('${d.name}')" id="tab-dept-${clean}" class="px-3 py-2 cursor-pointer">${d.name}</button>`; });
+            if(container) {
+                container.innerHTML = `<button onclick="filterUserByDept('all')" id="tab-dept-all" class="px-3 py-2 cursor-pointer">Tất Cả</button>`;
+                depts.forEach(d => { const clean = btoa(encodeURIComponent(d.name)).replace(/=/g,''); container.innerHTML += `<button onclick="filterUserByDept('${d.name}')" id="tab-dept-${clean}" class="px-3 py-2 cursor-pointer">${d.name}</button>`; });
+            }
         }
 
-        // TÍNH NĂNG CẢNH BÁO THỜI HẠN BẢO DƯỠNG LINH HOẠT TỰ ĐỘNG
         function checkMaintenanceAlerts() {
-            const zone = document.getElementById('maintenanceAlertZone'); zone.innerHTML = '';
+            const zone = document.getElementById('maintenanceAlertZone'); if(!zone) return; zone.innerHTML = '';
             let count = 0;
             devices.forEach(d => {
                 const logs = repairs.filter(r => r.devId === d.id);
@@ -654,13 +651,17 @@
             if(count === 0) zone.innerHTML = `<p class="text-slate-500 italic text-sm col-span-3">🟢 Hiện tại toàn bộ máy móc công nghiệp xeo giấy đang vận hành an toàn, chưa có cảnh báo đến hạn.</p>`;
         }
 
-        // RENDER MẠNG LƯỚI BẢNG TƯỜNG MINH
+        // ĐÂY LÀ CHÌA KHÓA: ĐẢM BẢO HOÀN TẤT INNERHTML TRƯỚC, SAU ĐÓ QUÉT QUA ĐỂ VẼ QR CODE VÀO ĐÚNG ĐỊA CHỈ KHÔNG TRƯỢT PHÁT NÀO
         window.renderDeviceTableOnly = function() {
-            const body = document.getElementById('deviceTableBody'); body.innerHTML = '';
+            const body = document.getElementById('deviceTableBody'); if(!body) return;
+            body.innerHTML = '';
             const key = document.getElementById('searchDeviceInput').value.trim().toLowerCase();
             const role = loggedInUser ? loggedInUser.role : 'Viewer';
 
-            devices.filter(d => d.name.toLowerCase().includes(key) || d.id.toLowerCase().includes(key)).forEach(d => {
+            const filteredDevices = devices.filter(d => d.name.toLowerCase().includes(key) || d.id.toLowerCase().includes(key));
+
+            // Bước 1: Tạo bộ khung HTML trơn trước
+            filteredDevices.forEach(d => {
                 const canvasId = `canvas-${d.id}`;
                 const btn = (role==='Admin' || role==='Kỹ thuật') ? `<button onclick="previewAndSelectQR('${d.id}')" class="px-2 py-1 bg-slate-900 text-amber-400 font-black rounded text-xs border border-amber-400 cursor-pointer">Xem & In</button><button onclick="deleteItem('device','${d.id}')" class="text-slate-400 hover:text-red-600 ml-1.5 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>` : `<button onclick="previewAndSelectQR('${d.id}')" class="px-2 py-1 bg-slate-900 text-amber-400 font-bold text-xs rounded border border-amber-400 cursor-pointer">Xem</button>`;
                 
@@ -668,20 +669,26 @@
                     <td class="p-3 pl-4 font-mono font-bold text-slate-900">${d.id}</td>
                     <td class="p-3 text-slate-800 font-bold">${d.name}<span class="block text-[11px] text-slate-400 font-normal italic">Nhóm: ${d.cat}</span></td>
                     <td class="p-3">${d.dept}</td>
-                    <td class="p-1 text-center bg-white w-24"><div id="${canvasId}" class="mx-auto cursor-pointer" onclick="previewAndSelectQR('${d.id}')"></div></td>
+                    <td class="p-1 text-center bg-white w-24"><div id="${canvasId}" class="mx-auto flex justify-center items-center min-w-[45px] min-h-[45px] cursor-pointer" onclick="previewAndSelectQR('${d.id}')"></div></td>
                     <td class="p-3 text-blue-600 font-bold">${d.user==='Chưa cấp phát'?'📦 Kho': d.user}</td>
                     <td class="p-3 text-center"><span class="px-2 py-0.5 text-xs rounded font-bold ${d.status==='Trong kho'?'bg-amber-100 text-amber-700':'bg-emerald-100 text-emerald-700'}">${d.status}</span></td>
                     <td class="p-3 text-right pr-4">${btn}</td>
                 </tr>`;
-                
-                // Trì hoãn luồng để QRCodeJS bám chắc chắn vào thẻ div vừa tạo
-                setTimeout(() => { generateLocalQR(canvasId, makeQRTextContent(d), 45); }, 15);
             });
+
+            // Bước 2: Sau khi bảng đã ngấm hoàn toàn vào DOM, dùng cấu trúc requestAnimationFrame để bắt thư viện QRCode chạy chuẩn xác 100%
+            requestAnimationFrame(() => {
+                filteredDevices.forEach(d => {
+                    const canvasId = `canvas-${d.id}`;
+                    generateLocalQR(canvasId, makeQRTextContent(d), 45);
+                });
+            });
+
             document.getElementById('count-device').innerText = `${devices.length} tài sản`;
         }
 
         function renderUserTableOnly() {
-            const body = document.getElementById('userTableBody'); body.innerHTML = '';
+            const body = document.getElementById('userTableBody'); if(!body) return; body.innerHTML = '';
             users.filter(u => activeUserDeptFilter === 'all' || u.dept === activeUserDeptFilter).forEach(u => {
                 body.innerHTML += `<tr class="border-b">
                     <td class="p-3 pl-4 font-bold text-slate-900">${u.name}<span class="block text-xs text-slate-400 font-normal">${u.title}</span></td>
@@ -693,7 +700,7 @@
         }
 
         function renderRepairTableOnly() {
-            const body = document.getElementById('repairTableBody'); body.innerHTML = '';
+            const body = document.getElementById('repairTableBody'); if(!body) return; body.innerHTML = '';
             repairs.forEach(r => {
                 body.innerHTML += `<tr class="border-b text-sm">
                     <td class="p-3 pl-4 font-mono font-bold">${r.devId}</td><td>${r.desc}</td><td>${r.date || '--'}</td><td>${r.repUser}</td><td class="font-bold">${Number(r.cost).toLocaleString()}đ</td>
@@ -703,7 +710,7 @@
         }
 
         function renderTaskTableOnly() {
-            const body = document.getElementById('taskTableBody'); body.innerHTML = '';
+            const body = document.getElementById('taskTableBody'); if(!body) return; body.innerHTML = '';
             tasks.forEach(t => {
                 body.innerHTML += `<tr class="border-b border-slate-800 text-sm">
                     <td class="p-3 pl-4 font-bold text-white">${t.name}</td><td class="p-3 font-mono">${t.devId}</td><td>${t.user}</td><td class="font-bold text-amber-400">${t.level}</td><td>${t.start}</td><td class="font-bold text-emerald-400 font-mono" id="timer-${t.id}">--:--</td><td><span class="px-2 py-0.5 rounded bg-slate-800 text-xs text-slate-300">Đang chạy</span></td>
@@ -712,7 +719,6 @@
             });
         }
 
-        // TÍNH TOÁN ĐẾM NGƯỢC THỜI GIAN THỰC CHO NHẮC VIỆC TRÊN DANH SÁCH KHÔNG LO LAG
         function updateCountdownTimers() {
             tasks.forEach(t => {
                 const el = document.getElementById(`timer-${t.id}`); if(!el) return;
@@ -734,7 +740,6 @@
 
         window.renderAllTables = function() { renderDeviceTableOnly(); renderUserTableOnly(); renderRepairTableOnly(); renderTaskTableOnly(); }
 
-        // BẮT ĐẦU CHẠY
         if (loggedInUser) { executeLoginSuccess(); } else { applyPermissionRulesUI(); }
         updateEnvButtonsUI(); fetchCloudData(); refreshQuoteOnline();
     </script>
