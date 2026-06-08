@@ -366,12 +366,11 @@
             set(ref(db, nodeKey), { depts, users, devices, repairs, tasks }).then(() => { fetchCloudData(); });
         }
 
-        // ĐỊNH DẠNG CHUỖI VĂN BẢN TRONG MÃ QR ĐỂ HIỂN THỊ THÔNG TIN KHI QUÉT ĐIỆN THOẠI
+        // ĐỊNH DẠNG BẢO MẬT VĂN BẢN TRONG QR: KHÓA CHẾ ĐỘ HIỂN THỊ CHỮ, TRÁNH BỊ ÉP SANG TRANG WEB
         function makeQRTextContent(dev) {
-            return `TỔNG CÔNG TY GIẤY VIỆT NAM\n-------------------------\nMã Định Danh: ${dev.id}\nTên Thiết Bị: ${dev.name}\nChủng Loại: ${dev.cat}\nĐơn Vị: ${dev.dept}\nPhụ Trách: ${dev.user || 'Trong kho'}\nTrạng Thái: ${dev.status || 'Hoạt động tốt'}`;
+            return `TEXT:\nTHÔNG TIN TÀI SẢN\nTên thiết bị: ${dev.name}\nMã định danh: ${dev.id}\nChủng loại: ${dev.cat}\nĐơn vị quản lý: ${dev.dept}\nNhân sự phụ trách: ${dev.user || 'Lưu kho'}\nTrạng thái hiện tại: ${dev.status || 'Tốt'}`;
         }
 
-        // HÀM VẼ QR CODE TRỰC TIẾP LÊN KHỐI CANVAS
         window.generateLocalQR = function(canvasId, text, size = 120) {
             setTimeout(() => {
                 const canvas = document.getElementById(canvasId);
