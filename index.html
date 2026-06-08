@@ -13,99 +13,145 @@
             #qrPrintZone, #qrPrintZone * { visibility: visible; }
             #qrPrintZone { position: absolute; left: 50%; top: 10%; transform: translateX(-50%); display: flex !important; flex-direction: column; align-items: center; justify-content: center; border: none !important; }
         }
-        .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        .tab-active { border-bottom-width: 3px; border-color: #0f172a; font-weight: bold; color: #0f172a; }
-        .auth-tab-active { border-bottom-width: 2px; border-color: #3b82f6; color: #3b82f6; font-weight: bold; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+        .tab-active { border-bottom-width: 4px; border-color: #0f172a; font-weight: bold; color: #0f172a; }
+        .auth-tab-active { border-bottom-width: 3px; border-color: #3b82f6; color: #3b82f6; font-weight: bold; }
     </style>
 </head>
-<body id="mainBody" class="bg-slate-100 text-slate-800 font-sans min-h-screen p-4 md:p-6 space-y-6">
+<body id="mainBody" class="bg-slate-100 text-slate-800 font-sans min-h-screen p-4 md:p-6 space-y-6 text-sm md:text-base">
 
     <header class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
         <div class="absolute inset-x-0 top-0 h-1 bg-slate-700"></div>
         <div class="grid grid-cols-1 xl:grid-cols-12 gap-4 items-center">
             
             <div class="xl:col-span-5 flex items-center gap-3 text-center sm:text-left">
-                <div class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center border border-slate-200 text-slate-600 text-xl font-black shrink-0">
+                <div class="w-14 h-14 bg-slate-100 rounded-lg flex items-center justify-center border border-slate-200 text-slate-600 text-2xl font-black shrink-0">
                     <i class="fa-solid fa-industry"></i>
                 </div>
                 <div>
-                    <h2 class="text-[9px] font-bold tracking-widest text-slate-400 uppercase">Hệ Thống Quản Lý Điều Hành Sản Xuất & Cấp Phát QR Code</h2>
-                    <h1 class="text-md md:text-lg font-black text-slate-900 tracking-tight mt-0.5">TỔNG CÔNG TY GIẤY VIỆT NAM</h1>
+                    <h2 class="text-[11px] font-bold tracking-widest text-slate-400 uppercase">Hệ Thống Quản Lý Điều Hành Sản Xuất & Cấp Phát QR Code</h2>
+                    <h1 class="text-lg md:text-xl font-black text-slate-900 tracking-tight mt-0.5">TỔNG CÔNG TY GIẤY VIỆT NAM</h1>
                 </div>
             </div>
 
-            <div class="xl:col-span-3 flex items-center justify-center bg-slate-50 p-1.5 rounded-lg border border-slate-200 h-fit max-w-sm mx-auto xl:w-full">
-                <button onclick="switchEnvironment('live')" id="envBtn-live" class="w-1/2 py-1 rounded-md font-bold cursor-pointer transition-all text-xs text-center">🟢 Live</button>
-                <button onclick="switchEnvironment('demo')" id="envBtn-demo" class="w-1/2 py-1 rounded-md font-bold cursor-pointer transition-all text-xs text-center">Chạy Thử</button>
+            <div class="xl:col-span-3 flex items-center justify-center bg-slate-50 p-2 rounded-lg border border-slate-200 h-fit max-w-sm mx-auto xl:w-full">
+                <button onclick="switchEnvironment('live')" id="envBtn-live" class="w-1/2 py-1.5 rounded-md font-bold cursor-pointer transition-all text-sm text-center">🟢 Live</button>
+                <button onclick="switchEnvironment('demo')" id="envBtn-demo" class="w-1/2 py-1.5 rounded-md font-bold cursor-pointer transition-all text-sm text-center">Chạy Thử</button>
             </div>
 
-            <div class="xl:col-span-4 bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs" id="authZoneArea">
+            <div class="xl:col-span-4 bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm" id="authZoneArea">
                 <div id="guestAuthForm" class="space-y-2">
                     <div class="flex border-b border-slate-200 mb-2">
-                        <button onclick="switchAuthTab('login')" id="tabAuthLogin" class="w-1/2 pb-1 text-center font-bold auth-tab-active cursor-pointer">Đăng Nhập</button>
-                        <button onclick="switchAuthTab('register')" id="tabAuthRegister" class="w-1/2 pb-1 text-center font-bold text-slate-400 cursor-pointer">Đăng Ký Tài Khoản</button>
+                        <button onclick="switchAuthTab('login')" id="tabAuthLogin" class="w-1/2 pb-1.5 text-center font-bold auth-tab-active cursor-pointer">Đăng Nhập</button>
+                        <button onclick="switchAuthTab('register')" id="tabAuthRegister" class="w-1/2 pb-1.5 text-center font-bold text-slate-400 cursor-pointer">Đăng Ký Tài Khoản</button>
                     </div>
                     
                     <div class="flex gap-2">
-                        <input type="text" id="authUsername" placeholder="Tài khoản..." class="w-1/2 border bg-white p-1.5 rounded focus:outline-none font-bold">
-                        <input type="password" id="authPassword" placeholder="Mật khẩu..." class="w-1/2 border bg-white p-1.5 rounded focus:outline-none font-bold">
+                        <input type="text" id="authUsername" placeholder="Tài khoản..." class="w-1/2 border bg-white p-2 rounded focus:outline-none font-bold">
+                        <input type="password" id="authPassword" placeholder="Mật khẩu..." class="w-1/2 border bg-white p-2 rounded focus:outline-none font-bold">
                     </div>
                     
                     <div id="registerRoleBox" class="hidden">
-                        <label class="block font-medium text-slate-500 mb-0.5">Chọn nhóm quyền mong muốn khi đăng ký:</label>
-                        <select id="authDesiredRole" class="w-full border bg-white p-1 rounded focus:outline-none font-bold text-blue-700">
+                        <label class="block font-medium text-slate-500 mb-1 text-xs">Chọn nhóm quyền mong muốn khi đăng ký:</label>
+                        <select id="authDesiredRole" class="w-full border bg-white p-2 rounded focus:outline-none font-bold text-blue-700">
                             <option value="Kỹ thuật">🛠️ Kỹ thuật (Được thêm thiết bị, sửa chữa)</option>
                             <option value="Viewer">👁️ Viewer (Chỉ xem báo cáo)</option>
                         </select>
                     </div>
 
                     <div class="flex justify-between items-center pt-1">
-                        <span class="text-[10px] text-red-500 font-bold hidden" id="authErrorMsg">⚠️ Thông tin sai!</span>
-                        <button onclick="processAuthSubmit()" id="btnAuthActionSubmit" class="ml-auto px-4 py-1.5 bg-slate-800 text-white font-bold rounded hover:bg-slate-900 cursor-pointer">Xác Nhận</button>
+                        <span class="text-xs text-red-500 font-bold hidden" id="authErrorMsg">⚠️ Thông tin sai!</span>
+                        <button onclick="processAuthSubmit()" id="btnAuthActionSubmit" class="ml-auto px-5 py-2 bg-slate-800 text-white font-bold rounded hover:bg-slate-900 cursor-pointer">Xác Nhận</button>
                     </div>
                 </div>
 
                 <div id="userLoggedInDashboard" class="hidden flex justify-between items-center h-full py-1">
-                    <div class="space-y-0.5">
+                    <div class="space-y-1">
                         <div class="flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                            <span id="txtHelloUser" class="font-bold text-slate-900">Xin chào, admin</span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                            <span id="txtHelloUser" class="font-bold text-slate-900 text-base">Xin chào, admin</span>
                         </div>
-                        <p id="txtUserRoleBadge" class="text-[10px] text-blue-600 font-black uppercase tracking-wider">Quyền hạn: Admin</p>
+                        <p id="txtUserRoleBadge" class="text-xs text-blue-600 font-black uppercase tracking-wider">Quyền hạn: Admin</p>
                     </div>
-                    <div class="flex gap-1.5">
-                        <button onclick="openChangePassInline()" class="px-2 py-1 bg-amber-600 text-white rounded font-bold hover:bg-amber-700 cursor-pointer text-[10px]"><i class="fa-solid fa-key"></i> Đổi MK</button>
-                        <button onclick="handleLogoutSystem()" class="px-2 py-1 bg-red-600 text-white rounded font-bold hover:bg-red-700 cursor-pointer text-[10px]"><i class="fa-solid fa-right-from-bracket"></i> Đăng Xuất</button>
+                    <div class="flex gap-2">
+                        <button onclick="openChangePassInline()" class="px-2.5 py-1.5 bg-amber-600 text-white rounded font-bold hover:bg-amber-700 cursor-pointer text-xs"><i class="fa-solid fa-key"></i> Đổi MK</button>
+                        <button onclick="handleLogoutSystem()" class="px-2.5 py-1.5 bg-red-600 text-white rounded font-bold hover:bg-red-700 cursor-pointer text-xs"><i class="fa-solid fa-right-from-bracket"></i> Đăng Xuất</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="mt-3 flex flex-col sm:flex-row gap-2 items-center justify-between text-xs bg-slate-50 border p-2 rounded-lg">
+        <div class="mt-3 flex flex-col sm:flex-row gap-2 items-center justify-between text-sm bg-slate-50 border p-3 rounded-lg">
             <div class="flex items-center gap-2">
-                <span id="envStatusIndicator" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span id="envStatusIndicator" class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span id="syncBadgeText" class="font-bold text-slate-600">Đang tải dữ liệu từ máy chủ VINAPACO...</span>
             </div>
-            <button onclick="triggerManualFetch()" class="px-2.5 py-1 bg-slate-700 text-white font-bold rounded hover:bg-slate-800 cursor-pointer text-[11px]"><i class="fa-solid fa-arrows-rotate"></i> Ép Tải Lại Dữ Liệu Cũ</button>
+            <button onclick="triggerManualFetch()" class="px-4 py-1.5 bg-slate-700 text-white font-bold rounded hover:bg-slate-800 cursor-pointer"><i class="fa-solid fa-arrows-rotate"></i> Ép Tải Lại Dữ Liệu Cũ</button>
         </div>
     </header>
 
     <main class="space-y-6">
+
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+            <div class="bg-emerald-700 text-white font-bold p-3.5 text-base flex items-center justify-between">
+                <span><i class="fa-solid fa-users-gear mr-1.5 text-slate-300"></i> Quản Lý Hồ Sơ Nhân Sự & Sơ Đồ Phòng Ban</span>
+                <span class="text-sm bg-emerald-600 px-2.5 py-1 rounded font-mono" id="count-user">0 nhân sự</span>
+            </div>
+            <div id="formUserAction" class="p-4 grid grid-cols-1 lg:grid-cols-12 gap-5 border-b border-slate-100 bg-slate-50/50 text-sm hidden">
+                <div class="lg:col-span-4 border-r border-slate-200 pr-4">
+                    <span class="block font-bold text-slate-400 text-xs uppercase mb-1.5"><i class="fa-solid fa-building"></i> PHÒNG BAN / PHÂN XƯỞNG</span>
+                    <form onsubmit="handleDeptSubmit(event)" class="space-y-2">
+                        <input type="text" id="deptName" required placeholder="Tên đơn vị mới..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
+                        <button type="submit" class="w-full py-2 bg-slate-700 text-white font-bold rounded-lg cursor-pointer hover:bg-slate-800">Thêm Đơn Vị</button>
+                    </form>
+                </div>
+                <div class="lg:col-span-8">
+                    <span class="block font-bold text-slate-400 text-xs uppercase mb-1.5"><i class="fa-solid fa-user-plus"></i> THÔNG TIN NHÂN SỰ</span>
+                    <form onsubmit="handleUserSubmit(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="sm:col-span-2">
+                            <input type="text" id="userName" required placeholder="Họ và tên nhân sự..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
+                        </div>
+                        <div>
+                            <input type="text" id="userTitle" required placeholder="Chức vụ (Ví dụ: Kỹ sư)" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
+                        </div>
+                        <div class="flex gap-2">
+                            <select id="userDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none"></select>
+                            <button type="submit" class="px-5 bg-emerald-600 text-white font-bold rounded-lg cursor-pointer whitespace-nowrap hover:bg-emerald-700">Lưu Hồ Sơ</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="px-4 bg-slate-50 border-b flex flex-wrap gap-2 text-sm" id="deptTabsContainer">
+                <button onclick="filterUserByDept('all')" id="tab-dept-all" class="px-3 py-2.5 tab-active cursor-pointer">Tất Cả Nhân Sự</button>
+            </div>
+            <div class="overflow-x-auto text-sm bg-white">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b bg-slate-50 text-slate-500 font-bold">
+                            <th class="p-3 pl-4">Họ Tên / Chức Danh</th>
+                            <th class="p-3">Đơn Vị Quản Lý</th>
+                            <th class="p-3 text-right pr-4" id="colUserActionHeader">Tác Vụ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+        </section>
         
         <section id="adminUserManagementBlock" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hidden">
-            <div class="bg-slate-900 text-white font-bold p-3 text-sm flex items-center gap-1.5">
+            <div class="bg-slate-900 text-white font-bold p-3.5 text-base flex items-center gap-1.5">
                 <i class="fa-solid fa-user-shield text-amber-400"></i> Trục Quản Lý Thành Viên & Phê Duyệt / Phân Quyền Hệ Thống
             </div>
-            <div class="overflow-x-auto text-xs bg-white">
+            <div class="overflow-x-auto text-sm bg-white">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="border-b bg-slate-100 text-slate-600 font-bold">
-                            <th class="p-2.5 pl-4">Tên tài khoản (Username)</th>
-                            <th class="p-2.5">Mật khẩu</th>
-                            <th class="p-2.5">Phân cấp quyền hạn hiện tại</th>
-                            <th class="p-2.5 text-right pr-4">Tác vụ quản trị</th>
+                            <th class="p-3 pl-4">Tên tài khoản (Username)</th>
+                            <th class="p-3">Mật khẩu</th>
+                            <th class="p-3">Phân cấp quyền hạn hiện tại</th>
+                            <th class="p-3 text-right pr-4">Tác vụ quản trị</th>
                         </tr>
                     </thead>
                     <tbody id="accountSubTableBody" class="divide-y divide-slate-100"></tbody>
@@ -116,19 +162,19 @@
         <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
             <div class="lg:col-span-8 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-                <div class="bg-slate-700 text-white font-bold p-3 text-sm flex items-center justify-between">
+                <div class="bg-slate-700 text-white font-bold p-3.5 text-base flex items-center justify-between">
                     <span><i class="fa-solid fa-boxes-stacked mr-1.5 text-slate-300"></i> Danh Mục Quản Lý Cấp Phát Tài Sản & Thiết Bị</span>
-                    <span class="text-xs bg-slate-600 px-2 py-0.5 rounded font-mono" id="count-device">0 tài sản</span>
+                    <span class="text-sm bg-slate-600 px-2.5 py-1 rounded font-mono" id="count-device">0 tài sản</span>
                 </div>
 
-                <form id="formDeviceAction" onsubmit="handleDeviceSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs border-b border-slate-100 bg-slate-50/50 hidden">
+                <form id="formDeviceAction" onsubmit="handleDeviceSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-sm border-b border-slate-100 bg-slate-50/50 hidden">
                     <div class="sm:col-span-3">
                         <label class="block font-bold text-slate-500 mb-1">Mã Tài Sản Định Danh</label>
                         <input type="text" id="deviceId" readonly class="w-full border border-slate-200 bg-slate-100 font-mono font-bold text-slate-600 rounded-lg p-2">
                     </div>
                     <div class="sm:col-span-5">
                         <label class="block font-bold text-slate-500 mb-1">Tên thiết bị tài sản</label>
-                        <input type="text" id="deviceName" required placeholder="Ví dụ: Máy nghiền bột thủy lực, Máy tính để bàn..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
+                        <input type="text" id="deviceName" required placeholder="Ví dụ: Máy nghiền bột thủy lực..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
                     </div>
                     <div class="sm:col-span-4">
                         <label class="block font-bold text-slate-500 mb-1">Chủng loại nhóm tài sản</label>
@@ -155,23 +201,23 @@
                     </div>
                 </form>
 
-                <div class="p-2.5 bg-slate-100/60 border-b border-slate-200 text-xs">
+                <div class="p-3 bg-slate-100/60 border-b border-slate-200 text-sm">
                     <div class="relative w-full">
-                        <input type="text" id="searchDeviceInput" oninput="renderDeviceTableOnly()" placeholder="Nhập mã định danh, tên thiết bị để lọc nhanh..." class="w-full border border-slate-300 rounded-lg pl-8 pr-3 py-2 bg-white focus:outline-none font-bold text-blue-700">
-                        <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-3 text-slate-400"></i>
+                        <input type="text" id="searchDeviceInput" oninput="renderDeviceTableOnly()" placeholder="Nhập mã định danh, tên thiết bị để lọc nhanh..." class="w-full border border-slate-300 rounded-lg pl-9 pr-3 py-2 bg-white focus:outline-none font-bold text-blue-700">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-slate-400"></i>
                     </div>
                 </div>
 
-                <div class="overflow-x-auto custom-scrollbar max-h-96 bg-white text-xs">
+                <div class="overflow-x-auto custom-scrollbar max-h-96 bg-white text-sm">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="border-b border-slate-200 bg-slate-50 text-slate-500 font-bold sticky top-0 z-10">
-                                <th class="p-2.5 pl-4">Mã Số / Tên Thiết Bị</th>
-                                <th class="p-2.5">Đơn Vị Quản Lý</th>
-                                <th class="p-2.5 text-center">Mã QR (Mắt Thưa)</th>
-                                <th class="p-2.5">Nhân Sự Phụ Trách</th>
-                                <th class="p-2.5 text-center">Trạng Thái</th>
-                                <th class="p-2.5 text-right pr-4">Hành Động</th>
+                                <th class="p-3 pl-4">Mã Số / Tên Thiết Bị</th>
+                                <th class="p-3">Đơn Vị Quản Lý</th>
+                                <th class="p-3 text-center">Mã QR (Mắt Thưa)</th>
+                                <th class="p-3">Nhân Sự Phụ Trách</th>
+                                <th class="p-3 text-center">Trạng Thái</th>
+                                <th class="p-3 text-right pr-4">Hành Động</th>
                             </tr>
                         </thead>
                         <tbody id="deviceTableBody" class="divide-y divide-slate-100"></tbody>
@@ -181,29 +227,33 @@
 
             <div class="lg:col-span-4">
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden sticky top-6">
-                    <div class="bg-slate-800 text-white font-bold p-3 text-sm flex items-center justify-between">
-                        <span><i class="fa-solid fa-eye text-amber-400 mr-1.5"></i> Xem Trước Tem QR Hiện Tại</span>
-                        <button onclick="window.print()" id="btnActionPrintNow" class="hidden px-3 py-1 bg-amber-500 text-slate-900 font-extrabold text-[11px] rounded hover:bg-amber-400 cursor-pointer">🖨️ Bấm In Ngay</button>
+                    <div class="bg-slate-800 text-white font-bold p-3.5 text-sm flex items-center justify-between">
+                        <span><i class="fa-solid fa-eye text-amber-400 mr-1.5"></i> Nhãn Tem In Phóng To</span>
+                        <button onclick="window.print()" id="btnActionPrintNow" class="hidden px-3.5 py-1.5 bg-amber-500 text-slate-900 font-extrabold text-xs rounded hover:bg-amber-400 cursor-pointer">🖨️ Đặt Lệnh In</button>
                     </div>
-                    <div class="p-6 flex flex-col items-center justify-center bg-slate-50 min-h-[250px]">
-                        <div id="webPreviewQRBox" class="p-4 bg-white border border-slate-300 rounded-xl shadow-sm text-center flex flex-col items-center justify-center hidden w-[210px]">
-                            <h4 id="wpTitle" class="text-[12px] font-black uppercase text-slate-900 max-w-[190px] truncate mb-2"></h4>
-                            <div id="wpCanvas" class="border p-2 bg-white flex items-center justify-center"></div>
-                            <p id="wpId" class="text-xs font-mono font-black mt-2 text-slate-800 tracking-wider border-t border-dashed pt-1 w-full"></p>
-                            <p id="wpDept" class="text-[9px] font-bold text-slate-500 mt-0.5"></p>
-                            <p id="wpUser" class="text-[10px] font-bold text-blue-600 mt-0.5 italic"></p>
+                    <div class="p-6 flex flex-col items-center justify-center bg-slate-50 min-h-[300px]">
+                        <div id="webPreviewQRBox" class="p-5 bg-white border border-slate-300 rounded-2xl shadow-sm text-center flex flex-col items-center justify-center hidden w-[240px] border-slate-400">
+                            <h4 id="wpTitle" class="text-sm font-black uppercase text-slate-900 max-w-[210px] truncate mb-3 tracking-wide">MÁY TÍNH ĐỂ BÀN</h4>
+                            
+                            <div id="wpCanvas" class="border border-slate-800 p-2 bg-white flex items-center justify-center w-[160px] h-[160px]"></div>
+                            
+                            <div class="w-full border-t border-dashed border-slate-400 my-2.5"></div>
+                            
+                            <p id="wpId" class="text-sm font-mono font-black text-slate-800 tracking-wider">TB-67149</p>
+                            <p id="wpDept" class="text-[11px] font-bold text-slate-600 mt-0.5">ĐV: Hội đồng thành viên</p>
+                            <p id="wpUser" class="text-xs font-bold text-emerald-600 mt-0.5 italic">Phụ trách: Nguyễn Thanh Huyền</p>
                         </div>
-                        <p id="webPreviewEmptyText" class="text-slate-400 italic text-center text-xs p-4">Vui lòng nhấn vào hình QR nhỏ hoặc nút <strong>"Xem & In Tem"</strong> ở danh sách để hiển thị nhãn xem trước phóng to tại đây.</p>
+                        <p id="webPreviewEmptyText" class="text-slate-400 italic text-center text-sm p-4">Vui lòng nhấn vào hình QR nhỏ hoặc nút <strong>"Xem & In Tem"</strong> ở danh sách để hiển thị nhãn xem trước phóng to tại đây.</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-            <div class="bg-purple-700 text-white font-bold p-3 text-sm flex items-center gap-1.5">
+            <div class="bg-purple-700 text-white font-bold p-3.5 text-base flex items-center gap-1.5">
                 <i class="fa-solid fa-screwdriver-wrench"></i> Mẫu Nhật Ký Bảo Trì & Sửa Chữa Thiết Bị Toàn Hệ Thống
             </div>
-            <form id="formRepairAction" onsubmit="handleRepairSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 text-xs bg-slate-50/30 border-b border-slate-100 hidden">
+            <form id="formRepairAction" onsubmit="handleRepairSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 text-sm bg-slate-50/30 border-b border-slate-100 hidden">
                 <div class="md:col-span-3">
                     <label class="block text-slate-500 font-medium mb-1">1. Thiết bị đang sự cố</label>
                     <select id="repairDeviceId" required class="w-full border border-slate-300 rounded-lg p-2 bg-white font-mono font-bold focus:outline-none"></select>
@@ -223,18 +273,18 @@
                         <label class="block text-slate-500 font-medium mb-1">4. Chi phí vật tư (VNĐ)</label>
                         <input type="number" id="repairCost" required value="0" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold">
                     </div>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 cursor-pointer whitespace-nowrap shadow-xs h-[34px]">Lưu Hồ Sơ Sửa Chữa</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 cursor-pointer whitespace-nowrap shadow-xs h-[38px]">Lưu Hồ Sơ</button>
                 </div>
             </form>
-            <div class="overflow-x-auto custom-scrollbar max-h-60 bg-white text-xs">
+            <div class="overflow-x-auto custom-scrollbar max-h-60 bg-white text-sm">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="border-b border-slate-200 bg-slate-50 text-slate-500 font-bold sticky top-0">
-                            <th class="p-2.5 pl-4">Thiết Bị</th>
-                            <th class="p-2.5">Chi Tiết Sự Cố</th>
-                            <th class="p-2.5">Kỹ Thuật</th>
-                            <th class="p-2.5">Chi Phí</th>
-                            <th class="p-2.5 text-right pr-4" id="colRepairActionHeader">Hành động</th>
+                            <th class="p-3 pl-4">Thiết Bị</th>
+                            <th class="p-3">Chi Tiết Sự Cố</th>
+                            <th class="p-3">Kỹ Thuật</th>
+                            <th class="p-3">Chi Phí</th>
+                            <th class="p-3 text-right pr-4" id="colRepairActionHeader">Hành động</th>
                         </tr>
                     </thead>
                     <tbody id="repairTableBody" class="divide-y divide-slate-100"></tbody>
@@ -242,57 +292,11 @@
             </div>
         </section>
 
-        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-            <div class="bg-emerald-700 text-white font-bold p-3 text-sm flex items-center justify-between">
-                <span><i class="fa-solid fa-users-gear mr-1.5 text-slate-300"></i> Quản Lý Hồ Sơ Nhân Sự & Sơ ĐỒ Phòng Ban</span>
-                <span class="text-xs bg-emerald-600 px-2 py-0.5 rounded font-mono" id="count-user">0 nhân sự</span>
-            </div>
-            <div id="formUserAction" class="p-4 grid grid-cols-1 lg:grid-cols-12 gap-5 border-b border-slate-100 bg-slate-50/50 text-xs hidden">
-                <div class="lg:col-span-4 border-r border-slate-200 pr-4">
-                    <span class="block font-bold text-slate-400 text-[10px] uppercase mb-1.5"><i class="fa-solid fa-building"></i> PHÒNG BAN / PHÂN XƯỞNG</span>
-                    <form onsubmit="handleDeptSubmit(event)" class="space-y-2">
-                        <input type="text" id="deptName" required placeholder="Tên đơn vị mới..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
-                        <button type="submit" class="w-full py-2 bg-slate-700 text-white font-bold rounded-lg cursor-pointer hover:bg-slate-800">Thêm Đơn Vị</button>
-                    </form>
-                </div>
-                <div class="lg:col-span-8">
-                    <span class="block font-bold text-slate-400 text-[10px] uppercase mb-1.5"><i class="fa-solid fa-user-plus"></i> THÔNG TIN NHÂN SỰ</span>
-                    <form onsubmit="handleUserSubmit(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div class="sm:col-span-2">
-                            <input type="text" id="userName" required placeholder="Họ và tên nhân sự..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
-                        </div>
-                        <div>
-                            <input type="text" id="userTitle" required placeholder="Chức vụ (Ví dụ: Kỹ sư)" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
-                        </div>
-                        <div class="flex gap-2">
-                            <select id="userDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none"></select>
-                            <button type="submit" class="px-5 bg-emerald-600 text-white font-bold rounded-lg cursor-pointer whitespace-nowrap hover:bg-emerald-700">Lưu Hồ Sơ</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div class="px-4 bg-slate-50 border-b flex flex-wrap gap-2 text-xs" id="deptTabsContainer">
-                <button onclick="filterUserByDept('all')" id="tab-dept-all" class="px-3 py-2.5 tab-active cursor-pointer">Tất Cả Nhân Sự</button>
-            </div>
-            <div class="overflow-x-auto text-xs bg-white">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="border-b bg-slate-50 text-slate-500 font-bold">
-                            <th class="p-2.5 pl-4">Họ Tên / Chức Danh</th>
-                            <th class="p-2.5">Đơn Vị Quản Lý</th>
-                            <th class="p-2.5 text-right pr-4" id="colUserActionHeader">Tác Vụ</th>
-                        </tr>
-                    </thead>
-                    <tbody id="userTableBody" class="divide-y divide-slate-100"></tbody>
-                </table>
-            </div>
-        </section>
-
         <section class="bg-slate-900 text-white rounded-xl shadow-sm overflow-hidden flex flex-col border border-slate-800">
-            <div class="p-3 font-bold text-sm bg-slate-800 flex items-center gap-1.5">
+            <div class="p-3.5 font-bold text-base bg-slate-800 flex items-center gap-1.5">
                 <i class="fa-solid fa-list-check"></i> Kế Hoạch Phân Công Công Việc Nhà Máy (Đếm Ngược Thời Gian Thực)
             </div>
-            <div id="formTaskAction" class="p-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs bg-slate-900/50 hidden">
+            <div id="formTaskAction" class="p-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm bg-slate-900/50 hidden">
                 <div>
                     <label class="block text-slate-400 mb-1">Nội dung hạng mục công việc</label>
                     <input type="text" id="taskName" placeholder="Nhập tên việc cần phân công..." class="w-full border border-slate-700 rounded-lg p-2 bg-slate-800 text-white focus:outline-none">
@@ -322,21 +326,21 @@
                         <label class="block text-slate-400 mb-1">Thời lượng kế hoạch (phút)</label>
                         <input type="number" id="taskDuration" value="30" class="w-full border border-slate-700 rounded-lg p-2 bg-slate-800 text-white focus:outline-none font-bold">
                     </div>
-                    <button onclick="handleTaskSubmit()" class="px-5 bg-blue-600 text-white font-bold rounded-lg cursor-pointer hover:bg-blue-700 h-[34px]">Lưu Phân Công</button>
+                    <button onclick="handleTaskSubmit()" class="px-5 bg-blue-600 text-white font-bold rounded-lg cursor-pointer hover:bg-blue-700 h-[38px]">Lưu Phân Công</button>
                 </div>
             </div>
-            <div class="overflow-x-auto text-xs bg-slate-900">
+            <div class="overflow-x-auto text-sm bg-slate-900">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="border-b border-slate-800 bg-slate-800 text-slate-400 font-bold">
-                            <th class="p-2.5 pl-4">Hạng Mục</th>
-                            <th class="p-2.5">Thiết Bị</th>
-                            <th class="p-2.5">Phụ Trách</th>
-                            <th class="p-2.5">Mức Độ</th>
-                            <th class="p-2.5">⏰ Bắt Đầu</th>
-                            <th class="p-2.5">⏳ Đếm Ngược</th>
-                            <th class="p-2.5">Trạng Thái</th>
-                            <th class="p-2.5 text-right pr-4" id="colTaskActionHeader">Xóa</th>
+                            <th class="p-3 pl-4">Hạng Mục</th>
+                            <th class="p-3">Thiết Bị</th>
+                            <th class="p-3">Phụ Trách</th>
+                            <th class="p-3">Mức Độ</th>
+                            <th class="p-3">⏰ Bắt Đầu</th>
+                            <th class="p-3">⏳ Đếm Ngược</th>
+                            <th class="p-3">Trạng Thái</th>
+                            <th class="p-3 text-right pr-4" id="colTaskActionHeader">Xóa</th>
                         </tr>
                     </thead>
                     <tbody id="taskTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
@@ -380,6 +384,12 @@
         }
         systemAccounts = JSON.parse(localStorage.getItem('vinapaco_accounts_v3'));
 
+        // 🔐 TỰ ĐỘNG KHÔI PHỤC PHIÊN ĐĂNG NHẬP (TRÁNH BỊ ĐÒI LẠI MẬT KHẨU KHI LÀM MỚI TRANG)
+        const savedUser = localStorage.getItem('vinapaco_logged_in_user');
+        if(savedUser) {
+            loggedInUser = JSON.parse(savedUser);
+        }
+
         // ĐỔI TAB ĐĂNG NHẬP / ĐĂNG KÝ
         window.switchAuthTab = function(tab) {
             currentAuthTab = tab;
@@ -388,12 +398,12 @@
             const roleBox = document.getElementById('registerRoleBox');
             
             if(tab === 'login') {
-                tabL.className = "w-1/2 pb-1 text-center font-bold auth-tab-active cursor-pointer";
-                tabR.className = "w-1/2 pb-1 text-center font-bold text-slate-400 cursor-pointer";
+                tabL.className = "w-1/2 pb-1.5 text-center font-bold auth-tab-active cursor-pointer";
+                tabR.className = "w-1/2 pb-1.5 text-center font-bold text-slate-400 cursor-pointer";
                 roleBox.classList.add('hidden');
             } else {
-                tabR.className = "w-1/2 pb-1 text-center font-bold auth-tab-active cursor-pointer";
-                tabL.className = "w-1/2 pb-1 text-center font-bold text-slate-400 cursor-pointer";
+                tabR.className = "w-1/2 pb-1.5 text-center font-bold auth-tab-active cursor-pointer";
+                tabL.className = "w-1/2 pb-1.5 text-center font-bold text-slate-400 cursor-pointer";
                 roleBox.classList.remove('hidden');
             }
         }
@@ -411,6 +421,7 @@
                 const found = systemAccounts.find(a => a.username === user && a.pass === pass);
                 if(found) {
                     loggedInUser = found;
+                    localStorage.setItem('vinapaco_logged_in_user', JSON.stringify(found)); // Lưu phiên đăng nhập vào máy tính
                     executeLoginSuccess();
                 } else {
                     errMsg.classList.remove('hidden');
@@ -441,6 +452,7 @@
 
         window.handleLogoutSystem = function() {
             loggedInUser = null;
+            localStorage.removeItem('vinapaco_logged_in_user'); // Xóa phiên khi bấm đăng xuất công khai
             document.getElementById('userLoggedInDashboard').classList.add('hidden');
             document.getElementById('guestAuthForm').classList.remove('hidden');
             document.getElementById('authUsername').value = "";
@@ -462,6 +474,7 @@
                 }
             });
             localStorage.setItem('vinapaco_accounts_v3', JSON.stringify(systemAccounts));
+            localStorage.setItem('vinapaco_logged_in_user', JSON.stringify(loggedInUser));
             alert("✅ Đã cập nhật mật khẩu tài khoản thành công!");
             if(loggedInUser.role === 'Admin') renderAccountSubTable();
         }
@@ -499,11 +512,11 @@
                 `;
                 const delBtn = a.username === 'admin' ? '<span class="text-slate-400 italic">Gốc</span>' : `<button onclick="deleteAccountSub('${a.username}')" class="text-red-600 font-bold hover:underline cursor-pointer">Xóa</button>`;
                 
-                body.innerHTML += `<tr class="border-b text-slate-600 hover:bg-slate-50 text-xs">
-                    <td class="p-2.5 pl-4 font-bold text-slate-900">${a.username}</td>
-                    <td class="p-2.5 font-mono">${a.pass}</td>
-                    <td class="p-2.5">${currentOptions}</td>
-                    <td class="p-2.5 text-right pr-4">${delBtn}</td>
+                body.innerHTML += `<tr class="border-b text-slate-600 hover:bg-slate-50 text-sm">
+                    <td class="p-3 pl-4 font-bold text-slate-900">${a.username}</td>
+                    <td class="p-3 font-mono">${a.pass}</td>
+                    <td class="p-3">${currentOptions}</td>
+                    <td class="p-3 text-right pr-4">${delBtn}</td>
                 </tr>`;
             });
         }
@@ -539,19 +552,18 @@
             const ind = document.getElementById('envStatusIndicator');
 
             if(currentEnv === 'live') {
-                btnLive.className = "w-1/2 py-1 rounded-md font-bold cursor-pointer bg-emerald-600 text-white text-xs text-center";
-                btnDemo.className = "w-1/2 py-1 rounded-md font-bold cursor-pointer bg-white text-slate-600 text-xs text-center";
+                btnLive.className = "w-1/2 py-1.5 rounded-md font-bold cursor-pointer bg-emerald-600 text-white text-sm text-center";
+                btnDemo.className = "w-1/2 py-1.5 rounded-md font-bold cursor-pointer bg-white text-slate-600 text-sm text-center";
                 text.innerText = "DỮ LIỆU THẬT (LIVE) - Tổng công ty Giấy Việt Nam";
-                ind.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
+                ind.className = "w-3 h-3 rounded-full bg-emerald-500 animate-pulse";
             } else {
-                btnDemo.className = "w-1/2 py-1 rounded-md font-bold cursor-pointer bg-amber-500 text-white text-xs text-center";
-                btnLive.className = "w-1/2 py-1 rounded-md font-bold cursor-pointer bg-white text-slate-600 text-xs text-center";
+                btnDemo.className = "w-1/2 py-1.5 rounded-md font-bold cursor-pointer bg-amber-500 text-white text-sm text-center";
+                btnLive.className = "w-1/2 py-1.5 rounded-md font-bold cursor-pointer bg-white text-slate-600 text-sm text-center";
                 text.innerText = "DỮ LIỆU THỬ NGHIỆM (DEMO)";
-                ind.className = "w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse";
+                ind.className = "w-3 h-3 rounded-full bg-amber-500 animate-pulse";
             }
         }
 
-        // 🛠️ FIX SỬA LỖI ÉP TẢI LẠI DỮ LIỆU: Tự nhận dạng Object hoặc Array trên Firebase
         function fetchCloudData() {
             const nodeKey = currentEnv === 'live' ? 'root' : 'demo_root';
             const indicatorText = document.getElementById('syncBadgeText');
@@ -560,7 +572,6 @@
             get(ref(db, nodeKey)).then((snapshot) => {
                 const data = snapshot.val() || {};
                 
-                // Hàm chuyển đổi an toàn tránh lỗi dữ liệu rỗng hoặc sai kiểu cấu trúc
                 const parseData = (target) => {
                     if (!target) return [];
                     return Array.isArray(target) ? target.filter(Boolean) : Object.values(target);
@@ -590,29 +601,26 @@
             set(ref(db, nodeKey), { depts, users, devices, repairs, tasks }).then(() => { fetchCloudData(); });
         }
 
-        // ⚡ TỐI ƯU HÓA MÃ QR (Rút gọn chuỗi tối đa giúp ma trận thưa, cực nhạy với đầu đọc máy quét)
         function makeQRTextContent(dev) {
             return `ID:${dev.id}\nN:${dev.name}\nD:${dev.dept}\nU:${dev.user || 'Kho'}`;
         }
 
-        window.generateLocalQR = function(containerId, text, size = 120) {
+        // 🎯 FIX CHÍNH: KHẮC PHỤC LỖI KHÔNG HIỂN THỊ ĐƯỢC QR TRONG KHUNG TEM
+        window.generateLocalQR = function(containerId, text, size = 130) {
             const container = document.getElementById(containerId);
             if (container) {
-                container.innerHTML = "";
+                container.innerHTML = ""; // Xóa dữ liệu cũ hoặc ảnh icon lỗi
                 new QRCode(container, {
                     text: text,
                     width: size,
                     height: size,
                     colorDark: "#000000",
                     colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.L // Level L: Mật độ mắt thưa tối đa, siêu nhạy cho máy quét nhà máy
+                    correctLevel: QRCode.CorrectLevel.L // Cấp độ L cho mắt thưa công nghiệp, quét siêu nhạy
                 });
                 
-                // Tối ưu hóa tag ảnh QR tạo ra để hiển thị sắc nét mượt mà không bị nhòe mờ
                 const qrImg = container.querySelector('img');
-                if (qrImg) {
-                    qrImg.style.imageRendering = 'pixelated';
-                }
+                if (qrImg) { qrImg.style.imageRendering = 'pixelated'; }
             }
         }
 
@@ -630,8 +638,11 @@
             document.getElementById('wpDept').innerText = "ĐV: " + dev.dept;
             document.getElementById('wpUser').innerText = "Phụ trách: " + (dev.user || "Trong kho");
             
+            // Đảm bảo phần tử HTML đã xuất hiện trước khi gọi hàm vẽ QR vào khung
             setTimeout(() => {
                 generateLocalQR('wpCanvas', qrText, 140);
+                
+                // Đồng bộ sang phôi in ẩn khi nhấn lệnh in hệ thống
                 document.getElementById('qrPrintTitle').innerText = dev.name;
                 document.getElementById('qrPrintId').innerText = dev.id;
                 document.getElementById('qrPrintDept').innerText = "ĐV: " + dev.dept;
@@ -792,19 +803,19 @@
                 
                 const showActionBtn = (currentRole === 'Admin' || currentRole === 'Kỹ thuật');
                 const actionCell = showActionBtn ? `
-                    <button onclick="previewAndSelectQR('${d.id}')" class="px-2.5 py-1.5 bg-slate-900 text-amber-400 font-black rounded border border-amber-400 cursor-pointer shadow-xs hover:bg-slate-800 text-[11px]"><i class="fa-solid fa-expand"></i> Xem & In Tem</button>
-                    <button onclick="deleteItem('device','${d.id}')" class="text-slate-300 hover:text-red-600 ml-2.5 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
-                ` : `<button onclick="previewAndSelectQR('${d.id}')" class="px-2.5 py-1.5 bg-slate-900 text-amber-400 font-black rounded border border-amber-400 cursor-pointer shadow-xs hover:bg-slate-800 text-[11px]"><i class="fa-solid fa-expand"></i> Xem</button>`;
+                    <button onclick="previewAndSelectQR('${d.id}')" class="px-3 py-2 bg-slate-900 text-amber-400 font-black rounded border border-amber-400 cursor-pointer shadow-xs hover:bg-slate-800 text-xs"><i class="fa-solid fa-expand"></i> Xem & In Tem</button>
+                    <button onclick="deleteItem('device','${d.id}')" class="text-slate-300 hover:text-red-600 ml-3 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
+                ` : `<button onclick="previewAndSelectQR('${d.id}')" class="px-3 py-2 bg-slate-900 text-amber-400 font-black rounded border border-amber-400 cursor-pointer shadow-xs hover:bg-slate-800 text-xs"><i class="fa-solid fa-expand"></i> Xem</button>`;
 
                 dtbBody.innerHTML += `<tr class="border-b text-slate-600 hover:bg-slate-50">
-                    <td class="p-2.5 pl-4 font-mono font-bold text-slate-900">${d.id}<span class="block text-slate-400 font-sans font-medium text-xs">${d.name}</span></td>
-                    <td class="p-2.5 font-medium">${d.dept}</td>
-                    <td class="p-1 text-center bg-white w-16">
+                    <td class="p-3 pl-4 font-mono font-bold text-slate-900">${d.id}<span class="block text-slate-400 font-sans font-medium text-xs">${d.name}</span></td>
+                    <td class="p-3 font-medium">${d.dept}</td>
+                    <td class="p-1 text-center bg-white w-20">
                         <div id="${rowCanvasId}" class="mx-auto flex items-center justify-center cursor-pointer" onclick="previewAndSelectQR('${d.id}')" title="Bấm để xem phóng to"></div>
                     </td>
-                    <td class="p-2.5 font-bold text-blue-600">${d.user === "Chưa cấp phát" || !d.user ? '📦 <span class="text-amber-600 font-normal">Trong kho</span>' : '👤 ' + d.user}</td>
-                    <td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[11px] font-bold ${bc}">${d.status || 'Hoạt động tốt'}</span></td>
-                    <td class="p-2.5 text-right pr-4">${actionCell}</td>
+                    <td class="p-3 font-bold text-blue-600">${d.user === "Chưa cấp phát" || !d.user ? '📦 <span class="text-amber-600 font-normal">Trong kho</span>' : '👤 ' + d.user}</td>
+                    <td class="p-3 text-center"><span class="px-2 py-0.5 rounded text-xs font-bold ${bc}">${d.status || 'Hoạt động tốt'}</span></td>
+                    <td class="p-3 text-right pr-4">${actionCell}</td>
                 </tr>`;
                 
                 setTimeout(() => { generateLocalQR(rowCanvasId, qrText, 45); }, 20);
@@ -822,8 +833,8 @@
 
             users.filter(u => activeUserDeptFilter === 'all' || u.dept === activeUserDeptFilter).forEach(u => {
                 const actionCell = (currentRole === 'Admin' || currentRole === 'Kỹ thuật') ? `<td class="p-3 text-right pr-4"><button onclick="deleteItem('user','${u.id}')" class="text-slate-400 hover:text-red-600 cursor-pointer"><i class="fa-solid fa-trash-can"></i> Xóa</button></td>` : '';
-                body.innerHTML += `<tr class="border-b text-slate-600 hover:bg-slate-50 text-xs">
-                    <td class="p-3 pl-4"><span class="font-bold text-slate-900 block">${u.name}</span><span class="text-slate-400 text-[11px]">${u.title}</span></td>
+                body.innerHTML += `<tr class="border-b text-slate-600 hover:bg-slate-50 text-sm">
+                    <td class="p-3 pl-4"><span class="font-bold text-slate-900 block">${u.name}</span><span class="text-slate-400 text-xs">${u.title}</span></td>
                     <td class="p-3 font-medium text-slate-700">${u.dept}</td>
                     ${actionCell}
                 </tr>`;
@@ -843,12 +854,12 @@
                 body.innerHTML = `<tr><td colspan="5" class="p-4 text-center italic text-slate-400">Chưa có hồ sơ sửa chữa nào được lưu</td></tr>`; return;
             }
             repairs.forEach(r => {
-                const actionCell = (currentRole === 'Admin' || currentRole === 'Kỹ thuật') ? `<td class="p-2.5 text-right pr-4"><button onclick="deleteItem('repair','${r.id}')" class="text-slate-300 hover:text-red-600 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button></td>` : '';
-                body.innerHTML += `<tr class="border-b text-slate-600 hover:bg-slate-50 text-xs">
-                    <td class="p-2.5 pl-4 font-mono font-bold text-slate-900">${r.devId}</td>
-                    <td class="p-2.5">${r.desc}</td>
-                    <td class="p-2.5 text-slate-500">${r.repUser || 'Theo thiết bị'}</td>
-                    <td class="p-2.5 font-bold text-slate-900">${Number(r.cost).toLocaleString('vi-VN')} đ</td>
+                const actionCell = (currentRole === 'Admin' || currentRole === 'Kỹ thuật') ? `<td class="p-3 text-right pr-4"><button onclick="deleteItem('repair','${r.id}')" class="text-slate-300 hover:text-red-600 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button></td>` : '';
+                body.innerHTML += `<tr class="border-b text-slate-600 hover:bg-slate-50 text-sm">
+                    <td class="p-3 pl-4 font-mono font-bold text-slate-900">${r.devId}</td>
+                    <td class="p-3">${r.desc}</td>
+                    <td class="p-3 text-slate-500">${r.repUser || 'Theo thiết bị'}</td>
+                    <td class="p-3 font-bold text-slate-900">${Number(r.cost).toLocaleString('vi-VN')} đ</td>
                     ${actionCell}
                 </tr>`;
             });
@@ -866,15 +877,15 @@
                 body.innerHTML = `<tr><td colspan="8" class="p-4 text-center italic text-slate-500">Chưa có kế hoạch phân công điều hành</td></tr>`; return;
             }
             tasks.forEach(t => {
-                const actionCell = (currentRole === 'Admin' || currentRole === 'Kỹ thuật') ? `<td class="p-2.5 text-right pr-4"><button onclick="deleteItem('task','${t.id}')" class="text-slate-600 hover:text-red-500 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button></td>` : '';
-                body.innerHTML += `<tr class="border-b border-slate-800 text-xs">
-                    <td class="p-2.5 pl-4 font-bold text-white">${t.name}</td>
-                    <td class="p-2.5 font-mono text-slate-400">${t.devId}</td>
-                    <td class="p-2.5 text-slate-300">${t.user}</td>
-                    <td class="p-2.5 font-bold text-amber-400">${t.level}</td>
-                    <td class="p-2.5 text-slate-400">${t.start}</td>
-                    <td class="p-2.5 font-bold text-emerald-400 font-mono animate-pulse" id="timer-${t.id}">--:--</td>
-                    <td class="p-2.5"><span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-medium text-[10px]">Đang chạy</span></td>
+                const actionCell = (currentRole === 'Admin' || currentRole === 'Kỹ thuật') ? `<td class="p-3 text-right pr-4"><button onclick="deleteItem('task','${t.id}')" class="text-slate-600 hover:text-red-500 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button></td>` : '';
+                body.innerHTML += `<tr class="border-b border-slate-800 text-sm">
+                    <td class="p-3 pl-4 font-bold text-white">${t.name}</td>
+                    <td class="p-3 font-mono text-slate-400">${t.devId}</td>
+                    <td class="p-3 text-slate-300">${t.user}</td>
+                    <td class="p-3 font-bold text-amber-400">${t.level}</td>
+                    <td class="p-3 text-slate-400">${t.start}</td>
+                    <td class="p-3 font-bold text-emerald-400 font-mono animate-pulse" id="timer-${t.id}">--:--</td>
+                    <td class="p-3"><span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-medium text-xs">Đang chạy</span></td>
                     ${actionCell}
                 </tr>`;
                 startCountdownUI(t.id, t.start, t.dur);
@@ -909,8 +920,12 @@
             renderTaskTableOnly(); 
         }
 
-        // KHỞI CHẠY TRẠNG THÁI BAN ĐẦU
-        applyPermissionRulesUI();
+        // KHỜI CHẠY TRẠNG THÁI BAN ĐẦU VÀ KIỂM TRA PHIÊN
+        if (loggedInUser) {
+            executeLoginSuccess();
+        } else {
+            applyPermissionRulesUI();
+        }
         updateEnvButtonsUI();
         fetchCloudData();
     </script>
