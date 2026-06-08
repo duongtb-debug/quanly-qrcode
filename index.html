@@ -86,7 +86,10 @@
                     <label class="block font-bold text-slate-500 mb-1">Tên Phòng ban / Bộ phận</label>
                     <input type="text" id="deptName" required placeholder="Ví dụ: Phòng Kỹ Thuật..." class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-blue-500 bg-white">
                 </div>
-                <button type="submit" id="btn_dept" class="w-full py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 transition cursor-pointer shadow-sm">Thêm Phòng Ban</button>
+                <div class="flex gap-2">
+                    <button type="submit" id="btn_dept" class="flex-1 py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 transition cursor-pointer shadow-sm">Thêm Phòng Ban</button>
+                    <button type="button" id="btn_cancel_dept" onclick="cancelEditDept()" class="hidden px-3 py-2 bg-rose-600 text-white font-bold rounded-lg hover:bg-rose-700 transition cursor-pointer shadow-sm" title="Hủy bỏ">Hủy ❌</button>
+                </div>
             </form>
             <div class="border-t border-slate-100 bg-slate-50 max-h-48 overflow-y-auto custom-scrollbar">
                 <table class="w-full text-left border-collapse text-xs">
@@ -121,7 +124,10 @@
                         <option value="">-- Chọn đơn vị --</option>
                     </select>
                 </div>
-                <button type="submit" id="btn_user" class="w-full py-2 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 transition cursor-pointer shadow-sm">Thêm Nhân Sự</button>
+                <div class="flex gap-2">
+                    <button type="submit" id="btn_user" class="flex-1 py-2 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 transition cursor-pointer shadow-sm">Thêm Nhân Sự</button>
+                    <button type="button" id="btn_cancel_user" onclick="cancelEditUser()" class="hidden px-3 py-2 bg-rose-600 text-white font-bold rounded-lg hover:bg-rose-700 transition cursor-pointer shadow-sm" title="Hủy bỏ">Hủy ❌</button>
+                </div>
             </form>
             <div class="border-t border-slate-100 bg-slate-50 max-h-48 overflow-y-auto custom-scrollbar">
                 <table class="w-full text-left border-collapse text-xs">
@@ -166,7 +172,10 @@
                         <option value="">-- Chọn phòng ban --</option>
                     </select>
                 </div>
-                <button type="submit" id="btn_device" class="w-full py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition cursor-pointer shadow-sm">Thêm Thiết Bị</button>
+                <div class="flex gap-2">
+                    <button type="submit" id="btn_device" class="flex-1 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition cursor-pointer shadow-sm">Thêm Thiết Bị</button>
+                    <button type="button" id="btn_cancel_device" onclick="cancelEditDevice()" class="hidden px-3 py-2 bg-rose-600 text-white font-bold rounded-lg hover:bg-rose-700 transition cursor-pointer shadow-sm" title="Hủy bỏ">Hủy ❌</button>
+                </div>
             </form>
             <div class="border-t border-slate-100 bg-slate-50 max-h-48 overflow-y-auto custom-scrollbar">
                 <table class="w-full text-left border-collapse text-xs">
@@ -570,7 +579,7 @@
         }
 
         function autoGenDeviceId() {
-            if(document.getElementById('editDeviceId').value !== "") return; // Nếu đang sửa thì không đổi ID
+            if(document.getElementById('editDeviceId').value !== "") return; 
             let maxNum = 67147;
             devices.forEach(d => {
                 if(d.id && d.id.startsWith("TB-")) {
@@ -629,7 +638,7 @@
             return false;
         }
 
-        // VIỆT HÓA HOÀN TOÀN ĐỒNG HỒ POMODORO 
+        // POMODORO 
         window.togglePomo = function() {
             if(isRunning) {
                 clearInterval(timerInterval); 
@@ -694,13 +703,10 @@
             if(editId) {
                 const target = depts.find(d => d.id === editId);
                 if(target) target.name = name;
-                document.getElementById('editDeptId').value = "";
-                document.getElementById('btn_dept').innerText = "Thêm Phòng Ban";
             } else { depts.push({ id: Date.now().toString(), name }); }
             
             pushDataToCloud();
-            document.getElementById('deptName').value = "";
-            document.getElementById('deptName').focus(); // TỰ ĐỘNG ĐƯA CON TRỎ VỀ ĐẦU TRANG FORM
+            cancelEditDept();
         }
 
         window.startEditDept = function(id) {
@@ -710,11 +716,20 @@
                 document.getElementById('editDeptId').value = target.id;
                 document.getElementById('deptName').value = target.name;
                 document.getElementById('btn_dept').innerText = "Cập Nhật Phòng Ban";
+                document.getElementById('btn_cancel_dept').classList.remove('hidden');
                 document.getElementById('deptName').focus();
             }
         }
 
-        // --- FORM NHÂN SỰ (BỔ SUNG NÚT SỬA + AUTO FOCUS) ---
+        window.cancelEditDept = function() {
+            document.getElementById('editDeptId').value = "";
+            document.getElementById('deptName').value = "";
+            document.getElementById('btn_dept').innerText = "Thêm Phòng Ban";
+            document.getElementById('btn_cancel_dept').classList.add('hidden');
+            document.getElementById('deptName').focus();
+        }
+
+        // --- FORM NHÂN SỰ ---
         window.handleUserSubmit = function(e) {
             e.preventDefault();
             const name = document.getElementById('userName').value.trim();
@@ -728,14 +743,10 @@
             if(editId) {
                 const target = users.find(u => u.id === editId);
                 if(target) { target.name = name; target.title = title; target.dept = dept; }
-                document.getElementById('editUserId').value = "";
-                document.getElementById('btn_user').innerText = "Thêm Nhân Sự";
             } else { users.push({ id: Date.now().toString(), name, title, dept }); }
             
             pushDataToCloud();
-            document.getElementById('userName').value = "";
-            document.getElementById('userTitle').value = "";
-            document.getElementById('userName').focus(); // TỰ ĐỘNG ĐƯA CON TRỎ VỀ ĐẦU TRANG FORM
+            cancelEditUser();
         }
 
         window.startEditUser = function(id) {
@@ -746,11 +757,22 @@
                 document.getElementById('userTitle').value = target.title;
                 document.getElementById('userDept').value = target.dept;
                 document.getElementById('btn_user').innerText = "Cập Nhật Nhân Sự";
+                document.getElementById('btn_cancel_user').classList.remove('hidden');
                 document.getElementById('userName').focus();
             }
         }
 
-        // --- FORM THIẾT BỊ (BỔ SUNG NÚT SỬA + AUTO FOCUS) ---
+        window.cancelEditUser = function() {
+            document.getElementById('editUserId').value = "";
+            document.getElementById('userName').value = "";
+            document.getElementById('userTitle').value = "";
+            document.getElementById('userDept').value = "";
+            document.getElementById('btn_user').innerText = "Thêm Nhân Sự";
+            document.getElementById('btn_cancel_user').classList.add('hidden');
+            document.getElementById('userName').focus();
+        }
+
+        // --- FORM THIẾT BỊ ---
         window.handleDeviceSubmit = function(e) {
             e.preventDefault(); if(!hasRight('device')) return alert("Từ chối phân quyền!");
             const id = document.getElementById('deviceId').value;
@@ -759,21 +781,16 @@
             const dept = document.getElementById('deviceDept').value;
             const editId = document.getElementById('editDeviceId').value;
             
-            const isDuplicate = devices.some(d => d.id !== id && d.name.toLowerCase().replace(/\s+/g, '') === name.toLowerCase().replace(/\s+/g, '') && d.dept === dept);
+            const isDuplicate = devices.some(d => d.id !== editId && d.name.toLowerCase().replace(/\s+/g, '') === name.toLowerCase().replace(/\s+/g, '') && d.dept === dept);
             if(isDuplicate) return alert(`⚠️ Lỗi: Thiết bị "${name}" đã tồn tại tại đơn vị này.`);
 
             if(editId) {
                 const target = devices.find(d => d.id === editId);
                 if(target) { target.name = name; target.cat = cat; target.dept = dept; }
-                document.getElementById('editDeviceId').value = "";
-                document.getElementById('btn_device').innerText = "Thêm Thiết Bị";
             } else { devices.push({ id, name, cat, dept, status: "Hoạt động tốt" }); }
             
             pushDataToCloud();
-            document.getElementById('deviceName').value = "";
-            document.getElementById('editDeviceId').value = "";
-            autoGenDeviceId();
-            document.getElementById('deviceName').focus(); // TỰ ĐỘNG ĐƯA CON TRỎ VỀ ĐẦU TRANG FORM
+            cancelEditDevice();
         }
 
         window.startEditDevice = function(id) {
@@ -786,11 +803,23 @@
                 document.getElementById('deviceCategory').value = target.cat;
                 document.getElementById('deviceDept').value = target.dept;
                 document.getElementById('btn_device').innerText = "Cập Nhật Thiết Bị";
+                document.getElementById('btn_cancel_device').classList.remove('hidden');
                 document.getElementById('deviceName').focus();
             }
         }
 
-        // --- FORM SỬA CHỮA & NHẮC LỊCH (BỎ QUA LIÊN KẾT BẮT BUỘC) ---
+        window.cancelEditDevice = function() {
+            document.getElementById('editDeviceId').value = "";
+            document.getElementById('deviceName').value = "";
+            document.getElementById('deviceCategory').value = "Thiết bị CNTT";
+            document.getElementById('deviceDept').value = "";
+            document.getElementById('btn_device').innerText = "Thêm Thiết Bị";
+            document.getElementById('btn_cancel_device').classList.add('hidden');
+            autoGenDeviceId();
+            document.getElementById('deviceName').focus();
+        }
+
+        // --- HÀNH ĐỘNG KHÁC ---
         window.addRepair = function(e) {
             e.preventDefault(); if(!hasRight('action')) return alert("Từ chối phân quyền!");
             const devId = document.getElementById('repairDevice').value, desc = document.getElementById('repairDesc').value.trim(), user = document.getElementById('repairUser').value, cost = parseFloat(document.getElementById('repairCost').value) || 0;
@@ -800,7 +829,7 @@
             if(tDev) tDev.status = "Hoạt động tốt";
             pushDataToCloud();
             document.getElementById('repairDesc').value = ""; document.getElementById('repairCost').value = "0";
-            document.getElementById('repairDevice').focus(); // AUTO FOCUS
+            document.getElementById('repairDevice').focus(); 
         }
 
         window.addTask = function(e) {
@@ -810,7 +839,7 @@
             tasks.push({ id: Date.now().toString(), name, device, user, priority, start, duration, status: "Chưa hoàn thành" });
             pushDataToCloud();
             document.getElementById('taskName').value = "";
-            document.getElementById('taskName').focus(); // AUTO FOCUS
+            document.getElementById('taskName').focus(); 
         }
 
         window.toggleTaskStatus = function(id) {
@@ -820,7 +849,7 @@
         }
 
         window.deleteItem = function(type, id) {
-            if(currentRole !== "admin") return alert("🛡️ Nghiêm cấm: Chỉ tài khoản quyền Cao Nhất mới được xóa dữ liệu!");
+            if(currentRole !== "admin") return alert("🛡️ Chỉ tài khoản quyền Cao Nhất mới được xóa dữ liệu!");
             if(confirm("Bạn có chắc chắn muốn xóa bản ghi này?")) {
                 if(type === 'dept') depts = depts.filter(item => item.id !== id);
                 if(type === 'user') users = users.filter(item => item.id !== id);
@@ -902,14 +931,14 @@
             });
             if(!depts.length) dtb.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-slate-400 italic">Chưa có dữ liệu</td></tr>`;
 
-            // Render Nhân Sự (Có nút sửa)
+            // Render Nhân Sự
             const utb = document.getElementById('userTableBody'); utb.innerHTML = '';
             users.forEach(u => { 
                 utb.innerHTML += `<tr class="border-b text-slate-700 hover:bg-slate-50"><td class="p-2 font-medium">${u.name}<span class="block text-[10px] text-slate-400 font-normal">${u.title}</span></td><td class="p-2 text-slate-500">${u.dept}</td><td class="p-2 text-right space-x-2"><button onclick="startEditUser('${u.id}')" class="text-amber-600 hover:text-amber-800 font-bold cursor-pointer" title="Sửa">📝</button><button onclick="deleteItem('user','${u.id}')" class="text-rose-600 hover:text-rose-800 font-bold cursor-pointer" title="Xóa">🗑️</button></td></tr>`; 
             });
             if(!users.length) utb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 italic">Chưa có dữ liệu</td></tr>`;
 
-            // Render Thiết Bị (Có nút sửa)
+            // Render Thiết Bị
             const dtbBody = document.getElementById('deviceTableBody'); dtbBody.innerHTML = '';
             devices.forEach(d => {
                 const statusColor = d.status === "Hoạt động tốt" ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800";
