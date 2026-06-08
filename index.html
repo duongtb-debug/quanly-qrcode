@@ -6,7 +6,6 @@
     <title>Hệ Thống Điều Hành Kỹ Thuật - Tổng Công Ty Giấy Việt Nam</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
         @media print {
             body * { visibility: hidden; }
@@ -28,7 +27,7 @@
                     <i class="fa-solid fa-industry"></i>
                 </div>
                 <div>
-                    <h2 class="text-[9px] font-bold tracking-widest text-slate-400 uppercase">Hệ Thống Quản Lý Tài Sản & Cấp Phát Mã QR Toàn Năng</h2>
+                    <h2 class="text-[9px] font-bold tracking-widest text-slate-400 uppercase">Hệ Thống Quản Lý Tài Sản & Tự Động Sinh Mã QR Độc Lập</h2>
                     <h1 class="text-lg md:text-xl font-black text-slate-900 tracking-tight mt-0.5">TỔNG CÔNG TY GIẤY VIỆT NAM</h1>
                 </div>
             </div>
@@ -53,7 +52,7 @@
         
         <div class="lg:col-span-8 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
             <div class="bg-slate-700 text-white font-bold p-3 text-sm flex items-center justify-between">
-                <span><i class="fa-solid fa-boxes-stacked mr-1.5 text-slate-300"></i> Danh Mục Quản Lý Cấp Phát & Tạo Mã QR Toàn Năng</span>
+                <span><i class="fa-solid fa-boxes-stacked mr-1.5 text-slate-300"></i> Danh Mục Quản Lý Cấp Phát & Mã QR Tự Động</span>
                 <span class="text-xs bg-slate-600 px-2 py-0.5 rounded font-mono" id="count-device">0 tài sản</span>
             </div>
 
@@ -89,13 +88,13 @@
                 </div>
 
                 <div class="sm:col-span-3 flex items-end">
-                    <button type="submit" id="btn_device" class="w-full py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 cursor-pointer shadow-xs">Lưu & Tạo Mã QR</button>
+                    <button type="submit" id="btn_device" class="w-full py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 cursor-pointer shadow-xs">Lưu & Sinh Mã QR</button>
                 </div>
             </form>
 
             <div class="p-2.5 bg-slate-100/60 border-b border-slate-200 text-xs">
                 <div class="relative w-full">
-                    <input type="text" id="searchDeviceInput" oninput="renderDeviceTableOnly()" placeholder="Nhập mã định danh, tên thiết bị hoặc nội dung quét từ bất kỳ phương tiện nào để lọc nhanh..." class="w-full border border-slate-300 rounded-lg pl-8 pr-3 py-2 bg-white focus:outline-none font-bold text-blue-700">
+                    <input type="text" id="searchDeviceInput" oninput="renderDeviceTableOnly()" placeholder="Nhập mã định danh, tên thiết bị hoặc quét mã từ Zalo để lọc hồ sơ..." class="w-full border border-slate-300 rounded-lg pl-8 pr-3 py-2 bg-white focus:outline-none font-bold text-blue-700">
                     <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-3 text-slate-400"></i>
                 </div>
             </div>
@@ -106,9 +105,9 @@
                         <tr class="border-b border-slate-200 bg-slate-50 text-slate-500 font-bold sticky top-0 z-10">
                             <th class="p-2.5 pl-4">Mã Số / Tên Thiết Bị</th>
                             <th class="p-2.5">Đơn Vị Quản Lý</th>
-                            <th class="p-2.5">Nhân Sự Phụ Trách</th>
-                            <th class="p-2.5 text-center">Vận Hành</th>
-                            <th class="p-2.5 text-right pr-4">Hành Động In Mã QR</th>
+                            <th class="p-2.5 text-center">Mã QR Quét Thử</th>
+                            <th class="p-2.5">Phụ Trách</th>
+                            <th class="p-2.5 text-right pr-4">Hành Động</th>
                         </tr>
                     </thead>
                     <tbody id="deviceTableBody" class="divide-y divide-slate-100"></tbody>
@@ -116,32 +115,21 @@
             </div>
         </div>
 
-        <div class="lg:col-span-4 space-y-4">
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="lg:col-span-4">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden sticky top-6">
                 <div class="bg-slate-800 text-white font-bold p-3 text-sm flex items-center justify-between">
-                    <span><i class="fa-solid fa-eye text-amber-400 mr-1.5"></i> Xem Trước Tem QR Hiện Tại</span>
-                    <button onclick="window.print()" id="btnActionPrintNow" class="hidden px-2 py-0.5 bg-amber-500 text-slate-900 font-bold text-[11px] rounded">🖨️ Bấm In Ngay</button>
+                    <span><i class="fa-solid fa-print text-amber-400 mr-1.5"></i> Nhãn Tem In Phóng To</span>
+                    <button onclick="window.print()" id="btnActionPrintNow" class="hidden px-3 py-1 bg-amber-500 text-slate-900 font-extrabold text-[11px] rounded hover:bg-amber-400 cursor-pointer">🖨️ Đặt Lệnh In</button>
                 </div>
-                <div class="p-6 flex flex-col items-center justify-center bg-slate-50 min-h-[220px]">
-                    <div id="webPreviewQRBox" class="p-4 bg-white border border-slate-300 rounded-lg shadow-xs text-center flex flex-col items-center justify-center hidden">
+                <div class="p-6 flex flex-col items-center justify-center bg-slate-50 min-h-[260px]">
+                    <div id="webPreviewQRBox" class="p-4 bg-white border-2 border-slate-400 rounded-xl shadow-md text-center flex flex-col items-center justify-center hidden w-[200px]">
                         <h4 id="wpTitle" class="text-[11px] font-black uppercase text-slate-900 max-w-[180px] truncate mb-1"></h4>
-                        <img id="wpImage" src="" alt="Mã QR định danh" class="w-32 h-32 border p-1 bg-white">
-                        <p id="wpId" class="text-xs font-mono font-black mt-1 text-slate-800 tracking-wider"></p>
+                        <img id="wpImage" src="" alt="Mã QR" class="w-36 h-36 border p-1 bg-white">
+                        <p id="wpId" class="text-xs font-mono font-black mt-1 text-slate-800 tracking-wider border-t border-dashed pt-0.5 w-full"></p>
                         <p id="wpDept" class="text-[9px] font-bold text-slate-500 mt-0.5"></p>
-                        <p id="wpUser" class="text-[9px] font-bold text-blue-600 mt-0.5 italic"></p>
+                        <p id="wpUser" class="text-[9px] font-bold text-emerald-600 mt-0.5 italic"></p>
                     </div>
-                    <p id="webPreviewEmptyText" class="text-slate-400 italic text-center text-xs">Vui lòng bấm nút "XEM & IN TEM" ở bảng danh sách để hiển thị mã QR tại đây.</p>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="bg-slate-800 text-white font-bold p-3 text-sm"><i class="fa-solid fa-camera text-slate-300 mr-1"></i> Web Cam phụ trợ</div>
-                <div class="p-3 text-xs space-y-2">
-                    <div id="qr-reader" class="w-full bg-slate-900 rounded-lg overflow-hidden"></div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="startQRScanner()" class="py-1.5 bg-emerald-600 text-white font-bold rounded cursor-pointer">Bật Cam</button>
-                        <button onclick="stopQRScanner()" class="py-1.5 bg-slate-500 text-white font-bold rounded cursor-pointer">Tắt Cam</button>
-                    </div>
+                    <p id="webPreviewEmptyText" class="text-slate-400 italic text-center text-xs p-4">Chọn một thiết bị bất kỳ từ danh sách bên cạnh và bấm nút <strong>"Xem & In Tem"</strong> để hiển thị nhãn in phóng to tại đây.</p>
                 </div>
             </div>
         </div>
@@ -201,7 +189,6 @@
 
         let currentEnv = localStorage.getItem('vinapaco_current_env') || 'live'; 
         let depts = [], users = [], devices = [];
-        let html5QrScanner = null;
 
         function checkIncomingQRQuery() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -229,12 +216,12 @@
             if(currentEnv === 'live') {
                 btnLive.className = "px-3 py-1 rounded-md font-bold cursor-pointer bg-emerald-600 text-white text-xs";
                 btnDemo.className = "px-3 py-1 rounded-md font-bold cursor-pointer bg-white text-slate-600 border text-xs";
-                text.innerText = "DỮ LIỆU THẬT (LIVE) - Đang kết nối trực tiếp dữ liệu cơ sở";
+                text.innerText = "DỮ LIỆU THẬT (LIVE) - Kết nối hệ thống sản xuất";
                 ind.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
             } else {
                 btnDemo.className = "px-3 py-1 rounded-md font-bold cursor-pointer bg-amber-500 text-white text-xs";
                 btnLive.className = "px-3 py-1 rounded-md font-bold cursor-pointer bg-white text-slate-600 border text-xs";
-                text.innerText = "DỮ LIỆU THỬ NGHIỆM (DEMO) - Không ảnh hưởng dữ liệu gốc";
+                text.innerText = "DỮ LIỆU THỬ NGHIỆM (DEMO)";
                 ind.className = "w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse";
             }
         }
@@ -339,31 +326,32 @@
             }
         }
 
-        // KÍCH HOẠT HIỂN THỊ VÀ IN MÃ QR QUA GOOGLE API (SỬA LỖI TRIỆT ĐỂ)
-        window.printDeviceQR = function(id) {
-            const dev = devices.find(d => d.id === id);
-            
+        // HÀM TẠO URL LINK QR CHUẨN ĐA PHƯƠNG TIỆN
+        function getQrImageUrl(id) {
             const baseWebUrl = window.location.href.split('?')[0];
-            const dynamicQrLink = `${baseWebUrl}?scan_id=${dev.id}`;
-            
-            // Mã hóa URL để đẩy vào API Google tạo ảnh QR chất lượng cao
-            const encodedUrl = encodeURIComponent(dynamicQrLink);
-            const googleQrApiUrl = `https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=${encodedUrl}&choe=UTF-8&chld=H|1`;
+            const dynamicQrLink = `${baseWebUrl}?scan_id=${id}`;
+            return `https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=${encodeURIComponent(dynamicQrLink)}&choe=UTF-8&chld=H|1`;
+        }
 
-            // 1. Cập nhật dữ liệu vào khung Xem Trước trên trang web
+        // XEM TRƯỚC VÀ CHUẨN BỊ IN TEM PHÓNG TO
+        window.previewAndSelectQR = function(id) {
+            const dev = devices.find(d => d.id === id);
+            const qrUrl = getQrImageUrl(dev.id);
+            
             document.getElementById('webPreviewEmptyText').classList.add('hidden');
             document.getElementById('webPreviewQRBox').classList.remove('hidden');
             document.getElementById('btnActionPrintNow').classList.remove('hidden');
             
+            // Đẩy dữ liệu ra khung xem trước phóng to bên phải
             document.getElementById('wpTitle').innerText = dev.name;
-            document.getElementById('wpImage').src = googleQrApiUrl;
+            document.getElementById('wpImage').src = qrUrl;
             document.getElementById('wpId').innerText = dev.id;
             document.getElementById('wpDept').innerText = "ĐV: " + dev.dept;
             document.getElementById('wpUser').innerText = "Phụ trách: " + (dev.user || "Trong kho");
 
-            // 2. Cập nhật dữ liệu vào vùng thiết kế nhãn In Pháp lý
+            // Đẩy dữ liệu vào phôi in chính thức của hệ thống
             document.getElementById('qrPrintTitle').innerText = dev.name;
-            document.getElementById('qrPrintImage').src = googleQrApiUrl;
+            document.getElementById('qrPrintImage').src = qrUrl;
             document.getElementById('qrPrintId').innerText = dev.id;
             document.getElementById('qrPrintDept').innerText = "ĐV: " + dev.dept;
             document.getElementById('qrPrintUser').innerText = "Phụ trách: " + (dev.user || "Trong kho");
@@ -389,15 +377,17 @@
             devices.filter(d => {
                 return d.name.toLowerCase().includes(keyword) || d.id.toLowerCase().includes(keyword) || (d.user && d.user.toLowerCase().includes(keyword));
             }).forEach(d => {
-                let bc = d.status === "Trong kho" ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700";
+                const rowQrUrl = getQrImageUrl(d.id);
                 dtbBody.innerHTML += `<tr class="border-b text-slate-600 hover:bg-slate-50">
                     <td class="p-2.5 pl-4 font-mono font-bold text-slate-900">${d.id}<span class="block text-slate-400 font-sans font-medium text-xs">${d.name}</span></td>
                     <td class="p-2.5 font-medium">${d.dept}</td>
+                    <td class="p-1 text-center bg-white">
+                        <img src="${rowQrUrl}" alt="QR" class="w-14 h-14 mx-auto border p-0.5 shadow-2xs bg-white cursor-pointer" onclick="previewAndSelectQR('${d.id}')" title="Bấm để xem phóng to">
+                    </td>
                     <td class="p-2.5 font-bold text-blue-600">${d.user === "Chưa cấp phát" || !d.user ? '📦 <span class="text-amber-600 font-normal">Trong kho</span>' : '👤 ' + d.user}</td>
-                    <td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[11px] font-bold ${bc}">${d.status}</span></td>
                     <td class="p-2.5 text-right pr-4">
-                        <button onclick="printDeviceQR('${d.id}')" class="px-3 py-1 bg-slate-900 text-amber-400 font-black rounded border border-amber-400 cursor-pointer shadow-xs hover:bg-slate-800"><i class="fa-solid fa-eye"></i> XEM & IN TEM</button>
-                        <button onclick="deleteItem('device','${d.id}')" class="text-slate-300 hover:text-red-600 ml-3 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
+                        <button onclick="previewAndSelectQR('${d.id}')" class="px-2.5 py-1.5 bg-slate-900 text-amber-400 font-black rounded border border-amber-400 cursor-pointer shadow-xs hover:bg-slate-800 text-[11px]"><i class="fa-solid fa-expand"></i> Xem & In Tem</button>
+                        <button onclick="deleteItem('device','${d.id}')" class="text-slate-300 hover:text-red-600 ml-2.5 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
                     </td>
                 </tr>`;
             });
@@ -424,16 +414,6 @@
         }
 
         window.renderAllTables = function() { renderUserLayoutAllScene(); renderDeviceTableOnly(); }
-        
-        window.startQRScanner = function() {
-            html5QrScanner = new Html5Qrcode("qr-reader");
-            html5QrScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 200 }, (text) => {
-                stopQRScanner();
-                document.getElementById('searchDeviceInput').value = text;
-                renderDeviceTableOnly();
-            });
-        }
-        window.stopQRScanner = function() { if(html5QrScanner) { html5QrScanner.stop().then(() => { html5QrScanner = null; }); } }
     </script>
 </body>
 </html>
