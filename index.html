@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Quản Lý Điều Hành - Tổng Công Ty Giấy Việt Nam</title>
+    <title>Hệ Thống Điều Hành - Tổng Công Ty Giấy Việt Nam</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -14,213 +14,180 @@
             #qrPrintZone { position: absolute; left: 0; top: 0; width: 100%; display: flex !important; flex-direction: column; align-items: center; }
             #printInventoryZone { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
         }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
         .dark-scrollbar::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 3px; }
 
-        /* Hiệu ứng phát sáng đặc quyền cho Chế độ Sang Trọng */
         .luxury-glow {
-            text-shadow: 0 0 12px rgba(245, 158, 11, 0.7), 0 0 24px rgba(245, 158, 11, 0.4);
-            animation: subtle-pulse 2.5s infinite alternate;
+            text-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+            animation: subtle-pulse 3s infinite alternate;
         }
         @keyframes subtle-pulse {
-            0% { text-shadow: 0 0 10px rgba(245, 158, 11, 0.5), 0 0 20px rgba(245, 158, 11, 0.2); }
-            100% { text-shadow: 0 0 18px rgba(245, 158, 11, 0.9), 0 0 36px rgba(245, 158, 11, 0.5); }
+            0% { text-shadow: 0 0 8px rgba(245, 158, 11, 0.4); }
+            100% { text-shadow: 0 0 15px rgba(245, 158, 11, 0.8); }
         }
     </style>
 </head>
 <body id="mainBody" class="bg-slate-100 text-slate-800 font-sans min-h-screen p-4 md:p-6 space-y-6 transition-colors duration-300">
 
-    <header id="mainHeader" class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 relative overflow-hidden transition-all duration-300">
-        <div id="headerTopBar" class="absolute inset-x-0 top-0 h-1.5 bg-blue-700 transition-colors duration-300"></div>
+    <header id="mainHeader" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 relative overflow-hidden transition-all duration-300">
+        <div id="headerTopBar" class="absolute inset-x-0 top-0 h-1 bg-blue-700 transition-colors duration-300"></div>
         
         <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-4 text-center md:text-left">
-                <div class="w-16 h-16 bg-blue-50 rounded-xl flex items-center justify-center border border-blue-100 shadow-inner shrink-0 text-blue-700 text-3xl font-black">
+            <div class="flex items-center gap-3.5 text-center md:text-left">
+                <div class="w-14 h-14 bg-slate-100 rounded-xl flex items-center justify-center border border-slate-200 text-slate-700 text-2xl font-black shrink-0">
                     <i class="fa-solid fa-industry"></i>
                 </div>
                 <div>
-                    <h2 class="text-xs font-bold tracking-widest text-slate-400 uppercase">Hệ Thống Điều Hành Tác Nghiệp Realtime</h2>
+                    <h2 class="text-[10px] font-bold tracking-widest text-slate-400 uppercase">Hệ Thống Điều Hành Realtime</h2>
                     <h1 id="mainTitle" class="text-xl md:text-2xl font-black text-slate-900 tracking-tight transition-all duration-300 mt-0.5">
                         TỔNG CÔNG TY GIẤY VIỆT NAM
                     </h1>
                 </div>
             </div>
 
-            <div id="themeSelectorBox" class="p-1.5 bg-slate-50 rounded-xl flex items-center gap-2 border border-slate-200 text-xs shadow-inner transition-colors duration-300">
-                <span class="font-bold text-slate-500 pl-2"><i class="fa-solid fa-palette"></i></span>
-                <div class="flex gap-1">
-                    <button onclick="changeAppTheme('default')" class="px-3 py-1.5 rounded-lg font-bold border cursor-pointer bg-blue-700 text-white border-blue-800 shadow-xs" id="themeBtn-default">Cơ Bản</button>
-                    <button onclick="changeAppTheme('modern')" class="px-3 py-1.5 rounded-lg font-bold border cursor-pointer bg-white text-slate-700 border-slate-300 hover:bg-slate-100 shadow-xs" id="themeBtn-modern">Hiện Đại</button>
-                    <button onclick="changeAppTheme('minimal')" class="px-3 py-1.5 rounded-lg font-bold border cursor-pointer bg-white text-slate-700 border-slate-300 hover:bg-slate-100 shadow-xs" id="themeBtn-minimal">Tối Giản</button>
-                    <button onclick="changeAppTheme('luxury')" class="px-3 py-1.5 rounded-lg font-bold border cursor-pointer bg-white text-slate-700 border-slate-300 hover:bg-slate-100 shadow-xs" id="themeBtn-luxury">Sang Trọng ✨</button>
-                </div>
+            <div id="themeSelectorBox" class="p-1 bg-slate-100 rounded-xl flex items-center gap-1 border border-slate-200 text-xs shadow-inner transition-colors duration-300">
+                <button onclick="changeAppTheme('default')" class="px-2.5 py-1.5 rounded-lg font-bold border cursor-pointer bg-blue-700 text-white border-blue-800 shadow-xs" id="themeBtn-default">Cơ Bản</button>
+                <button onclick="changeAppTheme('modern')" class="px-2.5 py-1.5 rounded-lg font-bold border cursor-pointer bg-white text-slate-700 border-slate-200 hover:bg-slate-50" id="themeBtn-modern">Hiện Đại</button>
+                <button onclick="changeAppTheme('minimal')" class="px-2.5 py-1.5 rounded-lg font-bold border cursor-pointer bg-white text-slate-700 border-slate-200 hover:bg-slate-50" id="themeBtn-minimal">Tối Giản</button>
+                <button onclick="changeAppTheme('luxury')" class="px-2.5 py-1.5 rounded-lg font-bold border cursor-pointer bg-white text-slate-700 border-slate-200 hover:bg-slate-50" id="themeBtn-luxury">Sang Trọng ✨</button>
             </div>
         </div>
         
         <hr class="my-4 border-slate-200/60">
 
         <div class="flex flex-wrap gap-2 items-center justify-between text-xs">
-            <div class="flex flex-wrap gap-2">
-                <div id="syncBadge" class="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 font-bold px-3 py-1 rounded-full shadow-xs">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span id="syncBadgeText">Dữ liệu đám mây Realtime kết nối ổn định</span>
-                </div>
-                <div id="adminBadge" class="bg-amber-500 text-slate-900 font-black px-3 py-1 rounded-full hidden shadow-xs uppercase">
-                    Quản Trị Viên
-                </div>
+            <div id="syncBadge" class="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 font-medium px-3 py-1 rounded-full">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span id="syncBadgeText">Dữ liệu đám mây ổn định</span>
+                <div id="adminBadge" class="ml-2 bg-slate-200 text-slate-700 font-bold px-2 py-0.5 rounded text-[10px] hidden uppercase"></div>
             </div>
             <div class="flex gap-2">
-                <button onclick="openLoginModal()" id="btnLoginText" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-lg transition-all cursor-pointer shadow-sm flex items-center gap-1.5">
-                    <i class="fa-solid fa-lock text-[10px]"></i> Đăng Nhập Hệ Thống
+                <button onclick="openLoginModal()" id="btnLoginText" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 shadow-xs">
+                    <i class="fa-solid fa-lock text-[10px] text-slate-400"></i> Đăng Nhập
                 </button>
-                <button onclick="openSetupModal()" id="btnSetupControl" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition-all cursor-pointer shadow-sm flex items-center gap-1.5">
-                    <i class="fa-solid fa-sliders text-[10px]"></i> Cấu Hình Quyền
+                <button onclick="openSetupModal()" id="btnSetupControl" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5 border border-slate-200">
+                    <i class="fa-solid fa-sliders text-[10px] text-slate-400"></i> Cấu Hình Quyền
                 </button>
             </div>
         </div>
     </header>
 
-    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div id="statCard-1" class="bg-white p-4 rounded-xl shadow-xs border-l-4 border-blue-600 flex flex-col justify-between min-h-[90px] transition-all duration-300">
-            <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Thiết Bị Đang Báo Lỗi</span>
-            <span id="stat-error-devices" class="text-2xl font-black text-blue-700 mt-1">0</span>
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div id="statCard-1" class="bg-white p-4 rounded-xl shadow-xs border-l-4 border-red-500 flex flex-col justify-between transition-all duration-300">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Thiết Bị Sự Cố</span>
+            <span id="stat-error-devices" class="text-2xl font-black text-slate-900 mt-1">0</span>
         </div>
-        <div id="statCard-2" class="bg-white p-4 rounded-xl shadow-xs border-l-4 border-purple-600 flex flex-col justify-between min-h-[90px] transition-all duration-300">
-            <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Tổng Chi Phí Vật Tư Sửa Chữa</span>
-            <span id="stat-total-cost" class="text-2xl font-black text-purple-700 mt-1">0 đ</span>
+        <div id="statCard-2" class="bg-white p-4 rounded-xl shadow-xs border-l-4 border-blue-600 flex flex-col justify-between transition-all duration-300">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Chi Phí Sửa Chữa</span>
+            <span id="stat-total-cost" class="text-xl font-black text-slate-900 mt-1">0 đ</span>
         </div>
-        <div id="statCard-3" class="bg-white p-4 rounded-xl shadow-xs border-l-4 border-rose-600 flex flex-col justify-between min-h-[90px] transition-all duration-300">
-            <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Kế Hoạch & Việc Cần Làm</span>
-            <span id="stat-pending-tasks" class="text-2xl font-black text-rose-700 mt-1">0</span>
+        <div id="statCard-3" class="bg-white p-4 rounded-xl shadow-xs border-l-4 border-amber-500 flex flex-col justify-between transition-all duration-300">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Kế Hoạch Chờ Đợi</span>
+            <span id="stat-pending-tasks" class="text-2xl font-black text-slate-900 mt-1">0</span>
         </div>
-        <div id="statCard-4" class="bg-white p-4 rounded-xl shadow-xs border-l-4 border-emerald-600 flex flex-col justify-between min-h-[90px] transition-all duration-300">
-            <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Tỷ Lệ Hoàn Thành Chỉ Tiêu</span>
-            <span id="stat-completion-rate" class="text-2xl font-black text-emerald-700 mt-1">0%</span>
+        <div id="statCard-4" class="bg-white p-4 rounded-xl shadow-xs border-l-4 border-emerald-500 flex flex-col justify-between transition-all duration-300">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tỷ Lệ Hoàn Thành</span>
+            <span id="stat-completion-rate" class="text-2xl font-black text-slate-900 mt-1">0%</span>
+        </div>
+    </section>
+
+    <section id="block-user" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden transition-all duration-300 flex flex-col">
+        <div id="title-user" class="bg-slate-800 text-white font-bold p-3.5 text-sm flex items-center justify-between transition-colors duration-300">
+            <span><i class="fa-solid fa-users-gear mr-1.5 text-slate-400"></i> Quản Lý Hồ Sơ Nhân Sự & Sơ Đồ Đơn Vị Toàn Cảnh</span>
+            <span class="text-xs bg-slate-700 px-2.5 py-0.5 rounded-md font-mono" id="count-user">0 nhân sự</span>
+        </div>
+        
+        <div class="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 border-b border-slate-100 bg-slate-50/50">
+            <div class="md:col-span-4 border-b md:border-b-0 md:border-r border-slate-200 pb-3 md:pb-0 md:pr-4">
+                <span class="block font-bold text-slate-400 text-[10px] uppercase mb-1.5 tracking-wider">🏢 Khởi Tạo Phòng Ban / Phân Xưởng</span>
+                <form onsubmit="handleDeptSubmit(event)" class="flex gap-1.5 text-xs">
+                    <input type="hidden" id="editDeptId" value="">
+                    <input type="text" id="deptName" required placeholder="Tên phòng ban..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-blue-500">
+                    <button type="submit" id="btn_dept" class="px-3 bg-slate-800 text-white font-bold rounded-lg hover:bg-slate-900 cursor-pointer shadow-xs whitespace-nowrap">Thêm</button>
+                    <button type="button" id="btn_cancel_dept" onclick="cancelEditDept()" class="hidden px-2 bg-red-600 text-white font-bold rounded-lg">✖</button>
+                </form>
+            </div>
+            
+            <div class="md:col-span-8 text-xs">
+                <span class="block font-bold text-slate-400 text-[10px] uppercase mb-1.5 tracking-wider">👤 Tiếp Nhận Hồ Sơ Nhân Sự Mới</span>
+                <form onsubmit="handleUserSubmit(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <input type="hidden" id="editUserId" value="">
+                    <input type="text" id="userName" required placeholder="Họ tên nhân sự..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-blue-500">
+                    <input type="text" id="userTitle" required placeholder="Chức danh (Ví dụ: Kỹ sư điều hành)" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-blue-500">
+                    <div class="flex gap-1.5">
+                        <select id="userDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-blue-500">
+                            <option value="">-- Chọn đơn vị --</option>
+                        </select>
+                        <button type="submit" id="btn_user" class="px-4 bg-blue-700 text-white font-bold rounded-lg hover:bg-blue-800 cursor-pointer shadow-sm whitespace-nowrap">Lưu Hồ Sơ</button>
+                        <button type="button" id="btn_cancel_user" onclick="cancelEditUser()" class="hidden px-2 bg-red-600 text-white font-bold rounded-lg">✖</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="p-4 bg-slate-50/30">
+            <div id="fullViewUserGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                </div>
         </div>
     </section>
 
     <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        <div id="block-user" class="lg:col-span-6 bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden transition-all duration-300 flex flex-col">
-            <div id="title-user" class="bg-emerald-700 text-white font-bold p-3.5 text-sm flex items-center justify-between transition-colors duration-300">
-                <span id="txt-title-user"><i class="fa-solid fa-users-gear mr-1.5"></i> Quản Lý Hồ Sơ Nhân Sự & Sơ Đồ Phòng Ban</span>
-                <span class="text-[11px] bg-white/20 px-2 py-0.5 rounded-md font-mono" id="count-user">0 nhân sự</span>
-            </div>
-            
-            <div class="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 border-b border-slate-100 bg-slate-50/40">
-                <div class="md:col-span-4 border-b md:border-b-0 md:border-r border-slate-200 pb-3 md:pb-0 md:pr-4">
-                    <span class="block font-bold text-slate-400 text-[10px] uppercase mb-2 tracking-wider">🏢 Phòng Ban / Phân Xưởng</span>
-                    <form onsubmit="handleDeptSubmit(event)" class="space-y-2 text-xs">
-                        <input type="hidden" id="editDeptId" value="">
-                        <input type="text" id="deptName" required placeholder="Tên đơn vị mới..." class="w-full border border-slate-300 rounded-lg p-2 text-xs bg-white focus:outline-emerald-500">
-                        <div class="flex gap-1">
-                            <button type="submit" id="btn_dept" class="w-full py-2 bg-slate-700 hover:bg-slate-800 text-white font-bold rounded-lg transition-all cursor-pointer text-[11px] shadow-xs">Thêm Đơn Vị</button>
-                            <button type="button" id="btn_cancel_dept" onclick="cancelEditDept()" class="hidden px-2.5 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg transition-all cursor-pointer">✖</button>
-                        </div>
-                    </form>
-                </div>
-                
-                <div class="md:col-span-8 space-y-2 text-xs">
-                    <span class="block font-bold text-slate-400 text-[10px] uppercase mb-1 tracking-wider">👤 Thông Tin Nhân Sự</span>
-                    <form onsubmit="handleUserSubmit(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <input type="hidden" id="editUserId" value="">
-                        <div class="sm:col-span-2">
-                            <input type="text" id="userName" required placeholder="Họ và tên nhân sự..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-emerald-500">
-                        </div>
-                        <div>
-                            <input type="text" id="userTitle" required placeholder="Chức vụ (Ví dụ: Kỹ sư)" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-emerald-500">
-                        </div>
-                        <div>
-                            <select id="userDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-emerald-500">
-                                <option value="">-- Chọn Đơn Vị --</option>
-                            </select>
-                        </div>
-                        <div class="sm:col-span-2 flex gap-1.5 mt-1">
-                            <button type="submit" id="btn_user" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition-all cursor-pointer shadow-md">Lưu Hồ Sơ</button>
-                            <button type="button" id="btn_cancel_user" onclick="cancelEditUser()" class="hidden px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg transition-all cursor-pointer">Hủy ❌</button>
-                        </div>
-                    </form>
-                </div>
+        <div id="block-device" class="lg:col-span-7 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden transition-all duration-300 flex flex-col">
+            <div id="title-device" class="bg-slate-800 text-white font-bold p-3 text-sm flex items-center justify-between transition-colors duration-300">
+                <span><i class="fa-solid fa-boxes-stacked mr-1.5 text-slate-400"></i> Quản Lý Danh Mục Thiết Bị & Tài Sản</span>
+                <span class="text-xs bg-slate-700 px-2 py-0.5 rounded-md font-mono" id="count-device">0 tài sản</span>
             </div>
 
-            <div class="px-4 pt-3 bg-slate-50 flex items-center gap-2 overflow-x-auto custom-scrollbar border-b border-slate-200">
-                <button onclick="filterUserList('all')" id="tabUser-all" class="px-3 py-1.5 font-bold text-xs rounded-t-lg bg-white border-x border-t border-slate-200 text-emerald-700 cursor-pointer whitespace-nowrap">Tất Cả Nhân Sự</button>
-                <div id="dynamicDeptTabs" class="flex gap-1"></div>
-            </div>
-
-            <div class="overflow-x-auto custom-scrollbar max-h-64 bg-white text-xs">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="border-b border-slate-200 bg-slate-100 text-slate-500 font-bold sticky top-0 z-10">
-                            <th class="p-2.5 pl-4">Họ Tên / Chức Danh</th>
-                            <th class="p-2.5">Đơn Vị Quản Lý</th>
-                            <th class="p-2.5 text-right pr-4">Tác Vụ</th>
-                        </tr>
-                    </thead>
-                    <tbody id="userTableBody" class="divide-y divide-slate-100"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="block-device" class="lg:col-span-6 bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden transition-all duration-300 flex flex-col">
-            <div id="title-device" class="bg-blue-700 text-white font-bold p-3.5 text-sm flex items-center justify-between transition-colors duration-300">
-                <span id="txt-title-device"><i class="fa-solid fa-boxes-stacked mr-1.5"></i> Quản Lý Danh Mục Thiết Bị & Tài Sản</span>
-                <span class="text-[11px] bg-white/20 px-2 py-0.5 rounded-md font-mono" id="count-device">0 tài sản</span>
-            </div>
-
-            <form onsubmit="handleDeviceSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs border-b border-slate-100 bg-slate-50/40">
+            <form onsubmit="handleDeviceSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs border-b border-slate-100 bg-slate-50/50">
                 <input type="hidden" id="editDeviceId" value="">
                 <div>
                     <label class="block font-bold text-slate-400 text-[10px] uppercase mb-1">Mã Tài Sản</label>
-                    <input type="text" id="deviceId" readonly class="w-full border border-slate-200 bg-slate-100 font-mono font-bold text-orange-600 rounded-lg p-2 focus:outline-none">
+                    <input type="text" id="deviceId" readonly class="w-full border border-slate-200 bg-slate-100 font-mono font-bold text-slate-700 rounded-lg p-2 focus:outline-none">
                 </div>
                 <div class="sm:col-span-2">
                     <label class="block font-bold text-slate-400 text-[10px] uppercase mb-1">Tên thiết bị tài sản</label>
-                    <input type="text" id="deviceName" required placeholder="Nhập tên thiết bị..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-blue-500">
+                    <input type="text" id="deviceName" required placeholder="Tên thiết bị..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-blue-500">
                 </div>
                 <div>
                     <label class="block font-bold text-slate-400 text-[10px] uppercase mb-1">Chủng loại</label>
-                    <select id="deviceCategory" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-blue-500">
+                    <select id="deviceCategory" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-blue-500">
                         <option value="Dây chuyền sản xuất">Dây chuyền sản xuất</option>
                         <option value="Hệ thống điện lực">Hệ thống điện lực</option>
-                        <option value="Thiết bị CNTT & Máy chủ">Thiết bị CNTT & Máy chủ</option>
-                        <option value="Xe cơ giới vận chuyển">Xe cơ giới vận chuyển</option>
+                        <option value="Thiết bị CNTT & Máy chủ">Thiết bị CNTT</option>
+                        <option value="Xe cơ giới vận chuyển">Xe cơ giới</option>
                     </select>
                 </div>
                 <div class="sm:col-span-3">
                     <label class="block font-bold text-slate-400 text-[10px] uppercase mb-1">Phòng ban quản lý & sử dụng</label>
-                    <select id="deviceDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-blue-500">
+                    <select id="deviceDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-blue-500">
                         <option value="">-- Chọn phòng ban phụ trách --</option>
                     </select>
                 </div>
                 <div class="flex items-end">
-                    <button type="submit" id="btn_device" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-all cursor-pointer shadow-md">Lưu Thiết Bị</button>
-                    <button type="button" id="btn_cancel_device" onclick="cancelEditDevice()" class="hidden ml-1 px-2.5 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg transition-all cursor-pointer">✖</button>
+                    <button type="submit" id="btn_device" class="w-full py-2 bg-slate-800 text-white font-bold rounded-lg hover:bg-slate-900 cursor-pointer shadow-xs">Lưu</button>
+                    <button type="button" id="btn_cancel_device" onclick="cancelEditDevice()" class="hidden ml-1 px-2.5 py-2 bg-red-600 text-white font-bold rounded-lg">✖</button>
                 </div>
             </form>
 
-            <div class="p-2.5 bg-slate-100/70 border-b border-slate-200 flex flex-col sm:flex-row gap-2 items-center justify-between text-xs">
-                <div class="w-full sm:w-1/2 relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
-                    <input type="text" id="searchDeviceInput" oninput="renderDeviceTableOnly()" placeholder="Tìm theo tên hoặc mã số tài sản..." class="w-full border border-slate-300 rounded-lg pl-8 pr-3 py-1.5 bg-white focus:outline-blue-500">
-                </div>
-                <div class="flex gap-1.5 w-full sm:w-auto justify-end">
-                    <select id="filterDeviceStatus" onchange="renderDeviceTableOnly()" class="border border-slate-300 rounded-lg p-1.5 bg-white text-xs">
-                        <option value="all">-- Tất cả trạng thái --</option>
-                        <option value="Hoạt động tốt">🟢 Hoạt động tốt</option>
-                        <option value="Đang hỏng">🔴 Đang hỏng</option>
-                    </select>
-                </div>
+            <div class="p-2.5 bg-slate-100/60 border-b border-slate-200 flex flex-col sm:flex-row gap-2 items-center justify-between text-xs">
+                <input type="text" id="searchDeviceInput" oninput="renderDeviceTableOnly()" placeholder="Tìm kiếm tài sản, mã định danh..." class="w-full sm:w-1/2 border border-slate-300 rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:border-blue-500">
+                <select id="filterDeviceStatus" onchange="renderDeviceTableOnly()" class="border border-slate-300 rounded-lg p-1.5 bg-white text-xs">
+                    <option value="all">Tất cả trạng thái</option>
+                    <option value="Hoạt động tốt">🟢 Hoạt động tốt</option>
+                    <option value="Đang hỏng">🔴 Đang hỏng</option>
+                </select>
             </div>
 
-            <div class="overflow-x-auto custom-scrollbar max-h-56 bg-white text-xs">
+            <div class="overflow-x-auto custom-scrollbar max-h-60 bg-white text-xs">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="border-b border-slate-200 bg-slate-100 text-slate-500 font-bold sticky top-0 z-10">
+                        <tr class="border-b border-slate-200 bg-slate-50 text-slate-500 font-bold sticky top-0 z-10">
                             <th class="p-2.5 pl-4">Mã Số / Tên Tài Sản</th>
-                            <th class="p-2.5">Vị Trí & Trạng Thái</th>
+                            <th class="p-2.5">Đơn Vị Phụ Trách</th>
+                            <th class="p-2.5 text-center">Trạng Thái</th>
                             <th class="p-2.5 text-right pr-4">Hành Động</th>
                         </tr>
                     </thead>
@@ -229,35 +196,32 @@
             </div>
         </div>
 
-    </section>
-
-    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        <div id="block-pomo" class="lg:col-span-4 bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden flex flex-col justify-between transition-all duration-300">
-            <div id="title-pomo" class="bg-rose-700 text-white font-bold p-3 text-sm flex items-center gap-2 transition-colors duration-300">
-                <i class="fa-solid fa-hourglass-half"></i> Chu Kỳ Tập Trung Làm Việc
+        <div id="block-pomo" class="lg:col-span-5 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col justify-between transition-all duration-300">
+            <div id="title-pomo" class="bg-slate-800 text-white font-bold p-3 text-sm flex items-center gap-2 transition-colors duration-300">
+                <i class="fa-solid fa-clock text-slate-400"></i> Chu Kỳ Tập Trung Lao Động & Sản Xuất
             </div>
             <div class="p-4 space-y-4 text-xs flex-1 flex flex-col justify-between">
-                <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex items-center justify-between transition-colors duration-300" id="miniCalBox">
+                
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-between" id="miniCalBox">
                     <div class="flex items-center space-x-2">
-                        <div id="calBox" class="bg-rose-600 text-white rounded-lg p-2 text-center font-bold font-mono min-w-[40px] shadow-sm">
+                        <div id="calBox" class="bg-slate-700 text-white rounded-lg p-2 text-center font-bold font-mono min-w-[40px]">
                             <span id="calDay" class="block text-lg leading-none">08</span>
                             <span id="calMonth" class="block text-[9px] uppercase mt-0.5">TH06</span>
                         </div>
                         <div>
-                            <span id="calWeekday" class="block font-extrabold text-slate-700 text-sm">Thứ Hai</span>
+                            <span id="calWeekday" class="block font-bold text-slate-700 text-sm">Thứ Hai</span>
                             <span id="calYear" class="block text-[10px] text-slate-400 font-medium">Năm 2026</span>
                         </div>
                     </div>
-                    <div class="text-right text-slate-400 text-lg pr-1"><i id="calIcon" class="fa-regular fa-calendar-check text-rose-500"></i></div>
+                    <div class="text-slate-400 text-lg pr-1"><i class="fa-regular fa-calendar-check text-slate-500"></i></div>
                 </div>
 
-                <div id="pomoBox" class="bg-rose-50/60 border border-rose-100 rounded-xl p-3 text-center space-y-2 flex flex-col items-center justify-center min-h-[145px] relative overflow-hidden group transition-colors duration-300">
-                    <div id="pomoIllustration" class="text-3xl transform group-hover:scale-110 transition-transform duration-300">🎯</div>
+                <div id="pomoBox" class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center space-y-3 flex flex-col items-center justify-center min-h-[150px] transition-colors duration-300">
                     <div>
-                        <span id="pomoLabel" class="block text-[10px] uppercase font-black text-rose-600 tracking-wider">ĐANG LÀM VIỆC 🎯</span>
-                        <span id="pomoDisplay" class="text-3xl font-black text-slate-800 block mt-0.5 font-mono tracking-tight">25:00</span>
+                        <span id="pomoLabel" class="block text-[10px] uppercase font-black text-blue-700 tracking-wider">ĐANG LAO ĐỘNG 🎯</span>
+                        <span id="pomoDisplay" class="text-4xl font-black text-slate-900 block mt-1 font-mono tracking-tight">25:00</span>
                     </div>
-                    <p id="pomoProverb" class="text-[11px] font-medium text-slate-600 px-2 leading-relaxed max-w-[240px] text-center pt-2 border-t border-rose-200/60 w-full min-h-[44px] flex items-center justify-center">
+                    <p id="pomoProverb" class="text-[11px] font-medium text-slate-600 px-2 leading-relaxed text-center pt-2.5 border-t border-slate-200 w-full min-h-[44px] flex items-center justify-center italic">
                         "Muốn lành nghề phải bền gan, chăm làm lụng mới nên cơ đồ."
                     </p>
                 </div>
@@ -265,89 +229,64 @@
                 <div class="space-y-3 pt-1">
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block font-bold text-slate-400 text-[10px] uppercase mb-0.5">Thời gian làm (phút)</label>
-                            <input type="number" id="pomoWork" value="25" onchange="resetPomo()" class="w-full border border-slate-300 p-2 rounded-lg text-center font-bold bg-white focus:outline-rose-500">
+                            <label class="block font-bold text-slate-400 text-[10px] uppercase mb-1">Thời lượng lao động (phút)</label>
+                            <input type="number" id="pomoWork" value="25" onchange="resetPomo()" class="w-full border border-slate-300 p-2 rounded-lg text-center font-bold bg-white focus:outline-none focus:border-blue-500">
                         </div>
                         <div>
-                            <label class="block font-bold text-slate-400 text-[10px] uppercase mb-0.5">Thời gian nghỉ (phút)</label>
-                            <input type="number" id="pomoBreak" value="5" onchange="resetPomo()" class="w-full border border-slate-300 p-2 rounded-lg text-center font-bold bg-white focus:outline-rose-500">
+                            <label class="block font-bold text-slate-400 text-[10px] uppercase mb-1">Thời lượng nghỉ ngơi (phút)</label>
+                            <input type="number" id="pomoBreak" value="5" onchange="resetPomo()" class="w-full border border-slate-300 p-2 rounded-lg text-center font-bold bg-white focus:outline-none focus:border-blue-500">
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
-                        <button onclick="togglePomo()" id="btnStartPomo" class="py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl transition-all shadow-sm cursor-pointer flex items-center justify-center gap-1"><i class="fa-solid fa-play text-[10px]"></i> Kích Hoạt</button>
-                        <button onclick="resetPomo()" class="py-2.5 bg-slate-500 hover:bg-slate-600 text-white font-bold rounded-xl transition-all shadow-sm cursor-pointer flex items-center justify-center gap-1"><i class="fa-solid fa-arrow-rotate-left text-[10px]"></i> Đặt Lại</button>
+                        <button onclick="togglePomo()" id="btnStartPomo" class="py-2.5 bg-gradient-to-r from-blue-700 to-blue-800 text-white font-bold rounded-xl shadow-xs cursor-pointer flex items-center justify-center gap-1.5"><i class="fa-solid fa-play text-[10px]"></i> Kích Hoạt</button>
+                        <button onclick="resetPomo()" class="py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl shadow-xs cursor-pointer flex items-center justify-center gap-1.5"><i class="fa-solid fa-arrow-rotate-left text-[10px]"></i> Đặt Lại</button>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="block-inventory" class="lg:col-span-8 bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden transition-all duration-300">
-            <div id="title-inventory" class="bg-emerald-800 text-white font-bold p-3 text-sm flex items-center justify-between transition-colors duration-300">
-                <span class="flex items-center gap-2"><i class="fa-solid fa-file-invoice"></i> Biên Bản Rà Soát & Kiểm Kê Tài Sản Nhà Máy</span>
-                <button onclick="triggerManualFetch()" class="text-xs bg-white/20 hover:bg-white/30 text-white font-bold px-3 py-1.5 rounded-lg transition-all cursor-pointer"><i class="fa-solid fa-cloud-arrow-down"></i> Đồng Bộ Đám Mây</button>
-            </div>
-            <div class="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 text-xs">
-                <div class="md:col-span-5 space-y-2.5 bg-slate-50 p-3 rounded-xl border border-slate-200 transition-colors duration-300" id="invFormBox">
-                    <input type="text" id="invOrg" value="TỔNG CÔNG TY GIẤY VIỆT NAM" placeholder="Cơ quan chủ quản" class="w-full border border-slate-300 rounded-lg p-2 bg-white">
-                    <input type="text" id="invSubOrg" value="CÔNG TY CP VINAPACO - XƯỞNG SẢN XUẤT" placeholder="Đơn vị trực thuộc" class="w-full border border-slate-300 rounded-lg p-2 bg-white">
-                    <input type="text" id="invLocationDate" value="Phú Thọ, ngày 08 tháng 06 năm 2026" placeholder="Địa danh thời gian" class="w-full border border-slate-300 rounded-lg p-2 bg-white">
-                    <input type="text" id="invTitle" value="BIÊN BẢN KIỂM KÊ HỆ THỐNG MÁY MÓC TÀI SẢN" placeholder="Tiêu đề biên bản" class="w-full border border-slate-300 rounded-lg p-2 font-bold bg-white uppercase">
-                    <textarea id="invMembers" rows="2" placeholder="Hội đồng kiểm kê..." class="w-full border border-slate-300 rounded-lg p-2 bg-white">1. Ông: Nguyễn Văn A - Chức vụ: Quản đốc xưởng&#10;2. Bà: Trần Thị B - Chức vụ: Đại diện phòng kế toán vật tư</textarea>
-                    <textarea id="invContent" rows="1" placeholder="Nội dung rà soát..." class="w-full border border-slate-300 rounded-lg p-2 bg-white">Hội đồng đã tiến hành rà soát, đối chiếu số liệu mã tài sản định kỳ trên toàn bộ hạ tầng kỹ thuật.</textarea>
-                    <textarea id="invConclusion" rows="1" placeholder="Kết luận kiến nghị..." class="w-full border border-slate-300 rounded-lg p-2 bg-white">Mọi thông số trùng khớp. Đề nghị duyệt kinh phí xử lý dứt điểm các thiết bị báo hỏng.</textarea>
-                    <div class="grid grid-cols-2 gap-2 pt-0.5">
-                        <button onclick="previewInventoryReport()" class="w-full py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-lg shadow-xs transition-all cursor-pointer">Xem Trước</button>
-                        <button onclick="printInventoryReport()" class="w-full py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold rounded-lg shadow-sm transition-all cursor-pointer flex items-center justify-center gap-1" id="btn_print_inv">🖨️ Xuất In</button>
-                    </div>
-                </div>
-                <div class="md:col-span-7 border border-slate-300 rounded-xl bg-white p-4 shadow-inner overflow-x-auto custom-scrollbar min-h-[280px]">
-                    <div id="previewContainer" class="bg-white text-black p-1"></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="block-repair" class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden transition-all duration-300">
-        <div id="title-repair" class="bg-purple-700 text-white font-bold p-3 text-sm flex items-center gap-2 transition-colors duration-300">
-            <i class="fa-solid fa-screwdriver-wrench"></i> Nhật Ký Khắc Phục Sự Cố & Bảo Trì Thiết Bị Nhà Máy
+    <section id="block-repair" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden transition-all duration-300">
+        <div id="title-repair" class="bg-slate-800 text-white font-bold p-3 text-sm flex items-center gap-2 transition-colors duration-300">
+            <i class="fa-solid fa-screwdriver-wrench text-slate-400"></i> Nhật Ký Sửa Chữa & Khắc Phục Sự Cố Kỹ Thuật Nhà Máy
         </div>
         <form onsubmit="addRepair(event)" class="p-4 grid grid-cols-1 md:grid-cols-5 gap-3 items-end text-xs border-b border-slate-100 bg-slate-50/50">
             <div>
                 <label class="block font-bold text-slate-500 mb-1">1. Thiết bị gặp sự cố</label>
-                <select id="repairDevice" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-purple-500"></select>
+                <select id="repairDevice" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-blue-500"></select>
             </div>
             <div>
-                <label class="block font-bold text-slate-500 mb-1">2. Hiện trạng hư hỏng (Chi tiết lỗi)</label>
-                <input type="text" id="repairErrorDesc" required placeholder="Ví dụ: Kẹt băng tải cơ khí..." class="w-full border border-slate-300 rounded-lg p-2 focus:outline-purple-500 bg-white">
+                <label class="block font-bold text-red-600 mb-1">⚠️ 2. Hiện trạng hư hỏng (Chi tiết lỗi)</label>
+                <input type="text" id="repairErrorDesc" required placeholder="Ví dụ: Rách băng chuyền tải bột..." class="w-full border border-red-300 rounded-lg p-2 bg-white focus:outline-none focus:border-red-500">
             </div>
             <div>
-                <label class="block font-bold text-slate-500 mb-1">3. Cách khắc phục / Phương án xử lý</label>
-                <input type="text" id="repairSolutionDesc" required placeholder="Ví dụ: Thay ổ bi vòng đệm mới..." class="w-full border border-slate-300 rounded-lg p-2 focus:outline-purple-500 bg-white">
+                <label class="block font-bold text-emerald-700 mb-1">🔧 3. Cách khắc phục / Xử lý</label>
+                <input type="text" id="repairSolutionDesc" required placeholder="Ví dụ: Ép nhiệt khâu nối lại đoạn hư..." class="w-full border border-emerald-300 rounded-lg p-2 bg-white focus:outline-none focus:border-emerald-500">
             </div>
             <div>
-                <label class="block font-bold text-slate-500 mb-1">4. Kỹ thuật phụ trách xử lý</label>
-                <select id="repairUser" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-purple-500">
+                <label class="block font-bold text-slate-500 mb-1">4. Nhân sự phụ trách</label>
+                <select id="repairUser" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-blue-500">
                     <option value="">-- Chọn nhân sự --</option>
                 </select>
             </div>
             <div>
-                <label class="block font-bold text-slate-500 mb-1">5. Chi phí vật tư phát sinh</label>
+                <label class="block font-bold text-slate-500 mb-1">5. Vật tư phát sinh (đ)</label>
                 <div class="flex gap-2">
-                    <input type="number" id="repairCost" required value="0" class="w-full border border-slate-300 rounded-lg p-2 focus:outline-purple-500 bg-white">
-                    <button type="submit" id="btn_repair" class="px-4 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-all cursor-pointer shadow-md whitespace-nowrap">Lưu Nhật Ký</button>
+                    <input type="number" id="repairCost" required value="0" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-blue-500">
+                    <button type="submit" id="btn_repair" class="px-4 bg-slate-800 text-white font-bold rounded-lg hover:bg-slate-900 cursor-pointer shadow-xs whitespace-nowrap">Lưu Nhật Ký</button>
                 </div>
             </div>
         </form>
-        <div class="overflow-x-auto bg-slate-50 text-xs max-h-60 overflow-y-auto custom-scrollbar">
+        <div class="overflow-x-auto bg-slate-50 text-xs max-h-60 custom-scrollbar">
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">
-                        <th class="p-3">Mã Thiết Bị</th>
-                        <th class="p-3 text-rose-700">⚠️ Hiện Trạng Hư Hỏng</th>
-                        <th class="p-3 text-emerald-700">🔧 Biện Pháp Khắc Phục</th>
-                        <th class="p-3">Kỹ Thuật Phụ Trách</th>
-                        <th class="p-3">Vật Tư</th>
-                        <th class="p-3 text-right">Xóa</th>
+                        <th class="p-3 w-28">Mã Tài Sản</th>
+                        <th class="p-3 text-red-700 bg-red-50/40">⚠️ Hiện Trạng Hư Hỏng</th>
+                        <th class="p-3 text-emerald-800 bg-emerald-50/40">🔧 Biện Pháp Khắc Phục / Xử Lý</th>
+                        <th class="p-3">Kỹ Thuật Thực Hiện</th>
+                        <th class="p-3 w-32">Chi Phí Vật Tư</th>
+                        <th class="p-3 text-right w-16">Xóa</th>
                     </tr>
                 </thead>
                 <tbody id="repairTableBody" class="divide-y divide-slate-100"></tbody>
@@ -355,25 +294,50 @@
         </div>
     </section>
 
-    <section id="block-task" class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden transition-all duration-300">
-        <div id="title-task" class="bg-sky-700 text-white font-bold p-3 text-sm flex items-center gap-2 transition-colors duration-300">
-            <i class="fa-solid fa-list-check"></i> Kế Hoạch Phân Công Công Việc Nhà Máy (Realtime Đếm Ngược)
+    <section id="block-inventory" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden transition-all duration-300">
+        <div id="title-inventory" class="bg-slate-800 text-white font-bold p-3 text-sm flex items-center justify-between transition-colors duration-300">
+            <span class="flex items-center gap-2"><i class="fa-solid fa-file-invoice text-slate-400"></i> Biên Bản Rà Soát & Kiểm Kê Tài Sản Nhà Máy Định Kỳ</span>
+            <button onclick="triggerManualFetch()" class="text-xs bg-slate-700 text-white font-bold px-3 py-1.5 rounded-lg hover:bg-slate-600 cursor-pointer"><i class="fa-solid fa-cloud-arrow-down"></i> Đồng Bộ Đám Mây</button>
+        </div>
+        <div class="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 text-xs">
+            <div class="md:col-span-4 space-y-2.5 bg-slate-50 p-3 rounded-xl border border-slate-200" id="invFormBox">
+                <input type="text" id="invOrg" value="TỔNG CÔNG TY GIẤY VIỆT NAM" class="w-full border border-slate-300 rounded-lg p-2 bg-white">
+                <input type="text" id="invSubOrg" value="CÔNG TY CP VINAPACO - XƯỞNG SẢN XUẤT" class="w-full border border-slate-300 rounded-lg p-2 bg-white">
+                <input type="text" id="invLocationDate" value="Phú Thọ, ngày 08 tháng 06 năm 2026" class="w-full border border-slate-300 rounded-lg p-2 bg-white">
+                <input type="text" id="invTitle" value="BIÊN BẢN KIỂM KÊ HỆ THỐNG MÁY MÓC TÀI SẢN" class="w-full border border-slate-300 rounded-lg p-2 font-bold bg-white uppercase">
+                <textarea id="invMembers" rows="2" class="w-full border border-slate-300 rounded-lg p-2 bg-white">1. Ông: Nguyễn Văn A - Chức vụ: Quản đốc xưởng&#10;2. Bà: Trần Thị B - Chức vụ: Đại diện phòng kế toán vật tư</textarea>
+                <textarea id="invContent" rows="1" class="w-full border border-slate-300 rounded-lg p-2 bg-white">Hội đồng đã tiến hành rà soát, đối chiếu số liệu mã tài sản định kỳ trên toàn bộ hạ tầng kỹ thuật.</textarea>
+                <textarea id="invConclusion" rows="1" class="w-full border border-slate-300 rounded-lg p-2 bg-white">Mọi thông số trùng khớp. Đề nghị duyệt kinh phí xử lý dứt điểm các thiết bị báo hỏng.</textarea>
+                <div class="grid grid-cols-2 gap-2 pt-0.5">
+                    <button onclick="previewInventoryReport()" class="w-full py-2 bg-slate-200 text-slate-700 font-bold rounded-lg hover:bg-slate-300 cursor-pointer">Xem Trước</button>
+                    <button onclick="printInventoryReport()" class="w-full py-2 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-bold rounded-lg shadow-xs cursor-pointer flex items-center justify-center gap-1" id="btn_print_inv">🖨️ Xuất In Bản Cứng</button>
+                </div>
+            </div>
+            <div class="md:col-span-8 border border-slate-200 rounded-xl bg-white p-4 shadow-inner overflow-x-auto custom-scrollbar min-h-[250px]">
+                <div id="previewContainer" class="bg-white text-black p-1"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="block-task" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden transition-all duration-300">
+        <div id="title-task" class="bg-slate-800 text-white font-bold p-3 text-sm flex items-center gap-2 transition-colors duration-300">
+            <i class="fa-solid fa-list-check text-slate-400"></i> Kế Hoạch Phân Công Công Việc Nhà Máy (Đếm Ngược Thời Gian Thực)
         </div>
         <form onsubmit="addTask(event)" class="p-4 space-y-3 text-xs border-b border-slate-100 bg-slate-50/50">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
                     <label class="block font-bold text-slate-500 mb-1">Nội dung hạng mục công việc</label>
-                    <input type="text" id="taskName" required placeholder="Nhập tên việc cần điều phối..." class="w-full border border-slate-300 rounded-lg p-2 focus:outline-sky-500 bg-white">
+                    <input type="text" id="taskName" required placeholder="Nhập tên việc cần phân công..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-blue-500">
                 </div>
                 <div>
                     <label class="block font-bold text-slate-500 mb-1">Liên kết tài sản thiết bị</label>
-                    <select id="taskDevice" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-sky-500">
+                    <select id="taskDevice" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-blue-500">
                         <option value="Không có">-- Không liên kết thiết bị --</option>
                     </select>
                 </div>
                 <div>
                     <label class="block font-bold text-slate-500 mb-1">Nhân sự thực hiện chính</label>
-                    <select id="taskUser" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-sky-500">
+                    <select id="taskUser" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-blue-500">
                         <option value="Chưa giao">-- Chưa giao nhân sự --</option>
                     </select>
                 </div>
@@ -381,26 +345,26 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
                 <div>
                     <label class="block font-bold text-slate-500 mb-1">Mức độ khẩn cấp</label>
-                    <select id="taskPriority" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-sky-500">
-                        <option value="🟢 Thấp">🟢 Thấp</option>
-                        <option value="🟡 Trung bình" selected>🟡 Trung bình</option>
-                        <option value="🔴 Cao">🔴 Cao</option>
+                    <select id="taskPriority" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-blue-500">
+                        <option value="Thấp">🟢 Thấp</option>
+                        <option value="Trung bình" selected>🟡 Trung bình</option>
+                        <option value="Cao">🔴 Cao</option>
                     </select>
                 </div>
                 <div>
                     <label class="block font-bold text-slate-500 mb-1">Giờ bắt đầu làm việc</label>
-                    <input type="time" id="taskTimeStart" required class="w-full border border-slate-300 rounded-lg p-2 focus:outline-sky-500 bg-white">
+                    <input type="time" id="taskTimeStart" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-blue-500">
                 </div>
                 <div>
                     <label class="block font-bold text-slate-500 mb-1">Thời lượng kế hoạch (phút)</label>
                     <div class="flex gap-2">
-                        <input type="number" id="taskDuration" value="30" class="w-full border border-slate-300 rounded-lg p-2 focus:outline-sky-500 bg-white">
-                        <button type="submit" id="btn_task" class="px-5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-lg transition-all cursor-pointer shadow-md whitespace-nowrap">Lưu Kế Hoạch</button>
+                        <input type="number" id="taskDuration" value="30" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-blue-500">
+                        <button type="submit" id="btn_task" class="px-5 bg-slate-800 text-white font-bold rounded-lg hover:bg-slate-900 cursor-pointer shadow-xs whitespace-nowrap">Lưu</button>
                     </div>
                 </div>
             </div>
         </form>
-        <div class="overflow-x-auto bg-slate-50 text-xs max-h-60 overflow-y-auto custom-scrollbar">
+        <div class="overflow-x-auto bg-slate-50 text-xs max-h-60 custom-scrollbar">
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">
@@ -428,22 +392,22 @@
     </div>
 
     <div id="loginModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50 p-4 text-xs">
-        <div class="bg-white p-5 rounded-xl w-full max-w-sm shadow-2xl space-y-4">
-            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5 border-b pb-2">🔒 Đăng Nhập Hệ Thống</h3>
+        <div class="bg-white p-5 rounded-xl w-full max-w-sm shadow-xl space-y-4">
+            <h3 class="text-sm font-bold text-slate-800 border-b pb-2">🔒 Đăng Nhập Hệ Thống</h3>
             <form onsubmit="submitLoginAdmin(event)" class="space-y-4">
-                <input type="text" id="loginUser" required placeholder="Tên tài khoản..." class="w-full border p-2.5 rounded-lg bg-white focus:outline-blue-500">
-                <input type="password" id="loginPass" required placeholder="Mật khẩu..." class="w-full border p-2.5 rounded-lg bg-white focus:outline-blue-500">
+                <input type="text" id="loginUser" required placeholder="Tài khoản..." class="w-full border p-2.5 rounded-lg bg-white">
+                <input type="password" id="loginPass" required placeholder="Mật khẩu..." class="w-full border p-2.5 rounded-lg bg-white">
                 <div class="flex gap-2">
-                    <button type="button" onclick="closeLoginModal()" class="w-1/2 p-2.5 bg-slate-100 font-bold rounded-lg cursor-pointer hover:bg-slate-200 transition-all">Hủy</button>
-                    <button type="submit" class="w-1/2 p-2.5 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded-lg cursor-pointer transition-all shadow-md">Xác Nhận</button>
+                    <button type="button" onclick="closeLoginModal()" class="w-1/2 p-2.5 bg-slate-100 font-bold rounded-lg cursor-pointer">Hủy</button>
+                    <button type="submit" class="w-1/2 p-2.5 bg-slate-800 text-white font-bold rounded-lg cursor-pointer">Xác Nhận</button>
                 </div>
             </form>
         </div>
     </div>
 
     <div id="setupModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50 p-4 text-xs">
-        <div class="bg-white p-5 rounded-xl w-full max-w-sm shadow-2xl space-y-4">
-            <h3 class="text-sm font-bold text-purple-800 border-b pb-2">⚙️ Cấu Hình Quyền Truy Cập</h3>
+        <div class="bg-white p-5 rounded-xl w-full max-w-sm shadow-xl space-y-4">
+            <h3 class="text-sm font-bold text-slate-800 border-b pb-2">⚙️ Cấu Hình Quyền Truy Cập</h3>
             <div class="space-y-2">
                 <div class="grid grid-cols-2 gap-2">
                     <input type="text" id="newAdminUser" class="border p-2 rounded bg-white" placeholder="Mã Admin">
@@ -453,16 +417,16 @@
                     <input type="text" id="newUserSub" class="border p-2 rounded bg-white" placeholder="Mã Nhân Viên">
                     <input type="text" id="newUserPassSub" class="border p-2 rounded bg-white" placeholder="Mật Khẩu NV">
                 </div>
-                <div class="space-y-1 bg-purple-50 p-2.5 rounded-lg border">
+                <div class="space-y-1 bg-slate-50 p-2.5 rounded-lg border">
                     <label class="flex items-center gap-2"><input type="checkbox" id="rightDept" checked> Quyền Phòng Ban</label>
                     <label class="flex items-center gap-2"><input type="checkbox" id="rightDevice" checked> Quyền Thiết Bị</label>
                     <label class="flex items-center gap-2"><input type="checkbox" id="rightAction" checked> Quyền Điều Hành</label>
                 </div>
-                <input type="password" id="confirmCurrentPass" placeholder="Xác nhận mật khẩu Admin hiện tại..." class="w-full border p-2.5 rounded-lg border-rose-300 bg-white">
+                <input type="password" id="confirmCurrentPass" placeholder="Xác nhận mật khẩu Admin hiện tại..." class="w-full border p-2.5 rounded-lg border-red-300 bg-white">
             </div>
             <div class="flex gap-2">
-                <button onclick="closeSetupModal()" class="w-1/2 p-2.5 bg-slate-100 font-bold rounded-lg cursor-pointer hover:bg-slate-200 transition-all">Đóng</button>
-                <button onclick="submitSaveAdminConfig()" class="w-1/2 p-2.5 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-lg cursor-pointer transition-all shadow-md">Cập Nhật</button>
+                <button onclick="closeSetupModal()" class="w-1/2 p-2.5 bg-slate-100 font-bold rounded-lg cursor-pointer">Đóng</button>
+                <button onclick="submitSaveAdminConfig()" class="w-1/2 p-2.5 bg-slate-800 text-white font-bold rounded-lg cursor-pointer">Cập Nhật</button>
             </div>
         </div>
     </div>
@@ -485,9 +449,8 @@
         let timerInterval, isRunning = false, isWorkingMode = true, timeLeft = 25 * 60;
         let accountConfig = { admin_user: "admin", admin_pass: "vinapaco2026", sub_user: "user1", sub_pass: "123456", sub_rights: { dept: true, device: true, action: true } };
         let currentRole = "guest", currentLoggedUser = "";
-        let selectedUserDeptTab = "all"; 
 
-        // Kho tàng ca dao tục ngữ thành ngữ Việt Nam phong phú về lao động, sản xuất, rèn luyện nghệ nghiệp
+        // Kho tàng ca dao tục ngữ thành ngữ Việt Nam phong phú nhất
         const vietnameseProverbs = [
             "\"Muốn lành nghề phải bền gan, chăm làm lụng mới nên cơ đồ.\"",
             "\"Tay làm hàm nhai, tay quai miệng trễ - Có làm thì mới có ăn.\"",
@@ -497,7 +460,10 @@
             "\"Năng nhặt chặt bị, tích tiểu thành đại, tiết kiệm vật tư làm giàu nhà máy.\"",
             "\"Một cây làm chẳng nên non, ba cây chụm lại nên hòn núi cao.\"",
             "\"Lửa thử vàng gian nan thử sức, kỷ luật lao động tạo dựng thành công.\"",
-            "\"Đi một ngày đàng học một sàng khôn, nâng cao tay nghề vững bước tương lai.\""
+            "\"Đi một ngày đàng học một sàng khôn, nâng cao tay nghề vững bước tương lai.\"",
+            "\"Tháng Chạp là tháng trồng khoai, tháng Giêng trồng đậu, tháng Hai trồng cà - Luân canh sản xuất.\"",
+            "\"Ăn quả nhớ kẻ trồng cây, uống nước nhớ nguồn - Tôn trọng giá trị lao động.\"",
+            "\"Hòn đất mà biết gọi xe, thì ta cũng biết đem tre đan gùi - Sáng tạo cải tiến kỹ thuật.\""
         ];
 
         function initMiniCalendar() {
@@ -518,13 +484,13 @@
             const selector = document.getElementById('themeSelectorBox');
             
             body.className = "text-slate-800 font-sans min-h-screen p-4 md:p-6 space-y-6 transition-colors duration-300 ";
-            header.className = "rounded-2xl shadow-md border p-6 relative overflow-hidden transition-all duration-300 ";
+            header.className = "rounded-2xl shadow-sm border p-6 relative overflow-hidden transition-all duration-300 ";
             mainTitle.className = "text-xl md:text-2xl font-black tracking-tight transition-all duration-300 mt-0.5 ";
-            selector.className = "p-1.5 bg-slate-50 rounded-xl flex items-center gap-2 border border-slate-200 text-xs shadow-inner transition-colors duration-300";
+            selector.className = "p-1 bg-slate-100 rounded-xl flex items-center gap-1 border border-slate-200 text-xs shadow-inner transition-colors duration-300";
 
             ['default', 'modern', 'minimal', 'luxury'].forEach(t => {
                 const btn = document.getElementById(`themeBtn-${t}`);
-                if(btn) btn.className = "px-3 py-1.5 rounded-lg font-bold border cursor-pointer bg-white text-slate-700 border-slate-300 hover:bg-slate-100 shadow-xs transition-all";
+                if(btn) btn.className = "px-2.5 py-1.5 rounded-lg font-bold border cursor-pointer bg-white text-slate-700 border-slate-200 hover:bg-slate-50 transition-all text-xs";
             });
             
             const scrollContainers = document.querySelectorAll('.custom-scrollbar');
@@ -532,33 +498,31 @@
 
             if(themeName === 'modern') {
                 body.className += "bg-slate-900 text-slate-100";
-                header.className += "bg-slate-800 border-slate-700 shadow-lg";
-                topBar.className = "absolute inset-x-0 top-0 h-1.5 bg-cyan-500 transition-colors duration-300";
+                header.className += "bg-slate-800 border-slate-700 shadow-md";
+                topBar.className = "absolute inset-x-0 top-0 h-1 bg-cyan-500 transition-colors duration-300";
                 mainTitle.className += "text-white";
-                document.getElementById('themeBtn-modern').className = "px-3 py-1.5 rounded-lg font-bold border cursor-pointer bg-cyan-500 text-white border-cyan-600 shadow-sm";
+                document.getElementById('themeBtn-modern').className = "px-2.5 py-1.5 rounded-lg font-bold border cursor-pointer bg-cyan-600 text-white border-cyan-700 shadow-xs text-xs";
                 scrollContainers.forEach(c => c.classList.add('dark-scrollbar'));
             } else if(themeName === 'minimal') {
                 body.className += "bg-zinc-50 text-zinc-900";
                 header.className += "bg-white border-zinc-200 shadow-none rounded-none";
-                topBar.className = "absolute inset-x-0 top-0 h-1.5 bg-zinc-900 transition-colors duration-300";
-                mainTitle.className += "text-zinc-900";
-                document.getElementById('themeBtn-minimal').className = "px-3 py-1.5 rounded-lg font-bold border cursor-pointer bg-zinc-900 text-white border-zinc-950 shadow-sm";
+                topBar.className = "absolute inset-x-0 top-0 h-1 bg-zinc-950 transition-colors duration-300";
+                mainTitle.className += "text-zinc-950";
+                document.getElementById('themeBtn-minimal').className = "px-2.5 py-1.5 rounded-lg font-bold border cursor-pointer bg-zinc-950 text-white border-zinc-950 shadow-xs text-xs";
             } else if(themeName === 'luxury') {
                 body.className += "bg-stone-950 text-stone-200";
-                header.className += "bg-stone-900 border-amber-600/20 shadow-2xl";
-                selector.className = "p-1.5 bg-stone-950 rounded-xl flex items-center gap-2 border border-amber-600/30 text-xs shadow-inner transition-colors duration-300 text-amber-500";
-                topBar.className = "absolute inset-x-0 top-0 h-1.5 bg-amber-500 transition-colors duration-300";
-                
+                header.className += "bg-stone-900 border-amber-600/20 shadow-xl";
+                selector.className = "p-1 bg-stone-950 rounded-xl flex items-center gap-1 border border-amber-600/20 text-xs shadow-inner transition-colors duration-300 text-amber-500";
+                topBar.className = "absolute inset-x-0 top-0 h-1 bg-amber-500 transition-colors duration-300";
                 mainTitle.className += "text-amber-500 luxury-glow";
-                
-                document.getElementById('themeBtn-luxury').className = "px-3 py-1.5 rounded-lg font-bold border cursor-pointer bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 border-amber-500 shadow-md";
+                document.getElementById('themeBtn-luxury').className = "px-2.5 py-1.5 rounded-lg font-bold border cursor-pointer bg-gradient-to-r from-amber-500 to-amber-600 text-stone-950 border-amber-500 shadow-xs text-xs";
                 scrollContainers.forEach(c => c.classList.add('dark-scrollbar'));
             } else { 
                 body.className += "bg-slate-100 text-slate-800";
                 header.className += "bg-white border-slate-200";
-                topBar.className = "absolute inset-x-0 top-0 h-1.5 bg-blue-700 transition-colors duration-300";
+                topBar.className = "absolute inset-x-0 top-0 h-1 bg-blue-700 transition-colors duration-300";
                 mainTitle.className += "text-slate-900";
-                document.getElementById('themeBtn-default').className = "px-3 py-1.5 rounded-lg font-bold border cursor-pointer bg-blue-700 text-white border-blue-800 shadow-sm";
+                document.getElementById('themeBtn-default').className = "px-2.5 py-1.5 rounded-lg font-bold border cursor-pointer bg-blue-700 text-white border-blue-800 shadow-xs text-xs";
             }
             localStorage.setItem('vinapaco_app_theme', themeName);
         }
@@ -609,7 +573,7 @@
 
         window.triggerManualFetch = function() {
             fetchCloudData();
-            alert("🔄 Đồng bộ thành công!");
+            alert("🔄 Đồng bộ hoàn tất thành công!");
         }
 
         function pushDataToCloud() {
@@ -619,7 +583,7 @@
 
         function autoGenDeviceId() {
             if(document.getElementById('editDeviceId').value !== "") return; 
-            let maxNum = 67147;
+            let maxNum = 70000;
             devices.forEach(d => {
                 if(d.id && d.id.startsWith("TB-")) {
                     const num = parseInt(d.id.substring(3));
@@ -632,7 +596,7 @@
         window.openLoginModal = function() {
             if(currentRole !== "guest") {
                 currentRole = "guest"; currentLoggedUser = "";
-                document.getElementById('btnLoginText').innerHTML = `<i class="fa-solid fa-lock text-[10px]"></i> Đăng Nhập Hệ Thống`;
+                document.getElementById('btnLoginText').innerHTML = `<i class="fa-solid fa-lock text-[10px] text-slate-400"></i> Đăng Nhập`;
                 renderAllTables();
             } else { 
                 document.getElementById('loginModal').classList.remove('hidden');
@@ -648,22 +612,22 @@
             const u = document.getElementById('loginUser').value.trim(), p = document.getElementById('loginPass').value;
             if(u === accountConfig.admin_user && p === accountConfig.admin_pass) {
                 currentRole = "admin"; currentLoggedUser = u; closeLoginModal(); renderAllTables();
-                document.getElementById('btnLoginText').innerHTML = `<i class="fa-solid fa-lock-open text-[10px]"></i> Đăng Xuất (${u})`;
+                document.getElementById('btnLoginText').innerHTML = `<i class="fa-solid fa-lock-open text-[10px] text-slate-400"></i> Đăng Xuất (${u})`;
             } else if(u === accountConfig.sub_user && p === accountConfig.sub_pass) {
                 currentRole = "subuser"; currentLoggedUser = u; closeLoginModal(); renderAllTables();
-                document.getElementById('btnLoginText').innerHTML = `<i class="fa-solid fa-lock-open text-[10px]"></i> Đăng Xuất (${u})`;
-            } else { alert("Sai tài khoản/mật khẩu!"); }
+                document.getElementById('btnLoginText').innerHTML = `<i class="fa-solid fa-lock-open text-[10px] text-slate-400"></i> Đăng Xuất (${u})`;
+            } else { alert("Tài khoản hoặc mật khẩu không chính xác!"); }
         }
 
         window.closeSetupModal = function() { document.getElementById('setupModal').classList.add('hidden'); }
         window.openSetupModal = function() {
-            if(currentRole !== "admin") return alert("Yêu cầu quyền Tài khoản quản trị cao nhất!");
+            if(currentRole !== "admin") return alert("Yêu cầu quyền Quản trị viên cao nhất!");
             document.getElementById('setupModal').classList.remove('hidden');
         }
 
         window.submitSaveAdminConfig = function() {
             const confirmPass = document.getElementById('confirmCurrentPass').value;
-            if(confirmPass !== accountConfig.admin_pass) return alert("Mật khẩu xác nhận không đúng!");
+            if(confirmPass !== accountConfig.admin_pass) return alert("Xác thực mật khẩu quản trị cấp cao thất bại!");
             const nu = document.getElementById('newAdminUser').value.trim(), np = document.getElementById('newAdminPass').value;
             const nsu = document.getElementById('newUserSub').value.trim(), nsp = document.getElementById('newUserPassSub').value;
             
@@ -674,7 +638,7 @@
             accountConfig.sub_rights.device = document.getElementById('rightDevice').checked;
             accountConfig.sub_rights.action = document.getElementById('rightAction').checked;
             
-            pushDataToCloud(); closeSetupModal(); alert("Cấu hình thành công!");
+            pushDataToCloud(); closeSetupModal(); alert("Cấu hình tài khoản thành công!");
         }
 
         function hasRight(type) {
@@ -683,7 +647,7 @@
             return false;
         }
 
-        // CHU KỲ LAO ĐỘNG TẬP TRUNG
+        // CHU KỲ TẬP TRUNG (LOẠI BỎ CHỮ TIẾNG ANH THỪA)
         window.togglePomo = function() {
             if(isRunning) {
                 clearInterval(timerInterval); 
@@ -694,8 +658,7 @@
                     if(timeLeft <= 0) {
                         isWorkingMode = !isWorkingMode;
                         timeLeft = (isWorkingMode ? parseInt(document.getElementById('pomoWork').value) : parseInt(document.getElementById('pomoBreak').value)) * 60;
-                        document.getElementById('pomoLabel').innerText = isWorkingMode ? "ĐANG LÀM VIỆC 🎯" : "GIỜ NGHỈ NGƠI ☕";
-                        document.getElementById('pomoIllustration').innerText = isWorkingMode ? "🎯" : "☕";
+                        document.getElementById('pomoLabel').innerText = isWorkingMode ? "ĐANG LAO ĐỘNG 🎯" : "GIỜ NGHỈ NGƠI ☕";
                         document.getElementById('pomoProverb').innerText = vietnameseProverbs[Math.floor(Math.random() * vietnameseProverbs.length)];
                     }
                     document.getElementById('pomoDisplay').innerText = `${String(Math.floor(timeLeft / 60)).padStart(2, '0')}:${String(timeLeft % 60).padStart(2, '0')}`;
@@ -709,12 +672,11 @@
             clearInterval(timerInterval); isRunning = false; isWorkingMode = true;
             timeLeft = parseInt(document.getElementById('pomoWork').value) * 60;
             document.getElementById('btnStartPomo').innerHTML = `<i class="fa-solid fa-play text-[10px]"></i> Kích Hoạt`;
-            document.getElementById('pomoLabel').innerText = "ĐANG LÀM VIỆC 🎯";
-            document.getElementById('pomoIllustration').innerText = "🎯";
+            document.getElementById('pomoLabel').innerText = "ĐANG LAO ĐỘNG 🎯";
             document.getElementById('pomoDisplay').innerText = `${String(document.getElementById('pomoWork').value).padStart(2, '0')}:00`;
         }
 
-        // PHẦN BIÊN BẢN KIỂM KÊ VÀ PHÁP LÝ IN ẤN
+        // BIÊN BẢN KIỂM KÊ VÀ PHÁP LÝ IN ẤN
         function generateInventoryHTML() {
             const org = document.getElementById('invOrg').value, subOrg = document.getElementById('invSubOrg').value, locDate = document.getElementById('invLocationDate').value, title = document.getElementById('invTitle').value;
             const members = document.getElementById('invMembers').value.replace(/\n/g, '<br>'), content = document.getElementById('invContent').value.replace(/\n/g, '<br>'), conclusion = document.getElementById('invConclusion').value.replace(/\n/g, '<br>');
@@ -727,37 +689,14 @@
         window.previewInventoryReport = function() { document.getElementById('previewContainer').innerHTML = generateInventoryHTML(); }
         window.printInventoryReport = function() { document.getElementById('printInventoryZone').innerHTML = generateInventoryHTML(); window.print(); }
 
-        // BỘ LỌC PHÒNG BAN CHO NHÂN SỰ
-        window.filterUserList = function(deptName) {
-            selectedUserDeptTab = deptName;
-            
-            const mainTab = document.getElementById('tabUser-all');
-            if(deptName === 'all') {
-                mainTab.className = "px-3 py-1.5 font-bold text-xs rounded-t-lg bg-white border-x border-t border-slate-200 text-emerald-700 cursor-pointer whitespace-nowrap";
-            } else {
-                mainTab.className = "px-3 py-1.5 font-bold text-xs rounded-t-lg text-slate-500 hover:text-slate-800 cursor-pointer whitespace-nowrap";
-            }
-            
-            depts.forEach(d => {
-                const btn = document.getElementById(`tabUserDept-${d.id}`);
-                if(!btn) return;
-                if(d.name === deptName) {
-                    btn.className = "px-3 py-1.5 font-bold text-xs rounded-t-lg bg-white border-x border-t border-slate-200 text-emerald-700 cursor-pointer whitespace-nowrap";
-                } else {
-                    btn.className = "px-3 py-1.5 font-bold text-xs rounded-t-lg text-slate-500 hover:text-slate-700 cursor-pointer whitespace-nowrap";
-                }
-            });
-            renderUserTableOnly();
-        }
-
-        // --- QUẢN LÝ PHÒNG BAN ---
+        // PHÒNG BAN
         window.handleDeptSubmit = function(e) {
-            e.preventDefault(); if(!hasRight('dept')) return alert("Từ chối xử lý phân quyền!");
+            e.preventDefault(); if(!hasRight('dept')) return alert("Không đủ quyền hạn cấu hình!");
             const name = document.getElementById('deptName').value.trim();
             const editId = document.getElementById('editDeptId').value;
             
             const isDuplicate = depts.some(d => d.id !== editId && d.name.toLowerCase().replace(/\s+/g, '') === name.toLowerCase().replace(/\s+/g, ''));
-            if(isDuplicate) return alert(`⚠️ Tên đơn vị này đã tồn tại!`);
+            if(isDuplicate) return alert(`Đơn vị này đã có sẵn trong cơ sở dữ liệu!`);
 
             if(editId) {
                 const target = depts.find(d => d.id === editId);
@@ -769,12 +708,12 @@
         }
 
         window.startEditDept = function(id) {
-            if(!hasRight('dept')) return alert("Từ chối xử lý phân quyền!");
+            if(!hasRight('dept')) return alert("Không đủ quyền hạn cấu hình!");
             const target = depts.find(d => d.id === id);
             if(target) {
                 document.getElementById('editDeptId').value = target.id;
                 document.getElementById('deptName').value = target.name;
-                document.getElementById('btn_dept').innerText = "Cập nhật";
+                document.getElementById('btn_dept').innerText = "Sửa";
                 document.getElementById('btn_cancel_dept').classList.remove('hidden');
             }
         }
@@ -782,11 +721,11 @@
         window.cancelEditDept = function() {
             document.getElementById('editDeptId').value = "";
             document.getElementById('deptName').value = "";
-            document.getElementById('btn_dept').innerText = "Thêm Đơn Vị";
+            document.getElementById('btn_dept').innerText = "Thêm";
             document.getElementById('btn_cancel_dept').classList.add('hidden');
         }
 
-        // --- QUẢN LÝ HỒ SƠ NHÂN SỰ ---
+        // NHÂN SỰ
         window.handleUserSubmit = function(e) {
             e.preventDefault();
             const name = document.getElementById('userName').value.trim();
@@ -810,7 +749,7 @@
                 document.getElementById('userName').value = target.name;
                 document.getElementById('userTitle').value = target.title;
                 document.getElementById('userDept').value = target.dept;
-                document.getElementById('btn_user').innerText = "Cập Nhật Lại";
+                document.getElementById('btn_user').innerText = "Cập Nhật";
                 document.getElementById('btn_cancel_user').classList.remove('hidden');
             }
         }
@@ -824,9 +763,9 @@
             document.getElementById('btn_cancel_user').classList.add('hidden');
         }
 
-        // --- QUẢN LÝ THIẾT BỊ ---
+        // THIẾT BỊ
         window.handleDeviceSubmit = function(e) {
-            e.preventDefault(); if(!hasRight('device')) return alert("Từ chối xử lý phân quyền!");
+            e.preventDefault(); if(!hasRight('device')) return alert("Không đủ quyền hạn cấu hình!");
             const id = document.getElementById('deviceId').value;
             const name = document.getElementById('deviceName').value.trim();
             const cat = document.getElementById('deviceCategory').value;
@@ -843,7 +782,7 @@
         }
 
         window.startEditDevice = function(id) {
-            if(!hasRight('device')) return alert("Từ chối xử lý phân quyền!");
+            if(!hasRight('device')) return alert("Không đủ quyền hạn cấu hình!");
             const target = devices.find(d => d.id === id);
             if(target) {
                 document.getElementById('editDeviceId').value = target.id;
@@ -866,9 +805,9 @@
             autoGenDeviceId();
         }
 
-        // --- HỒ SƠ SỬA CHỮA & CÔNG VIỆC ---
+        // NHẬT KÝ SỬA CHỮA
         window.addRepair = function(e) {
-            e.preventDefault(); if(!hasRight('action')) return alert("Từ chối xử lý phân quyền!");
+            e.preventDefault(); if(!hasRight('action')) return alert("Từ chối thực thi do phân quyền!");
             const devId = document.getElementById('repairDevice').value;
             const errorDesc = document.getElementById('repairErrorDesc').value.trim();
             const solutionDesc = document.getElementById('repairSolutionDesc').value.trim();
@@ -886,7 +825,7 @@
         }
 
         window.addTask = function(e) {
-            e.preventDefault(); if(!hasRight('action')) return alert("Từ chối xử lý phân quyền!");
+            e.preventDefault(); if(!hasRight('action')) return alert("Từ chối thực thi do phân quyền!");
             const name = document.getElementById('taskName').value.trim(), device = document.getElementById('taskDevice').value, user = document.getElementById('taskUser').value, priority = document.getElementById('taskPriority').value, start = document.getElementById('taskTimeStart').value, duration = parseInt(document.getElementById('taskDuration').value) || 30;
             
             tasks.push({ id: Date.now().toString(), name, device, user, priority, start, duration, status: "Chưa hoàn thành" });
@@ -895,13 +834,13 @@
         }
 
         window.toggleTaskStatus = function(id) {
-            if(!hasRight('action')) return alert("Từ chối xử lý phân quyền!");
+            if(!hasRight('action')) return alert("Từ chối thực thi do phân quyền!");
             const t = tasks.find(task => task.id === id);
             if(t) { t.status = (t.status === "Chưa hoàn thành") ? "Đã hoàn thành" : "Chưa hoàn thành"; pushDataToCloud(); }
         }
 
         window.deleteItem = function(type, id) {
-            if(currentRole !== "admin") return alert("🛡️ Thao tác yêu cầu quyền quản trị viên cao nhất!");
+            if(currentRole !== "admin") return alert("Yêu cầu tài khoản quản trị tối cao!");
             if(confirm("Xác nhận gỡ bỏ bản ghi dữ liệu này hoàn toàn?")) {
                 if(type === 'dept') depts = depts.filter(item => item.id !== id);
                 if(type === 'user') users = users.filter(item => item.id !== id);
@@ -913,7 +852,7 @@
         }
 
         window.changeDeviceStatus = function(id) {
-            if(!hasRight('device')) return alert("Từ chối phân quyền!");
+            if(!hasRight('device')) return alert("Từ chối thao tác!");
             const dev = devices.find(d => d.id === id);
             if(dev) { dev.status = (dev.status === "Hoạt động tốt") ? "Đang hỏng" : "Hoạt động tốt"; pushDataToCloud(); }
         }
@@ -933,7 +872,7 @@
             const currentRDev = rDev.value;
             const currentRUser = rUser.value;
 
-            uDept.innerHTML = '<option value="">-- Chọn Đơn Vị --</option>'; 
+            uDept.innerHTML = '<option value="">-- Chọn đơn vị --</option>'; 
             dDept.innerHTML = '<option value="">-- Chọn phòng ban phụ trách --</option>'; 
             rDev.innerHTML = '<option value="">-- Chọn thiết bị sự cố --</option>'; 
             tDev.innerHTML = '<option value="Không có">-- Không liên kết thiết bị --</option>'; 
@@ -972,75 +911,101 @@
             });
 
             filteredDevices.forEach(d => {
-                const statusColor = d.status === "Hoạt động tốt" ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800";
+                const statusColor = d.status === "Hoạt động tốt" ? "bg-slate-100 text-slate-700" : "bg-red-100 text-red-700";
                 dtbBody.innerHTML += `<tr class="border-b text-slate-700 hover:bg-slate-50 transition-colors">
-                    <td class="p-2.5 pl-4 font-mono text-orange-600 font-bold">${d.id}<span class="block text-slate-800 font-sans font-medium text-xs">${d.name}</span></td>
-                    <td class="p-2"><span class="block text-[10px] text-slate-400 font-bold uppercase">${d.dept}</span><button onclick="changeDeviceStatus('${d.id}')" class="mt-1 px-1.5 py-0.5 rounded text-[10px] font-bold cursor-pointer ${statusColor}">${d.status}</button></td>
+                    <td class="p-2.5 pl-4 font-mono font-bold text-slate-900">${d.id}<span class="block text-slate-500 font-sans font-medium text-xs">${d.name}</span></td>
+                    <td class="p-2.5 font-medium text-slate-500">${d.dept}</td>
+                    <td class="p-2.5 text-center"><button onclick="changeDeviceStatus('${d.id}')" class="px-2 py-0.5 rounded text-[11px] font-bold cursor-pointer ${statusColor}">${d.status === 'Hoạt động tốt' ? '🟢 Tốt' : '🔴 Hỏng'}</button></td>
                     <td class="p-2.5 text-right pr-4 space-x-2">
-                        <button onclick="printDeviceQR('${d.id}')" class="text-blue-600 hover:text-blue-800 font-bold text-xs cursor-pointer">🖨️ QR</button>
-                        <button onclick="startEditDevice('${d.id}')" class="text-amber-600 hover:text-amber-800 font-bold text-xs cursor-pointer">📝 Sửa</button>
-                        <button onclick="deleteItem('device','${d.id}')" class="text-rose-600 hover:text-rose-800 font-bold cursor-pointer">🗑️</button>
+                        <button onclick="printDeviceQR('${d.id}')" class="text-slate-600 font-bold hover:underline cursor-pointer">QR</button>
+                        <button onclick="startEditDevice('${d.id}')" class="text-slate-600 font-bold hover:underline cursor-pointer">Sửa</button>
+                        <button onclick="deleteItem('device','${d.id}')" class="text-slate-400 hover:text-red-600 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
                     </td>
                 </tr>`;
             });
-            if(!filteredDevices.length) dtbBody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 italic">Không tìm thấy tài sản phù hợp</td></tr>`;
             document.getElementById('count-device').innerText = `${devices.length} tài sản`;
         }
 
-        window.renderUserTableOnly = function() {
-            const utb = document.getElementById('userTableBody'); utb.innerHTML = '';
-            
-            let filteredUsers = users.filter(u => {
-                return (selectedUserDeptTab === 'all') || (u.dept === selectedUserDeptTab);
-            });
+        // BIẾN ĐỔI TOÀN DIỆN SƠ ĐỒ NHÂN SỰ DẠNG THẺ (DỄ BAO QUÁT 100%)
+        window.renderUserLayoutAllScene = function() {
+            const gridContainer = document.getElementById('fullViewUserGrid');
+            gridContainer.innerHTML = '';
 
-            filteredUsers.forEach(u => {
-                utb.innerHTML += `<tr class="border-b text-slate-700 hover:bg-slate-50 transition-colors">
-                    <td class="p-2.5 pl-4 font-medium text-slate-900">${u.name}<span class="block text-[10px] text-slate-400 font-normal">${u.title}</span></td>
-                    <td class="p-2.5 text-slate-500 font-semibold text-xs">${u.dept}</td>
-                    <td class="p-2.5 text-right pr-4 space-x-3">
-                        <button onclick="startEditUser('${u.id}')" class="text-amber-600 hover:text-amber-800 font-bold text-xs cursor-pointer">📝 Sửa</button>
-                        <button onclick="deleteItem('user','${u.id}')" class="text-rose-600 hover:text-rose-800 font-bold text-xs cursor-pointer">🗑️ Xóa</button>
-                    </td>
-                </tr>`;
+            if(depts.length === 0) {
+                gridContainer.innerHTML = `<div class="col-span-full p-6 text-center text-slate-400 italic">Hệ thống chưa thiết lập cơ cấu đơn vị phòng ban nào.</div>`;
+                return;
+            }
+
+            depts.forEach(d => {
+                const deptUsers = users.filter(u => u.dept === d.name);
+                let userRowsHTML = '';
+
+                deptUsers.forEach(u => {
+                    userRowsHTML += `
+                    <div class="flex items-center justify-between p-2 bg-white rounded-lg border border-slate-200/80 shadow-2xs group">
+                        <div>
+                            <span class="block font-bold text-slate-900 text-xs">${u.name}</span>
+                            <span class="block text-[10px] text-slate-400 font-medium">${u.title}</span>
+                        </div>
+                        <div class="flex gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
+                            <button onclick="startEditUser('${u.id}')" class="text-slate-500 hover:text-blue-600 cursor-pointer"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                            <button onclick="deleteItem('user','${u.id}')" class="text-slate-400 hover:text-red-600 cursor-pointer"><i class="fa-solid fa-xmark text-[11px]"></i></button>
+                        </div>
+                    </div>`;
+                });
+
+                if(deptUsers.length === 0) {
+                    userRowsHTML = `<p class="text-[11px] text-slate-400 italic text-center py-2">Trống (Chưa phân nhân sự phụ trách)</p>`;
+                }
+
+                gridContainer.innerHTML += `
+                <div class="bg-slate-100/60 border border-slate-200 rounded-xl p-3 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between border-b border-slate-200 pb-2 mb-2">
+                            <span class="font-extrabold text-slate-800 text-xs tracking-tight uppercase flex items-center gap-1.5">🏢 ${d.name}</span>
+                            <div class="flex items-center gap-1.5 text-[10px]">
+                                <button onclick="startEditDept('${d.id}')" class="text-slate-400 hover:text-slate-700 font-bold">Sửa</button>
+                                <button onclick="deleteItem('dept','${d.id}')" class="text-slate-300 hover:text-red-600"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </div>
+                        <div class="space-y-1.5 max-h-48 overflow-y-auto custom-scrollbar pr-0.5">
+                            ${userRowsHTML}
+                        </div>
+                    </div>
+                    <div class="mt-2.5 pt-1.5 border-t border-slate-200/60 text-right">
+                        <span class="text-[10px] font-bold text-slate-400 font-mono">Tổng: ${deptUsers.length} người</span>
+                    </div>
+                </div>`;
             });
-            if(!filteredUsers.length) utb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 italic">Chưa ghi nhận hồ sơ nhân sự ở phòng ban này</td></tr>`;
             document.getElementById('count-user').innerText = `${users.length} nhân sự`;
         }
 
         window.renderAllTables = function() {
-            const tabZone = document.getElementById('dynamicDeptTabs'); tabZone.innerHTML = '';
-            depts.forEach(d => {
-                const isActive = (selectedUserDeptTab === d.name);
-                const cls = isActive ? "px-3 py-1.5 font-bold text-xs rounded-t-lg bg-white border-x border-t border-slate-200 text-emerald-700 cursor-pointer whitespace-nowrap" : "px-3 py-1.5 font-bold text-xs rounded-t-lg text-slate-500 hover:text-slate-700 cursor-pointer whitespace-nowrap";
-                tabZone.innerHTML += `<button onclick="filterUserList('${d.name}')" id="tabUserDept-${d.id}" class="${cls}">${d.name} <span class="text-[10px] font-mono text-slate-400 font-normal">(${users.filter(u=>u.dept===d.name).length})</span></button>`;
-            });
-
-            renderUserTableOnly();
+            renderUserLayoutAllScene();
             renderDeviceTableOnly();
 
             const rtb = document.getElementById('repairTableBody'); rtb.innerHTML = '';
             repairs.forEach(r => {
                 rtb.innerHTML += `<tr class="border-b text-slate-700 hover:bg-slate-50">
-                    <td class="p-3 font-mono font-bold text-orange-600">${r.devId}</td>
-                    <td class="p-3 font-medium text-rose-600">${r.errorDesc || '---'}</td>
-                    <td class="p-3 font-medium text-emerald-700">${r.solutionDesc || '---'}</td>
-                    <td class="p-3 text-slate-500">${r.user}</td>
-                    <td class="p-3 font-bold text-purple-700">${r.cost.toLocaleString()} đ</td>
-                    <td class="p-3 text-right"><button onclick="deleteItem('repair','${r.id}')" class="text-rose-600 hover:text-rose-800 font-bold cursor-pointer">🗑️</button></td>
+                    <td class="p-3 font-mono font-bold text-slate-900">${r.devId}</td>
+                    <td class="p-3 font-medium text-red-600 bg-red-50/20">${r.errorDesc || '---'}</td>
+                    <td class="p-3 font-medium text-emerald-800 bg-emerald-50/20">${r.solutionDesc || '---'}</td>
+                    <td class="p-3 text-slate-500 font-medium">${r.user}</td>
+                    <td class="p-3 font-bold text-slate-900">${r.cost.toLocaleString()} đ</td>
+                    <td class="p-3 text-right"><button onclick="deleteItem('repair','${r.id}')" class="text-slate-400 hover:text-red-600 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button></td>
                 </tr>`;
             });
-            if(!repairs.length) rtb.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">Chưa ghi nhận tiến trình khắc phục nào</td></tr>`;
+            if(!repairs.length) rtb.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">Hệ thống chưa ghi nhận sự cố mới</td></tr>`;
 
             const ttb = document.getElementById('taskTableBody'); ttb.innerHTML = '';
             tasks.forEach(t => {
                 const isDone = t.status === "Đã hoàn thành";
-                ttb.innerHTML += `<tr class="border-b text-slate-700 hover:bg-slate-50 ${isDone ? 'line-through text-slate-400':''}"><td class="p-3 font-bold">${t.name}</td><td class="p-3 text-slate-500">${t.device}</td><td class="p-3 font-medium">${t.user}</td><td class="p-3 text-xs">${t.priority}</td><td class="p-3 font-mono">${t.start}</td><td class="p-3 font-bold text-blue-600 font-mono" id="cd-${t.id}">---</td><td class="p-3"><button onclick="toggleTaskStatus('${t.id}')" class="px-2 py-0.5 rounded font-bold text-[11px] cursor-pointer shadow-xs ${isDone ? 'bg-emerald-100 text-emerald-800':'bg-amber-100 text-amber-800'}">${t.status}</button></td><td class="p-3 text-right"><button onclick="deleteItem('task','${t.id}')" class="text-rose-600 hover:text-rose-800 font-bold cursor-pointer">🗑️</button></td></tr>`;
+                ttb.innerHTML += `<tr class="border-b text-slate-700 hover:bg-slate-50 ${isDone ? 'line-through text-slate-400':''}"><td class="p-3 font-bold">${t.name}</td><td class="p-3 text-slate-500">${t.device}</td><td class="p-3 font-medium">${t.user}</td><td class="p-3 text-xs">${t.priority}</td><td class="p-3 font-mono">${t.start}</td><td class="p-3 font-bold text-blue-700 font-mono" id="cd-${t.id}">---</td><td class="p-3"><button onclick="toggleTaskStatus('${t.id}')" class="px-2 py-0.5 rounded font-bold text-[11px] cursor-pointer ${isDone ? 'bg-slate-100 text-slate-500':'bg-blue-50 text-blue-700 border border-blue-200'}">${isDone ? 'Hoàn tất' : 'Chưa xong'}</button></td><td class="p-3 text-right"><button onclick="deleteItem('task','${t.id}')" class="text-slate-400 hover:text-red-600 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button></td></tr>`;
             });
-            if(!tasks.length) ttb.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400 italic">Chưa có lịch trình phân công</td></tr>`;
+            if(!tasks.length) ttb.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400 italic">Chưa có kế hoạch phân công điều hành</td></tr>`;
             
             const badge = document.getElementById('adminBadge');
-            if(currentRole !== "guest") { badge.classList.remove('hidden'); badge.innerText = `PHÂN QUYỀN: ${currentRole.toUpperCase()}`; } else { badge.classList.add('hidden'); }
+            if(currentRole !== "guest") { badge.classList.remove('hidden'); badge.innerText = currentRole.toUpperCase(); } else { badge.classList.add('hidden'); }
         }
 
         setInterval(() => {
@@ -1049,12 +1014,12 @@
             tasks.forEach(t => {
                 const zone = document.getElementById(`cd-${t.id}`);
                 if(!zone) return;
-                if(t.status === "Đã hoàn thành") { zone.innerText = "🏁 Hoàn tất"; return; }
+                if(t.status === "Đã hoàn thành") { zone.innerText = "Xong"; return; }
                 const parts = t.start.split(":");
                 const startMins = parseInt(parts[0]) * 60 + parseInt(parts[1]);
-                if(currentMinutes < startMins) zone.innerText = `⏳ Chờ (${startMins - currentMinutes}p)`;
-                else if(currentMinutes <= startMins + t.duration) zone.innerText = `🔥 Tiến hành (${startMins + t.duration - currentMinutes}p)`;
-                else zone.innerText = "❌ Quá hạn";
+                if(currentMinutes < startMins) zone.innerText = `Chờ (${startMins - currentMinutes}p)`;
+                else if(currentMinutes <= startMins + t.duration) zone.innerText = `Chạy (${startMins + t.duration - currentMinutes}p)`;
+                else zone.innerText = "Quá hạn";
             });
         }, 1000);
     </script>
