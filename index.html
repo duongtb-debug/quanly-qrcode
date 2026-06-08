@@ -6,7 +6,7 @@
     <title>Hệ Thống Điều Hành Kỹ Thuật - Tổng Công Ty Giấy Việt Nam</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         @media print {
             body * { visibility: hidden; }
@@ -21,7 +21,22 @@
 </head>
 <body id="mainBody" class="bg-slate-100 text-slate-800 font-sans min-h-screen p-4 md:p-6 space-y-6">
 
-    <header id="mainHeader" class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
+    <div id="loginBlock" class="fixed inset-0 bg-slate-900/80 backdrop-blur-xs flex items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-xl shadow-xl border border-slate-200 w-full max-w-sm">
+            <div class="text-center mb-4">
+                <i class="fa-solid fa-lock text-slate-700 text-3xl mb-2"></i>
+                <h3 class="font-black text-lg text-slate-900">ĐĂNG NHẬP HỆ THỐNG</h3>
+                <p class="text-xs text-slate-500">Vui lòng nhập mật khẩu phân quyền điều hành</p>
+            </div>
+            <div class="space-y-3">
+                <input type="password" id="sysPassword" placeholder="Nhập mật khẩu..." class="w-full border border-slate-300 rounded-lg p-2.5 text-center font-bold focus:outline-none">
+                <button onclick="handleLoginRole()" class="w-full py-2.5 bg-slate-800 text-white font-bold rounded-lg cursor-pointer hover:bg-slate-900">Xác Nhận Quyền</button>
+            </div>
+            <p id="loginError" class="text-red-600 font-bold text-center text-xs mt-2 hidden">⚠️ Mật khẩu không chính xác!</p>
+        </div>
+    </div>
+
+    <header id="mainHeader" class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden hidden">
         <div class="absolute inset-x-0 top-0 h-1 bg-slate-700"></div>
         <div class="flex flex-col lg:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-3 text-center lg:text-left">
@@ -46,11 +61,14 @@
                 <span id="envStatusIndicator" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span id="syncBadgeText" class="font-bold text-slate-600">Đang đồng bộ máy chủ...</span>
             </div>
-            <button onclick="triggerManualFetch()" class="px-2.5 py-1 bg-slate-700 text-white font-bold rounded hover:bg-slate-800 cursor-pointer text-[11px]"><i class="fa-solid fa-arrows-rotate"></i> Ép Tải Lại Dữ Liệu Cũ</button>
+            <div class="flex gap-2">
+                <span id="roleBadge" class="px-2 py-1 bg-blue-100 text-blue-800 font-bold rounded text-[11px]"></span>
+                <button onclick="triggerManualFetch()" class="px-2.5 py-1 bg-slate-700 text-white font-bold rounded hover:bg-slate-800 cursor-pointer text-[11px]"><i class="fa-solid fa-arrows-rotate"></i> Ép Tải Lại Dữ Liệu Cũ</button>
+            </div>
         </div>
     </header>
 
-    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <section id="contentSection" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start hidden">
         
         <div class="lg:col-span-8 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
             <div class="bg-slate-700 text-white font-bold p-3 text-sm flex items-center justify-between">
@@ -58,14 +76,14 @@
                 <span class="text-xs bg-slate-600 px-2 py-0.5 rounded font-mono" id="count-device">0 tài sản</span>
             </div>
 
-            <form onsubmit="handleDeviceSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs border-b border-slate-100 bg-slate-50/50">
+            <form id="deviceForm" onsubmit="handleDeviceSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs border-b border-slate-100 bg-slate-50/50 hidden">
                 <div class="sm:col-span-3">
                     <label class="block font-bold text-slate-500 mb-1">Mã Tài Sản Định Danh</label>
                     <input type="text" id="deviceId" readonly class="w-full border border-slate-200 bg-slate-100 font-mono font-bold text-slate-600 rounded-lg p-2">
                 </div>
                 <div class="sm:col-span-5">
                     <label class="block font-bold text-slate-500 mb-1">Tên thiết bị tài sản</label>
-                    <input type="text" id="deviceName" required placeholder="Ví dụ: Máy nghiền bột thủy lực, Máy tính để bàn..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
+                    <input type="text" id="deviceName" required placeholder="Ví dụ: Máy nghiền bột thủy lực..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
                 </div>
                 <div class="sm:col-span-4">
                     <label class="block font-bold text-slate-500 mb-1">Chủng loại nhóm tài sản</label>
@@ -83,7 +101,7 @@
                     </select>
                 </div>
                 <div class="sm:col-span-5">
-                    <label class="block font-bold text-blue-700 mb-1"><i class="fa-solid fa-user-check"></i> Nhân sự chịu trách nhiệm cấp phát</label>
+                    <label class="block font-bold text-blue-700 mb-1"><i class="fa-solid fa-user-check"></i> Nhân sự chịu trách nhiệm</label>
                     <select id="deviceUser" class="w-full border border-blue-300 rounded-lg p-2 bg-blue-50/30 font-bold focus:outline-none">
                         <option value="Chưa cấp phát">-- Để trống: Giữ lưu kho --</option>
                     </select>
@@ -121,13 +139,13 @@
         <div class="lg:col-span-4">
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden sticky top-6">
                 <div class="bg-slate-800 text-white font-bold p-3 text-sm flex items-center justify-between">
-                    <span><i class="fa-solid fa-eye text-amber-400 mr-1.5"></i> Xem Trước Tem QR Hiện Tại</span>
+                    <span><i class="fa-solid fa-eye text-amber-400 mr-1.5"></i> Xem Trước Tem QR</span>
                     <button onclick="window.print()" id="btnActionPrintNow" class="hidden px-3 py-1 bg-amber-500 text-slate-900 font-extrabold text-[11px] rounded hover:bg-amber-400 cursor-pointer">🖨️ Bấm In Ngay</button>
                 </div>
                 <div class="p-6 flex flex-col items-center justify-center bg-slate-50 min-h-[250px]">
                     <div id="webPreviewQRBox" class="p-4 bg-white border border-slate-300 rounded-xl shadow-sm text-center flex flex-col items-center justify-center hidden w-[210px]">
                         <h4 id="wpTitle" class="text-[12px] font-black uppercase text-slate-900 max-w-[190px] truncate mb-2"></h4>
-                        <canvas id="wpCanvas" class="border p-1 bg-white"></canvas>
+                        <div id="wpCanvas" class="border p-2 bg-white flex items-center justify-center"></div>
                         <p id="wpId" class="text-xs font-mono font-black mt-2 text-slate-800 tracking-wider border-t border-dashed pt-1 w-full"></p>
                         <p id="wpDept" class="text-[9px] font-bold text-slate-500 mt-0.5"></p>
                         <p id="wpUser" class="text-[10px] font-bold text-blue-600 mt-0.5 italic"></p>
@@ -138,162 +156,9 @@
         </div>
     </section>
 
-    <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-        <div class="bg-purple-700 text-white font-bold p-3 text-sm flex items-center gap-1.5">
-            <i class="fa-solid fa-screwdriver-wrench"></i> Mẫu Nhật Ký Bảo Trì & Sửa Chữa Thiết Bị Toàn Hệ Thống
-        </div>
-        <form onsubmit="handleRepairSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 text-xs bg-slate-50/30 border-b border-slate-100">
-            <div class="md:col-span-3">
-                <label class="block text-slate-500 font-medium mb-1">1. Thiết bị đang sự cố</label>
-                <select id="repairDeviceId" required class="w-full border border-slate-300 rounded-lg p-2 bg-white font-mono font-bold focus:outline-none"></select>
-            </div>
-            <div class="md:col-span-4">
-                <label class="block text-slate-500 font-medium mb-1">2. Hiện trạng hư hỏng / Cách xử lý</label>
-                <input type="text" id="repairDesc" required placeholder="Hỏng bộ nguồn thay nguồn mới..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
-            </div>
-            <div class="md:col-span-3">
-                <label class="block text-slate-500 font-medium mb-1">3. Kỹ thuật phụ trách</label>
-                <select id="repairUser" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
-                    <option value="Tự động theo thiết bị">-- Tự động theo thiết bị --</option>
-                </select>
-            </div>
-            <div class="md:col-span-2 flex items-end gap-2">
-                <div class="w-full">
-                    <label class="block text-slate-500 font-medium mb-1">4. Chi phí vật tư (VNĐ)</label>
-                    <input type="number" id="repairCost" required value="0" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold">
-                </div>
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 cursor-pointer whitespace-nowrap shadow-xs h-[34px]">Lưu Hồ Sơ Sửa Chữa</button>
-            </div>
-        </form>
-        <div class="overflow-x-auto custom-scrollbar max-h-60 bg-white text-xs">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="border-b border-slate-200 bg-slate-50 text-slate-500 font-bold sticky top-0">
-                        <th class="p-2.5 pl-4">Thiết Bị</th>
-                        <th class="p-2.5">Chi Tiết Sự Cố</th>
-                        <th class="p-2.5">Kỹ Thuật</th>
-                        <th class="p-2.5">Chi Phí</th>
-                        <th class="p-2.5 text-right pr-4">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody id="repairTableBody" class="divide-y divide-slate-100">
-                    <tr>
-                        <td colspan="5" class="p-4 text-center italic text-slate-400" id="repairEmptyRow">Chưa có hồ sơ sửa chữa nào được lưu</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-        <div class="bg-emerald-700 text-white font-bold p-3 text-sm flex items-center justify-between">
-            <span><i class="fa-solid fa-users-gear mr-1.5 text-slate-300"></i> Quản Lý Hồ Sơ Nhân Sự & Sơ Đồ Phòng Ban</span>
-            <span class="text-xs bg-emerald-600 px-2 py-0.5 rounded font-mono" id="count-user">0 nhân sự</span>
-        </div>
-        <div class="p-4 grid grid-cols-1 lg:grid-cols-12 gap-5 border-b border-slate-100 bg-slate-50/50 text-xs">
-            <div class="lg:col-span-4 border-r border-slate-200 pr-4">
-                <span class="block font-bold text-slate-400 text-[10px] uppercase mb-1.5"><i class="fa-solid fa-building"></i> PHÒNG BAN / PHÂN XƯỞNG</span>
-                <form onsubmit="handleDeptSubmit(event)" class="space-y-2">
-                    <input type="text" id="deptName" required placeholder="Tên đơn vị mới..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
-                    <button type="submit" class="w-full py-2 bg-slate-700 text-white font-bold rounded-lg cursor-pointer hover:bg-slate-800">Thêm Đơn Vị</button>
-                </form>
-            </div>
-            <div class="lg:col-span-8">
-                <span class="block font-bold text-slate-400 text-[10px] uppercase mb-1.5"><i class="fa-solid fa-user-plus"></i> THÔNG TIN NHÂN SỰ</span>
-                <form onsubmit="handleUserSubmit(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div class="sm:col-span-2">
-                        <input type="text" id="userName" required placeholder="Họ và tên nhân sự..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
-                    </div>
-                    <div>
-                        <input type="text" id="userTitle" required placeholder="Chức vụ (Ví dụ: Kỹ sư)" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
-                    </div>
-                    <div class="flex gap-2">
-                        <select id="userDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none"></select>
-                        <button type="submit" class="px-5 bg-emerald-600 text-white font-bold rounded-lg cursor-pointer whitespace-nowrap hover:bg-emerald-700">Lưu Hồ Sơ</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="px-4 bg-slate-50 border-b flex flex-wrap gap-2 text-xs" id="deptTabsContainer">
-            <button onclick="filterUserByDept('all')" id="tab-dept-all" class="px-3 py-2.5 tab-active cursor-pointer">Tất Cả Nhân Sự</button>
-        </div>
-        <div class="overflow-x-auto text-xs bg-white">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="border-b bg-slate-50 text-slate-500 font-bold">
-                        <th class="p-2.5 pl-4">Họ Tên / Chức Danh</th>
-                        <th class="p-2.5">Đơn Vị Quản Lý</th>
-                        <th class="p-2.5 text-right pr-4">Tác Vụ</th>
-                    </tr>
-                </thead>
-                <tbody id="userTableBody" class="divide-y divide-slate-100"></tbody>
-            </table>
-        </div>
-    </section>
-
-    <section class="bg-slate-900 text-white rounded-xl shadow-sm overflow-hidden flex flex-col border border-slate-800">
-        <div class="p-3 font-bold text-sm bg-slate-800 flex items-center gap-1.5">
-            <i class="fa-solid fa-list-check"></i> Kế Hoạch Phân Công Công Việc Nhà Máy (Đếm Ngược Thời Gian Thực)
-        </div>
-        <div class="p-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs bg-slate-900/50">
-            <div>
-                <label class="block text-slate-400 mb-1">Nội dung hạng mục công việc</label>
-                <input type="text" id="taskName" placeholder="Nhập tên việc cần phân công..." class="w-full border border-slate-700 rounded-lg p-2 bg-slate-800 text-white focus:outline-none">
-            </div>
-            <div>
-                <label class="block text-slate-400 mb-1">Liên kết tài sản thiết bị</label>
-                <select id="taskDeviceId" class="w-full border border-slate-700 rounded-lg p-2 bg-slate-800 text-white focus:outline-none font-mono"></select>
-            </div>
-            <div>
-                <label class="block text-slate-400 mb-1">Nhân sự thực hiện chính</label>
-                <select id="taskUser" class="w-full border border-slate-700 rounded-lg p-2 bg-slate-800 text-white focus:outline-none"></select>
-            </div>
-            <div>
-                <label class="block text-slate-400 mb-1">Mức độ khẩn cấp</label>
-                <select id="taskLevel" class="w-full border border-slate-700 rounded-lg p-2 bg-slate-800 text-white focus:outline-none font-bold text-amber-400">
-                    <option value="Trung bình">🟡 Trung bình</option>
-                    <option value="Cao">🟠 Cao</option>
-                    <option value="Khẩn cấp">🔴 Khẩn cấp</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-slate-400 mb-1">Giờ bắt đầu làm việc</label>
-                <input type="time" id="taskTimeStart" class="w-full border border-slate-700 rounded-lg p-2 bg-slate-800 text-white focus:outline-none">
-            </div>
-            <div class="flex items-end gap-2">
-                <div class="w-full">
-                    <label class="block text-slate-400 mb-1">Thời lượng kế hoạch (phút)</label>
-                    <input type="number" id="taskDuration" value="30" class="w-full border border-slate-700 rounded-lg p-2 bg-slate-800 text-white focus:outline-none font-bold">
-                </div>
-                <button onclick="handleTaskSubmit()" class="px-5 bg-blue-600 text-white font-bold rounded-lg cursor-pointer hover:bg-blue-700 h-[34px]">Lưu</button>
-            </div>
-        </div>
-        <div class="overflow-x-auto text-xs bg-slate-900">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="border-b border-slate-800 bg-slate-800 text-slate-400 font-bold">
-                        <th class="p-2.5 pl-4">Hạng Mục</th>
-                        <th class="p-2.5">Thiết Bị</th>
-                        <th class="p-2.5">Phụ Trách</th>
-                        <th class="p-2.5">Mức Độ</th>
-                        <th class="p-2.5">⏰ Bắt Đầu</th>
-                        <th class="p-2.5">⏳ Đếm Ngược</th>
-                        <th class="p-2.5">Trạng Thái</th>
-                        <th class="p-2.5 text-right pr-4">Xóa</th>
-                    </tr>
-                </thead>
-                <tbody id="taskTableBody" class="divide-y divide-slate-800 text-slate-300">
-                    <tr>
-                        <td colspan="8" class="p-4 text-center italic text-slate-500">Chưa có kế hoạch phân công điều hành</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-
     <div id="qrPrintZone" class="hidden flex-col items-center justify-center p-4 bg-white text-black border-2 border-black rounded-xl text-center w-[60mm] h-[60mm]">
         <h2 id="qrPrintTitle" class="text-xs font-black uppercase tracking-tight mb-1" style="font-family: Arial, sans-serif;"></h2>
-        <canvas id="qrPrintCanvas"></canvas>
+        <div id="qrPrintCanvas" class="bg-white p-1"></div>
         <p id="qrPrintId" class="text-sm font-mono font-black mt-1 tracking-widest border-t border-dashed border-black pt-0.5 w-full"></p>
         <p id="qrPrintDept" class="text-[9px] uppercase font-bold text-gray-700 mt-0.5"></p>
         <p id="qrPrintUser" class="text-[9px] font-bold text-black mt-0.5 italic"></p>
@@ -314,8 +179,36 @@
         const db = getDatabase(app);
 
         let currentEnv = localStorage.getItem('vinapaco_current_env') || 'live'; 
-        let depts = [], users = [], devices = [], repairs = [], tasks = [];
-        let activeUserDeptFilter = 'all';
+        let depts = [], users = [], devices = [], currentUserRole = 'Viewer';
+
+        // CƠ CHẾ PHÂN QUYỀN MẬT KHẨU TOÀN HỆ THỐNG
+        window.handleLoginRole = function() {
+            const pass = document.getElementById('sysPassword').value.trim();
+            const err = document.getElementById('loginError');
+            
+            if(pass === 'admin6789') {
+                currentUserRole = 'Admin';
+            } else if (pass === 'tech123') {
+                currentUserRole = 'Kỹ Thuật';
+            } else if (pass === 'vinapaco') {
+                currentUserRole = 'Xem dữ liệu';
+            } else {
+                err.classList.remove('hidden');
+                return;
+            }
+
+            // Mở khóa giao diện theo phân quyền
+            document.getElementById('loginBlock').classList.add('hidden');
+            document.getElementById('mainHeader').classList.remove('hidden');
+            document.getElementById('contentSection').classList.remove('hidden');
+            document.getElementById('roleBadge').innerText = `Quyền: ${currentUserRole}`;
+            
+            if(currentUserRole === 'Admin' || currentUserRole === 'Kỹ Thuật') {
+                document.getElementById('deviceForm').classList.remove('hidden');
+            }
+            
+            fetchCloudData();
+        }
 
         window.switchEnvironment = function(env) {
             currentEnv = env;
@@ -333,7 +226,7 @@
             if(currentEnv === 'live') {
                 btnLive.className = "px-3 py-1 rounded-md font-bold cursor-pointer bg-emerald-600 text-white text-xs";
                 btnDemo.className = "px-3 py-1 rounded-md font-bold cursor-pointer bg-white text-slate-600 border text-xs";
-                text.innerText = "DỮ LIỆU THẬT (LIVE) - Kết nối phân xưởng sản xuất";
+                text.innerText = "DỮ LIỆU THẬT (LIVE) - Máy chủ Tổng công ty";
                 ind.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
             } else {
                 btnDemo.className = "px-3 py-1 rounded-md font-bold cursor-pointer bg-amber-500 text-white text-xs";
@@ -350,11 +243,9 @@
                 depts = data.depts ? Object.values(data.depts) : [];
                 users = data.users ? Object.values(data.users) : [];
                 devices = data.devices ? Object.values(data.devices) : [];
-                repairs = data.repairs ? Object.values(data.repairs) : [];
-                tasks = data.tasks ? Object.values(data.tasks) : [];
                 
                 updateDropdownOptions();
-                renderAllTables();
+                renderDeviceTableOnly();
                 autoGenDeviceId();
             });
         }
@@ -363,22 +254,27 @@
 
         function pushDataToCloud() {
             const nodeKey = currentEnv === 'live' ? 'root' : 'demo_root';
-            set(ref(db, nodeKey), { depts, users, devices, repairs, tasks }).then(() => { fetchCloudData(); });
+            set(ref(db, nodeKey), { depts, users, devices }).then(() => { fetchCloudData(); });
         }
 
-        // TỐI GIẢN CHỮ ĐỂ Ô VUÔNG QR THƯA HƠN -> CAMERA ĐIỆN THOẠI QUÉT NHẠY 100% KHÔNG BỊ TRỄ
+        // ĐỊNH DẠNG CHUẨN: KHÔNG DẤU CHẤM TRÁNH NHẦM ĐƯỜNG LINK, HIỂN THỊ CHỮ NÉT TRÊN CAMERA PHÂN XƯỞNG
         function makeQRTextContent(dev) {
-            return `MA THIET BI: ${dev.id}\nTEN: ${dev.name}\nPHONG BAN: ${dev.dept}\nPHU TRACH: ${dev.user || 'Kho'}`;
+            return `MA THIET BI: ${dev.id}\nTEN: ${dev.name}\nPHONG BAN: ${dev.dept}\nPHU TRACH: ${dev.user || 'Luu kho'}`;
         }
 
-        window.generateLocalQR = function(canvasId, text, size = 120) {
-            setTimeout(() => {
-                const canvas = document.getElementById(canvasId);
-                if (canvas) {
-                    // level: 'L' giúp mã QR giảm tối đa các ô thừa, thưa và nhạy nhất đối với camera phân xưởng
-                    new QRious({ element: canvas, value: text, size: size, level: 'L' });
-                }
-            }, 50);
+        window.generateLocalQR = function(containerId, text, size = 120) {
+            const container = document.getElementById(containerId);
+            if (container) {
+                container.innerHTML = ""; // Xóa QR cũ tránh trùng lặp
+                new QRCode(container, {
+                    text: text,
+                    width: size,
+                    height: size,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.L // Cấp độ L giúp thưa mắt QR, máy quét ăn ngay lập tức
+                });
+            }
         }
 
         window.previewAndSelectQR = function(id) {
@@ -394,13 +290,16 @@
             document.getElementById('wpId').innerText = dev.id;
             document.getElementById('wpDept').innerText = "ĐV: " + dev.dept;
             document.getElementById('wpUser').innerText = "Phụ trách: " + (dev.user || "Trong kho");
-            generateLocalQR('wpCanvas', qrText, 150);
-
-            document.getElementById('qrPrintTitle').innerText = dev.name;
-            document.getElementById('qrPrintId').innerText = dev.id;
-            document.getElementById('qrPrintDept').innerText = "ĐV: " + dev.dept;
-            document.getElementById('qrPrintUser').innerText = "Phụ trách: " + (dev.user || "Trong kho");
-            generateLocalQR('qrPrintCanvas', qrText, 140);
+            
+            setTimeout(() => {
+                generateLocalQR('wpCanvas', qrText, 140);
+                
+                document.getElementById('qrPrintTitle').innerText = dev.name;
+                document.getElementById('qrPrintId').innerText = dev.id;
+                document.getElementById('qrPrintDept').innerText = "ĐV: " + dev.dept;
+                document.getElementById('qrPrintUser').innerText = "Phụ trách: " + (dev.user || "Trong kho");
+                generateLocalQR('qrPrintCanvas', qrText, 130);
+            }, 50);
         }
 
         function autoGenDeviceId() {
@@ -423,24 +322,10 @@
             });
         }
 
-        window.handleDeptSubmit = function(e) {
-            e.preventDefault();
-            const name = document.getElementById('deptName').value.trim();
-            depts.push({ id: Date.now().toString(), name });
-            pushDataToCloud(); document.getElementById('deptName').value = "";
-        }
-
-        window.handleUserSubmit = function(e) {
-            e.preventDefault();
-            const name = document.getElementById('userName').value.trim();
-            const title = document.getElementById('userTitle').value.trim();
-            const dept = document.getElementById('userDept').value;
-            users.push({ id: Date.now().toString(), name, title, dept });
-            pushDataToCloud(); document.getElementById('userName').value = ""; document.getElementById('userTitle').value = "";
-        }
-
         window.handleDeviceSubmit = function(e) {
             e.preventDefault();
+            if(currentUserRole === 'Xem dữ liệu') { alert("Tài khoản của bạn không có quyền thêm thiết bị!"); return; }
+            
             const id = document.getElementById('deviceId').value;
             const name = document.getElementById('deviceName').value.trim();
             const cat = document.getElementById('deviceCategory').value;
@@ -455,89 +340,18 @@
             autoGenDeviceId();
         }
 
-        window.handleRepairSubmit = function(e) {
-            e.preventDefault();
-            const devId = document.getElementById('repairDeviceId').value;
-            const desc = document.getElementById('repairDesc').value.trim();
-            const cost = document.getElementById('repairCost').value;
-            const repUser = document.getElementById('repairUser').value;
-
-            repairs.push({ id: Date.now().toString(), devId, desc, cost, repUser });
-            pushDataToCloud();
-            document.getElementById('repairDesc').value = "";
-            document.getElementById('repairCost').value = "0";
-        }
-
-        window.handleTaskSubmit = function() {
-            const name = document.getElementById('taskName').value.trim();
-            const devId = document.getElementById('taskDeviceId').value;
-            const user = document.getElementById('taskUser').value;
-            const level = document.getElementById('taskLevel').value;
-            const start = document.getElementById('taskTimeStart').value;
-            const dur = document.getElementById('taskDuration').value;
-
-            if(!name || !start) { alert("Vui lòng điền tên việc và giờ bắt đầu!"); return; }
-
-            tasks.push({ id: Date.now().toString(), name, devId, user, level, start, dur });
-            pushDataToCloud();
-            document.getElementById('taskName').value = "";
-        }
-
-        window.deleteItem = function(type, id) {
+        window.deleteItem = function(id) {
+            if(currentUserRole !== 'Admin') { alert("Chỉ tài khoản Admin mới được quyền xóa tài sản khỏi hệ thống!"); return; }
             if(confirm("Xóa bản ghi này khỏi máy chủ?")) {
-                if(type === 'dept') depts = depts.filter(i => i.id !== id);
-                if(type === 'user') users = users.filter(i => i.id !== id);
-                if(type === 'device') devices = devices.filter(i => i.id !== id);
-                if(type === 'repair') repairs = repairs.filter(i => i.id !== id);
-                if(type === 'task') tasks = tasks.filter(i => i.id !== id);
+                devices = devices.filter(i => i.id !== id);
                 pushDataToCloud();
             }
         }
 
-        window.filterUserByDept = function(deptName) {
-            activeUserDeptFilter = deptName;
-            const tabs = document.querySelectorAll('#deptTabsContainer button');
-            tabs.forEach(t => t.className = "px-3 py-2.5 cursor-pointer text-slate-500 hover:text-slate-900");
-            
-            const cleanId = deptName === 'all' ? 'all' : btoa(encodeURIComponent(deptName)).replace(/=/g, '');
-            const activeTab = document.getElementById(`tab-dept-${cleanId}`);
-            if(activeTab) activeTab.className = "px-3 py-2.5 tab-active cursor-pointer";
-            renderUserTableOnly();
-        }
-
         function updateDropdownOptions() {
-            const uDept = document.getElementById('userDept'), dDept = document.getElementById('deviceDept');
-            const rDev = document.getElementById('repairDeviceId'), tDev = document.getElementById('taskDeviceId'), tUser = document.getElementById('taskUser');
-            
-            uDept.innerHTML = '<option value="">-- Chọn Đơn Vị --</option>';
+            const dDept = document.getElementById('deviceDept');
             dDept.innerHTML = '<option value="">-- Chọn phòng ban --</option>';
-            rDev.innerHTML = '';
-            tDev.innerHTML = '<option value="Không liên kết thiết bị">-- Không liên kết thiết bị --</option>';
-            tUser.innerHTML = '<option value="Chưa giao nhân sự">-- Chưa giao nhân sự --</option>';
-            
-            depts.forEach(d => { 
-                uDept.innerHTML += `<option value="${d.name}">${d.name}</option>`; 
-                dDept.innerHTML += `<option value="${d.name}">${d.name}</option>`; 
-            });
-            devices.forEach(d => { 
-                rDev.innerHTML += `<option value="${d.id}">${d.id} - ${d.name}</option>`; 
-                tDev.innerHTML += `<option value="${d.id}">${d.id} - ${d.name}</option>`; 
-            });
-            users.forEach(u => {
-                tUser.innerHTML += `<option value="${u.name}">${u.name} (${u.title})</option>`;
-            });
-
-            const container = document.getElementById('deptTabsContainer');
-            container.innerHTML = `<button onclick="filterUserByDept('all')" id="tab-dept-all" class="px-3 py-2.5 cursor-pointer">Tất Cả Nhân Sự</button>`;
-            depts.forEach(d => {
-                const count = users.filter(u => u.dept === d.name).length;
-                const cleanId = btoa(encodeURIComponent(d.name)).replace(/=/g, '');
-                container.innerHTML += `<button onclick="filterUserByDept('${d.name}')" id="tab-dept-${cleanId}" class="px-3 py-2.5 cursor-pointer">${d.name} (${count})</button>`;
-            });
-            
-            const activeCleanId = activeUserDeptFilter === 'all' ? 'all' : btoa(encodeURIComponent(activeUserDeptFilter)).replace(/=/g, '');
-            const currentTab = document.getElementById(`tab-dept-${activeCleanId}`);
-            if(currentTab) currentTab.className = "px-3 py-2.5 tab-active cursor-pointer";
+            depts.forEach(d => { dDept.innerHTML += `<option value="${d.name}">${d.name}</option>`; });
         }
 
         window.renderDeviceTableOnly = function() {
@@ -545,122 +359,39 @@
             let rawKeyword = document.getElementById('searchDeviceInput').value.trim();
             let keyword = rawKeyword.toLowerCase();
 
-            devices.filter(d => {
+            const filteredDevices = devices.filter(d => {
                 return d.name.toLowerCase().includes(keyword) || d.id.toLowerCase().includes(keyword) || (d.user && d.user.toLowerCase().includes(keyword));
-            }).forEach(d => {
+            });
+
+            filteredDevices.forEach(d => {
                 let bc = d.status === "Trong kho" ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700";
                 const rowCanvasId = `canvas-${d.id}`;
                 const qrText = makeQRTextContent(d);
+
+                const deleteBtn = (currentUserRole === 'Admin') 
+                    ? `<button onclick="deleteItem('${d.id}')" class="text-slate-300 hover:text-red-600 ml-2.5 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>` 
+                    : '';
 
                 dtbBody.innerHTML += `<tr class="border-b text-slate-600 hover:bg-slate-50">
                     <td class="p-2.5 pl-4 font-mono font-bold text-slate-900">${d.id}<span class="block text-slate-400 font-sans font-medium text-xs">${d.name}</span></td>
                     <td class="p-2.5 font-medium">${d.dept}</td>
                     <td class="p-1 text-center bg-white w-16">
-                        <canvas id="${rowCanvasId}" class="mx-auto border p-0.5 shadow-2xs bg-white cursor-pointer" onclick="previewAndSelectQR('${d.id}')" title="Bấm để xem phóng to"></canvas>
+                        <div id="${rowCanvasId}" class="mx-auto flex items-center justify-center cursor-pointer" onclick="previewAndSelectQR('${d.id}')" title="Bấm để xem phóng to"></div>
                     </td>
                     <td class="p-2.5 font-bold text-blue-600">${d.user === "Chưa cấp phát" || !d.user ? '📦 <span class="text-amber-600 font-normal">Trong kho</span>' : '👤 ' + d.user}</td>
                     <td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[11px] font-bold ${bc}">${d.status || 'Hoạt động tốt'}</span></td>
                     <td class="p-2.5 text-right pr-4">
                         <button onclick="previewAndSelectQR('${d.id}')" class="px-2.5 py-1.5 bg-slate-900 text-amber-400 font-black rounded border border-amber-400 cursor-pointer shadow-xs hover:bg-slate-800 text-[11px]"><i class="fa-solid fa-expand"></i> Xem & In Tem</button>
-                        <button onclick="deleteItem('device','${d.id}')" class="text-slate-300 hover:text-red-600 ml-2.5 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
+                        ${deleteBtn}
                     </td>
                 </tr>`;
                 
-                generateLocalQR(rowCanvasId, qrText, 45);
+                setTimeout(() => { generateLocalQR(rowCanvasId, qrText, 45); }, 10);
             });
             document.getElementById('count-device').innerText = `${devices.length} tài sản`;
         }
 
-        function renderUserTableOnly() {
-            const body = document.getElementById('userTableBody'); body.innerHTML = '';
-            users.filter(u => activeUserDeptFilter === 'all' || u.dept === activeUserDeptFilter).forEach(u => {
-                body.innerHTML += `<tr class="border-b text-slate-600 hover:bg-slate-50 text-xs">
-                    <td class="p-3 pl-4"><span class="font-bold text-slate-900 block">${u.name}</span><span class="text-slate-400 text-[11px]">${u.title}</span></td>
-                    <td class="p-3 font-medium text-slate-700">${u.dept}</td>
-                    <td class="p-3 text-right pr-4">
-                        <button class="text-slate-400 hover:text-blue-600 mr-3"><i class="fa-solid fa-pen-to-square"></i> Sửa</button>
-                        <button onclick="deleteItem('user','${u.id}')" class="text-slate-400 hover:text-red-600 cursor-pointer"><i class="fa-solid fa-trash-can"></i> Xóa</button>
-                    </td>
-                </tr>`;
-            });
-        }
-
-        function renderRepairTableOnly() {
-            const body = document.getElementById('repairTableBody'); 
-            if(repairs.length === 0) {
-                document.getElementById('repairEmptyRow').style.display = 'table-cell';
-                return;
-            }
-            document.getElementById('repairEmptyRow').style.display = 'none';
-            body.innerHTML = '';
-            
-            repairs.forEach(r => {
-                body.innerHTML += `<tr class="border-b text-slate-600 hover:bg-slate-50 text-xs">
-                    <td class="p-2.5 pl-4 font-mono font-bold text-slate-900">${r.devId}</td>
-                    <td class="p-2.5">${r.desc}</td>
-                    <td class="p-2.5 text-slate-500">${r.repUser || 'Theo thiết bị'}</td>
-                    <td class="p-2.5 font-bold text-slate-900">${Number(r.cost).toLocaleString('vi-VN')} đ</td>
-                    <td class="p-2.5 text-right pr-4">
-                        <button onclick="deleteItem('repair','${r.id}')" class="text-slate-300 hover:text-red-600 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
-                    </td>
-                </tr>`;
-            });
-        }
-
-        function renderTaskTableOnly() {
-            const body = document.getElementById('taskTableBody');
-            if(tasks.length === 0) {
-                body.innerHTML = `<tr><td colspan="8" class="p-4 text-center italic text-slate-500">Chưa có kế hoạch phân công điều hành</td></tr>`;
-                return;
-            }
-            body.innerHTML = '';
-            tasks.forEach(t => {
-                body.innerHTML += `<tr class="border-b border-slate-800 text-xs">
-                    <td class="p-2.5 pl-4 font-bold text-white">${t.name}</td>
-                    <td class="p-2.5 font-mono text-slate-400">${t.devId}</td>
-                    <td class="p-2.5 text-slate-300">${t.user}</td>
-                    <td class="p-2.5 font-bold text-amber-400">${t.level}</td>
-                    <td class="p-2.5 text-slate-400">${t.start}</td>
-                    <td class="p-2.5 font-bold text-emerald-400 font-mono animate-pulse" id="timer-${t.id}">--:--</td>
-                    <td class="p-2.5"><span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-medium text-[10px]">Đang chạy</span></td>
-                    <td class="p-2.5 text-right pr-4">
-                        <button onclick="deleteItem('task','${t.id}')" class="text-slate-600 hover:text-red-500 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
-                    </td>
-                </tr>`;
-                startCountdownUI(t.id, t.start, t.dur);
-            });
-        }
-
-        function startCountdownUI(id, startStr, durationMins) {
-            function update() {
-                const el = document.getElementById(`timer-${id}`);
-                if(!el) return;
-                const now = new Date();
-                const [h, m] = startStr.split(':').map(Number);
-                const targetTime = new Date();
-                targetTime.setHours(h, m, 0, 0);
-                const endTime = new Date(targetTime.getTime() + durationMins * 60000);
-                
-                const diff = endTime - now;
-                if(diff <= 0) { el.innerText = "Hết giờ"; el.className = "text-red-500 font-bold"; return; }
-                
-                const mins = Math.floor(diff / 60000);
-                const secs = Math.floor((diff % 60000) / 1000);
-                el.innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-            }
-            update();
-            setInterval(update, 1000);
-        }
-
-        window.renderAllTables = function() { 
-            renderDeviceTableOnly(); 
-            renderUserTableOnly(); 
-            renderRepairTableOnly(); 
-            renderTaskTableOnly(); 
-        }
-
         updateEnvButtonsUI();
-        fetchCloudData();
     </script>
 </body>
 </html>
