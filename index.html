@@ -27,7 +27,7 @@
                     <i class="fa-solid fa-industry"></i>
                 </div>
                 <div>
-                    <h2 class="text-[9px] font-bold tracking-widest text-slate-400 uppercase">Hệ Thống Quản Lý Tài Sản & Tự Động Sinh Mã QR Độc Lập</h2>
+                    <h2 class="text-[9px] font-bold tracking-widest text-slate-400 uppercase">Hệ Thống Điều Hành Kỹ Thuật - Quản Lý Tài Sản Toàn Diện V2</h2>
                     <h1 class="text-lg md:text-xl font-black text-slate-900 tracking-tight mt-0.5">TỔNG CÔNG TY GIẤY VIỆT NAM</h1>
                 </div>
             </div>
@@ -94,7 +94,7 @@
 
             <div class="p-2.5 bg-slate-100/60 border-b border-slate-200 text-xs">
                 <div class="relative w-full">
-                    <input type="text" id="searchDeviceInput" oninput="renderDeviceTableOnly()" placeholder="Nhập mã định danh, tên thiết bị hoặc quét mã từ Zalo để lọc hồ sơ..." class="w-full border border-slate-300 rounded-lg pl-8 pr-3 py-2 bg-white focus:outline-none font-bold text-blue-700">
+                    <input type="text" id="searchDeviceInput" oninput="renderDeviceTableOnly()" placeholder="Nhập mã định danh, tên thiết bị hoặc nội dung quét mã để lọc nhanh..." class="w-full border border-slate-300 rounded-lg pl-8 pr-3 py-2 bg-white focus:outline-none font-bold text-blue-700">
                     <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-3 text-slate-400"></i>
                 </div>
             </div>
@@ -106,7 +106,8 @@
                             <th class="p-2.5 pl-4">Mã Số / Tên Thiết Bị</th>
                             <th class="p-2.5">Đơn Vị Quản Lý</th>
                             <th class="p-2.5 text-center">Mã QR Quét Thử</th>
-                            <th class="p-2.5">Phụ Trách</th>
+                            <th class="p-2.5">Nhân Sự Phụ Trách</th>
+                            <th class="p-2.5 text-center">Trạng Thái</th>
                             <th class="p-2.5 text-right pr-4">Hành Động</th>
                         </tr>
                     </thead>
@@ -129,15 +130,67 @@
                         <p id="wpDept" class="text-[9px] font-bold text-slate-500 mt-0.5"></p>
                         <p id="wpUser" class="text-[9px] font-bold text-emerald-600 mt-0.5 italic"></p>
                     </div>
-                    <p id="webPreviewEmptyText" class="text-slate-400 italic text-center text-xs p-4">Chọn một thiết bị bất kỳ từ danh sách bên cạnh và bấm nút <strong>"Xem & In Tem"</strong> để hiển thị nhãn in phóng to tại đây.</p>
+                    <p id="webPreviewEmptyText" class="text-slate-400 italic text-center text-xs p-4">Chọn một thiết bị bất kỳ từ danh sách bên cạnh và bấm nút <strong>"Xem & In Tem"</strong> hoặc bấm vào ảnh QR nhỏ để hiển thị nhãn phóng to tại đây.</p>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div class="lg:col-span-4 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+            <div class="bg-slate-700 text-white font-bold p-3 text-sm"><i class="fa-solid fa-screwdriver-wrench mr-1"></i> Cập Nhật Tiến Độ Sửa Chữa</div>
+            <form onsubmit="handleRepairSubmit(event)" class="p-4 space-y-3 text-xs bg-slate-50/40">
+                <div>
+                    <label class="block font-bold text-slate-500 mb-1">Chọn Thiết Bị Sửa Chữa</label>
+                    <select id="repairDeviceId" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-mono font-bold"></select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-500 mb-1">Nội dung / Sự cố kỹ thuật</label>
+                    <textarea id="repairDesc" required placeholder="Mô tả sự cố hoặc hạng mục bảo dưỡng..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none h-20"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-bold text-slate-500 mb-1">Chi Phí (VNĐ)</label>
+                        <input type="number" id="repairCost" required placeholder="Ví dụ: 500000" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-500 mb-1">Trạng Thái Vận Hành</label>
+                        <select id="repairStatus" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold">
+                            <option value="Đang sửa chữa">⚙️ Đang sửa chữa</option>
+                            <option value="Hoạt động tốt">🟢 Hoạt động tốt</option>
+                            <option value="Dừng hoạt động">🔴 Dừng hoạt động</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 cursor-pointer shadow-xs">Ghi Nhận Lịch Sử</button>
+            </form>
+        </div>
+
+        <div class="lg:col-span-8 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+            <div class="bg-slate-700 text-white font-bold p-3 text-sm flex items-center justify-between">
+                <span><i class="fa-solid fa-clock-rotate-left mr-1.5 text-slate-300"></i> Nhật Ký Bảo Dưỡng Lâm Sàng Nhà Máy</span>
+                <span class="text-xs bg-slate-600 px-2 py-0.5 rounded font-mono" id="count-repair">0 lượt</span>
+            </div>
+            <div class="overflow-x-auto custom-scrollbar max-h-64 bg-white text-xs">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-200 bg-slate-50 text-slate-500 font-bold sticky top-0">
+                            <th class="p-2.5 pl-4">Mã Thiết Bị</th>
+                            <th class="p-2.5">Hạng Mục Sửa Chữa</th>
+                            <th class="p-2.5">Chi Phí</th>
+                            <th class="p-2.5">Trạng Thái</th>
+                            <th class="p-2.5 text-right pr-4">Xóa</th>
+                        </tr>
+                    </thead>
+                    <tbody id="repairTableBody" class="divide-y divide-slate-100"></tbody>
+                </table>
             </div>
         </div>
     </section>
 
     <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
         <div class="bg-slate-700 text-white font-bold p-3 text-sm flex items-center justify-between">
-            <span><i class="fa-solid fa-users-gear mr-1.5 text-slate-300"></i> Cơ Cấu Nhân Sự Toàn Phân Xưởng Nhà Máy</span>
+            <span><i class="fa-solid fa-users-gear mr-1.5 text-slate-300"></i> Sơ Đồ Nhân Sự Phân Xưởng</span>
             <span class="text-xs bg-slate-600 px-2 py-0.5 rounded font-mono" id="count-user">0 nhân sự</span>
         </div>
         <div class="p-4 grid grid-cols-1 lg:grid-cols-12 gap-4 border-b border-slate-100 bg-slate-50/50 text-xs">
@@ -188,7 +241,7 @@
         const db = getDatabase(app);
 
         let currentEnv = localStorage.getItem('vinapaco_current_env') || 'live'; 
-        let depts = [], users = [], devices = [];
+        let depts = [], users = [], devices = [], repairs = [];
 
         function checkIncomingQRQuery() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -230,16 +283,6 @@
             const nodeKey = currentEnv === 'live' ? 'root' : 'demo_root';
             get(ref(db, nodeKey)).then((snapshot) => {
                 const data = snapshot.val() || {};
-                
-                if (!data.devices && currentEnv === 'live') {
-                    get(ref(db, 'demo_root')).then((dSnap) => {
-                        if (dSnap.val() && dSnap.val().devices) { currentEnv = 'demo'; updateEnvButtonsUI(); applyData(dSnap.val()); }
-                    });
-                } else if (!data.devices && currentEnv === 'demo') {
-                    get(ref(db, 'root')).then((lSnap) => {
-                        if (lSnap.val() && lSnap.val().devices) { currentEnv = 'live'; updateEnvButtonsUI(); applyData(lSnap.val()); }
-                    });
-                }
                 applyData(data);
             });
         }
@@ -248,6 +291,7 @@
             depts = data.depts ? Object.values(data.depts) : [];
             users = data.users ? Object.values(data.users) : [];
             devices = data.devices ? Object.values(data.devices) : [];
+            repairs = data.repairs ? Object.values(data.repairs) : [];
             
             updateDropdownOptions();
             renderAllTables();
@@ -259,7 +303,7 @@
 
         function pushDataToCloud() {
             const nodeKey = currentEnv === 'live' ? 'root' : 'demo_root';
-            set(ref(db, nodeKey), { depts, users, devices }).then(() => { fetchCloudData(); });
+            set(ref(db, nodeKey), { depts, users, devices, repairs }).then(() => { fetchCloudData(); });
         }
 
         updateEnvButtonsUI();
@@ -317,23 +361,39 @@
             autoGenDeviceId();
         }
 
+        window.handleRepairSubmit = function(e) {
+            e.preventDefault();
+            const devId = document.getElementById('repairDeviceId').value;
+            const desc = document.getElementById('repairDesc').value.trim();
+            const cost = document.getElementById('repairCost').value;
+            const status = document.getElementById('repairStatus').value;
+
+            repairs.push({ id: Date.now().toString(), devId, desc, cost, status });
+            
+            const targetDev = devices.find(d => d.id === devId);
+            if(targetDev) targetDev.status = status;
+
+            pushDataToCloud();
+            document.getElementById('repairDesc').value = "";
+            document.getElementById('repairCost').value = "";
+        }
+
         window.deleteItem = function(type, id) {
             if(confirm("Xóa bản ghi tài sản/nhân sự này?")) {
                 if(type === 'dept') depts = depts.filter(i => i.id !== id);
                 if(type === 'user') users = users.filter(i => i.id !== id);
                 if(type === 'device') devices = devices.filter(i => i.id !== id);
+                if(type === 'repair') repairs = repairs.filter(i => i.id !== id);
                 pushDataToCloud();
             }
         }
 
-        // HÀM TẠO URL LINK QR CHUẨN ĐA PHƯƠNG TIỆN
         function getQrImageUrl(id) {
             const baseWebUrl = window.location.href.split('?')[0];
             const dynamicQrLink = `${baseWebUrl}?scan_id=${id}`;
             return `https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=${encodeURIComponent(dynamicQrLink)}&choe=UTF-8&chld=H|1`;
         }
 
-        // XEM TRƯỚC VÀ CHUẨN BỊ IN TEM PHÓNG TO
         window.previewAndSelectQR = function(id) {
             const dev = devices.find(d => d.id === id);
             const qrUrl = getQrImageUrl(dev.id);
@@ -342,14 +402,12 @@
             document.getElementById('webPreviewQRBox').classList.remove('hidden');
             document.getElementById('btnActionPrintNow').classList.remove('hidden');
             
-            // Đẩy dữ liệu ra khung xem trước phóng to bên phải
             document.getElementById('wpTitle').innerText = dev.name;
             document.getElementById('wpImage').src = qrUrl;
             document.getElementById('wpId').innerText = dev.id;
             document.getElementById('wpDept').innerText = "ĐV: " + dev.dept;
             document.getElementById('wpUser').innerText = "Phụ trách: " + (dev.user || "Trong kho");
 
-            // Đẩy dữ liệu vào phôi in chính thức của hệ thống
             document.getElementById('qrPrintTitle').innerText = dev.name;
             document.getElementById('qrPrintImage').src = qrUrl;
             document.getElementById('qrPrintId').innerText = dev.id;
@@ -358,10 +416,13 @@
         }
 
         function updateDropdownOptions() {
-            const uDept = document.getElementById('userDept'), dDept = document.getElementById('deviceDept');
+            const uDept = document.getElementById('userDept'), dDept = document.getElementById('deviceDept'), rDev = document.getElementById('repairDeviceId');
             uDept.innerHTML = '<option value="">-- Chọn Đơn Vị --</option>';
             dDept.innerHTML = '<option value="">-- Chọn phòng ban --</option>';
+            rDev.innerHTML = '<option value="">-- Chọn thiết bị --</option>';
+            
             depts.forEach(d => { uDept.innerHTML += `<option value="${d.name}">${d.name}</option>`; dDept.innerHTML += `<option value="${d.name}">${d.name}</option>`; });
+            devices.forEach(d => { rDev.innerHTML += `<option value="${d.id}">${d.id} - ${d.name}</option>`; });
         }
 
         window.renderDeviceTableOnly = function() {
@@ -378,13 +439,16 @@
                 return d.name.toLowerCase().includes(keyword) || d.id.toLowerCase().includes(keyword) || (d.user && d.user.toLowerCase().includes(keyword));
             }).forEach(d => {
                 const rowQrUrl = getQrImageUrl(d.id);
+                let bc = d.status === "Trong kho" ? "bg-amber-100 text-amber-700" : d.status === "Đang sửa chữa" ? "bg-blue-100 text-blue-700" : d.status === "Dừng hoạt động" ? "bg-red-100 text-red-700" : "bg-emerald-100 text-emerald-700";
+                
                 dtbBody.innerHTML += `<tr class="border-b text-slate-600 hover:bg-slate-50">
                     <td class="p-2.5 pl-4 font-mono font-bold text-slate-900">${d.id}<span class="block text-slate-400 font-sans font-medium text-xs">${d.name}</span></td>
                     <td class="p-2.5 font-medium">${d.dept}</td>
                     <td class="p-1 text-center bg-white">
-                        <img src="${rowQrUrl}" alt="QR" class="w-14 h-14 mx-auto border p-0.5 shadow-2xs bg-white cursor-pointer" onclick="previewAndSelectQR('${d.id}')" title="Bấm để xem phóng to">
+                        <img src="${rowQrUrl}" alt="QR" class="w-12 h-12 mx-auto border p-0.5 shadow-2xs bg-white cursor-pointer" onclick="previewAndSelectQR('${d.id}')" title="Bấm để xem phóng to">
                     </td>
                     <td class="p-2.5 font-bold text-blue-600">${d.user === "Chưa cấp phát" || !d.user ? '📦 <span class="text-amber-600 font-normal">Trong kho</span>' : '👤 ' + d.user}</td>
+                    <td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[11px] font-bold ${bc}">${d.status || 'Hoạt động tốt'}</span></td>
                     <td class="p-2.5 text-right pr-4">
                         <button onclick="previewAndSelectQR('${d.id}')" class="px-2.5 py-1.5 bg-slate-900 text-amber-400 font-black rounded border border-amber-400 cursor-pointer shadow-xs hover:bg-slate-800 text-[11px]"><i class="fa-solid fa-expand"></i> Xem & In Tem</button>
                         <button onclick="deleteItem('device','${d.id}')" class="text-slate-300 hover:text-red-600 ml-2.5 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
@@ -392,6 +456,23 @@
                 </tr>`;
             });
             document.getElementById('count-device').innerText = `${devices.length} tài sản`;
+        }
+
+        window.renderRepairTableOnly = function() {
+            const rBody = document.getElementById('repairTableBody'); rBody.innerHTML = '';
+            repairs.forEach(r => {
+                let bc = r.status === "Đang sửa chữa" ? "bg-blue-100 text-blue-700" : r.status === "Dừng hoạt động" ? "bg-red-100 text-red-700" : "bg-emerald-100 text-emerald-700";
+                rBody.innerHTML += `<tr class="border-b text-slate-600 hover:bg-slate-50">
+                    <td class="p-2.5 pl-4 font-mono font-bold text-slate-900">${r.devId}</td>
+                    <td class="p-2.5">${r.desc}</td>
+                    <td class="p-2.5 font-bold">${Number(r.cost).toLocaleString('vi-VN')} đ</td>
+                    <td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${bc}">${r.status}</span></td>
+                    <td class="p-2.5 text-right pr-4">
+                        <button onclick="deleteItem('repair','${r.id}')" class="text-slate-300 hover:text-red-600 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                </tr>`;
+            });
+            document.getElementById('count-repair').innerText = `${repairs.length} lượt`;
         }
 
         window.renderUserLayoutAllScene = function() {
@@ -413,7 +494,7 @@
             document.getElementById('count-user').innerText = `${users.length} nhân sự`;
         }
 
-        window.renderAllTables = function() { renderUserLayoutAllScene(); renderDeviceTableOnly(); }
+        window.renderAllTables = function() { renderUserLayoutAllScene(); renderDeviceTableOnly(); renderRepairTableOnly(); }
     </script>
 </body>
 </html>
