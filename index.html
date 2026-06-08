@@ -170,7 +170,7 @@
                                 <th class="p-2.5">Đơn Vị Quản Lý</th>
                                 <th class="p-2.5 text-center">Mã QR (Mắt Thưa)</th>
                                 <th class="p-2.5">Nhân Sự Phụ Trách</th>
-                                <th class="p-2.5 text-center">Trạng Thắng</th>
+                                <th class="p-2.5 text-center">Trạng Thái</th>
                                 <th class="p-2.5 text-right pr-4">Hành Động</th>
                             </tr>
                         </thead>
@@ -371,7 +371,7 @@
         let depts = [], users = [], devices = [], repairs = [], tasks = [], systemAccounts = [];
         let activeUserDeptFilter = 'all', loggedInUser = null, currentAuthTab = 'login';
 
-        // KHỞI TẠO TÀI KHOẢN MẶC ĐỊNH THEO CHUẨN YÊU CẦU
+        // KHỞI TẠO TÀI KHOẢN MẶC ĐỊNH
         if(!localStorage.getItem('vinapaco_accounts_v3')) {
             const defaultAccs = [
                 { username: 'admin', pass: 'vinapaco2026', role: 'Admin' }
@@ -408,7 +408,6 @@
             if(!user || !pass) { alert("Vui lòng nhập tài khoản và mật khẩu!"); return; }
 
             if(currentAuthTab === 'login') {
-                // LOGIC ĐĂNG NHẬP
                 const found = systemAccounts.find(a => a.username === user && a.pass === pass);
                 if(found) {
                     loggedInUser = found;
@@ -417,7 +416,6 @@
                     errMsg.classList.remove('hidden');
                 }
             } else {
-                // LOGIC ĐĂNG KÝ TÀI KHOẢN MỚI
                 if(systemAccounts.some(a => a.username === user)) {
                     alert("Tên tài khoản này đã được sử dụng!"); return;
                 }
@@ -468,11 +466,10 @@
             if(loggedInUser.role === 'Admin') renderAccountSubTable();
         }
 
-        // ĐIỀU CHỈNH ẨN HIỆN FORM VÀ QUYỀN TRÊN GIAO DIỆN PHIÊN BẢN CŨ
+        // ĐIỀU CHỈNH ẨN HIỆN FORM VÀ QUYỀN TRÊN GIAO DIỆN
         function applyPermissionRulesUI() {
-            const role = loggedInUser ? loggedInUser.role : 'Viewer'; // Mặc định chưa đăng nhập là Viewer
+            const role = loggedInUser ? loggedInUser.role : 'Viewer'; 
             
-            // Khối quản lý quyền chỉ dành riêng cho Admin
             const adminBlock = document.getElementById('adminUserManagementBlock');
             if(role === 'Admin') {
                 adminBlock.classList.remove('hidden');
@@ -481,7 +478,6 @@
                 adminBlock.classList.add('hidden');
             }
 
-            // Thiết lập ẩn hiện Form nhập liệu tùy theo vai trò
             const forms = ['formDeviceAction', 'formRepairAction', 'formUserAction', 'formTaskAction'];
             forms.forEach(fId => {
                 const el = document.getElementById(fId);
@@ -555,19 +551,35 @@
             }
         }
 
+        // 🛠️ FIX SỬA LỖI ÉP TẢI LẠI DỮ LIỆU: Tự nhận dạng Object hoặc Array trên Firebase
         function fetchCloudData() {
             const nodeKey = currentEnv === 'live' ? 'root' : 'demo_root';
+            const indicatorText = document.getElementById('syncBadgeText');
+            indicatorText.innerText = "Đang kết nối cơ sở dữ liệu cloud...";
+            
             get(ref(db, nodeKey)).then((snapshot) => {
                 const data = snapshot.val() || {};
-                depts = data.depts ? Object.values(data.depts) : [];
-                users = data.users ? Object.values(data.users) : [];
-                devices = data.devices ? Object.values(data.devices) : [];
-                repairs = data.repairs ? Object.values(data.repairs) : [];
-                tasks = data.tasks ? Object.values(data.tasks) : [];
+                
+                // Hàm chuyển đổi an toàn tránh lỗi dữ liệu rỗng hoặc sai kiểu cấu trúc
+                const parseData = (target) => {
+                    if (!target) return [];
+                    return Array.isArray(target) ? target.filter(Boolean) : Object.values(target);
+                };
+
+                depts = parseData(data.depts);
+                users = parseData(data.users);
+                devices = parseData(data.devices);
+                repairs = parseData(data.repairs);
+                tasks = parseData(data.tasks);
                 
                 updateDropdownOptions();
                 renderAllTables();
                 autoGenDeviceId();
+                
+                indicatorText.innerText = currentEnv === 'live' ? "DỮ LIỆU THẬT (LIVE) - Tổng công ty Giấy Việt Nam" : "DỮ LIỆU THỬ NGHIỆM (DEMO)";
+            }).catch(err => {
+                console.error("Lỗi tải dữ liệu: ", err);
+                indicatorText.innerText = "⚠️ Lỗi kết nối đồng bộ Firebase!";
             });
         }
 
@@ -578,9 +590,9 @@
             set(ref(db, nodeKey), { depts, users, devices, repairs, tasks }).then(() => { fetchCloudData(); });
         }
 
-        // THIẾT LẬP CHUỖI QR MA TRẬN DẸT ĐỂ MÁY QUÉT CÔNG NGHIỆP CẦM TAY ĐỌC NHẠY BÉN
+        // ⚡ TỐI ƯU HÓA MÃ QR (Rút gọn chuỗi tối đa giúp ma trận thưa, cực nhạy với đầu đọc máy quét)
         function makeQRTextContent(dev) {
-            return `ID:${dev.id}|N:${dev.name}|D:${dev.dept}|U:${dev.user || 'Kho'}`;
+            return `ID:${dev.id}\nN:${dev.name}\nD:${dev.dept}\nU:${dev.user || 'Kho'}`;
         }
 
         window.generateLocalQR = function(containerId, text, size = 120) {
@@ -593,8 +605,14 @@
                     height: size,
                     colorDark: "#000000",
                     colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.L // Ép thưa ma trận, mắt to rõ dễ nhận dạng
+                    correctLevel: QRCode.CorrectLevel.L // Level L: Mật độ mắt thưa tối đa, siêu nhạy cho máy quét nhà máy
                 });
+                
+                // Tối ưu hóa tag ảnh QR tạo ra để hiển thị sắc nét mượt mà không bị nhòe mờ
+                const qrImg = container.querySelector('img');
+                if (qrImg) {
+                    qrImg.style.imageRendering = 'pixelated';
+                }
             }
         }
 
@@ -618,7 +636,7 @@
                 document.getElementById('qrPrintId').innerText = dev.id;
                 document.getElementById('qrPrintDept').innerText = "ĐV: " + dev.dept;
                 document.getElementById('qrPrintUser').innerText = "Phụ trách: " + (dev.user || "Trong kho");
-                generateLocalQR('qrPrintCanvas', qrText, 130);
+                generateLocalQR('qrPrintCanvas', qrText, 140);
             }, 50);
         }
 
@@ -891,7 +909,7 @@
             renderTaskTableOnly(); 
         }
 
-        // KHI TẢI TRANG LẦN ĐẦU: ÁP DỤNG QUYỀN GUEST XEM BẢNG TRƯỚC
+        // KHỞI CHẠY TRẠNG THÁI BAN ĐẦU
         applyPermissionRulesUI();
         updateEnvButtonsUI();
         fetchCloudData();
