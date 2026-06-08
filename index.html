@@ -17,87 +17,102 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
         .tab-active { border-bottom-width: 3px; border-color: #0f172a; font-weight: bold; color: #0f172a; }
+        .auth-tab-active { border-bottom-width: 2px; border-color: #3b82f6; color: #3b82f6; font-weight: bold; }
     </style>
 </head>
 <body id="mainBody" class="bg-slate-100 text-slate-800 font-sans min-h-screen p-4 md:p-6 space-y-6">
 
-    <div id="loginBlock" class="fixed inset-0 bg-slate-900/80 backdrop-blur-xs flex items-center justify-center z-50">
-        <div class="bg-white p-6 rounded-xl shadow-xl border border-slate-200 w-full max-w-sm">
-            <div class="text-center mb-4">
-                <i class="fa-solid fa-users-gear text-slate-700 text-3xl mb-2"></i>
-                <h3 class="font-black text-lg text-slate-900">ĐĂNG NHẬP ĐIỀU HÀNH</h3>
-                <p class="text-xs text-slate-500">Hệ thống phân quyền nhà máy VINAPACO</p>
-            </div>
-            <div class="space-y-3 text-xs">
-                <div>
-                    <label class="block font-bold text-slate-600 mb-1">Tên tài khoản</label>
-                    <input type="text" id="sysUsername" placeholder="Nhập username... (Mặc định: admin)" class="w-full border border-slate-300 rounded-lg p-2.5 font-bold focus:outline-none">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-600 mb-1">Mật khẩu</label>
-                    <input type="password" id="sysPassword" placeholder="Nhập mật khẩu... (Mặc định: vinapaco2026)" class="w-full border border-slate-300 rounded-lg p-2.5 font-bold focus:outline-none">
-                </div>
-                <button onclick="handleLoginWithAccount()" class="w-full py-2.5 bg-slate-800 text-white font-bold rounded-lg cursor-pointer hover:bg-slate-900 text-sm mt-2">Xác Nhận Đăng Nhập</button>
-            </div>
-            <p id="loginError" class="text-red-600 font-bold text-center text-xs mt-2 hidden">⚠️ Tài khoản hoặc mật khẩu không đúng!</p>
-        </div>
-    </div>
-
-    <div id="changePassModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 hidden">
-        <div class="bg-white p-6 rounded-xl shadow-xl border border-slate-200 w-full max-w-sm">
-            <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h3 class="font-black text-slate-900 text-sm uppercase"><i class="fa-solid fa-key mr-1.5 text-slate-600"></i> Đổi mật khẩu tài khoản</h3>
-                <button onclick="toggleChangePassModal(false)" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="space-y-3 text-xs">
-                <div>
-                    <label class="block font-bold text-slate-500 mb-1">Mật khẩu cũ hiện tại</label>
-                    <input type="password" id="oldPasswordInput" class="w-full border p-2 rounded-lg focus:outline-none font-bold">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-500 mb-1">Mật khẩu mới</label>
-                    <input type="password" id="newPasswordInput" class="w-full border p-2 rounded-lg focus:outline-none font-bold">
-                </div>
-                <button onclick="submitChangePassword()" class="w-full py-2 bg-slate-800 text-white font-bold rounded-lg cursor-pointer hover:bg-slate-950 mt-2">Cập Nhật Mật Khẩu</button>
-            </div>
-        </div>
-    </div>
-
-    <header id="mainHeader" class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden hidden">
+    <header class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
         <div class="absolute inset-x-0 top-0 h-1 bg-slate-700"></div>
-        <div class="flex flex-col lg:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-3 text-center lg:text-left">
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-4 items-center">
+            
+            <div class="xl:col-span-5 flex items-center gap-3 text-center sm:text-left">
                 <div class="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center border border-slate-200 text-slate-600 text-xl font-black shrink-0">
                     <i class="fa-solid fa-industry"></i>
                 </div>
                 <div>
                     <h2 class="text-[9px] font-bold tracking-widest text-slate-400 uppercase">Hệ Thống Quản Lý Điều Hành Sản Xuất & Cấp Phát QR Code</h2>
-                    <h1 class="text-lg md:text-xl font-black text-slate-900 tracking-tight mt-0.5">TỔNG CÔNG TY GIẤY VIỆT NAM</h1>
+                    <h1 class="text-md md:text-lg font-black text-slate-900 tracking-tight mt-0.5">TỔNG CÔNG TY GIẤY VIỆT NAM</h1>
                 </div>
             </div>
 
-            <div class="flex flex-wrap items-center justify-center gap-3 bg-slate-50 p-1.5 rounded-lg border border-slate-200">
-                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider pl-1"><i class="fa-solid fa-database"></i> Kho Dữ Liệu:</span>
-                <button onclick="switchEnvironment('live')" id="envBtn-live" class="px-3 py-1 rounded-md font-bold cursor-pointer transition-all text-xs">🟢 Chạy Thật (Live)</button>
-                <button onclick="switchEnvironment('demo')" id="envBtn-demo" class="px-3 py-1 rounded-md font-bold cursor-pointer transition-all text-xs">Chạy Thử (Demo)</button>
+            <div class="xl:col-span-3 flex items-center justify-center bg-slate-50 p-1.5 rounded-lg border border-slate-200 h-fit max-w-sm mx-auto xl:w-full">
+                <button onclick="switchEnvironment('live')" id="envBtn-live" class="w-1/2 py-1 rounded-md font-bold cursor-pointer transition-all text-xs text-center">🟢 Live</button>
+                <button onclick="switchEnvironment('demo')" id="envBtn-demo" class="w-1/2 py-1 rounded-md font-bold cursor-pointer transition-all text-xs text-center">Chạy Thử</button>
+            </div>
+
+            <div class="xl:col-span-4 bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs" id="authZoneArea">
+                <div id="guestAuthForm" class="space-y-2">
+                    <div class="flex border-b border-slate-200 mb-2">
+                        <button onclick="switchAuthTab('login')" id="tabAuthLogin" class="w-1/2 pb-1 text-center font-bold auth-tab-active cursor-pointer">Đăng Nhập</button>
+                        <button onclick="switchAuthTab('register')" id="tabAuthRegister" class="w-1/2 pb-1 text-center font-bold text-slate-400 cursor-pointer">Đăng Ký Tài Khoản</button>
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <input type="text" id="authUsername" placeholder="Tài khoản..." class="w-1/2 border bg-white p-1.5 rounded focus:outline-none font-bold">
+                        <input type="password" id="authPassword" placeholder="Mật khẩu..." class="w-1/2 border bg-white p-1.5 rounded focus:outline-none font-bold">
+                    </div>
+                    
+                    <div id="registerRoleBox" class="hidden">
+                        <label class="block font-medium text-slate-500 mb-0.5">Chọn nhóm quyền mong muốn khi đăng ký:</label>
+                        <select id="authDesiredRole" class="w-full border bg-white p-1 rounded focus:outline-none font-bold text-blue-700">
+                            <option value="Kỹ thuật">🛠️ Kỹ thuật (Được thêm thiết bị, sửa chữa)</option>
+                            <option value="Viewer">👁️ Viewer (Chỉ xem báo cáo)</option>
+                        </select>
+                    </div>
+
+                    <div class="flex justify-between items-center pt-1">
+                        <span class="text-[10px] text-red-500 font-bold hidden" id="authErrorMsg">⚠️ Thông tin sai!</span>
+                        <button onclick="processAuthSubmit()" id="btnAuthActionSubmit" class="ml-auto px-4 py-1.5 bg-slate-800 text-white font-bold rounded hover:bg-slate-900 cursor-pointer">Xác Nhận</button>
+                    </div>
+                </div>
+
+                <div id="userLoggedInDashboard" class="hidden flex justify-between items-center h-full py-1">
+                    <div class="space-y-0.5">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <span id="txtHelloUser" class="font-bold text-slate-900">Xin chào, admin</span>
+                        </div>
+                        <p id="txtUserRoleBadge" class="text-[10px] text-blue-600 font-black uppercase tracking-wider">Quyền hạn: Admin</p>
+                    </div>
+                    <div class="flex gap-1.5">
+                        <button onclick="openChangePassInline()" class="px-2 py-1 bg-amber-600 text-white rounded font-bold hover:bg-amber-700 cursor-pointer text-[10px]"><i class="fa-solid fa-key"></i> Đổi MK</button>
+                        <button onclick="handleLogoutSystem()" class="px-2 py-1 bg-red-600 text-white rounded font-bold hover:bg-red-700 cursor-pointer text-[10px]"><i class="fa-solid fa-right-from-bracket"></i> Đăng Xuất</button>
+                    </div>
+                </div>
             </div>
         </div>
-        
+
         <div class="mt-3 flex flex-col sm:flex-row gap-2 items-center justify-between text-xs bg-slate-50 border p-2 rounded-lg">
             <div class="flex items-center gap-2">
                 <span id="envStatusIndicator" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span id="syncBadgeText" class="font-bold text-slate-600">Đang đồng bộ máy chủ...</span>
+                <span id="syncBadgeText" class="font-bold text-slate-600">Đang tải dữ liệu từ máy chủ VINAPACO...</span>
             </div>
-            <div class="flex flex-wrap gap-2 items-center">
-                <span id="activeUserBadge" class="px-2 py-1 bg-blue-100 text-blue-800 font-bold rounded text-[11px]">User: Guest</span>
-                <button onclick="toggleChangePassModal(true)" class="px-2.5 py-1 bg-amber-600 text-white font-bold rounded hover:bg-amber-700 cursor-pointer text-[11px]"><i class="fa-solid fa-key"></i> Đổi Mật Khẩu</button>
-                <button onclick="triggerManualFetch()" class="px-2.5 py-1 bg-slate-700 text-white font-bold rounded hover:bg-slate-800 cursor-pointer text-[11px]"><i class="fa-solid fa-arrows-rotate"></i> Ép Tải Lại Dữ Liệu Cũ</button>
-                <button onclick="window.location.reload()" class="px-2 py-1 bg-red-600 text-white font-bold rounded hover:bg-red-700 cursor-pointer text-[11px]"><i class="fa-solid fa-power-off"></i> Đăng Xuất</button>
-            </div>
+            <button onclick="triggerManualFetch()" class="px-2.5 py-1 bg-slate-700 text-white font-bold rounded hover:bg-slate-800 cursor-pointer text-[11px]"><i class="fa-solid fa-arrows-rotate"></i> Ép Tải Lại Dữ Liệu Cũ</button>
         </div>
     </header>
 
-    <main id="contentSection" class="space-y-6 hidden">
+    <main class="space-y-6">
+        
+        <section id="adminUserManagementBlock" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hidden">
+            <div class="bg-slate-900 text-white font-bold p-3 text-sm flex items-center gap-1.5">
+                <i class="fa-solid fa-user-shield text-amber-400"></i> Trục Quản Lý Thành Viên & Phê Duyệt / Phân Quyền Hệ Thống
+            </div>
+            <div class="overflow-x-auto text-xs bg-white">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b bg-slate-100 text-slate-600 font-bold">
+                            <th class="p-2.5 pl-4">Tên tài khoản (Username)</th>
+                            <th class="p-2.5">Mật khẩu</th>
+                            <th class="p-2.5">Phân cấp quyền hạn hiện tại</th>
+                            <th class="p-2.5 text-right pr-4">Tác vụ quản trị</th>
+                        </tr>
+                    </thead>
+                    <tbody id="accountSubTableBody" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+        </section>
+
         <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
             <div class="lg:col-span-8 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
@@ -106,7 +121,7 @@
                     <span class="text-xs bg-slate-600 px-2 py-0.5 rounded font-mono" id="count-device">0 tài sản</span>
                 </div>
 
-                <form id="formDeviceAction" onsubmit="handleDeviceSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs border-b border-slate-100 bg-slate-50/50">
+                <form id="formDeviceAction" onsubmit="handleDeviceSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs border-b border-slate-100 bg-slate-50/50 hidden">
                     <div class="sm:col-span-3">
                         <label class="block font-bold text-slate-500 mb-1">Mã Tài Sản Định Danh</label>
                         <input type="text" id="deviceId" readonly class="w-full border border-slate-200 bg-slate-100 font-mono font-bold text-slate-600 rounded-lg p-2">
@@ -123,7 +138,6 @@
                             <option value="Thiết bị CNTT & Văn phòng">Thiết bị CNTT & Văn phòng</option>
                         </select>
                     </div>
-                    
                     <div class="sm:col-span-4">
                         <label class="block font-bold text-amber-700 mb-1"><i class="fa-solid fa-building"></i> Phòng ban quản lý</label>
                         <select id="deviceDept" required onchange="updateUserDropdownByDept()" class="w-full border border-amber-300 rounded-lg p-2 bg-amber-50/30 font-bold focus:outline-none">
@@ -136,7 +150,6 @@
                             <option value="Chưa cấp phát">-- Để trống: Giữ lưu kho --</option>
                         </select>
                     </div>
-
                     <div class="sm:col-span-3 flex items-end">
                         <button type="submit" class="w-full py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 cursor-pointer shadow-xs">Lưu & Sinh Mã QR</button>
                     </div>
@@ -157,7 +170,7 @@
                                 <th class="p-2.5">Đơn Vị Quản Lý</th>
                                 <th class="p-2.5 text-center">Mã QR (Mắt Thưa)</th>
                                 <th class="p-2.5">Nhân Sự Phụ Trách</th>
-                                <th class="p-2.5 text-center">Trạng Thái</th>
+                                <th class="p-2.5 text-center">Trạng Thắng</th>
                                 <th class="p-2.5 text-right pr-4">Hành Động</th>
                             </tr>
                         </thead>
@@ -186,51 +199,11 @@
             </div>
         </section>
 
-        <section id="adminUserManagementBlock" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hidden">
-            <div class="bg-slate-900 text-white font-bold p-3 text-sm flex items-center gap-1.5">
-                <i class="fa-solid fa-user-gear text-amber-400"></i> Thiết Lập Quản Lý Tài Khoản Thành Viên & Phân Quyền Hệ Thống
-            </div>
-            <div class="p-4 grid grid-cols-1 md:grid-cols-4 gap-3 text-xs bg-slate-50/50 border-b border-slate-200">
-                <div>
-                    <label class="block font-bold text-slate-600 mb-1">Tên tài khoản (Username)</label>
-                    <input type="text" id="newAccUser" placeholder="Ví dụ: kytuong123" class="w-full border border-slate-300 rounded-lg p-2 focus:outline-none bg-white font-bold">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-600 mb-1">Mật khẩu khởi tạo</label>
-                    <input type="text" id="newAccPass" placeholder="Mật khẩu riêng..." class="w-full border border-slate-300 rounded-lg p-2 focus:outline-none bg-white font-bold">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-600 mb-1">Cấp nhóm quyền điều hành</label>
-                    <select id="newAccRole" class="w-full border border-slate-300 rounded-lg p-2 focus:outline-none bg-white font-bold text-blue-700">
-                        <option value="Admin">🔑 Admin (Toàn quyền hệ thống)</option>
-                        <option value="Kỹ thuật">🛠️ Kỹ thuật (Được thêm tài sản, sửa chữa)</option>
-                        <option value="Viewer">👁️ Viewer (Chỉ xem, không có quyền sửa)</option>
-                    </select>
-                </div>
-                <div class="flex items-end">
-                    <button onclick="handleCreateAccountSub()" class="w-full py-2 bg-slate-800 text-white font-bold rounded-lg cursor-pointer hover:bg-slate-950">Tạo & Lưu Tài Khoản</button>
-                </div>
-            </div>
-            <div class="overflow-x-auto text-xs bg-white">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="border-b bg-slate-100 text-slate-600 font-bold">
-                            <th class="p-2.5 pl-4">Tài Khoản (Username)</th>
-                            <th class="p-2.5">Mật Khẩu</th>
-                            <th class="p-2.5">Quyền Hạn</th>
-                            <th class="p-2.5 text-right pr-4">Hành Động</th>
-                        </tr>
-                    </thead>
-                    <tbody id="accountSubTableBody" class="divide-y divide-slate-100"></tbody>
-                </table>
-            </div>
-        </section>
-
         <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
             <div class="bg-purple-700 text-white font-bold p-3 text-sm flex items-center gap-1.5">
                 <i class="fa-solid fa-screwdriver-wrench"></i> Mẫu Nhật Ký Bảo Trì & Sửa Chữa Thiết Bị Toàn Hệ Thống
             </div>
-            <form id="formRepairAction" onsubmit="handleRepairSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 text-xs bg-slate-50/30 border-b border-slate-100">
+            <form id="formRepairAction" onsubmit="handleRepairSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 text-xs bg-slate-50/30 border-b border-slate-100 hidden">
                 <div class="md:col-span-3">
                     <label class="block text-slate-500 font-medium mb-1">1. Thiết bị đang sự cố</label>
                     <select id="repairDeviceId" required class="w-full border border-slate-300 rounded-lg p-2 bg-white font-mono font-bold focus:outline-none"></select>
@@ -261,7 +234,7 @@
                             <th class="p-2.5">Chi Tiết Sự Cố</th>
                             <th class="p-2.5">Kỹ Thuật</th>
                             <th class="p-2.5">Chi Phí</th>
-                            <th class="p-2.5 text-right pr-4">Hành động</th>
+                            <th class="p-2.5 text-right pr-4" id="colRepairActionHeader">Hành động</th>
                         </tr>
                     </thead>
                     <tbody id="repairTableBody" class="divide-y divide-slate-100"></tbody>
@@ -271,10 +244,10 @@
 
         <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
             <div class="bg-emerald-700 text-white font-bold p-3 text-sm flex items-center justify-between">
-                <span><i class="fa-solid fa-users-gear mr-1.5 text-slate-300"></i> Quản Lý Hồ Sơ Nhân Sự & Sơ Đồ Phòng Ban</span>
+                <span><i class="fa-solid fa-users-gear mr-1.5 text-slate-300"></i> Quản Lý Hồ Sơ Nhân Sự & Sơ ĐỒ Phòng Ban</span>
                 <span class="text-xs bg-emerald-600 px-2 py-0.5 rounded font-mono" id="count-user">0 nhân sự</span>
             </div>
-            <div id="formUserAction" class="p-4 grid grid-cols-1 lg:grid-cols-12 gap-5 border-b border-slate-100 bg-slate-50/50 text-xs">
+            <div id="formUserAction" class="p-4 grid grid-cols-1 lg:grid-cols-12 gap-5 border-b border-slate-100 bg-slate-50/50 text-xs hidden">
                 <div class="lg:col-span-4 border-r border-slate-200 pr-4">
                     <span class="block font-bold text-slate-400 text-[10px] uppercase mb-1.5"><i class="fa-solid fa-building"></i> PHÒNG BAN / PHÂN XƯỞNG</span>
                     <form onsubmit="handleDeptSubmit(event)" class="space-y-2">
@@ -307,7 +280,7 @@
                         <tr class="border-b bg-slate-50 text-slate-500 font-bold">
                             <th class="p-2.5 pl-4">Họ Tên / Chức Danh</th>
                             <th class="p-2.5">Đơn Vị Quản Lý</th>
-                            <th class="p-2.5 text-right pr-4">Tác Vụ</th>
+                            <th class="p-2.5 text-right pr-4" id="colUserActionHeader">Tác Vụ</th>
                         </tr>
                     </thead>
                     <tbody id="userTableBody" class="divide-y divide-slate-100"></tbody>
@@ -319,7 +292,7 @@
             <div class="p-3 font-bold text-sm bg-slate-800 flex items-center gap-1.5">
                 <i class="fa-solid fa-list-check"></i> Kế Hoạch Phân Công Công Việc Nhà Máy (Đếm Ngược Thời Gian Thực)
             </div>
-            <div id="formTaskAction" class="p-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs bg-slate-900/50">
+            <div id="formTaskAction" class="p-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs bg-slate-900/50 hidden">
                 <div>
                     <label class="block text-slate-400 mb-1">Nội dung hạng mục công việc</label>
                     <input type="text" id="taskName" placeholder="Nhập tên việc cần phân công..." class="w-full border border-slate-700 rounded-lg p-2 bg-slate-800 text-white focus:outline-none">
@@ -363,7 +336,7 @@
                             <th class="p-2.5">⏰ Bắt Đầu</th>
                             <th class="p-2.5">⏳ Đếm Ngược</th>
                             <th class="p-2.5">Trạng Thái</th>
-                            <th class="p-2.5 text-right pr-4">Xóa</th>
+                            <th class="p-2.5 text-right pr-4" id="colTaskActionHeader">Xóa</th>
                         </tr>
                     </thead>
                     <tbody id="taskTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
@@ -396,128 +369,164 @@
 
         let currentEnv = localStorage.getItem('vinapaco_current_env') || 'live'; 
         let depts = [], users = [], devices = [], repairs = [], tasks = [], systemAccounts = [];
-        let activeUserDeptFilter = 'all', loggedInUser = null;
+        let activeUserDeptFilter = 'all', loggedInUser = null, currentAuthTab = 'login';
 
-        // BẢO MẬT: KHỞI TẠO TÀI KHOẢN ADMIN MẶC ĐỊNH THEO YÊU CẦU
-        if(!localStorage.getItem('vinapaco_accounts_db')) {
+        // KHỞI TẠO TÀI KHOẢN MẶC ĐỊNH THEO CHUẨN YÊU CẦU
+        if(!localStorage.getItem('vinapaco_accounts_v3')) {
             const defaultAccs = [
                 { username: 'admin', pass: 'vinapaco2026', role: 'Admin' }
             ];
-            localStorage.setItem('vinapaco_accounts_db', JSON.stringify(defaultAccs));
+            localStorage.setItem('vinapaco_accounts_v3', JSON.stringify(defaultAccs));
         }
-        systemAccounts = JSON.parse(localStorage.getItem('vinapaco_accounts_db'));
+        systemAccounts = JSON.parse(localStorage.getItem('vinapaco_accounts_v3'));
 
-        window.handleLoginWithAccount = function() {
-            const uInput = document.getElementById('sysUsername').value.trim();
-            const pInput = document.getElementById('sysPassword').value.trim();
-            const err = document.getElementById('loginError');
-
-            const found = systemAccounts.find(a => a.username === uInput && a.pass === pInput);
-            if(found) {
-                loggedInUser = found;
-                document.getElementById('loginBlock').classList.add('hidden');
-                document.getElementById('mainHeader').classList.remove('hidden');
-                document.getElementById('contentSection').classList.remove('hidden');
-                
-                document.getElementById('activeUserBadge').innerText = `User: ${found.username} (${found.role})`;
-                applyPermissionRulesUI();
-                fetchCloudData();
+        // ĐỔI TAB ĐĂNG NHẬP / ĐĂNG KÝ
+        window.switchAuthTab = function(tab) {
+            currentAuthTab = tab;
+            const tabL = document.getElementById('tabAuthLogin');
+            const tabR = document.getElementById('tabAuthRegister');
+            const roleBox = document.getElementById('registerRoleBox');
+            
+            if(tab === 'login') {
+                tabL.className = "w-1/2 pb-1 text-center font-bold auth-tab-active cursor-pointer";
+                tabR.className = "w-1/2 pb-1 text-center font-bold text-slate-400 cursor-pointer";
+                roleBox.classList.add('hidden');
             } else {
-                err.classList.remove('hidden');
+                tabR.className = "w-1/2 pb-1 text-center font-bold auth-tab-active cursor-pointer";
+                tabL.className = "w-1/2 pb-1 text-center font-bold text-slate-400 cursor-pointer";
+                roleBox.classList.remove('hidden');
             }
         }
 
-        // PHÂN QUYỀN TRỰC TIẾP TRÊN INTERFACE NGƯỜI DÙNG CON
+        // XỬ LÝ CLICK NÚT XÁC NHẬN (LOGIN / REGISTER)
+        window.processAuthSubmit = function() {
+            const user = document.getElementById('authUsername').value.trim();
+            const pass = document.getElementById('authPassword').value.trim();
+            const errMsg = document.getElementById('authErrorMsg');
+            errMsg.classList.add('hidden');
+
+            if(!user || !pass) { alert("Vui lòng nhập tài khoản và mật khẩu!"); return; }
+
+            if(currentAuthTab === 'login') {
+                // LOGIC ĐĂNG NHẬP
+                const found = systemAccounts.find(a => a.username === user && a.pass === pass);
+                if(found) {
+                    loggedInUser = found;
+                    executeLoginSuccess();
+                } else {
+                    errMsg.classList.remove('hidden');
+                }
+            } else {
+                // LOGIC ĐĂNG KÝ TÀI KHOẢN MỚI
+                if(systemAccounts.some(a => a.username === user)) {
+                    alert("Tên tài khoản này đã được sử dụng!"); return;
+                }
+                const desiredRole = document.getElementById('authDesiredRole').value;
+                systemAccounts.push({ username: user, pass, role: desiredRole });
+                localStorage.setItem('vinapaco_accounts_v3', JSON.stringify(systemAccounts));
+                
+                alert(`✅ Đăng ký tài khoản con [${user}] thành công! Bạn có thể sử dụng tài khoản này để đăng nhập ngay.`);
+                switchAuthTab('login');
+                document.getElementById('authPassword').value = "";
+            }
+        }
+
+        function executeLoginSuccess() {
+            document.getElementById('guestAuthForm').classList.add('hidden');
+            document.getElementById('userLoggedInDashboard').classList.remove('hidden');
+            document.getElementById('txtHelloUser').innerText = `Xin chào, ${loggedInUser.username}`;
+            document.getElementById('txtUserRoleBadge').innerText = `Quyền hạn: ${loggedInUser.role}`;
+            
+            applyPermissionRulesUI();
+            renderAllTables();
+        }
+
+        window.handleLogoutSystem = function() {
+            loggedInUser = null;
+            document.getElementById('userLoggedInDashboard').classList.add('hidden');
+            document.getElementById('guestAuthForm').classList.remove('hidden');
+            document.getElementById('authUsername').value = "";
+            document.getElementById('authPassword').value = "";
+            
+            applyPermissionRulesUI();
+            renderAllTables();
+        }
+
+        window.openChangePassInline = function() {
+            const newPass = prompt("Nhập mật khẩu mới cho tài khoản của bạn (tối thiểu 4 ký tự):");
+            if(!newPass) return;
+            if(newPass.trim().length < 4) { alert("Mật khẩu quá ngắn!"); return; }
+
+            systemAccounts.forEach(a => {
+                if(a.username === loggedInUser.username) {
+                    a.pass = newPass.trim();
+                    loggedInUser.pass = newPass.trim();
+                }
+            });
+            localStorage.setItem('vinapaco_accounts_v3', JSON.stringify(systemAccounts));
+            alert("✅ Đã cập nhật mật khẩu tài khoản thành công!");
+            if(loggedInUser.role === 'Admin') renderAccountSubTable();
+        }
+
+        // ĐIỀU CHỈNH ẨN HIỆN FORM VÀ QUYỀN TRÊN GIAO DIỆN PHIÊN BẢN CŨ
         function applyPermissionRulesUI() {
-            const role = loggedInUser.role;
+            const role = loggedInUser ? loggedInUser.role : 'Viewer'; // Mặc định chưa đăng nhập là Viewer
+            
+            // Khối quản lý quyền chỉ dành riêng cho Admin
+            const adminBlock = document.getElementById('adminUserManagementBlock');
             if(role === 'Admin') {
-                document.getElementById('adminUserManagementBlock').classList.remove('hidden');
+                adminBlock.classList.remove('hidden');
                 renderAccountSubTable();
             } else {
-                document.getElementById('adminUserManagementBlock').classList.add('hidden');
+                adminBlock.classList.add('hidden');
             }
 
-            if(role === 'Viewer') {
-                document.getElementById('formDeviceAction').classList.add('hidden');
-                document.getElementById('formRepairAction').classList.add('hidden');
-                document.getElementById('formUserAction').classList.add('hidden');
-                document.getElementById('formTaskAction').classList.add('hidden');
-            } else {
-                document.getElementById('formDeviceAction').classList.remove('hidden');
-                document.getElementById('formRepairAction').classList.remove('hidden');
-                document.getElementById('formUserAction').classList.remove('hidden');
-                document.getElementById('formTaskAction').classList.remove('hidden');
-            }
-        }
-
-        window.handleCreateAccountSub = function() {
-            const user = document.getElementById('newAccUser').value.trim();
-            const pass = document.getElementById('newAccPass').value.trim();
-            const role = document.getElementById('newAccRole').value;
-
-            if(!user || !pass) { alert("Vui lòng điền đầy đủ User và Mật khẩu con!"); return; }
-            if(systemAccounts.some(a => a.username === user)) { alert("Tên tài khoản này đã tồn tại!"); return; }
-
-            systemAccounts.push({ username: user, pass, role });
-            localStorage.setItem('vinapaco_accounts_db', JSON.stringify(systemAccounts));
-            
-            document.getElementById('newAccUser').value = "";
-            document.getElementById('newAccPass').value = "";
-            renderAccountSubTable();
-            alert(`✅ Đã khởi tạo thành công tài khoản con: ${user}`);
+            // Thiết lập ẩn hiện Form nhập liệu tùy theo vai trò
+            const forms = ['formDeviceAction', 'formRepairAction', 'formUserAction', 'formTaskAction'];
+            forms.forEach(fId => {
+                const el = document.getElementById(fId);
+                if(role === 'Admin' || role === 'Kỹ thuật') el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            });
         }
 
         function renderAccountSubTable() {
             const body = document.getElementById('accountSubTableBody');
             body.innerHTML = '';
             systemAccounts.forEach(a => {
-                const delBtn = a.username === 'admin' ? '<span class="text-slate-400 italic">Mặc định</span>' : `<button onclick="deleteAccountSub('${a.username}')" class="text-red-600 font-bold hover:underline cursor-pointer">Xóa tài khoản</button>`;
+                let currentOptions = `
+                    <select onchange="changeRoleDirectly('${a.username}', this.value)" class="border rounded p-1 font-bold text-slate-700 bg-white">
+                        <option value="Admin" ${a.role==='Admin'?'selected':''}>🔑 Admin</option>
+                        <option value="Kỹ thuật" ${a.role==='Kỹ thuật'?'selected':''}>🛠️ Kỹ thuật</option>
+                        <option value="Viewer" ${a.role==='Viewer'?'selected':''}>👁️ Viewer</option>
+                    </select>
+                `;
+                const delBtn = a.username === 'admin' ? '<span class="text-slate-400 italic">Gốc</span>' : `<button onclick="deleteAccountSub('${a.username}')" class="text-red-600 font-bold hover:underline cursor-pointer">Xóa</button>`;
+                
                 body.innerHTML += `<tr class="border-b text-slate-600 hover:bg-slate-50 text-xs">
                     <td class="p-2.5 pl-4 font-bold text-slate-900">${a.username}</td>
                     <td class="p-2.5 font-mono">${a.pass}</td>
-                    <td class="p-2.5 font-bold text-blue-700">${a.role}</td>
+                    <td class="p-2.5">${currentOptions}</td>
                     <td class="p-2.5 text-right pr-4">${delBtn}</td>
                 </tr>`;
             });
         }
 
+        window.changeRoleDirectly = function(uname, newRole) {
+            if(uname === 'admin') { alert("Không thể đổi phân quyền của tài khoản Admin tối cao!"); return; }
+            systemAccounts.forEach(a => {
+                if(a.username === uname) a.role = newRole;
+            });
+            localStorage.setItem('vinapaco_accounts_v3', JSON.stringify(systemAccounts));
+            alert(`✅ Đã cập nhật quyền của [${uname}] thành [${newRole}]`);
+        }
+
         window.deleteAccountSub = function(uname) {
-            if(confirm(`Bạn có chắc chắn muốn xóa quyền truy cập của tài khoản [${uname}]?`)) {
+            if(confirm(`Xóa tài khoản [${uname}]?`)) {
                 systemAccounts = systemAccounts.filter(a => a.username !== uname);
-                localStorage.setItem('vinapaco_accounts_db', JSON.stringify(systemAccounts));
+                localStorage.setItem('vinapaco_accounts_v3', JSON.stringify(systemAccounts));
                 renderAccountSubTable();
             }
-        }
-
-        window.toggleChangePassModal = function(show) {
-            const modal = document.getElementById('changePassModal');
-            if(show) modal.classList.remove('hidden');
-            else modal.classList.add('hidden');
-        }
-
-        window.submitChangePassword = function() {
-            const oldPass = document.getElementById('oldPasswordInput').value.trim();
-            const newPass = document.getElementById('newPasswordInput').value.trim();
-
-            if(oldPass !== loggedInUser.pass) {
-                alert("⚠️ Mật khẩu cũ không chính xác!"); return;
-            }
-            if(newPass.length < 4) {
-                alert("⚠️ Mật khẩu mới phải từ 4 ký tự trở lên!"); return;
-            }
-
-            systemAccounts.forEach(a => {
-                if(a.username === loggedInUser.username) {
-                    a.pass = newPass;
-                    loggedInUser.pass = newPass;
-                }
-            });
-            localStorage.setItem('vinapaco_accounts_db', JSON.stringify(systemAccounts));
-            alert("✅ Đã cập nhật mật khẩu tài khoản thành công!");
-            toggleChangePassModal(false);
-            document.getElementById('oldPasswordInput').value = "";
-            document.getElementById('newPasswordInput').value = "";
-            if(loggedInUser.role === 'Admin') renderAccountSubTable();
         }
 
         window.switchEnvironment = function(env) {
@@ -534,13 +543,13 @@
             const ind = document.getElementById('envStatusIndicator');
 
             if(currentEnv === 'live') {
-                btnLive.className = "px-3 py-1 rounded-md font-bold cursor-pointer bg-emerald-600 text-white text-xs";
-                btnDemo.className = "px-3 py-1 rounded-md font-bold cursor-pointer bg-white text-slate-600 border text-xs";
-                text.innerText = "DỮ LIỆU THẬT (LIVE) - Kết nối phân xưởng sản xuất";
+                btnLive.className = "w-1/2 py-1 rounded-md font-bold cursor-pointer bg-emerald-600 text-white text-xs text-center";
+                btnDemo.className = "w-1/2 py-1 rounded-md font-bold cursor-pointer bg-white text-slate-600 text-xs text-center";
+                text.innerText = "DỮ LIỆU THẬT (LIVE) - Tổng công ty Giấy Việt Nam";
                 ind.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
             } else {
-                btnDemo.className = "px-3 py-1 rounded-md font-bold cursor-pointer bg-amber-500 text-white text-xs";
-                btnLive.className = "px-3 py-1 rounded-md font-bold cursor-pointer bg-white text-slate-600 border text-xs";
+                btnDemo.className = "w-1/2 py-1 rounded-md font-bold cursor-pointer bg-amber-500 text-white text-xs text-center";
+                btnLive.className = "w-1/2 py-1 rounded-md font-bold cursor-pointer bg-white text-slate-600 text-xs text-center";
                 text.innerText = "DỮ LIỆU THỬ NGHIỆM (DEMO)";
                 ind.className = "w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse";
             }
@@ -569,9 +578,9 @@
             set(ref(db, nodeKey), { depts, users, devices, repairs, tasks }).then(() => { fetchCloudData(); });
         }
 
-        // TỐI ƯU DỮ LIỆU ĐUÔI QR: BỎ CÁC KÝ TỰ NGẮT DÒNG PHỨC TẠP, LÀM THƯA MA TRẬN QR ĐỂ MÁY CÔNG NGHIỆP QUÉT ĂN NGAY
+        // THIẾT LẬP CHUỖI QR MA TRẬN DẸT ĐỂ MÁY QUÉT CÔNG NGHIỆP CẦM TAY ĐỌC NHẠY BÉN
         function makeQRTextContent(dev) {
-            return `ID:${dev.id}|NAME:${dev.name}|DEPT:${dev.dept}|USER:${dev.user || 'Kho'}`;
+            return `ID:${dev.id}|N:${dev.name}|D:${dev.dept}|U:${dev.user || 'Kho'}`;
         }
 
         window.generateLocalQR = function(containerId, text, size = 120) {
@@ -584,7 +593,7 @@
                     height: size,
                     colorDark: "#000000",
                     colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.L // Ép ma trận mật độ thấp nhất (Mắt to dễ đọc dưới ánh sáng yếu)
+                    correctLevel: QRCode.CorrectLevel.L // Ép thưa ma trận, mắt to rõ dễ nhận dạng
                 });
             }
         }
@@ -635,7 +644,6 @@
 
         window.handleDeptSubmit = function(e) {
             e.preventDefault();
-            if(loggedInUser.role === 'Viewer') return;
             const name = document.getElementById('deptName').value.trim();
             depts.push({ id: Date.now().toString(), name });
             pushDataToCloud(); document.getElementById('deptName').value = "";
@@ -643,7 +651,6 @@
 
         window.handleUserSubmit = function(e) {
             e.preventDefault();
-            if(loggedInUser.role === 'Viewer') return;
             const name = document.getElementById('userName').value.trim();
             const title = document.getElementById('userTitle').value.trim();
             const dept = document.getElementById('userDept').value;
@@ -653,7 +660,6 @@
 
         window.handleDeviceSubmit = function(e) {
             e.preventDefault();
-            if(loggedInUser.role === 'Viewer') return;
             const id = document.getElementById('deviceId').value;
             const name = document.getElementById('deviceName').value.trim();
             const cat = document.getElementById('deviceCategory').value;
@@ -670,7 +676,6 @@
 
         window.handleRepairSubmit = function(e) {
             e.preventDefault();
-            if(loggedInUser.role === 'Viewer') return;
             const devId = document.getElementById('repairDeviceId').value;
             const desc = document.getElementById('repairDesc').value.trim();
             const cost = document.getElementById('repairCost').value;
@@ -683,7 +688,6 @@
         }
 
         window.handleTaskSubmit = function() {
-            if(loggedInUser.role === 'Viewer') return;
             const name = document.getElementById('taskName').value.trim();
             const devId = document.getElementById('taskDeviceId').value;
             const user = document.getElementById('taskUser').value;
@@ -699,7 +703,6 @@
         }
 
         window.deleteItem = function(type, id) {
-            if(loggedInUser.role === 'Viewer') { alert("Bạn không có quyền thực hiện chức năng xóa!"); return; }
             if(confirm("Xóa bản ghi này khỏi máy chủ?")) {
                 if(type === 'dept') depts = depts.filter(i => i.id !== id);
                 if(type === 'user') users = users.filter(i => i.id !== id);
@@ -760,6 +763,7 @@
             const dtbBody = document.getElementById('deviceTableBody'); dtbBody.innerHTML = '';
             let rawKeyword = document.getElementById('searchDeviceInput').value.trim();
             let keyword = rawKeyword.toLowerCase();
+            const currentRole = loggedInUser ? loggedInUser.role : 'Viewer';
 
             devices.filter(d => {
                 return d.name.toLowerCase().includes(keyword) || d.id.toLowerCase().includes(keyword) || (d.user && d.user.toLowerCase().includes(keyword));
@@ -767,6 +771,12 @@
                 let bc = d.status === "Trong kho" ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700";
                 const rowCanvasId = `canvas-${d.id}`;
                 const qrText = makeQRTextContent(d);
+                
+                const showActionBtn = (currentRole === 'Admin' || currentRole === 'Kỹ thuật');
+                const actionCell = showActionBtn ? `
+                    <button onclick="previewAndSelectQR('${d.id}')" class="px-2.5 py-1.5 bg-slate-900 text-amber-400 font-black rounded border border-amber-400 cursor-pointer shadow-xs hover:bg-slate-800 text-[11px]"><i class="fa-solid fa-expand"></i> Xem & In Tem</button>
+                    <button onclick="deleteItem('device','${d.id}')" class="text-slate-300 hover:text-red-600 ml-2.5 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
+                ` : `<button onclick="previewAndSelectQR('${d.id}')" class="px-2.5 py-1.5 bg-slate-900 text-amber-400 font-black rounded border border-amber-400 cursor-pointer shadow-xs hover:bg-slate-800 text-[11px]"><i class="fa-solid fa-expand"></i> Xem</button>`;
 
                 dtbBody.innerHTML += `<tr class="border-b text-slate-600 hover:bg-slate-50">
                     <td class="p-2.5 pl-4 font-mono font-bold text-slate-900">${d.id}<span class="block text-slate-400 font-sans font-medium text-xs">${d.name}</span></td>
@@ -776,10 +786,7 @@
                     </td>
                     <td class="p-2.5 font-bold text-blue-600">${d.user === "Chưa cấp phát" || !d.user ? '📦 <span class="text-amber-600 font-normal">Trong kho</span>' : '👤 ' + d.user}</td>
                     <td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[11px] font-bold ${bc}">${d.status || 'Hoạt động tốt'}</span></td>
-                    <td class="p-2.5 text-right pr-4">
-                        <button onclick="previewAndSelectQR('${d.id}')" class="px-2.5 py-1.5 bg-slate-900 text-amber-400 font-black rounded border border-amber-400 cursor-pointer shadow-xs hover:bg-slate-800 text-[11px]"><i class="fa-solid fa-expand"></i> Xem & In Tem</button>
-                        <button onclick="deleteItem('device','${d.id}')" class="text-slate-300 hover:text-red-600 ml-2.5 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
-                    </td>
+                    <td class="p-2.5 text-right pr-4">${actionCell}</td>
                 </tr>`;
                 
                 setTimeout(() => { generateLocalQR(rowCanvasId, qrText, 45); }, 20);
@@ -789,46 +796,59 @@
 
         function renderUserTableOnly() {
             const body = document.getElementById('userTableBody'); body.innerHTML = '';
+            const currentRole = loggedInUser ? loggedInUser.role : 'Viewer';
+            const headCol = document.getElementById('colUserActionHeader');
+            
+            if(currentRole === 'Admin' || currentRole === 'Kỹ thuật') headCol.classList.remove('hidden');
+            else headCol.classList.add('hidden');
+
             users.filter(u => activeUserDeptFilter === 'all' || u.dept === activeUserDeptFilter).forEach(u => {
+                const actionCell = (currentRole === 'Admin' || currentRole === 'Kỹ thuật') ? `<td class="p-3 text-right pr-4"><button onclick="deleteItem('user','${u.id}')" class="text-slate-400 hover:text-red-600 cursor-pointer"><i class="fa-solid fa-trash-can"></i> Xóa</button></td>` : '';
                 body.innerHTML += `<tr class="border-b text-slate-600 hover:bg-slate-50 text-xs">
                     <td class="p-3 pl-4"><span class="font-bold text-slate-900 block">${u.name}</span><span class="text-slate-400 text-[11px]">${u.title}</span></td>
                     <td class="p-3 font-medium text-slate-700">${u.dept}</td>
-                    <td class="p-3 text-right pr-4">
-                        <button onclick="deleteItem('user','${u.id}')" class="text-slate-400 hover:text-red-600 cursor-pointer"><i class="fa-solid fa-trash-can"></i> Xóa</button>
-                    </td>
+                    ${actionCell}
                 </tr>`;
             });
             document.getElementById('count-user').innerText = `${users.length} nhân sự`;
         }
 
         function renderRepairTableOnly() {
-            const body = document.getElementById('repairTableBody'); 
-            body.innerHTML = '';
+            const body = document.getElementById('repairTableBody'); body.innerHTML = '';
+            const currentRole = loggedInUser ? loggedInUser.role : 'Viewer';
+            const headCol = document.getElementById('colRepairActionHeader');
+
+            if(currentRole === 'Admin' || currentRole === 'Kỹ thuật') headCol.classList.remove('hidden');
+            else headCol.classList.add('hidden');
+
             if(repairs.length === 0) {
-                body.innerHTML = `<tr><td colspan="5" class="p-4 text-center italic text-slate-400">Chưa có hồ sơ sửa chữa nào được lưu</td></tr>`;
-                return;
+                body.innerHTML = `<tr><td colspan="5" class="p-4 text-center italic text-slate-400">Chưa có hồ sơ sửa chữa nào được lưu</td></tr>`; return;
             }
             repairs.forEach(r => {
+                const actionCell = (currentRole === 'Admin' || currentRole === 'Kỹ thuật') ? `<td class="p-2.5 text-right pr-4"><button onclick="deleteItem('repair','${r.id}')" class="text-slate-300 hover:text-red-600 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button></td>` : '';
                 body.innerHTML += `<tr class="border-b text-slate-600 hover:bg-slate-50 text-xs">
                     <td class="p-2.5 pl-4 font-mono font-bold text-slate-900">${r.devId}</td>
                     <td class="p-2.5">${r.desc}</td>
                     <td class="p-2.5 text-slate-500">${r.repUser || 'Theo thiết bị'}</td>
                     <td class="p-2.5 font-bold text-slate-900">${Number(r.cost).toLocaleString('vi-VN')} đ</td>
-                    <td class="p-2.5 text-right pr-4">
-                        <button onclick="deleteItem('repair','${r.id}')" class="text-slate-300 hover:text-red-600 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
-                    </td>
+                    ${actionCell}
                 </tr>`;
             });
         }
 
         function renderTaskTableOnly() {
-            const body = document.getElementById('taskTableBody');
-            body.innerHTML = '';
+            const body = document.getElementById('taskTableBody'); body.innerHTML = '';
+            const currentRole = loggedInUser ? loggedInUser.role : 'Viewer';
+            const headCol = document.getElementById('colTaskActionHeader');
+
+            if(currentRole === 'Admin' || currentRole === 'Kỹ thuật') headCol.classList.remove('hidden');
+            else headCol.classList.add('hidden');
+
             if(tasks.length === 0) {
-                body.innerHTML = `<tr><td colspan="8" class="p-4 text-center italic text-slate-500">Chưa có kế hoạch phân công điều hành</td></tr>`;
-                return;
+                body.innerHTML = `<tr><td colspan="8" class="p-4 text-center italic text-slate-500">Chưa có kế hoạch phân công điều hành</td></tr>`; return;
             }
             tasks.forEach(t => {
+                const actionCell = (currentRole === 'Admin' || currentRole === 'Kỹ thuật') ? `<td class="p-2.5 text-right pr-4"><button onclick="deleteItem('task','${t.id}')" class="text-slate-600 hover:text-red-500 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button></td>` : '';
                 body.innerHTML += `<tr class="border-b border-slate-800 text-xs">
                     <td class="p-2.5 pl-4 font-bold text-white">${t.name}</td>
                     <td class="p-2.5 font-mono text-slate-400">${t.devId}</td>
@@ -837,9 +857,7 @@
                     <td class="p-2.5 text-slate-400">${t.start}</td>
                     <td class="p-2.5 font-bold text-emerald-400 font-mono animate-pulse" id="timer-${t.id}">--:--</td>
                     <td class="p-2.5"><span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-medium text-[10px]">Đang chạy</span></td>
-                    <td class="p-2.5 text-right pr-4">
-                        <button onclick="deleteItem('task','${t.id}')" class="text-slate-600 hover:text-red-500 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
-                    </td>
+                    ${actionCell}
                 </tr>`;
                 startCountdownUI(t.id, t.start, t.dur);
             });
@@ -873,7 +891,10 @@
             renderTaskTableOnly(); 
         }
 
+        // KHI TẢI TRANG LẦN ĐẦU: ÁP DỤNG QUYỀN GUEST XEM BẢNG TRƯỚC
+        applyPermissionRulesUI();
         updateEnvButtonsUI();
+        fetchCloudData();
     </script>
 </body>
 </html>
