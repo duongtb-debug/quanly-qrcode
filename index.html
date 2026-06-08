@@ -11,7 +11,12 @@
         @media print {
             body * { visibility: hidden; }
             #qrPrintZone, #qrPrintZone * { visibility: visible; }
-            #qrPrintZone { position: absolute; left: 50%; top: 10%; transform: translateX(-50%); display: flex !important; flex-direction: column; align-items: center; justify-content: center; border: none !important; }
+            #qrPrintZone {
+                position: absolute; left: 50%; top: 10%;
+                transform: translateX(-50%); display: flex !important;
+                flex-direction: column; align-items: center; justify-content: center;
+                border: none !important;
+            }
         }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -94,6 +99,97 @@
 
     <main class="space-y-6">
 
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <div class="lg:col-span-8 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                <div class="bg-slate-700 text-white font-bold p-3.5 text-base flex items-center justify-between">
+                    <span><i class="fa-solid fa-boxes-stacked mr-1.5 text-slate-300"></i> Danh Mục Quản Lý Cấp Phát Tài Sản & Thiết Bị</span>
+                    <span class="text-sm bg-slate-600 px-2.5 py-1 rounded font-mono" id="count-device">0 tài sản</span>
+                </div>
+
+                <form id="formDeviceAction" onsubmit="handleDeviceSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-sm border-b border-slate-100 bg-slate-50/50 hidden">
+                    <div class="sm:col-span-3">
+                        <label class="block font-bold text-slate-500 mb-1">Mã Tài Sản Định Danh</label>
+                        <input type="text" id="deviceId" readonly class="w-full border border-slate-200 bg-slate-100 font-mono font-bold text-slate-600 rounded-lg p-2">
+                    </div>
+                    <div class="sm:col-span-5">
+                        <label class="block font-bold text-slate-500 mb-1">Tên thiết bị tài sản</label>
+                        <input type="text" id="deviceName" required placeholder="Ví dụ: Máy nghiền bột thủy lực..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
+                    </div>
+                    <div class="sm:col-span-4">
+                        <label class="block font-bold text-slate-500 mb-1">Chủng loại nhóm tài sản</label>
+                        <select id="deviceCategory" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
+                            <option value="Dây chuyền sản xuất">Dây chuyền sản xuất</option>
+                            <option value="Hệ thống điện lực">Hệ thống điện lực</option>
+                            <option value="Thiết bị CNTT & Văn phòng">Thiết bị CNTT & Văn phòng</option>
+                        </select>
+                    </div>
+                    <div class="sm:col-span-4">
+                        <label class="block font-bold text-amber-700 mb-1"><i class="fa-solid fa-building"></i> Phòng ban quản lý</label>
+                        <select id="deviceDept" required onchange="updateUserDropdownByDept()" class="w-full border border-amber-300 rounded-lg p-2 bg-amber-50/30 font-bold focus:outline-none">
+                            <option value="">-- Chọn phòng ban --</option>
+                        </select>
+                    </div>
+                    <div class="sm:col-span-5">
+                        <label class="block font-bold text-blue-700 mb-1"><i class="fa-solid fa-user-check"></i> Nhân sự chịu trách nhiệm cấp phát</label>
+                        <select id="deviceUser" class="w-full border border-blue-300 rounded-lg p-2 bg-blue-50/30 font-bold focus:outline-none">
+                            <option value="Chưa cấp phát">-- Để trống: Giữ lưu kho --</option>
+                        </select>
+                    </div>
+                    <div class="sm:col-span-3 flex items-end">
+                        <button type="submit" class="w-full py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 cursor-pointer shadow-sm">Lưu & Sinh Mã QR</button>
+                    </div>
+                </form>
+
+                <div class="p-3 bg-slate-100/60 border-b border-slate-200 text-sm">
+                    <div class="relative w-full">
+                        <input type="text" id="searchDeviceInput" oninput="renderDeviceTableOnly()" placeholder="Nhập mã định danh, tên thiết bị để lọc nhanh..." class="w-full border border-slate-300 rounded-lg pl-9 pr-3 py-2 bg-white focus:outline-none font-bold text-blue-700">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-slate-400"></i>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto custom-scrollbar max-h-96 bg-white text-sm">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 font-bold sticky top-0 z-10 text-xs md:text-sm uppercase tracking-wider">
+                                <th class="p-3 pl-4">Mã Số</th>
+                                <th class="p-3">Tên Thiết Bị / Tài Sản</th>
+                                <th class="p-3">Đơn Vị Quản Lý</th>
+                                <th class="p-3 text-center">Mã QR Nhỏ</th>
+                                <th class="p-3">Người Phụ Trách</th>
+                                <th class="p-3 text-center">Trạng Thái</th>
+                                <th class="p-3 text-right pr-4">Tác Vụ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deviceTableBody" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="lg:col-span-4">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden sticky top-6">
+                    <div class="bg-slate-800 text-white font-bold p-3.5 text-sm flex items-center justify-between">
+                        <span><i class="fa-solid fa-eye text-amber-400 mr-1.5"></i> Nhãn Tem In Phóng To</span>
+                        <button onclick="window.print()" id="btnActionPrintNow" class="hidden px-3.5 py-1.5 bg-amber-500 text-slate-900 font-extrabold text-xs rounded hover:bg-amber-400 cursor-pointer">🖨️ Đặt Lệnh In</button>
+                    </div>
+                    <div class="p-6 flex flex-col items-center justify-center bg-slate-50 min-h-[300px]">
+                        <div id="webPreviewQRBox" class="p-5 bg-white border rounded-2xl shadow-sm text-center flex flex-col items-center justify-center hidden w-[240px] border-slate-400">
+                            <h4 id="wpTitle" class="text-sm font-black uppercase text-slate-900 max-w-[210px] truncate mb-3 tracking-wide">MÁY TÍNH ĐỂ BÀN</h4>
+                            
+                            <div id="wpCanvas" class="border border-slate-800 p-2 bg-white flex items-center justify-center w-[160px] h-[160px]"></div>
+                            
+                            <div class="w-full border-t border-dashed border-slate-400 my-2.5"></div>
+                            
+                            <p id="wpId" class="text-sm font-mono font-black text-slate-800 tracking-wider">TB-67149</p>
+                            <p id="wpDept" class="text-[11px] font-bold text-slate-600 mt-0.5">ĐV: Hội đồng thành viên</p>
+                            <p id="wpUser" class="text-xs font-bold text-emerald-600 mt-0.5 italic">Phụ trách: Nguyễn Thanh Huyền</p>
+                        </div>
+                        <p id="webPreviewEmptyText" class="text-slate-400 italic text-center text-sm p-4">Vui lòng nhấn vào hình QR nhỏ hoặc nút <strong>"Xem & In Tem"</strong> ở danh sách để hiển thị nhãn xem trước phóng to tại đây.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
             <div class="bg-emerald-700 text-white font-bold p-3.5 text-base flex items-center justify-between">
                 <span><i class="fa-solid fa-users-gear mr-1.5 text-slate-300"></i> Quản Lý Hồ Sơ Nhân Sự & Sơ Đồ Phòng Ban</span>
@@ -159,97 +255,6 @@
             </div>
         </section>
 
-        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            
-            <div class="lg:col-span-8 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-                <div class="bg-slate-700 text-white font-bold p-3.5 text-base flex items-center justify-between">
-                    <span><i class="fa-solid fa-boxes-stacked mr-1.5 text-slate-300"></i> Danh Mục Quản Lý Cấp Phát Tài Sản & Thiết Bị</span>
-                    <span class="text-sm bg-slate-600 px-2.5 py-1 rounded font-mono" id="count-device">0 tài sản</span>
-                </div>
-
-                <form id="formDeviceAction" onsubmit="handleDeviceSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-sm border-b border-slate-100 bg-slate-50/50 hidden">
-                    <div class="sm:col-span-3">
-                        <label class="block font-bold text-slate-500 mb-1">Mã Tài Sản Định Danh</label>
-                        <input type="text" id="deviceId" readonly class="w-full border border-slate-200 bg-slate-100 font-mono font-bold text-slate-600 rounded-lg p-2">
-                    </div>
-                    <div class="sm:col-span-5">
-                        <label class="block font-bold text-slate-500 mb-1">Tên thiết bị tài sản</label>
-                        <input type="text" id="deviceName" required placeholder="Ví dụ: Máy nghiền bột thủy lực..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
-                    </div>
-                    <div class="sm:col-span-4">
-                        <label class="block font-bold text-slate-500 mb-1">Chủng loại nhóm tài sản</label>
-                        <select id="deviceCategory" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
-                            <option value="Dây chuyền sản xuất">Dây chuyền sản xuất</option>
-                            <option value="Hệ thống điện lực">Hệ thống điện lực</option>
-                            <option value="Thiết bị CNTT & Văn phòng">Thiết bị CNTT & Văn phòng</option>
-                        </select>
-                    </div>
-                    <div class="sm:col-span-4">
-                        <label class="block font-bold text-amber-700 mb-1"><i class="fa-solid fa-building"></i> Phòng ban quản lý</label>
-                        <select id="deviceDept" required onchange="updateUserDropdownByDept()" class="w-full border border-amber-300 rounded-lg p-2 bg-amber-50/30 font-bold focus:outline-none">
-                            <option value="">-- Chọn phòng ban --</option>
-                        </select>
-                    </div>
-                    <div class="sm:col-span-5">
-                        <label class="block font-bold text-blue-700 mb-1"><i class="fa-solid fa-user-check"></i> Nhân sự chịu trách nhiệm cấp phát</label>
-                        <select id="deviceUser" class="w-full border border-blue-300 rounded-lg p-2 bg-blue-50/30 font-bold focus:outline-none">
-                            <option value="Chưa cấp phát">-- Để trống: Giữ lưu kho --</option>
-                        </select>
-                    </div>
-                    <div class="sm:col-span-3 flex items-end">
-                        <button type="submit" class="w-full py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 cursor-pointer shadow-xs">Lưu & Sinh Mã QR</button>
-                    </div>
-                </form>
-
-                <div class="p-3 bg-slate-100/60 border-b border-slate-200 text-sm">
-                    <div class="relative w-full">
-                        <input type="text" id="searchDeviceInput" oninput="renderDeviceTableOnly()" placeholder="Nhập mã định danh, tên thiết bị để lọc nhanh..." class="w-full border border-slate-300 rounded-lg pl-9 pr-3 py-2 bg-white focus:outline-none font-bold text-blue-700">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-slate-400"></i>
-                    </div>
-                </div>
-
-                <div class="overflow-x-auto custom-scrollbar max-h-96 bg-white text-sm">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 font-bold sticky top-0 z-10 text-xs md:text-sm uppercase tracking-wider">
-                                <th class="p-3 pl-4">Mã Số</th>
-                                <th class="p-3">Tên Thiết Bị / Tài Sản</th>
-                                <th class="p-3">Đơn Vị Quản Lý</th>
-                                <th class="p-3 text-center">Mã QR Nhỏ</th>
-                                <th class="p-3">Người Phụ Trách</th>
-                                <th class="p-3 text-center">Trạng Thái</th>
-                                <th class="p-3 text-right pr-4">Tác Vụ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="deviceTableBody" class="divide-y divide-slate-100"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="lg:col-span-4">
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden sticky top-6">
-                    <div class="bg-slate-800 text-white font-bold p-3.5 text-sm flex items-center justify-between">
-                        <span><i class="fa-solid fa-eye text-amber-400 mr-1.5"></i> Nhãn Tem In Phóng To</span>
-                        <button onclick="window.print()" id="btnActionPrintNow" class="hidden px-3.5 py-1.5 bg-amber-500 text-slate-900 font-extrabold text-xs rounded hover:bg-amber-400 cursor-pointer">🖨️ Đặt Lệnh In</button>
-                    </div>
-                    <div class="p-6 flex flex-col items-center justify-center bg-slate-50 min-h-[300px]">
-                        <div id="webPreviewQRBox" class="p-5 bg-white border border-slate-300 rounded-2xl shadow-sm text-center flex flex-col items-center justify-center hidden w-[240px] border-slate-400">
-                            <h4 id="wpTitle" class="text-sm font-black uppercase text-slate-900 max-w-[210px] truncate mb-3 tracking-wide">MÁY TÍNH ĐỂ BÀN</h4>
-                            
-                            <div id="wpCanvas" class="border border-slate-800 p-2 bg-white flex items-center justify-center w-[160px] h-[160px]"></div>
-                            
-                            <div class="w-full border-t border-dashed border-slate-400 my-2.5"></div>
-                            
-                            <p id="wpId" class="text-sm font-mono font-black text-slate-800 tracking-wider">TB-67149</p>
-                            <p id="wpDept" class="text-[11px] font-bold text-slate-600 mt-0.5">ĐV: Hội đồng thành viên</p>
-                            <p id="wpUser" class="text-xs font-bold text-emerald-600 mt-0.5 italic">Phụ trách: Nguyễn Thanh Huyền</p>
-                        </div>
-                        <p id="webPreviewEmptyText" class="text-slate-400 italic text-center text-sm p-4">Vui lòng nhấn vào hình QR nhỏ hoặc nút <strong>"Xem & In Tem"</strong> ở danh sách để hiển thị nhãn xem trước phóng to tại đây.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
             <div class="bg-purple-700 text-white font-bold p-3.5 text-base flex items-center gap-1.5">
                 <i class="fa-solid fa-screwdriver-wrench"></i> Mẫu Nhật Ký Bảo Trì & Sữa Chữa Thiết Bị Toàn Hệ Thống
@@ -274,7 +279,7 @@
                         <label class="block text-slate-500 font-medium mb-1">4. Chi phí vật tư (VNĐ)</label>
                         <input type="number" id="repairCost" required value="0" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold">
                     </div>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 cursor-pointer whitespace-nowrap shadow-xs h-[38px]">Lưu Hồ Sơ</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 cursor-pointer whitespace-nowrap shadow-sm h-[38px]">Lưu Hồ Sơ</button>
                 </div>
             </form>
             <div class="overflow-x-auto custom-scrollbar max-h-60 bg-white text-sm">
@@ -376,14 +381,12 @@
         let depts = [], users = [], devices = [], repairs = [], tasks = [], systemAccounts = [];
         let activeUserDeptFilter = 'all', loggedInUser = null, currentAuthTab = 'login';
 
-        // KHỞI TẠO TÀI KHOẢN MẶC ĐỊNH KHÔNG ĐỔI
         if(!localStorage.getItem('vinapaco_accounts_v3')) {
             const defaultAccs = [{ username: 'admin', pass: 'vinapaco2026', role: 'Admin' }];
             localStorage.setItem('vinapaco_accounts_v3', JSON.stringify(defaultAccs));
         }
         systemAccounts = JSON.parse(localStorage.getItem('vinapaco_accounts_v3'));
 
-        // KHÔI PHỤC PHIÊN ĐĂNG NHẬP CHỐNG ĐÒI MẬT KHẨU
         const savedUser = localStorage.getItem('vinapaco_logged_in_user');
         if(savedUser) { loggedInUser = JSON.parse(savedUser); }
 
@@ -531,10 +534,11 @@
                 depts = parseData(data.depts); users = parseData(data.users);
                 devices = parseData(data.devices); repairs = parseData(data.repairs); tasks = parseData(data.tasks);
                 updateDropdownOptions(); renderAllTables(); autoGenDeviceId();
-            }).catch(err => console.error("Lỗi:", err));
+            }).catch(err => console.error("Lỗi tải dữ liệu:", err));
         }
 
         window.triggerManualFetch = function() { fetchCloudData(); }
+        
         function pushDataToCloud() {
             const nodeKey = currentEnv === 'live' ? 'root' : 'demo_root';
             set(ref(db, nodeKey), { depts, users, devices, repairs, tasks }).then(() => { fetchCloudData(); });
@@ -542,7 +546,7 @@
 
         function makeQRTextContent(dev) { return `ID:${dev.id}\nN:${dev.name}\nD:${dev.dept}\nU:${dev.user || 'Kho'}`; }
 
-        // HÀM TẠO QR ĐỘC LẬP - KHÔNG LO LỖI ELEMENT
+        // SỬA LỖI QR: ĐẢM BẢO CONTAINER ĐÃ ĐƯỢC DỰNG SẴN TRONG DOM MỚI VẼ
         window.generateLocalQR = function(containerId, text, size = 130) {
             const container = document.getElementById(containerId);
             if (container) {
@@ -664,7 +668,7 @@
             });
         }
 
-        // 🛠️ ĐỒNG BỘ HIỂN THỊ MÃ QR TỰ ĐỘNG LÊN DANH SÁCH TƯỜNG MINH
+        // KHÔI PHỤC HOÀN TOÀN CẤU TRÚC DANH MỤC THIẾT BỊ TƯỜNG MINH
         window.renderDeviceTableOnly = function() {
             const dtbBody = document.getElementById('deviceTableBody'); dtbBody.innerHTML = '';
             let keyword = document.getElementById('searchDeviceInput').value.trim().toLowerCase();
@@ -680,7 +684,7 @@
                     <button onclick="deleteItem('device','${d.id}')" class="text-slate-400 hover:text-red-600 ml-2 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
                 ` : `<button onclick="previewAndSelectQR('${d.id}')" class="px-3 py-1.5 bg-slate-900 text-amber-400 font-bold rounded border border-amber-400 text-xs cursor-pointer">Xem</button>`;
 
-                // Cấu trúc bảng phân chia rõ rệt từng cột như trước
+                // Giữ nguyên cấu trúc phân tách độc lập các cột dữ liệu trước đây
                 dtbBody.innerHTML += `<tr class="border-b text-slate-600 hover:bg-slate-50 font-medium">
                     <td class="p-3 pl-4 font-mono font-bold text-slate-900">${d.id}</td>
                     <td class="p-3 text-slate-800 font-bold">${d.name}</td>
@@ -693,7 +697,7 @@
                     <td class="p-3 text-right pr-4">${actionCell}</td>
                 </tr>`;
                 
-                // Đẩy tiến trình vẽ QR bất đồng bộ để tránh nghẽn luồng HTML
+                // Đồng bộ tiến trình vẽ mã QR sau khi hàng tr đã bám chắc vào DOM
                 setTimeout(() => { generateLocalQR(rowCanvasId, qrText, 45); }, 15);
             });
             document.getElementById('count-device').innerText = `${devices.length} tài sản`;
@@ -746,7 +750,7 @@
 
         window.renderAllTables = function() { renderDeviceTableOnly(); renderUserTableOnly(); renderRepairTableOnly(); renderTaskTableOnly(); }
 
-        // KHỞI CHẠY HỆ THỐNG
+        // KHỞI CHẠY HỆ THỐNG GỐC
         if (loggedInUser) { executeLoginSuccess(); } else { applyPermissionRulesUI(); }
         updateEnvButtonsUI(); fetchCloudData();
     </script>
