@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Đám Mây Realtime & Quản Lý Mã QR</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link class="content" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         @media print {
@@ -31,7 +31,7 @@
         <div class="mt-4 flex flex-wrap gap-2 items-center justify-center text-xs">
             <div id="syncBadge" class="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 font-bold px-3 py-1 rounded-full shadow-sm">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span id="syncBadgeText">● Đã đồng bộ Đám mây (Firebase)</span>
+                <span id="syncBadgeText">⚡ Tối ưu lai: LocalStorage + Firebase Get Once</span>
             </div>
             <div id="adminBadge" class="bg-amber-500 text-slate-900 font-black px-3 py-1 rounded-full hidden shadow-sm uppercase">
                 🛡️ Quyền Quản Lý Hoạt Động
@@ -228,6 +228,9 @@
     <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="bg-emerald-800 text-white font-bold p-3 text-sm flex items-center justify-between">
             <span class="flex items-center gap-2"><i class="fa-solid fa-file-signature"></i> Kiểm Kê Thiết Bị & Thiết Lập Biên Bản Pháp Lý</span>
+            <button onclick="triggerManualFetch()" class="text-xs bg-white/20 hover:bg-white/30 text-white font-bold px-3 py-1 rounded transition cursor-pointer shadow-xs">
+                <i class="fa-solid fa-cloud-arrow-down mr-1"></i> 🔄 Tải Dữ Liệu Mới Nhất (Firebase)
+            </button>
         </div>
         <div class="p-4 grid grid-cols-1 lg:grid-cols-3 gap-6 text-xs">
             <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
@@ -284,7 +287,7 @@
                 <input type="text" id="repairDesc" required placeholder="Mô tả lỗi..." class="w-full border border-slate-300 rounded-lg p-2 focus:outline-purple-500">
             </div>
             <div>
-                <label class="block font-bold text-slate-500 mb-1">3. Kỹ thuật phụ trách (Lọc tự động)</label>
+                <label class="block font-bold text-slate-500 mb-1">3. Kỹ thuật phụ trách</label>
                 <select id="repairUser" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-purple-500">
                     <option value="">-- Vui lòng chọn thiết bị trước --</option>
                 </select>
@@ -293,7 +296,7 @@
                 <label class="block font-bold text-slate-500 mb-1">4. Chi phí vật tư phát sinh (VNĐ)</label>
                 <div class="flex gap-2">
                     <input type="number" id="repairCost" required value="0" class="w-full border border-slate-300 rounded-lg p-2 focus:outline-purple-500">
-                    <button type="submit" id="btn_repair" class="px-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition cursor-pointer shadow-sm whitespace-nowrap admin-action-btn">Lưu Hồ Sơ Sửa Chữa</button>
+                    <button type="submit" id="btn_repair" class="px-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition cursor-pointer shadow-sm whitespace-nowrap admin-action-btn">Lưu Hồ Sơ Sữa Chữa</button>
                 </div>
             </div>
         </form>
@@ -427,7 +430,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBre5KbRWv64Qum4EDZkOAYTJe1YyIojuA",
@@ -444,7 +447,6 @@
         let accountConfig = { admin_user: "admin", admin_pass: "vinapaco2026", sub_user: "user1", sub_pass: "123456", sub_rights: { dept: true, device: true, action: true } };
         let currentRole = "guest", currentLoggedUser = "";
 
-        // Kho tàng tục ngữ thành ngữ mạng về thời gian
         const internetProverbs = [
             "\"Thời giờ thấm thoát thoi đưa, nó đi đi mãi không chờ đợi ai.\"",
             "\"Thời gian là vàng bạc, bỏ lỡ hôm nay ngày mai khó tìm.\"",
@@ -455,7 +457,6 @@
             "\"Việc hôm nay chớ để ngày mai, thời gian rảnh rỗi gặt hái thành công.\""
         ];
 
-        // Khởi chạy đồng hồ hiển thị Lịch Vạn Niên tự động
         function initMiniCalendar() {
             const daysMap = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
             const now = new Date();
@@ -466,24 +467,74 @@
         }
         initMiniCalendar();
 
-        onValue(ref(db, 'root'), (snapshot) => {
-            const data = snapshot.val() || {};
-            depts = data.depts ? Object.values(data.depts) : [];
-            users = data.users ? Object.values(data.users) : [];
-            devices = data.devices ? Object.values(data.devices) : [];
-            tasks = data.tasks ? Object.values(data.tasks) : [];
-            repairs = data.repairs ? Object.values(data.repairs) : [];
-            if(data.accountConfig) accountConfig = data.accountConfig;
-            
+        // 🌟 BƯỚC ĐỘT PHÁ: TẢI CACHE TỪ LOCALSTORAGE TRƯỚC ĐỂ LOAD WEB TRONG 0.1 GIÂY
+        function loadLocalCache() {
+            const cached = localStorage.getItem('vinapaco_local_cache');
+            if (cached) {
+                try {
+                    const data = JSON.parse(cached);
+                    depts = data.depts || [];
+                    users = data.users || [];
+                    devices = data.devices || [];
+                    tasks = data.tasks || [];
+                    repairs = data.repairs || [];
+                    if(data.accountConfig) accountConfig = data.accountConfig;
+                    
+                    // Cập nhật nhanh ra giao diện mà chưa cần đợi Firebase phản hồi
+                    refreshUI();
+                } catch (e) {
+                    console.error("Lỗi parse cache dữ liệu local:", e);
+                }
+            }
+        }
+
+        // Hàm cập nhật toàn bộ bảng biểu và các chỉ số thống kê
+        function refreshUI() {
             updateDropdownOptions(); 
             renderAllTables(); 
             calculateStats(); 
             autoGenDeviceId(); 
             previewInventoryReport();
-        });
+        }
+
+        // 🌟 CHỈ GỌI LÊN CLOUD ĐỂ ĐỒNG BỘ ĐÚNG 1 LẦN KHI CẦN THIẾT
+        function fetchCloudData() {
+            get(ref(db, 'root')).then((snapshot) => {
+                const data = snapshot.val() || {};
+                depts = data.depts ? Object.values(data.depts) : [];
+                users = data.users ? Object.values(data.users) : [];
+                devices = data.devices ? Object.values(data.devices) : [];
+                tasks = data.tasks ? Object.values(data.tasks) : [];
+                repairs = data.repairs ? Object.values(data.repairs) : [];
+                if(data.accountConfig) accountConfig = data.accountConfig;
+                
+                // Lưu bản sao mới nhất vào bộ nhớ trình duyệt máy người dùng
+                localStorage.setItem('vinapaco_local_cache', JSON.stringify({ depts, users, devices, tasks, repairs, accountConfig }));
+                
+                // Vẽ lại giao diện từ dữ liệu đám mây chính thức
+                refreshUI();
+            }).catch(err => {
+                console.error("Lỗi đồng bộ hạn mức Firebase:", err);
+            });
+        }
+
+        // QUY TRÌNH KHI KHỞI ĐỘNG TRANG WEB:
+        loadLocalCache();   // 1. Lấy dữ liệu cũ ra xem ngay lập tức (Tốn 0% Quota)
+        fetchCloudData();   // 2. Kéo ngầm dữ liệu mới nhất từ cloud về đè lên (Chỉ chạy 1 lần rồi ngắt)
+
+        // Hàm click nút làm mới thủ công
+        window.triggerManualFetch = function() {
+            fetchCloudData();
+            alert("🔄 Đã lấy bản đồng bộ mới nhất từ Đám mây và ghi đè vào bộ nhớ đệm Local thành công!");
+        }
 
         function pushDataToCloud() {
-            set(ref(db, 'root'), { depts, users, devices, tasks, repairs, accountConfig });
+            // Đồng thời lưu vào cả LocalStorage máy mình và đẩy lên Cloud
+            localStorage.setItem('vinapaco_local_cache', JSON.stringify({ depts, users, devices, tasks, repairs, accountConfig }));
+            set(ref(db, 'root'), { depts, users, devices, tasks, repairs, accountConfig })
+            .then(() => {
+                fetchCloudData(); // Đồng bộ lại trạng thái cho chính xác
+            });
         }
 
         function autoGenDeviceId() {
@@ -554,7 +605,7 @@
             return false;
         }
 
-        // CẢI TIẾN POMODORO VIỆT HÓA & MINH HỌA ĐỘNG
+        // POMODORO 
         window.togglePomo = function() {
             if(isRunning) {
                 clearInterval(timerInterval); 
@@ -566,7 +617,6 @@
                         isWorkingMode = !isWorkingMode;
                         timeLeft = (isWorkingMode ? parseInt(document.getElementById('pomoWork').value) : parseInt(document.getElementById('pomoBreak').value)) * 60;
                         
-                        // Thay đổi minh họa và nhãn linh hoạt
                         if (isWorkingMode) {
                             document.getElementById('pomoLabel').innerText = "ĐANG LÀM VIỆC 🎯";
                             document.getElementById('pomoIllustration').innerText = "🎯";
@@ -575,7 +625,6 @@
                             document.getElementById('pomoIllustration').innerText = "☕";
                         }
                         
-                        // Đổi tục ngữ ngẫu nhiên khi sang phiên mới
                         const ranIdx = Math.floor(Math.random() * internetProverbs.length);
                         document.getElementById('pomoProverb').innerText = internetProverbs[ranIdx];
                     }
@@ -598,7 +647,7 @@
             document.getElementById('pomoProverb').innerText = internetProverbs[ranIdx];
         }
 
-        // PHÔI IN ẤN BIÊN BẢN CHUẨN A4
+        // BIÊN BẢN 
         function generateInventoryHTML() {
             const org = document.getElementById('invOrg').value;
             const subOrg = document.getElementById('invSubOrg').value;
@@ -674,7 +723,7 @@
         window.previewInventoryReport = function() { document.getElementById('previewContainer').innerHTML = generateInventoryHTML(); }
         window.printInventoryReport = function() { document.getElementById('printInventoryZone').innerHTML = generateInventoryHTML(); window.print(); }
 
-        // CÁC NGHIỆP VỤ NHẬP LIỆU GỐC
+        // NGHIỆP VỤ NHẬP LIỆU GỐC
         window.addDept = function(e) {
             e.preventDefault(); if(!hasRight('dept')) return alert("Từ chối phân quyền!");
             const name = document.getElementById('deptName').value.trim();
@@ -786,7 +835,7 @@
             document.getElementById('stat-completion-rate').innerText = tasks.length ? Math.round((done / tasks.length) * 100) + "%" : "0%";
         }
 
-        // ĐẾM NGƯỢC THỜI GIAN THỰC LỊCH TRÌNH CÔNG VIỆC
+        // ĐẾM NGƯỢC LỊCH TRÌNH
         setInterval(() => {
             const now = new Date();
             const currentMinutes = now.getHours() * 60 + now.getMinutes();
