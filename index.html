@@ -500,23 +500,20 @@
             return { Model: QRCodeModel };
         })();
 
-        // HÀM SINH MÃ QR ĐỘC LẬP CHẠY TRÊN RAM TỰ VẼ RA THẺ IMG - KHÔNG LỖI 100%
+        // HÀM SINH MÃ QR ĐỘC LẬP CHẠY TRÊN RAM TỰ VẼ RA THẺ IMG
         window.generateLocalQR = function(domElement, text, size = 50) {
             if (!domElement) return;
             domElement.innerHTML = "";
 
             try {
-                // Xác định phiên bản QR (TypeNumber) tự động dựa trên độ dài dữ liệu chuỗi nhập vào
                 var typeNumber = 4;
                 if(text.length > 50) typeNumber = 6;
                 if(text.length > 100) typeNumber = 10;
                 
-                // Khởi tạo model mã hóa chuẩn quốc tế với thuật toán sửa lỗi cấp độ M (Khôi phục 15% dữ liệu mất mát)
                 var qr = new CustomQREngine.Model(typeNumber, 0); 
                 qr.addData(text);
                 qr.make();
 
-                // Tạo đối tượng canvas ảo trong RAM để vẽ ma trận điểm ảnh vector sắc nét
                 var canvas = document.createElement('canvas');
                 canvas.width = size;
                 canvas.height = size;
@@ -526,22 +523,18 @@
                 var tileW = size / rowCount;
                 var tileH = size / rowCount;
 
-                // Thiết lập màu nền trắng thô cho nhãn tem
                 ctx.fillStyle = '#FFFFFF';
                 ctx.fillRect(0, 0, size, size);
 
-                // Quét qua các điểm của ma trận để phủ mực đen đặc cho các ô pixel
                 ctx.fillStyle = '#000000';
                 for (var r = 0; r < rowCount; r++) {
                     for (var c = 0; c < rowCount; c++) {
                         if (qr.isDark(r, c)) {
-                            // Áp dụng thuật toán làm tròn điểm để khử mờ biên (Pixelated alignment) giúp camera dễ bắt nét
                             ctx.fillRect(Math.round(c * tileW), Math.round(r * tileH), Math.ceil(tileW), Math.ceil(tileH));
                         }
                     }
                 }
 
-                // Xuất canvas ra chuỗi ảnh Base64 rồi đưa vào thẻ img tiêu chuẩn của trình duyệt
                 var img = document.createElement('img');
                 img.src = canvas.toDataURL("image/png");
                 img.style.width = size + "px";
@@ -713,22 +706,27 @@
         window.triggerManualFetch = function() { fetchCloudData(); }
         function pushDataToCloud() { set(ref(db, currentEnv === 'live' ? 'root' : 'demo_root'), { depts, users, devices, repairs, tasks }).then(() => fetchCloudData()); }
 
+        // SỬA LỖI GÁN DỮ LIỆU CHUẨN XÁC LÊN PHÔI TEM IN
         window.previewAndSelectQR = function(id) {
             const dev = devices.find(d => d.id === id); if(!dev) return;
             const text = makeQRTextContent(dev);
+            
+            // 1. Hiển thị khối xem trước trên màn hình web
             document.getElementById('webPreviewEmptyText').classList.add('hidden');
             document.getElementById('webPreviewQRBox').classList.remove('hidden');
             document.getElementById('btnActionPrintNow').classList.remove('hidden');
+            
             document.getElementById('wpTitle').innerText = dev.name;
             document.getElementById('wpId').innerText = dev.id;
             document.getElementById('wpDept').innerText = "ĐV: " + dev.dept;
-            document.getElementById('wpUser').innerText = "Phụ trách: " + (dev.user || "Trong kho");
-            
+            document.getElementById('wpUser').innerText = "Phụ trách: " + (dev.user === "Chưa cấp phát" ? "Trong kho" : dev.user);
             generateLocalQR(document.getElementById('wpCanvas'), text, 140);
+            
+            // 2. Đồng bộ dữ liệu chuẩn sang phôi in ẩn (qrPrintZone)
             document.getElementById('qrPrintTitle').innerText = dev.name;
             document.getElementById('qrPrintId').innerText = dev.id;
             document.getElementById('qrPrintDept').innerText = "ĐV: " + dev.dept;
-            document.getElementById('qrPrintUser').innerText = "Phụ trách: " + (dev.user || "Trong kho");
+            document.getElementById('qrPrintUser').innerText = "Phụ trách: " + (dev.user === "Chưa cấp phát" ? "Trong kho" : dev.user);
             generateLocalQR(document.getElementById('qrPrintCanvas'), text, 140);
         }
 
