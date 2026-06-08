@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Đám Mây Realtime & Quản Lý Mã QR</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         @media print {
@@ -13,6 +14,9 @@
             #qrPrintZone { position: absolute; left: 0; top: 0; width: 100%; display: flex !important; flex-direction: column; align-items: center; }
             #printInventoryZone { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
         }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen p-4 md:p-6 space-y-6">
@@ -64,7 +68,7 @@
         
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="bg-slate-700 text-white font-bold p-3 text-sm flex items-center gap-2">
-                📁 Mẫu Phòng Ban / Đơn Vị
+                <i class="fa-solid fa-folder"></i> Mẫu Phòng Ban / Đơn Vị
             </div>
             <form onsubmit="addDept(event)" class="p-4 space-y-3 text-xs">
                 <div>
@@ -73,7 +77,7 @@
                 </div>
                 <button type="submit" id="btn_dept" class="w-full py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 transition cursor-pointer shadow-sm admin-action-btn">Thêm Phòng Ban</button>
             </form>
-            <div class="border-t border-slate-100 bg-slate-50 max-h-48 overflow-y-auto">
+            <div class="border-t border-slate-100 bg-slate-50 max-h-48 overflow-y-auto custom-scrollbar">
                 <table class="w-full text-left border-collapse text-xs">
                     <thead>
                         <tr class="border-b border-slate-200 bg-slate-100 text-slate-500 font-bold">
@@ -88,7 +92,7 @@
 
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="bg-emerald-700 text-white font-bold p-3 text-sm flex items-center gap-2">
-                👤 Mẫu Nhân Sự Đơn Vị
+                <i class="fa-solid fa-user"></i> Mẫu Nhân Sự Đơn Vị
             </div>
             <form onsubmit="addUser(event)" class="p-4 space-y-3 text-xs">
                 <div>
@@ -107,7 +111,7 @@
                 </div>
                 <button type="submit" id="btn_user" class="w-full py-2 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 transition cursor-pointer shadow-sm admin-action-btn">Thêm Nhân Sự</button>
             </form>
-            <div class="border-t border-slate-100 bg-slate-50 max-h-48 overflow-y-auto">
+            <div class="border-t border-slate-100 bg-slate-50 max-h-48 overflow-y-auto custom-scrollbar">
                 <table class="w-full text-left border-collapse text-xs">
                     <thead>
                         <tr class="border-b border-slate-200 bg-slate-100 text-slate-500 font-bold">
@@ -123,7 +127,7 @@
 
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="bg-blue-700 text-white font-bold p-3 text-sm flex items-center gap-2">
-                ⚙️ Mẫu Quản Lý Thiết Bị
+                <i class="fa-solid fa-gears"></i> Mẫu Quản Lý Thiết Bị
             </div>
             <form onsubmit="addDevice(event)" class="p-4 space-y-3 text-xs">
                 <div>
@@ -152,7 +156,7 @@
                 <input type="hidden" id="deviceStatus" value="Hoạt động tốt">
                 <button type="submit" id="btn_device" class="w-full py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition cursor-pointer shadow-sm admin-action-btn">Thêm Thiết Bị</button>
             </form>
-            <div class="border-t border-slate-100 bg-slate-50 max-h-48 overflow-y-auto">
+            <div class="border-t border-slate-100 bg-slate-50 max-h-48 overflow-y-auto custom-scrollbar">
                 <table class="w-full text-left border-collapse text-xs">
                     <thead>
                         <tr class="border-b border-slate-200 bg-slate-100 text-slate-500 font-bold">
@@ -166,28 +170,56 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col justify-between">
             <div class="bg-rose-700 text-white font-bold p-3 text-sm flex items-center gap-2">
-                ⏱️ Thời Gian Pomodoro
+                <i class="fa-solid fa-clock"></i> Thời Gian Pomodoro
             </div>
-            <div class="p-4 space-y-3 text-xs">
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="block font-bold text-slate-500 mb-1">Làm (phút)</label>
-                        <input type="number" id="pomoWork" value="25" class="w-full border border-slate-300 p-2 rounded-lg focus:outline-rose-500">
+            
+            <div class="p-4 space-y-4 text-xs flex-1 flex flex-col justify-between">
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex items-center justify-between shadow-xs">
+                    <div class="flex items-center space-x-2">
+                        <div class="bg-rose-600 text-white rounded-lg p-2 text-center font-bold font-mono min-w-[40px] shadow-sm">
+                            <span id="calDay" class="block text-lg leading-none">08</span>
+                            <span id="calMonth" class="block text-[9px] uppercase tracking-wider mt-0.5">TH06</span>
+                        </div>
+                        <div>
+                            <span id="calWeekday" class="block font-extrabold text-slate-700 text-sm">Thứ Hai</span>
+                            <span id="calYear" class="block text-[10px] text-slate-400 font-medium">Năm 2026</span>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block font-bold text-slate-500 mb-1">Nghỉ (phút)</label>
-                        <input type="number" id="pomoBreak" value="5" class="w-full border border-slate-300 p-2 rounded-lg focus:outline-rose-500">
+                    <div class="text-right text-slate-400 text-lg pr-1">
+                        <i class="fa-regular fa-calendar-check text-rose-500/80"></i>
                     </div>
                 </div>
-                <div class="bg-rose-50/50 border border-rose-100 rounded-xl p-4 text-center">
-                    <span id="pomoLabel" class="block text-[10px] uppercase font-black text-rose-500 tracking-wider">ĐANG LÀM VIỆC 🎯</span>
-                    <span id="pomoDisplay" class="text-3xl font-black text-slate-800 block mt-1 font-mono">25:00</span>
+
+                <div class="bg-rose-50/60 border border-rose-100 rounded-xl p-3 text-center space-y-2 flex flex-col items-center justify-center min-h-[145px] relative overflow-hidden group">
+                    <div id="pomoIllustration" class="text-3xl transform group-hover:scale-110 transition-transform duration-300 drop-shadow-xs">
+                        🎯
+                    </div>
+                    <div>
+                        <span id="pomoLabel" class="block text-[10px] uppercase font-black text-rose-600 tracking-wider">ĐANG LÀM VIỆC 🎯</span>
+                        <span id="pomoDisplay" class="text-3xl font-black text-slate-800 block mt-0.5 font-mono tracking-tight">25:00</span>
+                    </div>
+                    <p id="pomoProverb" class="text-[11px] italic text-slate-500 font-medium px-1 leading-relaxed max-w-[200px] text-center pt-1 border-t border-rose-200/50 w-full transition-all duration-300">
+                        "Thời giờ thấm thoát thoi đưa, nó đi đi mãi không chờ đợi ai."
+                    </p>
                 </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <button onclick="togglePomo()" id="btnStartPomo" class="py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition shadow-sm cursor-pointer">Bắt Đầu</button>
-                    <button onclick="resetPomo()" class="py-2 bg-slate-500 hover:bg-slate-600 text-white font-bold rounded-lg transition shadow-sm cursor-pointer">Đặt Lại</button>
+
+                <div class="space-y-3 pt-1">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-bold text-slate-400 text-[10px] uppercase mb-0.5">Làm (phút)</label>
+                            <input type="number" id="pomoWork" value="25" onchange="resetPomo()" class="w-full border border-slate-300 p-1.5 rounded-lg text-center font-bold focus:outline-rose-500 bg-white">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-400 text-[10px] uppercase mb-0.5">Nghỉ (phút)</label>
+                            <input type="number" id="pomoBreak" value="5" onchange="resetPomo()" class="w-full border border-slate-300 p-1.5 rounded-lg text-center font-bold focus:outline-rose-500 bg-white">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="togglePomo()" id="btnStartPomo" class="py-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold rounded-lg transition shadow-sm cursor-pointer"><i class="fa-solid fa-play mr-1 text-[10px]"></i> Bắt Đầu</button>
+                        <button onclick="resetPomo()" class="py-2 bg-slate-500 hover:bg-slate-600 active:scale-95 text-white font-bold rounded-lg transition shadow-sm cursor-pointer"><i class="fa-solid fa-arrow-rotate-left mr-1 text-[10px]"></i> Đặt Lại</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -195,7 +227,7 @@
 
     <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="bg-emerald-800 text-white font-bold p-3 text-sm flex items-center justify-between">
-            <span class="flex items-center gap-2">📋 Kiểm Kê Thiết Bị & Thiết Lập Biên Bản Pháp Lý</span>
+            <span class="flex items-center gap-2"><i class="fa-solid fa-file-signature"></i> Kiểm Kê Thiết Bị & Thiết Lập Biên Bản Pháp Lý</span>
         </div>
         <div class="p-4 grid grid-cols-1 lg:grid-cols-3 gap-6 text-xs">
             <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
@@ -232,7 +264,7 @@
                     <button onclick="printInventoryReport()" class="w-full py-2 bg-emerald-600 text-white font-bold rounded shadow hover:bg-emerald-700 transition cursor-pointer">🖨️ In Biên Bản</button>
                 </div>
             </div>
-            <div class="lg:col-span-2 border border-slate-300 rounded-xl bg-white p-6 shadow-inner overflow-x-auto min-w-[620px]">
+            <div class="lg:col-span-2 border border-slate-300 rounded-xl bg-white p-6 shadow-inner overflow-x-auto min-w-[620px] custom-scrollbar">
                 <div id="previewContainer" class="bg-white text-black p-2"></div>
             </div>
         </div>
@@ -240,7 +272,7 @@
 
     <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="bg-purple-700 text-white font-bold p-3 text-sm flex items-center gap-2">
-            🛠️ Mẫu Nhật Ký Bảo Trì & Sửa Chữa Thiết Bị Toàn Hệ Thống
+            <i class="fa-solid fa-screwdriver-wrench"></i> Mẫu Nhật Ký Bảo Trì & Sửa Chữa Thiết Bị Toàn Hệ Thống
         </div>
         <form onsubmit="addRepair(event)" class="p-4 grid grid-cols-1 md:grid-cols-4 gap-3 items-end text-xs border-b border-slate-100 bg-slate-50/50">
             <div>
@@ -265,7 +297,7 @@
                 </div>
             </div>
         </form>
-        <div class="overflow-x-auto bg-slate-50 text-xs max-h-60 overflow-y-auto">
+        <div class="overflow-x-auto bg-slate-50 text-xs max-h-60 overflow-y-auto custom-scrollbar">
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">
@@ -283,7 +315,7 @@
 
     <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="bg-sky-700 text-white font-bold p-3 text-sm flex items-center gap-2">
-            📅 Mẫu Kế Hoạch & Nhắc Lịch Thời Gian Thực (Realtime Countdown)
+            <i class="fa-regular fa-calendar-minus"></i> Mẫu Kế Hoạch & Nhắc Lịch Thời Gian Thực (Realtime Countdown)
         </div>
         <form onsubmit="addTask(event)" class="p-4 space-y-3 text-xs border-b border-slate-100 bg-slate-50/50">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -326,7 +358,7 @@
                 </div>
             </div>
         </form>
-        <div class="overflow-x-auto bg-slate-50 text-xs max-h-60 overflow-y-auto">
+        <div class="overflow-x-auto bg-slate-50 text-xs max-h-60 overflow-y-auto custom-scrollbar">
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">
@@ -412,6 +444,28 @@
         let accountConfig = { admin_user: "admin", admin_pass: "vinapaco2026", sub_user: "user1", sub_pass: "123456", sub_rights: { dept: true, device: true, action: true } };
         let currentRole = "guest", currentLoggedUser = "";
 
+        // Kho tàng tục ngữ thành ngữ mạng về thời gian
+        const internetProverbs = [
+            "\"Thời giờ thấm thoát thoi đưa, nó đi đi mãi không chờ đợi ai.\"",
+            "\"Thời gian là vàng bạc, bỏ lỡ hôm nay ngày mai khó tìm.\"",
+            "\"Ngày đi tháng chạy năm bay, cơ hội qua tay khó lòng lấy lại.\"",
+            "\"Đời người có một gang tay, ai hay ngủ ngày còn được nửa gang.\"",
+            "\"Giàu đâu đến kẻ ngủ trưa, sang đâu đến kẻ say sưa tối ngày.\"",
+            "\"Nước chảy đá mòn, thời gian cuốn trôi không chừa một ai.\"",
+            "\"Việc hôm nay chớ để ngày mai, thời gian rảnh rỗi gặt hái thành công.\""
+        ];
+
+        // Khởi chạy đồng hồ hiển thị Lịch Vạn Niên tự động
+        function initMiniCalendar() {
+            const daysMap = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
+            const now = new Date();
+            document.getElementById("calDay").innerText = String(now.getDate()).padStart(2, '0');
+            document.getElementById("calMonth").innerText = "TH" + String(now.getMonth() + 1).padStart(2, '0');
+            document.getElementById("calWeekday").innerText = daysMap[now.getDay()];
+            document.getElementById("calYear").innerText = "Năm " + now.getFullYear();
+        }
+        initMiniCalendar();
+
         onValue(ref(db, 'root'), (snapshot) => {
             const data = snapshot.val() || {};
             depts = data.depts ? Object.values(data.depts) : [];
@@ -443,7 +497,7 @@
             document.getElementById('deviceId').value = `TB-${maxNum + 1}`;
         }
 
-        // ĐĂNG NHẬP
+        // ĐĂNG NHẬP HỆ THỐNG
         window.openLoginModal = function() {
             if(currentRole !== "guest") {
                 currentRole = "guest"; currentLoggedUser = "";
@@ -500,29 +554,48 @@
             return false;
         }
 
-        // POMODORO ENGINE
+        // CẢI TIẾN POMODORO VIỆT HÓA & MINH HỌA ĐỘNG
         window.togglePomo = function() {
             if(isRunning) {
-                clearInterval(timerInterval); document.getElementById('btnStartPomo').innerText = "Bắt Đầu";
+                clearInterval(timerInterval); 
+                document.getElementById('btnStartPomo').innerHTML = `<i class="fa-solid fa-play mr-1 text-[10px]"></i> Tiếp Tục`;
             } else {
                 timerInterval = setInterval(() => {
                     timeLeft--;
                     if(timeLeft <= 0) {
                         isWorkingMode = !isWorkingMode;
                         timeLeft = (isWorkingMode ? parseInt(document.getElementById('pomoWork').value) : parseInt(document.getElementById('pomoBreak').value)) * 60;
-                        document.getElementById('pomoLabel').innerText = isWorkingMode ? "ĐANG LÀM VIỆC 🎯" : "NGHỈ GIẢI LAO ☕";
+                        
+                        // Thay đổi minh họa và nhãn linh hoạt
+                        if (isWorkingMode) {
+                            document.getElementById('pomoLabel').innerText = "ĐANG LÀM VIỆC 🎯";
+                            document.getElementById('pomoIllustration').innerText = "🎯";
+                        } else {
+                            document.getElementById('pomoLabel').innerText = "GIỜ NGHỈ NGƠI ☕";
+                            document.getElementById('pomoIllustration').innerText = "☕";
+                        }
+                        
+                        // Đổi tục ngữ ngẫu nhiên khi sang phiên mới
+                        const ranIdx = Math.floor(Math.random() * internetProverbs.length);
+                        document.getElementById('pomoProverb').innerText = internetProverbs[ranIdx];
                     }
                     document.getElementById('pomoDisplay').innerText = `${String(Math.floor(timeLeft / 60)).padStart(2, '0')}:${String(timeLeft % 60).padStart(2, '0')}`;
                 }, 1000);
-                document.getElementById('btnStartPomo').innerText = "Tạm Dừng";
+                document.getElementById('btnStartPomo').innerHTML = `<i class="fa-solid fa-pause mr-1 text-[10px]"></i> Tạm Dừng`;
             }
             isRunning = !isRunning;
         }
+        
         window.resetPomo = function() {
             clearInterval(timerInterval); isRunning = false; isWorkingMode = true;
             timeLeft = parseInt(document.getElementById('pomoWork').value) * 60;
-            document.getElementById('btnStartPomo').innerText = "Bắt Đầu";
+            document.getElementById('btnStartPomo').innerHTML = `<i class="fa-solid fa-play mr-1 text-[10px]"></i> Bắt Đầu`;
+            document.getElementById('pomoLabel').innerText = "ĐANG LÀM VIỆC 🎯";
+            document.getElementById('pomoIllustration').innerText = "🎯";
             document.getElementById('pomoDisplay').innerText = `${String(document.getElementById('pomoWork').value).padStart(2, '0')}:00`;
+            
+            const ranIdx = Math.floor(Math.random() * internetProverbs.length);
+            document.getElementById('pomoProverb').innerText = internetProverbs[ranIdx];
         }
 
         // PHÔI IN ẤN BIÊN BẢN CHUẨN A4
@@ -601,7 +674,7 @@
         window.previewInventoryReport = function() { document.getElementById('previewContainer').innerHTML = generateInventoryHTML(); }
         window.printInventoryReport = function() { document.getElementById('printInventoryZone').innerHTML = generateInventoryHTML(); window.print(); }
 
-        // CÁC NGHIỆP VỤ NHẬP LIỆU
+        // CÁC NGHIỆP VỤ NHẬP LIỆU GỐC
         window.addDept = function(e) {
             e.preventDefault(); if(!hasRight('dept')) return alert("Từ chối phân quyền!");
             const name = document.getElementById('deptName').value.trim();
@@ -694,7 +767,6 @@
 
         function updateDropdownOptions() {
             const uDept = document.getElementById('userDept'), dDept = document.getElementById('deviceDept'), rDev = document.getElementById('repairDevice'), tDev = document.getElementById('taskDevice'), tUsr = document.getElementById('taskUser');
-            
             const currentRDev = rDev.value;
 
             uDept.innerHTML = ''; dDept.innerHTML = ''; rDev.innerHTML = '<option value="">-- Chọn thiết bị --</option>'; tDev.innerHTML = '<option value="Không có">Không có</option>'; tUsr.innerHTML = '<option value="Chưa giao">Chưa giao</option>';
@@ -703,9 +775,7 @@
             devices.forEach(dev => { rDev.innerHTML += `<option value="${dev.id}">${dev.id} - ${dev.name}</option>`; tDev.innerHTML += `<option value="${dev.name}">${dev.name}</option>`; });
             users.forEach(u => { tUsr.innerHTML += `<option value="${u.name}">${u.name}</option>`; });
 
-            if(currentRDev && devices.some(d => d.id === currentRDev)) {
-                rDev.value = currentRDev;
-            }
+            if(currentRDev && devices.some(d => d.id === currentRDev)) { rDev.value = currentRDev; }
         }
 
         function calculateStats() {
@@ -716,7 +786,7 @@
             document.getElementById('stat-completion-rate').innerText = tasks.length ? Math.round((done / tasks.length) * 100) + "%" : "0%";
         }
 
-        // REALTIME COUNTDOWN ENGINE
+        // ĐẾM NGƯỢC THỜI GIAN THỰC LỊCH TRÌNH CÔNG VIỆC
         setInterval(() => {
             const now = new Date();
             const currentMinutes = now.getHours() * 60 + now.getMinutes();
@@ -740,7 +810,7 @@
 
             // Render Nhân Sự
             const utb = document.getElementById('userTableBody'); utb.innerHTML = '';
-            users.forEach(u => { utb.innerHTML += `<tr class="border-b text-slate-700 hover:bg-slate-50"><td class="p-2 font-medium">${u.name}<span class="block text-[10px] text-slate-400 font-normal">${u.title}</span></td><td class="p-2 text-slate-500">${u.dept}</td><td class="p-2 text-right"><button onclick="deleteItem('user','${d.id}')" class="text-rose-600 hover:text-rose-800 font-bold cursor-pointer">🗑️</button></td></tr>`; });
+            users.forEach(u => { utb.innerHTML += `<tr class="border-b text-slate-700 hover:bg-slate-50"><td class="p-2 font-medium">${u.name}<span class="block text-[10px] text-slate-400 font-normal">${u.title}</span></td><td class="p-2 text-slate-500">${u.dept}</td><td class="p-2 text-right"><button onclick="deleteItem('user','${u.id}')" class="text-rose-600 hover:text-rose-800 font-bold cursor-pointer">🗑️</button></td></tr>`; });
             if(!users.length) utb.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 italic">Chưa có dữ liệu</td></tr>`;
 
             // Render Thiết Bị
