@@ -24,27 +24,34 @@
     <div id="loginBlock" class="fixed inset-0 bg-slate-900/80 backdrop-blur-xs flex items-center justify-center z-50">
         <div class="bg-white p-6 rounded-xl shadow-xl border border-slate-200 w-full max-w-sm">
             <div class="text-center mb-4">
-                <i class="fa-solid fa-user-shield text-slate-700 text-3xl mb-2"></i>
-                <h3 class="font-black text-lg text-slate-900">ĐĂNG NHẬP HỆ THỐNG</h3>
-                <p class="text-xs text-slate-500">Tài khoản Admin mặc định</p>
+                <i class="fa-solid fa-users-gear text-slate-700 text-3xl mb-2"></i>
+                <h3 class="font-black text-lg text-slate-900">ĐĂNG NHẬP ĐIỀU HÀNH</h3>
+                <p class="text-xs text-slate-500">Hệ thống phân quyền nhà máy VINAPACO</p>
             </div>
-            <div class="space-y-3">
-                <input type="password" id="sysPassword" placeholder="Nhập mật khẩu (Mặc định: vinapaco2026)" class="w-full border border-slate-300 rounded-lg p-2.5 text-center font-bold focus:outline-none">
-                <button onclick="handleLoginRole()" class="w-full py-2.5 bg-slate-800 text-white font-bold rounded-lg cursor-pointer hover:bg-slate-900">Xác Nhận Đăng Nhập</button>
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-600 mb-1">Tên tài khoản</label>
+                    <input type="text" id="sysUsername" placeholder="Nhập username... (Mặc định: admin)" class="w-full border border-slate-300 rounded-lg p-2.5 font-bold focus:outline-none">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 mb-1">Mật khẩu</label>
+                    <input type="password" id="sysPassword" placeholder="Nhập mật khẩu... (Mặc định: vinapaco2026)" class="w-full border border-slate-300 rounded-lg p-2.5 font-bold focus:outline-none">
+                </div>
+                <button onclick="handleLoginWithAccount()" class="w-full py-2.5 bg-slate-800 text-white font-bold rounded-lg cursor-pointer hover:bg-slate-900 text-sm mt-2">Xác Nhận Đăng Nhập</button>
             </div>
-            <p id="loginError" class="text-red-600 font-bold text-center text-xs mt-2 hidden">⚠️ Mật khẩu không chính xác!</p>
+            <p id="loginError" class="text-red-600 font-bold text-center text-xs mt-2 hidden">⚠️ Tài khoản hoặc mật khẩu không đúng!</p>
         </div>
     </div>
 
     <div id="changePassModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 hidden">
         <div class="bg-white p-6 rounded-xl shadow-xl border border-slate-200 w-full max-w-sm">
             <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h3 class="font-black text-slate-900 text-sm uppercase"><i class="fa-solid fa-key mr-1.5 text-slate-600"></i> Đổi mật khẩu Admin</h3>
+                <h3 class="font-black text-slate-900 text-sm uppercase"><i class="fa-solid fa-key mr-1.5 text-slate-600"></i> Đổi mật khẩu tài khoản</h3>
                 <button onclick="toggleChangePassModal(false)" class="text-slate-400 hover:text-slate-600 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="space-y-3 text-xs">
                 <div>
-                    <label class="block font-bold text-slate-500 mb-1">Mật khẩu cũ</label>
+                    <label class="block font-bold text-slate-500 mb-1">Mật khẩu cũ hiện tại</label>
                     <input type="password" id="oldPasswordInput" class="w-full border p-2 rounded-lg focus:outline-none font-bold">
                 </div>
                 <div>
@@ -81,10 +88,11 @@
                 <span id="envStatusIndicator" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span id="syncBadgeText" class="font-bold text-slate-600">Đang đồng bộ máy chủ...</span>
             </div>
-            <div class="flex gap-2">
-                <span class="px-2 py-1 bg-red-100 text-red-800 font-bold rounded text-[11px]"><i class="fa-solid fa-user-lock"></i> Quyền: Admin</span>
+            <div class="flex flex-wrap gap-2 items-center">
+                <span id="activeUserBadge" class="px-2 py-1 bg-blue-100 text-blue-800 font-bold rounded text-[11px]">User: Guest</span>
                 <button onclick="toggleChangePassModal(true)" class="px-2.5 py-1 bg-amber-600 text-white font-bold rounded hover:bg-amber-700 cursor-pointer text-[11px]"><i class="fa-solid fa-key"></i> Đổi Mật Khẩu</button>
                 <button onclick="triggerManualFetch()" class="px-2.5 py-1 bg-slate-700 text-white font-bold rounded hover:bg-slate-800 cursor-pointer text-[11px]"><i class="fa-solid fa-arrows-rotate"></i> Ép Tải Lại Dữ Liệu Cũ</button>
+                <button onclick="window.location.reload()" class="px-2 py-1 bg-red-600 text-white font-bold rounded hover:bg-red-700 cursor-pointer text-[11px]"><i class="fa-solid fa-power-off"></i> Đăng Xuất</button>
             </div>
         </div>
     </header>
@@ -98,7 +106,7 @@
                     <span class="text-xs bg-slate-600 px-2 py-0.5 rounded font-mono" id="count-device">0 tài sản</span>
                 </div>
 
-                <form onsubmit="handleDeviceSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs border-b border-slate-100 bg-slate-50/50">
+                <form id="formDeviceAction" onsubmit="handleDeviceSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs border-b border-slate-100 bg-slate-50/50">
                     <div class="sm:col-span-3">
                         <label class="block font-bold text-slate-500 mb-1">Mã Tài Sản Định Danh</label>
                         <input type="text" id="deviceId" readonly class="w-full border border-slate-200 bg-slate-100 font-mono font-bold text-slate-600 rounded-lg p-2">
@@ -130,7 +138,7 @@
                     </div>
 
                     <div class="sm:col-span-3 flex items-end">
-                        <button type="submit" id="btn_device" class="w-full py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 cursor-pointer shadow-xs">Lưu & Sinh Mã QR</button>
+                        <button type="submit" class="w-full py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 cursor-pointer shadow-xs">Lưu & Sinh Mã QR</button>
                     </div>
                 </form>
 
@@ -147,7 +155,7 @@
                             <tr class="border-b border-slate-200 bg-slate-50 text-slate-500 font-bold sticky top-0 z-10">
                                 <th class="p-2.5 pl-4">Mã Số / Tên Thiết Bị</th>
                                 <th class="p-2.5">Đơn Vị Quản Lý</th>
-                                <th class="p-2.5 text-center">Mã QR (Bấm để xem)</th>
+                                <th class="p-2.5 text-center">Mã QR (Mắt Thưa)</th>
                                 <th class="p-2.5">Nhân Sự Phụ Trách</th>
                                 <th class="p-2.5 text-center">Trạng Thái</th>
                                 <th class="p-2.5 text-right pr-4">Hành Động</th>
@@ -178,11 +186,51 @@
             </div>
         </section>
 
+        <section id="adminUserManagementBlock" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hidden">
+            <div class="bg-slate-900 text-white font-bold p-3 text-sm flex items-center gap-1.5">
+                <i class="fa-solid fa-user-gear text-amber-400"></i> Thiết Lập Quản Lý Tài Khoản Thành Viên & Phân Quyền Hệ Thống
+            </div>
+            <div class="p-4 grid grid-cols-1 md:grid-cols-4 gap-3 text-xs bg-slate-50/50 border-b border-slate-200">
+                <div>
+                    <label class="block font-bold text-slate-600 mb-1">Tên tài khoản (Username)</label>
+                    <input type="text" id="newAccUser" placeholder="Ví dụ: kytuong123" class="w-full border border-slate-300 rounded-lg p-2 focus:outline-none bg-white font-bold">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 mb-1">Mật khẩu khởi tạo</label>
+                    <input type="text" id="newAccPass" placeholder="Mật khẩu riêng..." class="w-full border border-slate-300 rounded-lg p-2 focus:outline-none bg-white font-bold">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-600 mb-1">Cấp nhóm quyền điều hành</label>
+                    <select id="newAccRole" class="w-full border border-slate-300 rounded-lg p-2 focus:outline-none bg-white font-bold text-blue-700">
+                        <option value="Admin">🔑 Admin (Toàn quyền hệ thống)</option>
+                        <option value="Kỹ thuật">🛠️ Kỹ thuật (Được thêm tài sản, sửa chữa)</option>
+                        <option value="Viewer">👁️ Viewer (Chỉ xem, không có quyền sửa)</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button onclick="handleCreateAccountSub()" class="w-full py-2 bg-slate-800 text-white font-bold rounded-lg cursor-pointer hover:bg-slate-950">Tạo & Lưu Tài Khoản</button>
+                </div>
+            </div>
+            <div class="overflow-x-auto text-xs bg-white">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b bg-slate-100 text-slate-600 font-bold">
+                            <th class="p-2.5 pl-4">Tài Khoản (Username)</th>
+                            <th class="p-2.5">Mật Khẩu</th>
+                            <th class="p-2.5">Quyền Hạn</th>
+                            <th class="p-2.5 text-right pr-4">Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="accountSubTableBody" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+        </section>
+
         <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
             <div class="bg-purple-700 text-white font-bold p-3 text-sm flex items-center gap-1.5">
                 <i class="fa-solid fa-screwdriver-wrench"></i> Mẫu Nhật Ký Bảo Trì & Sửa Chữa Thiết Bị Toàn Hệ Thống
             </div>
-            <form onsubmit="handleRepairSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 text-xs bg-slate-50/30 border-b border-slate-100">
+            <form id="formRepairAction" onsubmit="handleRepairSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 text-xs bg-slate-50/30 border-b border-slate-100">
                 <div class="md:col-span-3">
                     <label class="block text-slate-500 font-medium mb-1">1. Thiết bị đang sự cố</label>
                     <select id="repairDeviceId" required class="w-full border border-slate-300 rounded-lg p-2 bg-white font-mono font-bold focus:outline-none"></select>
@@ -216,11 +264,7 @@
                             <th class="p-2.5 text-right pr-4">Hành động</th>
                         </tr>
                     </thead>
-                    <tbody id="repairTableBody" class="divide-y divide-slate-100">
-                        <tr>
-                            <td colspan="5" class="p-4 text-center italic text-slate-400" id="repairEmptyRow">Chưa có hồ sơ sửa chữa nào được lưu</td>
-                        </tr>
-                    </tbody>
+                    <tbody id="repairTableBody" class="divide-y divide-slate-100"></tbody>
                 </table>
             </div>
         </section>
@@ -230,7 +274,7 @@
                 <span><i class="fa-solid fa-users-gear mr-1.5 text-slate-300"></i> Quản Lý Hồ Sơ Nhân Sự & Sơ Đồ Phòng Ban</span>
                 <span class="text-xs bg-emerald-600 px-2 py-0.5 rounded font-mono" id="count-user">0 nhân sự</span>
             </div>
-            <div class="p-4 grid grid-cols-1 lg:grid-cols-12 gap-5 border-b border-slate-100 bg-slate-50/50 text-xs">
+            <div id="formUserAction" class="p-4 grid grid-cols-1 lg:grid-cols-12 gap-5 border-b border-slate-100 bg-slate-50/50 text-xs">
                 <div class="lg:col-span-4 border-r border-slate-200 pr-4">
                     <span class="block font-bold text-slate-400 text-[10px] uppercase mb-1.5"><i class="fa-solid fa-building"></i> PHÒNG BAN / PHÂN XƯỞNG</span>
                     <form onsubmit="handleDeptSubmit(event)" class="space-y-2">
@@ -275,7 +319,7 @@
             <div class="p-3 font-bold text-sm bg-slate-800 flex items-center gap-1.5">
                 <i class="fa-solid fa-list-check"></i> Kế Hoạch Phân Công Công Việc Nhà Máy (Đếm Ngược Thời Gian Thực)
             </div>
-            <div class="p-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs bg-slate-900/50">
+            <div id="formTaskAction" class="p-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs bg-slate-900/50">
                 <div>
                     <label class="block text-slate-400 mb-1">Nội dung hạng mục công việc</label>
                     <input type="text" id="taskName" placeholder="Nhập tên việc cần phân công..." class="w-full border border-slate-700 rounded-lg p-2 bg-slate-800 text-white focus:outline-none">
@@ -322,11 +366,7 @@
                             <th class="p-2.5 text-right pr-4">Xóa</th>
                         </tr>
                     </thead>
-                    <tbody id="taskTableBody" class="divide-y divide-slate-800 text-slate-300">
-                        <tr>
-                            <td colspan="8" class="p-4 text-center italic text-slate-500">Chưa có kế hoạch phân công điều hành</td>
-                        </tr>
-                    </tbody>
+                    <tbody id="taskTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
                 </table>
             </div>
         </section>
@@ -355,26 +395,97 @@
         const db = getDatabase(app);
 
         let currentEnv = localStorage.getItem('vinapaco_current_env') || 'live'; 
-        let depts = [], users = [], devices = [], repairs = [], tasks = [];
-        let activeUserDeptFilter = 'all';
+        let depts = [], users = [], devices = [], repairs = [], tasks = [], systemAccounts = [];
+        let activeUserDeptFilter = 'all', loggedInUser = null;
 
-        // KHỞI TẠO CƠ CHẾ ĐỔI MẬT KHẨU TỪ LOCALSTORAGE
-        if(!localStorage.getItem('vinapaco_admin_password')) {
-            localStorage.setItem('vinapaco_admin_password', 'vinapaco2026'); // Mật khẩu gốc theo yêu cầu
+        // BẢO MẬT: KHỞI TẠO TÀI KHOẢN ADMIN MẶC ĐỊNH THEO YÊU CẦU
+        if(!localStorage.getItem('vinapaco_accounts_db')) {
+            const defaultAccs = [
+                { username: 'admin', pass: 'vinapaco2026', role: 'Admin' }
+            ];
+            localStorage.setItem('vinapaco_accounts_db', JSON.stringify(defaultAccs));
         }
+        systemAccounts = JSON.parse(localStorage.getItem('vinapaco_accounts_db'));
 
-        window.handleLoginRole = function() {
-            const inputPass = document.getElementById('sysPassword').value.trim();
-            const currentSavedPass = localStorage.getItem('vinapaco_admin_password');
+        window.handleLoginWithAccount = function() {
+            const uInput = document.getElementById('sysUsername').value.trim();
+            const pInput = document.getElementById('sysPassword').value.trim();
             const err = document.getElementById('loginError');
 
-            if(inputPass === currentSavedPass) {
+            const found = systemAccounts.find(a => a.username === uInput && a.pass === pInput);
+            if(found) {
+                loggedInUser = found;
                 document.getElementById('loginBlock').classList.add('hidden');
                 document.getElementById('mainHeader').classList.remove('hidden');
                 document.getElementById('contentSection').classList.remove('hidden');
+                
+                document.getElementById('activeUserBadge').innerText = `User: ${found.username} (${found.role})`;
+                applyPermissionRulesUI();
                 fetchCloudData();
             } else {
                 err.classList.remove('hidden');
+            }
+        }
+
+        // PHÂN QUYỀN TRỰC TIẾP TRÊN INTERFACE NGƯỜI DÙNG CON
+        function applyPermissionRulesUI() {
+            const role = loggedInUser.role;
+            if(role === 'Admin') {
+                document.getElementById('adminUserManagementBlock').classList.remove('hidden');
+                renderAccountSubTable();
+            } else {
+                document.getElementById('adminUserManagementBlock').classList.add('hidden');
+            }
+
+            if(role === 'Viewer') {
+                document.getElementById('formDeviceAction').classList.add('hidden');
+                document.getElementById('formRepairAction').classList.add('hidden');
+                document.getElementById('formUserAction').classList.add('hidden');
+                document.getElementById('formTaskAction').classList.add('hidden');
+            } else {
+                document.getElementById('formDeviceAction').classList.remove('hidden');
+                document.getElementById('formRepairAction').classList.remove('hidden');
+                document.getElementById('formUserAction').classList.remove('hidden');
+                document.getElementById('formTaskAction').classList.remove('hidden');
+            }
+        }
+
+        window.handleCreateAccountSub = function() {
+            const user = document.getElementById('newAccUser').value.trim();
+            const pass = document.getElementById('newAccPass').value.trim();
+            const role = document.getElementById('newAccRole').value;
+
+            if(!user || !pass) { alert("Vui lòng điền đầy đủ User và Mật khẩu con!"); return; }
+            if(systemAccounts.some(a => a.username === user)) { alert("Tên tài khoản này đã tồn tại!"); return; }
+
+            systemAccounts.push({ username: user, pass, role });
+            localStorage.setItem('vinapaco_accounts_db', JSON.stringify(systemAccounts));
+            
+            document.getElementById('newAccUser').value = "";
+            document.getElementById('newAccPass').value = "";
+            renderAccountSubTable();
+            alert(`✅ Đã khởi tạo thành công tài khoản con: ${user}`);
+        }
+
+        function renderAccountSubTable() {
+            const body = document.getElementById('accountSubTableBody');
+            body.innerHTML = '';
+            systemAccounts.forEach(a => {
+                const delBtn = a.username === 'admin' ? '<span class="text-slate-400 italic">Mặc định</span>' : `<button onclick="deleteAccountSub('${a.username}')" class="text-red-600 font-bold hover:underline cursor-pointer">Xóa tài khoản</button>`;
+                body.innerHTML += `<tr class="border-b text-slate-600 hover:bg-slate-50 text-xs">
+                    <td class="p-2.5 pl-4 font-bold text-slate-900">${a.username}</td>
+                    <td class="p-2.5 font-mono">${a.pass}</td>
+                    <td class="p-2.5 font-bold text-blue-700">${a.role}</td>
+                    <td class="p-2.5 text-right pr-4">${delBtn}</td>
+                </tr>`;
+            });
+        }
+
+        window.deleteAccountSub = function(uname) {
+            if(confirm(`Bạn có chắc chắn muốn xóa quyền truy cập của tài khoản [${uname}]?`)) {
+                systemAccounts = systemAccounts.filter(a => a.username !== uname);
+                localStorage.setItem('vinapaco_accounts_db', JSON.stringify(systemAccounts));
+                renderAccountSubTable();
             }
         }
 
@@ -387,22 +498,26 @@
         window.submitChangePassword = function() {
             const oldPass = document.getElementById('oldPasswordInput').value.trim();
             const newPass = document.getElementById('newPasswordInput').value.trim();
-            const currentSavedPass = localStorage.getItem('vinapaco_admin_password');
 
-            if(oldPass !== currentSavedPass) {
-                alert("⚠️ Mật khẩu cũ không chính xác!");
-                return;
+            if(oldPass !== loggedInUser.pass) {
+                alert("⚠️ Mật khẩu cũ không chính xác!"); return;
             }
             if(newPass.length < 4) {
-                alert("⚠️ Mật khẩu mới phải từ 4 ký tự trở lên!");
-                return;
+                alert("⚠️ Mật khẩu mới phải từ 4 ký tự trở lên!"); return;
             }
 
-            localStorage.setItem('vinapaco_admin_password', newPass);
-            alert("✅ Đã cập nhật mật khẩu mới thành công!");
+            systemAccounts.forEach(a => {
+                if(a.username === loggedInUser.username) {
+                    a.pass = newPass;
+                    loggedInUser.pass = newPass;
+                }
+            });
+            localStorage.setItem('vinapaco_accounts_db', JSON.stringify(systemAccounts));
+            alert("✅ Đã cập nhật mật khẩu tài khoản thành công!");
             toggleChangePassModal(false);
             document.getElementById('oldPasswordInput').value = "";
             document.getElementById('newPasswordInput').value = "";
+            if(loggedInUser.role === 'Admin') renderAccountSubTable();
         }
 
         window.switchEnvironment = function(env) {
@@ -454,8 +569,9 @@
             set(ref(db, nodeKey), { depts, users, devices, repairs, tasks }).then(() => { fetchCloudData(); });
         }
 
+        // TỐI ƯU DỮ LIỆU ĐUÔI QR: BỎ CÁC KÝ TỰ NGẮT DÒNG PHỨC TẠP, LÀM THƯA MA TRẬN QR ĐỂ MÁY CÔNG NGHIỆP QUÉT ĂN NGAY
         function makeQRTextContent(dev) {
-            return `MA THIET BI: ${dev.id}\nTEN: ${dev.name}\nPHONG BAN: ${dev.dept}\nPHU TRACH: ${dev.user || 'Kho'}`;
+            return `ID:${dev.id}|NAME:${dev.name}|DEPT:${dev.dept}|USER:${dev.user || 'Kho'}`;
         }
 
         window.generateLocalQR = function(containerId, text, size = 120) {
@@ -468,7 +584,7 @@
                     height: size,
                     colorDark: "#000000",
                     colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.L
+                    correctLevel: QRCode.CorrectLevel.L // Ép ma trận mật độ thấp nhất (Mắt to dễ đọc dưới ánh sáng yếu)
                 });
             }
         }
@@ -519,6 +635,7 @@
 
         window.handleDeptSubmit = function(e) {
             e.preventDefault();
+            if(loggedInUser.role === 'Viewer') return;
             const name = document.getElementById('deptName').value.trim();
             depts.push({ id: Date.now().toString(), name });
             pushDataToCloud(); document.getElementById('deptName').value = "";
@@ -526,6 +643,7 @@
 
         window.handleUserSubmit = function(e) {
             e.preventDefault();
+            if(loggedInUser.role === 'Viewer') return;
             const name = document.getElementById('userName').value.trim();
             const title = document.getElementById('userTitle').value.trim();
             const dept = document.getElementById('userDept').value;
@@ -535,6 +653,7 @@
 
         window.handleDeviceSubmit = function(e) {
             e.preventDefault();
+            if(loggedInUser.role === 'Viewer') return;
             const id = document.getElementById('deviceId').value;
             const name = document.getElementById('deviceName').value.trim();
             const cat = document.getElementById('deviceCategory').value;
@@ -551,6 +670,7 @@
 
         window.handleRepairSubmit = function(e) {
             e.preventDefault();
+            if(loggedInUser.role === 'Viewer') return;
             const devId = document.getElementById('repairDeviceId').value;
             const desc = document.getElementById('repairDesc').value.trim();
             const cost = document.getElementById('repairCost').value;
@@ -563,6 +683,7 @@
         }
 
         window.handleTaskSubmit = function() {
+            if(loggedInUser.role === 'Viewer') return;
             const name = document.getElementById('taskName').value.trim();
             const devId = document.getElementById('taskDeviceId').value;
             const user = document.getElementById('taskUser').value;
@@ -578,6 +699,7 @@
         }
 
         window.deleteItem = function(type, id) {
+            if(loggedInUser.role === 'Viewer') { alert("Bạn không có quyền thực hiện chức năng xóa!"); return; }
             if(confirm("Xóa bản ghi này khỏi máy chủ?")) {
                 if(type === 'dept') depts = depts.filter(i => i.id !== id);
                 if(type === 'user') users = users.filter(i => i.id !== id);
@@ -683,7 +805,7 @@
             const body = document.getElementById('repairTableBody'); 
             body.innerHTML = '';
             if(repairs.length === 0) {
-                body.innerHTML = `<tr><td colspan="5" class="p-4 text-center italic text-slate-400" id="repairEmptyRow">Chưa có hồ sơ sửa chữa nào được lưu</td></tr>`;
+                body.innerHTML = `<tr><td colspan="5" class="p-4 text-center italic text-slate-400">Chưa có hồ sơ sửa chữa nào được lưu</td></tr>`;
                 return;
             }
             repairs.forEach(r => {
