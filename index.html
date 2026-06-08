@@ -410,14 +410,16 @@
     <div id="loginModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50 p-4 text-xs">
         <div class="bg-white p-5 rounded-xl w-full max-w-sm shadow-xl space-y-4">
             <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5 border-b pb-2">🔒 Đăng Nhập Hệ Thống</h3>
-            <div class="space-y-3">
-                <input type="text" id="loginUser" placeholder="Tên tài khoản..." class="w-full border p-2 rounded-lg bg-white">
-                <input type="password" id="loginPass" placeholder="Mật khẩu..." class="w-full border p-2 rounded-lg bg-white">
-            </div>
-            <div class="flex gap-2">
-                <button onclick="closeLoginModal()" class="w-1/2 p-2.5 bg-slate-100 font-bold rounded-lg cursor-pointer">Hủy Bỏ</button>
-                <button onclick="submitLoginAdmin()" class="w-1/2 p-2.5 bg-blue-700 text-white font-bold rounded-lg cursor-pointer">Vào Hệ Thống</button>
-            </div>
+            <form onsubmit="submitLoginAdmin(event)" class="space-y-4">
+                <div class="space-y-3">
+                    <input type="text" id="loginUser" required placeholder="Tên tài khoản..." class="w-full border p-2 rounded-lg bg-white focus:outline-blue-500">
+                    <input type="password" id="loginPass" required placeholder="Mật khẩu..." class="w-full border p-2 rounded-lg bg-white focus:outline-blue-500">
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeLoginModal()" class="w-1/2 p-2.5 bg-slate-100 font-bold rounded-lg cursor-pointer hover:bg-slate-200 transition">Hủy Bỏ</button>
+                    <button type="submit" class="w-1/2 p-2.5 bg-blue-700 text-white font-bold rounded-lg cursor-pointer hover:bg-blue-800 transition shadow-sm">Vào Hệ Thống</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -590,16 +592,24 @@
             document.getElementById('deviceId').value = `TB-${maxNum + 1}`;
         }
 
-        // ĐĂNG NHẬP
+        // MỞ ĐĂNG NHẬP VÀ FOCUS
         window.openLoginModal = function() {
             if(currentRole !== "guest") {
                 currentRole = "guest"; currentLoggedUser = "";
                 document.getElementById('btnLoginText').innerText = "🔒 Đăng Nhập Hệ Thống";
                 renderAllTables();
-            } else { document.getElementById('loginModal').classList.remove('hidden'); }
+            } else { 
+                document.getElementById('loginModal').classList.remove('hidden');
+                document.getElementById('loginUser').value = "";
+                document.getElementById('loginPass').value = "";
+                setTimeout(() => { document.getElementById('loginUser').focus(); }, 100);
+            }
         }
         window.closeLoginModal = function() { document.getElementById('loginModal').classList.add('hidden'); }
-        window.submitLoginAdmin = function() {
+        
+        // HÀM XỬ LÝ ĐĂNG NHẬP KHI BẤM VÀO HỆ THỐNG HOẶC ẤN ENTER
+        window.submitLoginAdmin = function(e) {
+            if(e) e.preventDefault(); // Ngăn trang reload khi dùng form submit
             const u = document.getElementById('loginUser').value.trim(), p = document.getElementById('loginPass').value;
             if(u === accountConfig.admin_user && p === accountConfig.admin_pass) {
                 currentRole = "admin"; currentLoggedUser = u; closeLoginModal(); renderAllTables();
