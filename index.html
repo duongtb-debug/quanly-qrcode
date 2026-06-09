@@ -309,6 +309,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+        // Cấu hình Firebase chuẩn của hệ thống
         const firebaseConfig = {
             apiKey: "AIzaSyBre5KbRWv64Qum4EDZkOAYTJe1YyIojuA",
             authDomain: "qltbvinapaco.firebaseapp.com",
@@ -344,7 +345,6 @@
         window.openForgotPasswordModal = function() { document.getElementById('forgotPasswordModal').style.display = 'flex'; }
         window.closeForgotPasswordModal = function() { document.getElementById('forgotPasswordModal').style.display = 'none'; }
 
-        // SỬA ĐỔI QUAN TRỌNG: Mở khóa trực tiếp và hiển thị toàn bộ giao diện quản trị ngay lập tức
         window.executeSystemLogin = function() {
             document.getElementById('loginOverlaySystem').classList.add('hidden');
             document.getElementById('mainSystemContentDashboard').classList.remove('hidden');
@@ -355,34 +355,46 @@
             document.getElementById('loginOverlaySystem').classList.remove('hidden');
         }
 
+        // THUẬT TOÁN PHỤC HỒI DỮ LIỆU ĐA TẦNG: Quét toàn bộ các node để tránh mất mát dữ liệu cũ
         function fetchCloudData() {
-            const newPath = 'root_v6_status';
-            const oldPath = 'root_v5_integrated'; 
+            const parse = (arr) => arr ? (Array.isArray(arr) ? arr.filter(Boolean) : Object.values(arr)) : [];
 
-            get(ref(db, newPath)).then((snapshot) => {
-                let data = snapshot.val();
-                const parse = (arr) => arr ? (Array.isArray(arr) ? arr.filter(Boolean) : Object.values(arr)) : [];
-
-                if (data && (data.devices || data.repairs)) {
-                    devices = parse(data.devices);
-                    repairs = parse(data.repairs);
-                    updateDropdownOptions(); renderAllTables(); autoGenDeviceId(); update3DMetricsDashboard();
-                    executeSystemLogin(); // Tự động vào thẳng giao diện nếu có dữ liệu mới
+            // Quét nhánh v5 trước (Nơi chứa toàn bộ dữ liệu gốc bạn đã nhập)
+            get(ref(db, 'root_v5_integrated')).then((snapshotV5) => {
+                let dataV5 = snapshotV5.val();
+                
+                if (dataV5 && (dataV5.devices || dataV5.repairs)) {
+                    devices = parse(dataV5.devices);
+                    repairs = parse(dataV5.repairs);
+                    completeDataRecovery();
                 } else {
-                    get(ref(db, oldPath)).then((oldSnapshot) => {
-                        let oldData = oldSnapshot.val() || {};
-                        devices = parse(oldData.devices);
-                        repairs = parse(oldData.repairs);
-                        pushDataToCloud();
-                        executeSystemLogin(); // Tự động vào thẳng giao diện sau khi đồng bộ dữ liệu cũ thành công
+                    // Nếu không có, quét tiếp nhánh v6 để kiểm tra dự phòng
+                    get(ref(db, 'root_v6_status')).then((snapshotV6) => {
+                        let dataV6 = snapshotV6.val() || {};
+                        devices = parse(dataV6.devices);
+                        repairs = parse(dataV6.repairs);
+                        completeDataRecovery();
                     });
                 }
+            }).catch((err) => {
+                console.error("Lỗi đồng bộ dữ liệu: ", err);
+                executeSystemLogin();
             });
         }
 
+        function completeDataRecovery() {
+            updateDropdownOptions(); 
+            renderAllTables(); 
+            autoGenDeviceId(); 
+            update3DMetricsDashboard();
+            executeSystemLogin(); // Vào trực tiếp màn hình làm việc sau khi phục hồi thành công
+        }
+
         function pushDataToCloud() {
-            const basePath = 'root_v6_status';
-            return set(ref(db, basePath), { depts, devices, repairs, secure_credentials: credentialsConfig }).then(() => {
+            // Đồng bộ dữ liệu đồng thời lên cả 2 nhánh để bảo vệ an toàn dữ liệu tuyệt đối
+            const payload = { depts, devices, repairs, secure_credentials: credentialsConfig };
+            set(ref(db, 'root_v5_integrated'), payload);
+            return set(ref(db, 'root_v6_status'), payload).then(() => {
                 renderAllTables(); update3DMetricsDashboard();
             });
         }
@@ -411,6 +423,7 @@
 
         window.renderAllTables = function() {
             const devBody = document.getElementById('deviceTableBody'); 
+            if(!devBody) return;
             devBody.innerHTML = '';
             
             devices.forEach(d => {
@@ -428,7 +441,7 @@
 
                 devBody.innerHTML += `<tr>
                     <td class="p-3 font-mono font-bold">${d.id}</td>
-                    <td class="p-3 font-bold">${d.name}<span class="block text-xs text-slate-400 font-medium">${d.cat}</span></td>
+                    <td class="p-3 font-bold">${d.name}<span class="block text-xs text-slate-400 font-medium">${d.cat || ''}</span></td>
                     <td class="p-3">${statusBadge}</td>
                     <td class="p-1 text-center">
                         <button onclick="previewAndSelectQR('${d.id}')" class="px-2 py-0.5 text-xs bg-slate-100 border text-slate-700 rounded font-bold cursor-pointer hover:bg-slate-200">In QR</button>
@@ -441,6 +454,7 @@
             document.getElementById('count-device').innerText = `${devices.length} tài sản`;
 
             const repBody = document.getElementById('repairTableBody'); 
+            if(!repBody) return;
             repBody.innerHTML = '';
             repairs.forEach((r) => {
                 let statusActionBtn = ""; let statusRowText = "";
@@ -456,7 +470,7 @@
                 repBody.innerHTML += `<tr>
                     <td class="p-3 font-mono font-bold text-rose-700 pl-4">${r.devId}</td>
                     <td class="p-3 font-medium">${r.desc}</td>
-                    <td class="p-3 text-slate-500 text-xs">${r.date}</td>
+                    <td class="p-3 text-slate-500 text-xs">${r.date || ''}</td>
                     <td class="p-3">${statusRowText}</td>
                     <td class="p-3 text-right pr-4 flex justify-end gap-2">${statusActionBtn} 
                         <button onclick="deleteItem('repair','${r.id}')" class="text-red-400 ml-2"><i class="fa-solid fa-trash"></i></button>
@@ -530,7 +544,7 @@
             if(rd) { rd.innerHTML = ''; devices.forEach(d => rd.innerHTML += `<option value="${d.id}">${d.id} - ${d.name}</option>`); }
         }
 
-        // Tự kích hoạt lấy dữ liệu khi khởi chạy trang web
+        // Khởi chạy quét tìm dữ liệu ngay khi mở trang web
         window.addEventListener('DOMContentLoaded', () => {
             fetchCloudData();
         });
