@@ -68,7 +68,6 @@
 
     <div id="loginOverlaySystem" class="fixed inset-0 bg-slate-950/80 backdrop-blur-lg flex items-center justify-center z-50 p-4 transition-all duration-500">
         <div class="bg-white/95 rounded-2xl shadow-2xl w-full max-w-sm border border-slate-200 overflow-hidden backdrop-blur-sm">
-            
             <div class="p-6 pb-4 text-center border-b border-slate-100">
                 <div class="w-12 h-12 bg-emerald-50 text-emerald-700 rounded-full mx-auto flex items-center justify-center text-xl mb-3 border border-emerald-200">
                     <i class="fa-solid fa-lock-open animate-pulse"></i>
@@ -261,32 +260,26 @@
                             <option value="[Bột] Sàng áp lực (Pressure Screen)">
                             <option value="[Bột] Bể chứa & Khuấy trộn bột (Chest & Agitator)">
                             <option value="[Bột] Máy cô đặc / Máy rửa (Thickeners/Washers)">
-                            
                             <option value="[Xeo] Thùng đầu (Headbox)">
                             <option value="[Xeo] Bộ phận lưới (Wire Section)">
                             <option value="[Xeo] Bộ phận ép (Press Section)">
                             <option value="[Xeo] Lô sấy / Hệ thống sấy (Dryer Cylinder)">
                             <option value="[Xeo] Ép keo / Tráng phủ (Size Press/Coater)">
                             <option value="[Xeo] Máy cuộn / Lô cuộn (Pope Reel)">
-                            
                             <option value="[Thành Phẩm] Máy cắt cuộn (Slitter Rewinder)">
                             <option value="[Thành Phẩm] Máy cắt tờ rời (Sheet Cutter)">
                             <option value="[Thành Phẩm] Hệ thống đóng gói / Đóng đai tự động">
-                            
                             <option value="[Năng Lượng] Lò hơi tầng sôi (CFB Boiler)">
                             <option value="[Năng Lượng] Lò thu hồi hóa chất (Recovery Boiler)">
                             <option value="[Năng Lượng] Tuabin phát điện (Steam Turbine Generator)">
                             <option value="[Năng Lượng] Máy nén khí trung tâm (Air Compressor)">
-                            
                             <option value="[Phụ Trợ] Bơm bột giấy chuyên dụng (Stock Pump)">
                             <option value="[Phụ Trợ] Bơm nước ly tâm định lượng (Water Pump)">
                             <option value="[Phụ Trợ] Quạt hút / Quạt thổi khí độc lập (Fan/Blower)">
                             <option value="[Phụ Trợ] Van điều khiển hành trình (Control Valve)">
-                            
                             <option value="[Môi Trường] Trạm hóa chất thô (Thu hồi kiềm)">
                             <option value="[Môi Trường] Hệ thống xử lý nước cấp (WTP)">
                             <option value="[Môi Trường] Hệ thống xử lý nước thải nhà máy (WWTP)">
-                            
                             <option value="[Điện - TĐH] Biến tần điều khiển tốc độ (Inverter/VFD)">
                             <option value="[Điện - TĐH] Tủ điện phân phối trung thế/hạ thế (MSB)">
                             <option value="[Điện - TĐH] Hệ thống điều khiển phân tán (DCS/PLC)">
@@ -347,8 +340,13 @@
         </section>
 
         <section class="glass-panel bg-white/95 rounded-xl shadow-md border border-slate-200 overflow-hidden flex flex-col backdrop-blur-sm">
-            <div class="bg-gradient-to-r from-purple-800 to-indigo-800 text-white font-bold p-3.5 text-base"><i class="fa-solid fa-screwdriver-wrench mr-2"></i>Nhật Ký Hành Động Sửa Chữa Kỹ Thuật Kịp Thời</div>
+            <div class="bg-gradient-to-r from-purple-800 to-indigo-800 text-white font-bold p-3.5 text-base flex items-center justify-between">
+                <span><i class="fa-solid fa-screwdriver-wrench mr-2"></i>Nhật Ký Hành Động Sửa Chữa Kỹ Thuật Kịp Thời</span>
+                <span class="text-sm bg-black/20 px-2.5 py-1 rounded font-mono" id="count-repair">0 lượt</span>
+            </div>
             <form id="formRepairAction" onsubmit="handleRepairSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-12 gap-3 text-sm bg-slate-50/50 border-b border-slate-100 form-bg-panel">
+                <input type="hidden" id="editRepairId" value="">
+                
                 <div class="md:col-span-3">
                     <label class="block font-bold text-slate-600 mb-1">Thiết Bị Sự Cố</label>
                     <select id="repairDeviceId" required class="w-full border border-slate-300 rounded-lg p-2 bg-white font-mono font-bold focus:outline-none h-[38px]"></select>
@@ -372,7 +370,7 @@
                         <label class="block font-bold text-slate-600 mb-1">Người xử lý</label>
                         <select id="repairUser" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none h-[38px] font-bold text-xs"></select>
                     </div>
-                    <button type="submit" class="px-4 bg-purple-700 text-white font-bold rounded-lg hover:bg-purple-800 shadow-sm h-[38px] cursor-pointer text-xs uppercase tracking-wider">Lưu</button>
+                    <button type="submit" id="btnRepairSubmit" class="px-4 bg-purple-700 text-white font-bold rounded-lg hover:bg-purple-800 shadow-sm h-[38px] cursor-pointer text-xs uppercase tracking-wider">Lưu</button>
                 </div>
             </form>
             <div class="overflow-x-auto text-sm bg-white table-container-panel">
@@ -614,7 +612,7 @@
 
         function pushDataToCloud() {
             const basePath = currentEnv === 'live' ? 'root_v5' : 'demo_root_v5';
-            set(ref(db, basePath), { depts, users, devices, repairs, docRecords, secure_credentials: credentialsConfig }).then(() => fetchCloudData());
+            return set(ref(db, basePath), { depts, users, devices, repairs, docRecords, secure_credentials: credentialsConfig }).then(() => fetchCloudData());
         }
 
         window.handleRepairFileBinaryUpload = function(e) {
@@ -779,9 +777,13 @@
                     <td class="p-3">${r.date}</td>
                     <td class="p-3 font-medium">${r.repUser}</td>
                     <td class="p-3 text-center">${fileBtn}</td>
-                    <td class="p-3 text-right pr-4"><button onclick="deleteItem('repair','${r.id}')" class="text-red-400"><i class="fa-solid fa-trash"></i></button></td>
+                    <td class="p-3 text-right pr-4 flex justify-end gap-2">
+                        <button onclick="startEditRepair('${r.id}')" class="text-amber-600 font-bold hover:text-amber-800"><i class="fa-solid fa-pen-to-square"></i> Sửa</button>
+                        <button onclick="deleteItem('repair','${r.id}')" class="text-red-400 hover:text-red-600"><i class="fa-solid fa-trash"></i> Xóa</button>
+                    </td>
                 </tr>`;
             });
+            document.getElementById('count-repair').innerText = `${repairs.length} lượt`;
 
             const docBody = document.getElementById('docRecordsTableBody'); docBody.innerHTML = '';
             docRecords.forEach((p, idx) => {
@@ -817,31 +819,99 @@
             document.getElementById('deviceName').value = ""; document.getElementById('deviceCategory').value = ""; pushDataToCloud();
         }
 
+        /* --- LOGIC ĐIỀU HÈNH SỬA / THÊM NHẬT KÝ SỬA CHỮA BẢO TRÌ --- */
+        window.startEditRepair = function(id) {
+            const target = repairs.find(r => r.id === id);
+            if (!target) return;
+
+            document.getElementById('editRepairId').value = target.id;
+            document.getElementById('repairDeviceId').value = target.devId;
+            document.getElementById('repairDesc').value = target.desc;
+            document.getElementById('repairUser').value = target.repUser;
+
+            // Đổ lại dữ liệu file cũ nếu có
+            document.getElementById('repairFileBinaryData').value = target.fileData || "";
+            document.getElementById('repairFileMimeType').value = target.fileMime || "";
+            document.getElementById('repairFileName').value = target.fileName || "";
+
+            const indicator = document.getElementById('btnUploadRepairIndicator');
+            if (target.fileName) {
+                indicator.innerHTML = `<i class="fa-solid fa-circle-check text-green-400"></i> ${target.fileName.substring(0,10)}...`;
+            } else {
+                indicator.innerHTML = `<i class="fa-solid fa-paperclip"></i> Chọn File`;
+            }
+
+            // Đổi chữ nút submit sang Cập nhật
+            document.getElementById('btnRepairSubmit').innerText = "Cập Nhật";
+            document.getElementById('btnRepairSubmit').className = "px-4 bg-amber-600 text-white font-bold rounded-lg hover:bg-amber-700 shadow-sm h-[38px] cursor-pointer text-xs uppercase tracking-wider";
+            
+            // Cuộn mượt lên form nhập liệu để người dùng sửa đổi
+            document.getElementById('formRepairAction').scrollIntoView({ behavior: 'smooth' });
+        }
+
         window.handleRepairSubmit = function(e) {
             e.preventDefault();
-            repairs.push({ 
-                id: Date.now().toString(), 
-                devId: document.getElementById('repairDeviceId').value, 
-                desc: document.getElementById('repairDesc').value.trim(), 
-                date: new Date().toLocaleDateString('vi-VN'), 
-                repUser: document.getElementById('repairUser').value,
-                fileData: document.getElementById('repairFileBinaryData').value,
-                fileMime: document.getElementById('repairFileMimeType').value,
-                fileName: document.getElementById('repairFileName').value
-            });
+            const editId = document.getElementById('editRepairId').value;
+
+            if (editId) {
+                // Chế độ Cập nhật sửa đổi dữ liệu cũ
+                repairs = repairs.map(r => {
+                    if (r.id === editId) {
+                        return {
+                            ...r,
+                            devId: document.getElementById('repairDeviceId').value,
+                            desc: document.getElementById('repairDesc').value.trim(),
+                            repUser: document.getElementById('repairUser').value,
+                            fileData: document.getElementById('repairFileBinaryData').value,
+                            fileMime: document.getElementById('repairFileMimeType').value,
+                            fileName: document.getElementById('repairFileName').value
+                        };
+                    }
+                    return r;
+                });
+                document.getElementById('editRepairId').value = "";
+            } else {
+                // Chế độ Thêm mới hoàn toàn
+                repairs.push({ 
+                    id: Date.now().toString(), 
+                    devId: document.getElementById('repairDeviceId').value, 
+                    desc: document.getElementById('repairDesc').value.trim(), 
+                    date: new Date().toLocaleDateString('vi-VN'), 
+                    repUser: document.getElementById('repairUser').value,
+                    fileData: document.getElementById('repairFileBinaryData').value,
+                    fileMime: document.getElementById('repairFileMimeType').value,
+                    fileName: document.getElementById('repairFileName').value
+                });
+            }
             
+            // Khôi phục lại trạng thái form ban đầu
             document.getElementById('repairDesc').value = ""; 
             document.getElementById('repairFileBinaryData').value = "";
+            document.getElementById('repairFileMimeType').value = "";
+            document.getElementById('repairFileName').value = "";
             document.getElementById('btnUploadRepairIndicator').innerHTML = `<i class="fa-solid fa-paperclip"></i> Chọn File`;
+            
+            document.getElementById('btnRepairSubmit').innerText = "Lưu";
+            document.getElementById('btnRepairSubmit').className = "px-4 bg-purple-700 text-white font-bold rounded-lg hover:bg-purple-800 shadow-sm h-[38px] cursor-pointer text-xs uppercase tracking-wider";
+            
             pushDataToCloud();
         }
 
         window.deleteItem = function(type, id) {
-            if(confirm("Xác nhận hành động xóa dữ liệu?")) {
+            if(confirm("Xác nhận hành động xóa dữ liệu khỏi hệ thống dữ liệu đám mây?")) {
                 if(type==='dept') depts = depts.filter(i=>i.id!==id);
                 if(type==='user') users = users.filter(i=>i.id!==id);
                 if(type==='device') devices = devices.filter(i=>i.id!==id);
-                if(type==='repair') repairs = repairs.filter(i=>i.id!==id);
+                if(type==='repair') {
+                    repairs = repairs.filter(i=>i.id!==id);
+                    // Nếu đang sửa dòng này mà bị bấm xóa, reset form luôn
+                    if(document.getElementById('editRepairId').value === id) {
+                        document.getElementById('editRepairId').value = "";
+                        document.getElementById('repairDesc').value = "";
+                        document.getElementById('btnRepairSubmit').innerText = "Lưu";
+                        document.getElementById('btnRepairSubmit').className = "px-4 bg-purple-700 text-white font-bold rounded-lg hover:bg-purple-800 shadow-sm h-[38px] cursor-pointer text-xs uppercase tracking-wider";
+                    }
+                }
                 if(type==='docRecord') docRecords = docRecords.filter(i=>i.id!==id);
                 pushDataToCloud();
             }
