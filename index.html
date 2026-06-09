@@ -85,11 +85,11 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Mật Khẩu</label>
-                    <input type="password" id="loginPin" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Mặc định: vinapaco2026" class="w-full border border-slate-300 rounded-lg p-2.5 font-bold text-center bg-slate-50 focus:outline-none">
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Mật Khẩu / PIN xác thực</label>
+                    <input type="password" id="loginPin" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Mặc định: vinapaco2026" class="w-full border border-slate-300 rounded-lg p-2.5 font-bold text-center bg-slate-50 focus:outline-none tracking-widest">
                 </div>
-                <div id="loginErrorMsg" class="text-red-500 font-bold text-xs text-center hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> Sai thông tin xác thực!</div>
-                <button onclick="executeSystemLogin()" class="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-black rounded-lg uppercase text-sm tracking-wider cursor-pointer">Xác Thực Vào Hệ Thống</button>
+                <div id="loginErrorMsg" class="text-red-500 font-bold text-xs text-center hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> Sai thông tin xác thực dữ liệu!</div>
+                <button onclick="executeSystemLogin()" class="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-black rounded-lg uppercase text-sm tracking-wider cursor-pointer transition-colors">Xác Thực Vào Hệ Thống</button>
             </div>
         </div>
     </div>
@@ -465,10 +465,13 @@
             document.getElementById('loginOverlaySystem').classList.remove('hidden');
         }
 
+        // --- HÀM ĐỌC VÀ CHUYỂN ĐỔI THÔNG MINH (BAO GỒM HOÀN TÁC NẾU NHÁNH V5 CHƯA CÓ DỮ LIỆU) ---
         function fetchCloudData() {
             const basePath = currentEnv === 'live' ? 'root_v5' : 'demo_root_v5';
+            const oldPath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
+
             get(ref(db, basePath)).then((snapshot) => {
-                const data = snapshot.val() || {};
+                let data = snapshot.val() || {};
                 const parse = (arr) => arr ? (Array.isArray(arr) ? arr.filter(Boolean) : Object.values(arr)) : [];
 
                 depts = parse(data.depts);
@@ -476,6 +479,30 @@
                 devices = parse(data.devices);
                 repairs = parse(data.repairs);
                 docRecords = parse(data.docRecords);
+
+                // Cơ chế khôi phục khẩn cấp: Nếu nhánh v5 chưa có gì, lập tức đọc từ v4 để đồng bộ ngược lên
+                if (depts.length === 0 && devices.length === 0) {
+                    get(ref(db, oldPath)).then((oldSnapshot) => {
+                        if (oldSnapshot.exists()) {
+                            let oldData = oldSnapshot.val() || {};
+                            depts = parse(oldData.depts);
+                            users = parse(oldData.users);
+                            devices = parse(oldData.devices);
+                            repairs = parse(oldData.repairs);
+                            
+                            // Map mục Mua sắm cũ sang dạng Chứng từ mới nếu có
+                            let legacyProposals = parse(oldData.proposals || oldData.requests);
+                            docRecords = legacyProposals.map((p, i) => ({
+                                id: p.id || ("HS-" + (20000 + i)),
+                                name: p.name || p.desc || "Hồ sơ chuyển đổi dữ liệu kỹ thuật cũ",
+                                createdAt: p.date || new Date().toLocaleDateString('vi-VN'),
+                                cost: parseFloat(p.cost) || 0,
+                                fileData: "", fileMime: "", fileName: ""
+                            }));
+                            pushDataToCloud(); // Đẩy lưu trữ ngay để cố định v5
+                        }
+                    });
+                }
 
                 updateDropdownOptions(); renderAllTables(); autoGenDeviceId();
             });
@@ -486,7 +513,6 @@
             set(ref(db, basePath), { depts, users, devices, repairs, docRecords, secure_credentials: credentialsConfig }).then(() => fetchCloudData());
         }
 
-        // --- CƠ CHẾ ĐỌC FILE KHÔNG GIỚI HẠN DUNG LƯỢNG QUA BUFFER STREAM ---
         window.handleRecordFileBinaryUpload = function(e) {
             const file = e.target.files[0]; if (!file) return;
             const indicator = document.getElementById('btnUploadDocIndicator');
@@ -502,7 +528,6 @@
             reader.readAsDataURL(file);
         }
 
-        // Hàm dựng Blob URL mở trực tiếp tệp tin
         window.openRecordAttachedDocument = function(index) {
             const record = docRecords[index];
             if (!record || !record.fileData) { alert("Hồ sơ này chưa có tệp tin đính kèm!"); return; }
@@ -545,7 +570,6 @@
             document.getElementById('filePreviewContainer').innerHTML = '';
         }
 
-        // Xử lý nạp dữ liệu hồ sơ tự lấy Mã hồ sơ và Thời gian thực
         window.handleDocRecordSubmit = function(e) {
             e.preventDefault();
             const randCode = "HS-" + Math.floor(10000 + Math.random() * 90000);
@@ -573,7 +597,6 @@
             let q1 = 0, q2 = 0, q3 = 0, q4 = 0;
             docRecords.forEach(r => {
                 if(!r.createdAt) return;
-                // Trích xuất tháng từ chuỗi cấu trúc ngày "DD/MM/YYYY hh:mm:ss"
                 const parts = r.createdAt.split('/');
                 if(parts.length >= 2) {
                     const month = parseInt(parts[1]);
@@ -622,7 +645,7 @@
             });
             document.getElementById('count-user').innerText = `${users.length} nhân sự`;
 
-            // Render Nhật Ký Sửa Chữa (Đã bỏ hoàn toàn cột Chi phí)
+            // Render Nhật Ký Sửa Chữa (Loại bỏ chi phí)
             const repBody = document.getElementById('repairTableBody'); repBody.innerHTML = '';
             repairs.forEach(r => {
                 repBody.innerHTML += `<tr>
@@ -634,7 +657,7 @@
                 </tr>`;
             });
 
-            // Render Hồ Sơ Chứng Từ & Tính Tổng Chi Phí Theo Quý
+            // Render Hồ Sơ Chứng Từ Sửa Chữa
             const docBody = document.getElementById('docRecordsTableBody'); docBody.innerHTML = '';
             docRecords.forEach((p, idx) => {
                 const docBtn = p.fileData ? `<button onclick="openRecordAttachedDocument(${idx})" class="px-2.5 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded font-bold text-xs cursor-pointer"><i class="fa-solid fa-folder-open"></i> Xem File</button>` : `<span class="text-slate-400 italic text-xs">Trống</span>`;
