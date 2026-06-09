@@ -31,42 +31,25 @@
                 linear-gradient(60deg, #033e2f 25%, transparent 25.5%, transparent 75%, #033e2f 75.5%, #033e2f);
             background-size: 80px 140px;
             background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
-            position: relative;
-        }
-
-        .stage-3d-container { perspective: 1000px; }
-        .card-3d-isometric {
-            transform: rotateX(15deg) rotateY(-10deg);
-            transform-style: preserve-3d;
-            transition: all 0.4s ease;
-            box-shadow: -12px 12px 18px rgba(0,0,0,0.4);
-        }
-        .card-3d-isometric:hover {
-            transform: rotateX(5deg) rotateY(-2deg) translateZ(15px);
-            box-shadow: -20px 20px 25px rgba(0,0,0,0.5);
         }
     </style>
 </head>
-<body id="systemBody" class="text-slate-800 font-sans min-h-screen p-4 md:p-6 space-y-6 text-sm md:text-base transition-all duration-300">
+<body class="text-slate-800 font-sans min-h-screen p-4 md:p-6 space-y-6 text-sm md:text-base">
 
     <div id="forgotPasswordModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center z-[100] p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border-2 border-amber-500">
             <div class="bg-amber-600 text-white p-4 font-bold flex items-center justify-between">
                 <span class="flex items-center gap-2"><i class="fa-solid fa-key"></i> Khôi Phục Quyền Truy Cập Kỹ Thuật</span>
-                <button onclick="closeForgotPasswordModal()" class="text-white hover:text-slate-200 cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <button onclick="closeForgotPasswordModal()" class="text-white hover:text-slate-200"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <div class="p-6 space-y-4">
-                <p class="text-slate-700 leading-relaxed text-sm">Vì mục tiêu bảo mật dữ liệu vận hành an toàn của nhà máy <b>VINAPACO</b>, tính năng tự động thay đổi mật khẩu qua Internet không được kích hoạt để tránh rủi ro xâm nhập trái phép.</p>
-                <div class="p-3 bg-amber-50 border-l-4 border-amber-500 rounded-r-lg text-amber-900 text-xs font-semibold">
-                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> Vui lòng mang thẻ cán bộ trực tiếp tới phòng Điều Hành Trung Tâm gặp Quản trị viên để xác minh ca trực và thiết lập lại Mã số.
-                </div>
+                <p class="text-slate-700 leading-relaxed text-sm">Vì mục tiêu bảo mật dữ liệu vận hành an toàn của nhà máy <b>VINAPACO</b>, vui lòng mang thẻ cán bộ trực tiếp tới phòng Điều Hành Trung Tâm gặp Quản trị viên để xác minh ca trực và thiết lập lại Mã số.</p>
                 <div class="border-t border-slate-200 pt-3 space-y-2 text-xs font-bold text-slate-700">
-                    <div class="flex items-center gap-2"><i class="fa-solid fa-phone text-emerald-700"></i> <span>Đường dây nóng nội bộ: Máy lẻ 808 (P. Kỹ thuật)</span></div>
-                    <div class="flex items-center gap-2"><i class="fa-solid fa-user-shield text-emerald-700"></i> <span>Phụ trách ca: Đ/c Nguyễn Tiến Dũng (Phòng IT)</span></div>
+                    <div><i class="fa-solid fa-phone text-emerald-700 mr-1"></i> Máy lẻ nội bộ: 808 (P. Kỹ thuật)</div>
                 </div>
             </div>
-            <div class="bg-slate-50 p-3 flex justify-end border-t border-slate-100">
-                <button onclick="closeForgotPasswordModal()" class="px-5 py-2 bg-slate-900 text-white font-bold rounded-lg text-xs hover:bg-black cursor-pointer">Tôi Đã Hiểu</button>
+            <div class="bg-slate-50 p-3 flex justify-end">
+                <button onclick="closeForgotPasswordModal()" class="px-5 py-2 bg-slate-900 text-white font-bold rounded-lg text-xs">Tôi Đã Hiểu</button>
             </div>
         </div>
     </div>
@@ -80,7 +63,7 @@
                 <h1 class="text-xl font-black text-slate-900 tracking-tight">VẬN HÀNH VINAPACO 2026</h1>
                 <p class="text-xs text-slate-500 mt-1">Hệ thống điều hành & giám sát kỹ thuật tổng hợp</p>
                 <div id="syncStatusBadge" class="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
-                    <i class="fa-solid fa-circle-notch animate-spin"></i> Đang đọc bộ nhớ dữ liệu cũ đám mây...
+                    <i class="fa-solid fa-sync animate-spin"></i> Đang kết nối thẳng tới bộ nhớ dữ liệu gốc...
                 </div>
             </div>
             
@@ -104,24 +87,24 @@
                 </div>
 
                 <div id="containerLoginPassword" class="block space-y-1">
-                    <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1">Mật khẩu khu vực làm việc</label>
+                    <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider">Mật khẩu khu vực làm việc</label>
                     <input type="password" id="loginPassword" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Mặc định: vinapaco2026" class="w-full border border-slate-300 rounded-xl p-3 text-center bg-slate-50 text-sm font-bold focus:outline-none focus:border-emerald-600">
                 </div>
 
                 <div id="containerLoginPin" class="hidden space-y-1">
-                    <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1">Mã PIN cá nhân bảo mật</label>
+                    <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider">Mã PIN cá nhân bảo mật</label>
                     <input type="password" id="loginPin" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Nhập mã PIN..." class="w-full border border-slate-300 rounded-xl p-3 text-center bg-slate-50 text-sm tracking-widest font-bold focus:outline-none focus:border-emerald-600">
                 </div>
 
                 <div class="flex items-center justify-between pt-1">
                     <span class="text-xs text-slate-400 font-medium">Bảo mật nội bộ 🔐</span>
-                    <button type="button" onclick="openForgotPasswordModal()" class="text-xs font-black text-amber-600 hover:text-amber-800 underline bg-amber-50 px-2 py-1 rounded border border-amber-200 cursor-pointer">
-                        <i class="fa-solid fa-circle-question mr-1"></i> Quên mật khẩu / mã PIN?
+                    <button type="button" onclick="openForgotPasswordModal()" class="text-xs font-black text-amber-600 hover:text-amber-800 underline bg-amber-50 px-2 py-1 rounded border border-amber-200">
+                        ❓ Quên mật khẩu / mã PIN?
                     </button>
                 </div>
 
-                <div id="loginErrorMsg" class="text-red-500 font-bold text-xs text-center hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> Thông tin đăng nhập không chính xác!</div>
-                <button onclick="executeSystemLogin()" class="w-full py-3 bg-slate-900 hover:bg-emerald-800 text-white font-bold rounded-xl uppercase text-xs cursor-pointer shadow-lg tracking-wider transition-colors duration-200">
+                <div id="loginErrorMsg" class="text-red-500 font-bold text-xs text-center hidden">❌ Thông tin đăng nhập không chính xác!</div>
+                <button onclick="executeSystemLogin()" class="w-full py-3 bg-slate-900 hover:bg-emerald-800 text-white font-bold rounded-xl uppercase text-xs tracking-wider transition-colors">
                     Xác Thực Vào Hệ Thống
                 </button>
             </div>
@@ -137,42 +120,7 @@
             </div>
             <div class="flex items-center gap-2 text-xs font-bold text-emerald-400">
                 <span id="currentRoleBadge">🔑 Quản Trị Viên</span>
-                <button onclick="logoutSystem()" class="text-slate-400 hover:text-red-400 ml-2 cursor-pointer">[Thoát]</button>
-            </div>
-        </div>
-
-        <div class="stage-3d-container grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-            <div class="card-3d-isometric bg-slate-900/95 text-white p-5 rounded-2xl border border-emerald-500/30 flex flex-col justify-between min-h-[140px]">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">1. THIẾT BỊ CẤP MỚI VẬN HÀNH</h4>
-                        <p class="text-3xl font-black mt-2 text-emerald-300" id="db-status-new">0</p>
-                    </div>
-                    <div class="p-2 bg-emerald-500/20 text-emerald-400 rounded-xl"><i class="fa-solid fa-circle-plus text-xl"></i></div>
-                </div>
-                <div class="text-[11px] text-slate-400 border-t border-slate-800 pt-2 mt-2">Thiết bị lưu kho ổn định, chưa báo lỗi sự cố</div>
-            </div>
-
-            <div class="card-3d-isometric bg-slate-900/95 text-white p-5 rounded-2xl border border-rose-500/30 flex flex-col justify-between min-h-[140px]">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h4 class="text-xs font-bold text-rose-400 uppercase tracking-wider">2. TRƯỚC SỬA CHỮA (ĐANG LỖI)</h4>
-                        <p class="text-3xl font-black mt-2 text-rose-400 animate-pulse" id="db-status-pending">0</p>
-                    </div>
-                    <div class="p-2 bg-rose-500/20 text-rose-400 rounded-xl"><i class="fa-solid fa-triangle-exclamation text-xl"></i></div>
-                </div>
-                <div class="text-[11px] text-slate-400 border-t border-slate-800 pt-2 mt-2 font-bold text-rose-300">⚠️ Ràng buộc từ Nhật ký lỗi chưa xử lý</div>
-            </div>
-
-            <div class="card-3d-isometric bg-slate-900/95 text-white p-5 rounded-2xl border border-sky-500/30 flex flex-col justify-between min-h-[140px]">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider">3. SAU SỬA CHỮA (ĐÃ KHẮC PHỤC)</h4>
-                        <p class="text-3xl font-black mt-2 text-sky-300" id="db-status-resolved">0</p>
-                    </div>
-                    <div class="p-2 bg-sky-500/20 text-sky-400 rounded-xl"><i class="fa-solid fa-circle-check text-xl"></i></div>
-                </div>
-                <div class="text-[11px] text-slate-400 border-t border-slate-800 pt-2 mt-2">Đã được nghiệm thu, đưa lại vào dây chuyền</div>
+                <button onclick="logoutSystem()" class="text-slate-400 hover:text-red-400 ml-2">[Thoát]</button>
             </div>
         </div>
 
@@ -207,7 +155,7 @@
                     </div>
                     <div class="sm:col-span-12">
                         <label class="block font-bold text-slate-500 mb-1">Chủng loại phân nhóm thiết bị</label>
-                        <input type="text" id="deviceCategory" list="categorySuggestions" required placeholder="Nhấp chọn hoặc gõ phân nhóm..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold text-emerald-800">
+                        <input type="text" id="deviceCategory" list="categorySuggestions" required placeholder="Nhắp chọn hoặc gõ phân nhóm..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold text-emerald-800">
                         <datalist id="categorySuggestions">
                             <option value="[Bột] Máy nghiền thủy lực (Hydrapulper)">
                             <option value="[Bột] Máy nghiền đĩa (Disc Refiner)">
@@ -229,7 +177,7 @@
                         <input type="text" id="deviceUser" required placeholder="Họ tên kỹ sư phụ trách..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold">
                     </div>
                     <div class="sm:col-span-12 flex justify-end">
-                        <button type="submit" class="px-6 py-2 bg-slate-800 text-white font-bold rounded-lg text-xs uppercase cursor-pointer hover:bg-emerald-800">Lưu & Sinh Mã Định Danh</button>
+                        <button type="submit" class="px-6 py-2 bg-slate-800 text-white font-bold rounded-lg text-xs uppercase hover:bg-emerald-800">LƯU & SINH MÃ ĐỊNH DANH</button>
                     </div>
                 </form>
 
@@ -253,7 +201,7 @@
                 <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden sticky top-6">
                     <div class="bg-slate-800 text-white p-3.5 font-bold text-sm flex items-center justify-between">
                         <span><i class="fa-solid fa-eye text-amber-400 mr-1.5"></i> Nhãn QR Đóng Khối</span>
-                        <button onclick="window.print()" id="btnActionPrintNow" class="hidden px-3 py-1 bg-amber-500 text-slate-950 font-extrabold text-xs rounded hover:bg-amber-400 cursor-pointer">🖨️ In Ngay</button>
+                        <button onclick="window.print()" id="btnActionPrintNow" class="hidden px-3 py-1 bg-amber-500 text-slate-950 font-extrabold text-xs rounded hover:bg-amber-400">🖨️ In Ngay</button>
                     </div>
                     <div class="p-6 flex flex-col items-center justify-center bg-slate-50 min-h-[220px]">
                         <div id="webPreviewQRBox" class="p-4 bg-white border border-slate-400 rounded-xl text-center flex flex-col items-center justify-center hidden w-[200px]">
@@ -283,8 +231,8 @@
                     <input type="text" id="repairDesc" required placeholder="Ghi nhận hỏng hóc, sự cố cần bảo dưỡng..." class="w-full border border-slate-300 rounded-lg p-2 bg-white h-[38px]">
                 </div>
                 <div class="md:col-span-3 flex items-end">
-                    <button type="submit" class="w-full bg-rose-600 text-white font-bold rounded-lg hover:bg-rose-700 h-[38px] cursor-pointer text-xs uppercase tracking-wider">
-                        <i class="fa-solid fa-triangle-exclamation mr-1"></i> Ghi Nhận Sự Cố
+                    <button type="submit" class="w-full bg-rose-600 text-white font-bold rounded-lg hover:bg-rose-700 h-[38px] text-xs uppercase tracking-wider">
+                        <i class="fa-solid fa-triangle-exclamation mr-1"></i> GHI NHẬN & BÁO LỖI SỰ CỐ
                     </button>
                 </div>
             </form>
@@ -296,7 +244,7 @@
                             <th class="p-3 pl-4">Mã Thiết Bị</th>
                             <th class="p-3">Biên Bản Mô Tả Lỗi Kỹ Thuật</th>
                             <th class="p-3">Thời Điểm Báo</th>
-                            <th class="p-3">Trạng Thắng Xử Lý</th>
+                            <th class="p-3">Trạng Thái Xử Lý</th>
                             <th class="p-3 text-right pr-4">Hành Động Khắc Phục</th>
                         </tr>
                     </thead>
@@ -309,4 +257,203 @@
     <div id="qrPrintZone" class="hidden flex-col items-center justify-center p-4 bg-white text-black text-center w-[55mm] h-[55mm]">
         <h2 id="qrPrintTitle" class="text-[10px] font-black uppercase tracking-tight mb-1"></h2>
         <div id="qrPrintCanvas" class="bg-white p-0.5"></div>
-        <p id="qrPrintId" class="text-xs font-mono font-black mt-1 tracking
+        <p id="qrPrintId" class="text-xs font-mono font-black mt-1 tracking-widest pt-0.5 w-full"></p>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBre5KbRWv64Qum4EDZkOAYTJe1YyIojuA",
+            authDomain: "qltbvinapaco.firebaseapp.com",
+            databaseURL: "https://qltbvinapaco-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "qltbvinapaco"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let devices = []; 
+        let repairs = [];
+
+        window.switchLoginMethod = function(method) {
+            const tabPass = document.getElementById('tabLoginPassword');
+            const tabPin = document.getElementById('tabLoginPin');
+            const boxPass = document.getElementById('containerLoginPassword');
+            const boxPin = document.getElementById('containerLoginPin');
+
+            if (method === 'password') {
+                boxPass.style.display = "block"; boxPin.style.display = "none";
+                tabPass.className = "w-1/2 py-2 text-xs font-black rounded-lg text-emerald-900 bg-white shadow-sm";
+                tabPin.className = "w-1/2 py-2 text-xs font-black rounded-lg text-slate-500 hover:text-slate-800";
+            } else {
+                boxPass.style.display = "none"; boxPin.style.display = "block";
+                tabPass.className = "w-1/2 py-2 text-xs font-black rounded-lg text-slate-500 hover:text-slate-800";
+                tabPin.className = "w-1/2 py-2 text-xs font-black rounded-lg text-emerald-900 bg-white shadow-sm";
+            }
+        }
+
+        window.openForgotPasswordModal = function() { document.getElementById('forgotPasswordModal').style.display = 'flex'; }
+        window.closeForgotPasswordModal = function() { document.getElementById('forgotPasswordModal').style.display = 'none'; }
+
+        window.executeSystemLogin = function() {
+            document.getElementById('loginOverlaySystem').classList.add('hidden');
+            document.getElementById('mainSystemContentDashboard').classList.remove('hidden');
+        }
+
+        window.logoutSystem = function() {
+            document.getElementById('mainSystemContentDashboard').classList.add('hidden');
+            document.getElementById('loginOverlaySystem').classList.remove('hidden');
+        }
+
+        // KẾT NỐI TRỰC TIẾP ĐƯỜNG DẪN GỐC PHẲNG - KHÔNG QUA NODE LỒNG
+        function fetchCloudData() {
+            const cleanData = (snapVal) => {
+                if (!snapVal) return [];
+                if (Array.isArray(snapVal)) return snapVal.filter(Boolean);
+                return Object.values(snapVal);
+            };
+
+            // Quét và kết nối trực tiếp đích danh node dữ liệu cũ của bạn trên Firebase
+            onValue(ref(db, 'devices'), (snapshot) => {
+                devices = cleanData(snapshot.val());
+                
+                const badge = document.getElementById('syncStatusBadge');
+                if (badge) {
+                    badge.className = "mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800";
+                    badge.innerHTML = `<i class="fa-solid fa-cloud-check"></i> Đã kết nối! Tìm thấy ${devices.length} thiết bị tài sản`;
+                }
+                
+                updateDropdownOptions();
+                renderAllTables();
+                autoGenDeviceId();
+            });
+
+            onValue(ref(db, 'repairs'), (snapshot) => {
+                repairs = cleanData(snapshot.val());
+                renderAllTables();
+            });
+        }
+
+        // Đồng bộ chuẩn xác về đúng các node lưu trữ cũ để tránh ghi đè hư hỏng dữ liệu
+        function pushDeviceToCloud() { set(ref(db, 'devices'), devices); }
+        function pushRepairToCloud() { set(ref(db, 'repairs'), repairs); }
+
+        window.renderAllTables = function() {
+            const devBody = document.getElementById('deviceTableBody'); 
+            if(!devBody) return;
+            devBody.innerHTML = '';
+            
+            devices.forEach(d => {
+                const isError = repairs.some(r => r.devId === d.id && !r.isResolved);
+                let statusText = isError ? 
+                    `<span class="px-2.5 py-1 rounded-full text-xs font-black bg-rose-100 text-rose-800 animate-pulse">🔴 Có sự cố</span>` : 
+                    `<span class="px-2.5 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800">🟢 Hoạt động ổn định</span>`;
+
+                devBody.innerHTML += `<tr>
+                    <td class="p-3 font-mono font-bold">${d.id}</td>
+                    <td class="p-3 font-bold">${d.name}<span class="block text-xs text-slate-400 font-medium">${d.cat || ''} (${d.dept || ''})</span></td>
+                    <td class="p-3">${statusText}</td>
+                    <td class="p-1 text-center">
+                        <button type="button" onclick="previewAndSelectQR('${d.id}')" class="px-2 py-0.5 text-xs bg-slate-100 border text-slate-700 rounded font-bold hover:bg-slate-200">In QR</button>
+                    </td>
+                    <td class="p-3 text-right pr-4">
+                        <button type="button" onclick="deleteItem('device','${d.id}')" class="text-red-400 hover:text-red-600"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+            document.getElementById('count-device').innerText = `${devices.length} tài sản`;
+
+            const repBody = document.getElementById('repairTableBody'); 
+            if(!repBody) return;
+            repBody.innerHTML = '';
+            repairs.forEach((r) => {
+                let statusActionBtn = r.isResolved ? 
+                    `<span class="text-slate-400 text-xs italic">Đã xử lý xong</span>` : 
+                    `<button type="button" onclick="resolveRepairTask('${r.id}')" class="px-2.5 py-1 bg-emerald-700 text-white font-bold rounded text-xs hover:bg-emerald-800">✔️ Đã sửa xong</button>`;
+
+                let statusRowText = r.isResolved ? 
+                    `<span class="text-xs font-bold text-sky-600">🔵 Hoàn thành</span>` : 
+                    `<span class="text-xs font-bold text-rose-600 animate-pulse">🚨 Chờ sửa chữa</span>`;
+
+                repBody.innerHTML += `<tr>
+                    <td class="p-3 font-mono font-bold text-rose-700 pl-4">${r.devId}</td>
+                    <td class="p-3 font-medium">${r.desc}</td>
+                    <td class="p-3 text-slate-500 text-xs">${r.date || ''}</td>
+                    <td class="p-3">${statusRowText}</td>
+                    <td class="p-3 text-right pr-4 flex justify-end gap-2">${statusActionBtn} 
+                        <button type="button" onclick="deleteItem('repair','${r.id}')" class="text-red-400 ml-2"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+            document.getElementById('count-repair').innerText = `${repairs.length} lượt`;
+        }
+
+        window.resolveRepairTask = function(repairId) {
+            const target = repairs.find(r => r.id === repairId);
+            if(target) { target.isResolved = true; pushRepairToCloud(); }
+        }
+
+        window.handleDeviceSubmit = function(e) {
+            e.preventDefault();
+            devices.push({ 
+                id: document.getElementById('deviceId').value, 
+                name: document.getElementById('deviceName').value.trim(), 
+                cat: document.getElementById('deviceCategory').value.trim(), 
+                dept: document.getElementById('deviceDept').value, 
+                user: document.getElementById('deviceUser').value 
+            });
+            document.getElementById('deviceName').value = ""; 
+            pushDeviceToCloud();
+        }
+
+        window.handleRepairSubmit = function(e) {
+            e.preventDefault();
+            repairs.push({ 
+                id: Date.now().toString(), 
+                devId: document.getElementById('repairDeviceId').value, 
+                desc: document.getElementById('repairDesc').value.trim(), 
+                date: new Date().toLocaleTimeString('vi-VN') + " " + new Date().toLocaleDateString('vi-VN'),
+                isResolved: false
+            });
+            document.getElementById('repairDesc').value = ""; 
+            pushRepairToCloud();
+        }
+
+        window.deleteItem = function(type, id) {
+            if(confirm("Xóa bản ghi này khỏi cơ sở dữ liệu?")) {
+                if(type==='device') { devices = devices.filter(i=>i.id!==id); pushDeviceToCloud(); }
+                if(type==='repair') { repairs = repairs.filter(i=>i.id!==id); pushRepairToCloud(); }
+            }
+        }
+
+        window.previewAndSelectQR = function(id) {
+            const dev = devices.find(d => d.id === id); if(!dev) return;
+            document.getElementById('webPreviewEmptyText').classList.add('hidden');
+            document.getElementById('webPreviewQRBox').classList.remove('hidden');
+            document.getElementById('btnActionPrintNow').classList.remove('hidden');
+            document.getElementById('wpTitle').innerText = dev.name; 
+            document.getElementById('wpId').innerText = dev.id;
+            
+            const targetUrl = window.location.origin + window.location.pathname + `?id=${dev.id}`;
+            document.getElementById('wpCanvas').innerHTML = "";
+            new QRCode(document.getElementById('wpCanvas'), { text: targetUrl, width: 120, height: 120 });
+        }
+
+        function autoGenDeviceId() {
+            let max = 72100; 
+            devices.forEach(d => { if(d.id && d.id.startsWith("TB-")) { const n = parseInt(d.id.substring(3)); if(!isNaN(n) && n > max) max = n; } });
+            document.getElementById('deviceId').value = `TB-${max + 1}`;
+        }
+
+        function updateDropdownOptions() {
+            const rd = document.getElementById('repairDeviceId');
+            if(rd) { rd.innerHTML = ''; devices.forEach(d => rd.innerHTML += `<option value="${d.id}">${d.id} - ${d.name}</option>`); }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => { fetchCloudData(); });
+        setInterval(() => { if(document.getElementById('liveClockText')) document.getElementById('liveClockText').innerText = new Date().toLocaleTimeString('vi-VN'); }, 1000);
+    </script>
+</body>
+</html>
