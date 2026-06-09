@@ -188,48 +188,90 @@
                 <span><i class="fa-solid fa-users-gear mr-1.5 text-slate-300"></i> Quản Lý Hồ Sơ Nhân Sự & Danh Sách Phòng Ban</span>
                 <span class="text-sm bg-emerald-600 px-2.5 py-1 rounded font-mono" id="count-user">0 nhân sự</span>
             </div>
-            <div class="p-4 grid grid-cols-1 lg:grid-cols-12 gap-5 border-b border-slate-100 bg-slate-50/50 text-sm">
-                <div class="lg:col-span-4 border-r border-slate-200 pr-4">
-                    <span class="block font-bold text-slate-400 text-xs uppercase mb-1.5">THÊM PHÒNG BAN / ĐƠN VỊ MỚI</span>
-                    <form onsubmit="handleDeptSubmit(event)" class="space-y-2">
-                        <input type="text" id="deptName" required placeholder="Tên xưởng, phòng ban..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-emerald-600">
-                        <button type="submit" class="w-full py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 transition-colors cursor-pointer">Thêm Đơn Vị</button>
-                    </form>
+            
+            <div class="p-4 grid grid-cols-1 lg:grid-cols-12 gap-6 text-sm">
+                <div class="lg:col-span-4 border-r border-slate-200 pr-4 space-y-4">
+                    <div>
+                        <span class="block font-bold text-slate-500 text-xs uppercase mb-2"><i class="fa-solid fa-folder-plus text-emerald-600"></i> THÊM PHÒNG BAN / ĐƠN VỊ MỚI</span>
+                        <form onsubmit="handleDeptSubmit(event)" class="flex gap-2">
+                            <input type="hidden" id="editDeptId" value="">
+                            <input type="text" id="deptName" required placeholder="Tên xưởng, phòng ban..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-emerald-600 font-medium">
+                            <button type="submit" id="btnDeptSubmit" class="px-4 py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 transition-colors cursor-pointer whitespace-nowrap">Thêm</button>
+                        </form>
+                    </div>
+
+                    <div>
+                        <span class="block font-bold text-slate-400 text-xs uppercase mb-2">DANH SÁCH PHÒNG BAN HIỆN TẠI</span>
+                        <div id="deptManagementList" class="space-y-1.5 max-h-[180px] overflow-y-auto custom-scrollbar">
+                            <p class="text-slate-400 italic text-xs">Chưa có phòng ban nào. Vui lòng nhập ở trên.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="lg:col-span-8">
-                    <span class="block font-bold text-slate-400 text-xs uppercase mb-1.5">NHẬP LIỆU NHÂN SỰ</span>
-                    <form onsubmit="handleUserSubmit(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+
+                <div class="lg:col-span-8 space-y-4">
+                    <span class="block font-bold text-slate-500 text-xs uppercase"><i class="fa-solid fa-user-pen text-emerald-600"></i> NHẬP LIỆU HỒ SƠ NHÂN SỰ</span>
+                    <form onsubmit="handleUserSubmit(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                        <input type="hidden" id="editUserId" value="">
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">Họ và tên</label>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Họ và tên</label>
                             <input type="text" id="userName" required placeholder="Nguyễn Văn A..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-emerald-600 font-bold">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">Chức vụ</label>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Chức vụ</label>
                             <input type="text" id="userTitle" required placeholder="Kỹ sư vận hành..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-emerald-600 font-bold">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">Đơn vị tiếp quản</label>
-                            <select id="userDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-slate-700">
-                                <option value="">-- Cần thêm đơn vị trước --</option>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Đơn vị quản lý trực tiếp</label>
+                            <select id="userDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-emerald-600 font-bold text-slate-700">
+                                <option value="">-- Chọn đơn vị --</option>
                             </select>
                         </div>
-                        <div class="sm:col-span-3 flex justify-end gap-2 pt-1">
-                            <button type="submit" class="px-8 py-2 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 shadow-sm transition-colors cursor-pointer">Lưu Hồ Sơ</button>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Ảnh chân dung nhân sự (Tùy chọn)</label>
+                            <div class="flex items-center gap-3">
+                                <input type="file" id="userAvatarFile" accept="image/*" onchange="handleUserAvatarUpload(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
+                                <input type="hidden" id="userAvatarData" value="">
+                                <div id="avatarPreviewContainer" class="w-9 h-9 rounded-full bg-slate-200 border border-slate-300 overflow-hidden hidden flex-shrink-0">
+                                    <img id="imgAvatarPreview" src="" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sm:col-span-1 flex justify-end items-end gap-2">
+                            <button type="button" id="btnCancelUserEdit" onclick="resetUserForm()" class="px-3 py-2 bg-slate-200 text-slate-700 font-bold rounded-lg hidden transition-colors cursor-pointer text-xs">Hủy</button>
+                            <button type="submit" id="btnUserSubmit" class="w-full py-2 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 shadow-sm transition-colors cursor-pointer text-xs uppercase tracking-wider">Lưu Hồ Sơ</button>
                         </div>
                     </form>
+
+                    <div class="p-3 bg-slate-900 text-white rounded-xl text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border border-slate-800">
+                        <div>
+                            <span class="block font-bold text-amber-400 uppercase tracking-wide"><i class="fa-solid fa-file-excel mr-1"></i> Nhập danh sách nhân sự hàng loạt bằng File</span>
+                            <p class="text-slate-400 text-[11px] mt-0.5">Hỗ trợ .csv, .txt, .xlsx. Định dạng dòng: <code class="bg-slate-800 px-1 text-slate-300">Tên Nhân Viên, Chức Vụ, Tên Phòng Ban</code>. Hệ thống sẽ tự động phân loại vào đúng phòng ban.</p>
+                        </div>
+                        <div>
+                            <input type="file" id="importUserFile" accept=".csv, .txt, .xlsx" class="hidden" onchange="processUserFileImport(event)">
+                            <button onclick="document.getElementById('importUserFile').click()" class="px-3 py-2 bg-blue-600 hover:bg-blue-500 font-bold rounded-lg text-white cursor-pointer transition-colors whitespace-nowrap"><i class="fa-solid fa-file-import mr-1"></i> Tải Lên Danh Sách</button>
+                        </div>
+                    </div>
                 </div>
             </div>
+
             <div class="px-4 bg-slate-50 border-b border-slate-100 flex flex-wrap gap-2 text-sm py-2 items-center" id="deptTabsContainer"></div>
+            
             <div class="overflow-x-auto text-sm bg-white">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="border-b border-slate-100 bg-slate-50/70 text-slate-500 font-bold">
-                            <th class="p-3 pl-4">Họ Tên / Chức Danh</th>
+                            <th class="p-3 pl-4 w-[60px] text-center">Ảnh</th>
+                            <th class="p-3">Họ Tên / Chức Danh</th>
                             <th class="p-3">Đơn Vị Quản Lý</th>
                             <th class="p-3 text-right pr-4">Tác Vụ</th>
                         </tr>
                     </thead>
-                    <tbody id="userTableBody" class="divide-y divide-slate-100"></tbody>
+                    <tbody id="userTableBody" class="divide-y divide-slate-100">
+                        <tr>
+                            <td colspan="4" class="p-4 text-center text-slate-400 italic">Chưa có dữ liệu nhân sự. Hãy nhập mới dữ liệu ở trên hoặc tải file danh sách.</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </section>
@@ -499,7 +541,7 @@
             sub_user_2: { password: "vinapaco2026", pin: "2222", isPassChanged: false, isPinChanged: false }
         };
 
-        // ĐÃ XÓA SẠCH DỮ LIỆU MẪU MẶC ĐỊNH ĐỂ BẠN TỰ NHẬP MỚI TỪ ĐẦU
+        // ĐÃ XÓA SẠCH HOÀN TOÀN CÁC PHÒNG BAN VÀ NHÂN SỰ CŨ THEO YÊU CẦU
         let depts = [], users = [], devices = [], repairs = [], tasks = [], procurements = [];
         let activeUserDeptFilter = 'all';
         let pomoInterval = null, pomoTimeLeft = 25 * 60, pomoIsRunning = false, pomoCurrentMode = 'work';
@@ -708,6 +750,60 @@
             }
         }
 
+        // TẢI ẢNH CHÂN DUNG NHÂN SỰ CHUYỂN ĐỔI SANG BASE64
+        window.handleUserAvatarUpload = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                document.getElementById('userAvatarData').value = evt.target.result;
+                document.getElementById('imgAvatarPreview').src = evt.target.result;
+                document.getElementById('avatarPreviewContainer').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // CHỨC NĂNG NHẬP HÀNG LOẠT NHÂN SỰ TỪ FILE (CSV/TXT/EXCEL) - TỰ ĐỘNG PHÂN PHÒNG BAN
+        window.processUserFileImport = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const text = evt.target.result;
+                const lines = text.split('\n');
+                let countNew = 0;
+
+                lines.forEach(line => {
+                    if (!line.trim()) return;
+                    const parts = line.split(',');
+                    if (parts.length >= 2) {
+                        const fName = parts[0].trim();
+                        const fTitle = parts[1].trim();
+                        const fDept = parts[2] ? parts[2].trim() : "Phòng vận hành chung";
+
+                        // Kiểm tra nếu phòng ban trong file chưa tồn tại thì tự động tạo luôn
+                        let deptExist = depts.find(d => d.name.toLowerCase() === fDept.toLowerCase());
+                        if (!deptExist) {
+                            deptExist = { id: Date.now().toString() + Math.random().toString(36).substring(2,5), name: fDept };
+                            depts.push(deptExist);
+                        }
+
+                        users.push({
+                            id: Date.now().toString() + Math.random().toString(36).substring(2,5),
+                            name: fName,
+                            title: fTitle,
+                            dept: deptExist.name,
+                            avatar: ""
+                        });
+                        countNew++;
+                    }
+                });
+                alert(`Đã tải lên và tự động đồng bộ thành công ${countNew} nhân sự vào hệ thống!`);
+                pushDataToCloud();
+            };
+            reader.readAsText(file);
+        }
+
         window.processDeviceFileImport = function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -812,16 +908,85 @@
 
         window.switchEnvironment = function(env) { currentEnv = env; localStorage.setItem('vinapaco_current_env', env); fetchCloudData(); }
 
+        // XỬ LÝ LƯU HOẶC SỬA HỒ SƠ NHÂN SỰ
         window.handleUserSubmit = function(e) { 
             e.preventDefault(); 
-            users.push({ id: Date.now().toString(), name: document.getElementById('userName').value.trim(), title: document.getElementById('userTitle').value.trim(), dept: document.getElementById('userDept').value });
-            document.getElementById('userName').value = ""; document.getElementById('userTitle').value = ""; pushDataToCloud(); 
+            const uId = document.getElementById('editUserId').value;
+            const name = document.getElementById('userName').value.trim();
+            const title = document.getElementById('userTitle').value.trim();
+            const dept = document.getElementById('userDept').value;
+            const avatar = document.getElementById('userAvatarData').value;
+
+            if(uId) {
+                // Chế độ chỉnh sửa
+                users.forEach(u => {
+                    if(u.id === uId) { u.name = name; u.title = title; u.dept = dept; if(avatar) u.avatar = avatar; }
+                });
+            } else {
+                // Thêm mới
+                users.push({ id: Date.now().toString(), name, title, dept, avatar });
+            }
+            resetUserForm();
+            pushDataToCloud(); 
         }
 
+        window.editUserInline = function(id) {
+            const u = users.find(item => item.id === id); if(!u) return;
+            document.getElementById('editUserId').value = u.id;
+            document.getElementById('userName').value = u.name;
+            document.getElementById('userTitle').value = u.title;
+            document.getElementById('userDept').value = u.dept;
+            if(u.avatar) {
+                document.getElementById('imgAvatarPreview').src = u.avatar;
+                document.getElementById('avatarPreviewContainer').classList.remove('hidden');
+                document.getElementById('userAvatarData').value = u.avatar;
+            } else {
+                document.getElementById('avatarPreviewContainer').classList.add('hidden');
+                document.getElementById('userAvatarData').value = "";
+            }
+            document.getElementById('btnCancelUserEdit').classList.remove('hidden');
+            document.getElementById('btnUserSubmit').innerText = "Cập Nhật Hồ Sơ";
+        }
+
+        window.resetUserForm = function() {
+            document.getElementById('editUserId').value = "";
+            document.getElementById('userName').value = "";
+            document.getElementById('userTitle').value = "";
+            document.getElementById('userAvatarData').value = "";
+            document.getElementById('userAvatarFile').value = "";
+            document.getElementById('avatarPreviewContainer').classList.add('hidden');
+            document.getElementById('btnCancelUserEdit').classList.add('hidden');
+            document.getElementById('btnUserSubmit').innerText = "Lưu Hồ Sơ";
+        }
+
+        // XỬ LÝ THÊM HOẶC SỬA TÊN PHÒNG BAN
         window.handleDeptSubmit = function(e) { 
             e.preventDefault(); 
-            depts.push({ id: Date.now().toString(), name: document.getElementById('deptName').value.trim() });
-            document.getElementById('deptName').value = ""; pushDataToCloud(); 
+            const dId = document.getElementById('editDeptId').value;
+            const name = document.getElementById('deptName').value.trim();
+
+            if (dId) {
+                const oldDept = depts.find(d => d.id === dId);
+                if (oldDept) {
+                    // Cập nhật cả phòng ban của nhân sự liên quan
+                    users.forEach(u => { if(u.dept === oldDept.name) u.dept = name; });
+                    devices.forEach(d => { if(d.dept === oldDept.name) d.dept = name; });
+                    oldDept.name = name;
+                }
+            } else {
+                depts.push({ id: Date.now().toString(), name });
+            }
+            document.getElementById('editDeptId').value = "";
+            document.getElementById('deptName').value = "";
+            document.getElementById('btnDeptSubmit').innerText = "Thêm";
+            pushDataToCloud(); 
+        }
+
+        window.editDeptInline = function(id, name) {
+            document.getElementById('editDeptId').value = id;
+            document.getElementById('deptName').value = name;
+            document.getElementById('btnDeptSubmit').innerText = "Sửa";
+            document.getElementById('deptName').focus();
         }
 
         window.handleDeviceSubmit = function(e) { 
@@ -909,16 +1074,30 @@
             document.getElementById('count-device').innerText = `${devices.length} tài sản`;
         }
 
+        // TRÌNH BÀY LẠI BẢNG NHÂN SỰ TÍCH HỢP ẢNH ĐẠI DIỆN CHUYÊN NGHIỆP
         window.renderUserTableOnly = function() {
             const body = document.getElementById('userTableBody'); if(!body) return; body.innerHTML = '';
+            let hasData = false;
+
             users.forEach(u => {
                 if(activeUserDeptFilter !== 'all' && u.dept !== activeUserDeptFilter) return;
-                body.innerHTML += `<tr class="border-b">
-                    <td class="p-3 pl-4 font-bold text-slate-900">${u.name}<span class="block text-xs text-slate-400 font-normal">${u.title}</span></td>
-                    <td class="p-3 font-medium text-slate-600">${u.dept}</td>
-                    <td class="p-3 text-right pr-4"><button onclick="deleteItem('user','${u.id}')" class="text-red-500 hover:underline">Xóa</button></td>
+                hasData = true;
+                const avaImg = u.avatar ? `<img src="${u.avatar}" class="w-8 h-8 rounded-full object-cover border border-slate-300 mx-auto">` : `<div class="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs font-bold mx-auto"><i class="fa-solid fa-user"></i></div>`;
+                
+                body.innerHTML += `<tr class="border-b hover:bg-slate-50/50">
+                    <td class="p-2 text-center">${avaImg}</td>
+                    <td class="p-3 font-bold text-slate-900">${u.name}<span class="block text-xs text-slate-400 font-normal">${u.title}</span></td>
+                    <td class="p-3 font-semibold text-slate-600">${u.dept}</td>
+                    <td class="p-3 text-right pr-4">
+                        <button onclick="editUserInline('${u.id}')" class="text-blue-600 hover:text-blue-800 font-bold mr-3 cursor-pointer"><i class="fa-solid fa-pen-to-square"></i> Sửa</button>
+                        <button onclick="deleteItem('user','${u.id}')" class="text-red-500 hover:text-red-700 font-bold cursor-pointer"><i class="fa-solid fa-trash-can"></i> Xóa</button>
+                    </td>
                 </tr>`;
             });
+
+            if(!hasData) {
+                body.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 italic">Không tìm thấy nhân sự phù hợp cho đơn vị này.</td></tr>`;
+            }
             document.getElementById('count-user').innerText = `${users.length} nhân sự`;
         }
 
@@ -955,7 +1134,11 @@
         }
 
         window.deleteItem = function(type, id) { 
-            if(confirm("Xác nhận xóa?")) { 
+            if(confirm("Xác nhận xóa hạng mục này khỏi hệ thống?")) { 
+                if(type=='dept') {
+                    const target = depts.find(d => d.id === id);
+                    if(target) depts = depts.filter(i=>i.id!==id);
+                }
                 if(type=='user') users=users.filter(i=>i.id!==id); 
                 if(type=='device') devices=devices.filter(i=>i.id!==id); 
                 if(type=='repair') repairs=repairs.filter(i=>i.id!==id); 
@@ -991,10 +1174,11 @@
             users.filter(u => u.dept === dDept).forEach(u => dUser.innerHTML += `<option value="${u.name}">${u.name}</option>`);
         }
 
+        // ĐỒNG BỘ HIỂN THỊ DANH SÁCH PHÒNG BAN THỰC TẾ
         function updateDropdownOptions() {
             const ud = document.getElementById('userDept'), dd = document.getElementById('deviceDept'), rd = document.getElementById('repairDeviceId'), ru = document.getElementById('repairUser'), pd = document.getElementById('procuDept');
             
-            if(ud) ud.innerHTML = depts.length ? '' : '<option value="">-- Cần thêm đơn vị trước --</option>'; 
+            if(ud) ud.innerHTML = depts.length ? '<option value="">-- Chọn đơn vị --</option>' : '<option value="">-- Cần thêm đơn vị trước --</option>'; 
             if(dd) dd.innerHTML = depts.length ? '<option value="">-- Chọn đơn vị --</option>' : '<option value="">-- Cần thêm đơn vị trước --</option>'; 
             if(rd) rd.innerHTML = devices.length ? '' : '<option value="">-- Cần có thiết bị --</option>'; 
             if(ru) ru.innerHTML = '<option value="Hệ thống">Hệ thống</option>'; 
@@ -1008,6 +1192,26 @@
             if(td) { td.innerHTML = ''; devices.forEach(d => td.innerHTML += `<option value="${d.id}">${d.id}</option>`); }
             if(tu) { tu.innerHTML = ''; users.forEach(u => tu.innerHTML += `<option value="${u.name}">${u.name}</option>`); }
 
+            // RENDER RA DANH SÁCH PHÒNG BAN CÓ CHỨC NĂNG SỬA VÀ XÓA Ở CỘT TRÁI
+            const listDeptDom = document.getElementById('deptManagementList');
+            if(listDeptDom) {
+                if(depts.length === 0) {
+                    listDeptDom.innerHTML = `<p class="text-slate-400 italic text-xs">Chưa có phòng ban nào. Vui lòng nhập ở trên.</p>`;
+                } else {
+                    listDeptDom.innerHTML = '';
+                    depts.forEach(d => {
+                        listDeptDom.innerHTML += `<div class="flex items-center justify-between p-2 bg-slate-100 rounded-lg border border-slate-200">
+                            <span class="font-bold text-slate-700 text-xs">${d.name}</span>
+                            <div class="flex items-center gap-2">
+                                <button onclick="editDeptInline('${d.id}', '${d.name}')" class="text-blue-600 hover:text-blue-800 text-xs cursor-pointer"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="deleteItem('dept', '${d.id}')" class="text-red-500 hover:text-red-700 text-xs cursor-pointer"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>`;
+                    });
+                }
+            }
+
+            // Cập nhật lại các thanh tab bộ lọc
             const container = document.getElementById('deptTabsContainer');
             if(container) {
                 container.innerHTML = `<button onclick="filterUserByDept('all')" class="px-3 py-1 text-xs font-bold border rounded bg-white text-slate-700 cursor-pointer">Tất Cả Đơn Vị</button>`;
