@@ -202,7 +202,7 @@
         <form id="formProcurementAction" onsubmit="handleProcurementSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-12 gap-3 text-sm bg-slate-50 border-b border-slate-200 hidden">
             <div class="md:col-span-3">
                 <label class="block font-bold text-slate-600 mb-1">Tên Vật Tư / Thiết Bị Mua Mới</label>
-                <input type="text" id="procuName" required placeholder="Ví dụ: Van áp suất, Màn hình điều khiển..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
+                <input type="text" id="procuName" required placeholder="Ví dụ: Van áp suất..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
             </div>
             <div class="md:col-span-2">
                 <label class="block font-bold text-slate-600 mb-1">Số Lượng</label>
@@ -229,7 +229,7 @@
                         <th class="p-3 text-center">Số Lượng</th>
                         <th class="p-3">Dự Toán Chi Phí</th>
                         <th class="p-3 text-center">Trạng Thái Phê Duyệt</th>
-                        <th class="p-3 text-right pr-4" id="colProcuActionHeader">Tác Vụ</th>
+                        <th class="p-3 text-right pr-4">Tác Vụ</th>
                     </tr>
                 </thead>
                 <tbody id="procurementTableBody" class="divide-y divide-slate-100"></tbody>
@@ -277,7 +277,7 @@
                     <tr class="border-b bg-slate-50 text-slate-500 font-bold">
                         <th class="p-3 pl-4">Họ Tên / Chức Danh</th>
                         <th class="p-3">Đơn Vị Quản Lý</th>
-                        <th class="p-3 text-right pr-4" id="colUserActionHeader">Tác Vụ</th>
+                        <th class="p-3 text-right pr-4">Tác Vụ</th>
                     </tr>
                 </thead>
                 <tbody id="userTableBody" class="divide-y divide-slate-100"></tbody>
@@ -315,7 +315,7 @@
                         <th class="p-3">Ngày Thực Hiện</th>
                         <th class="p-3">Kỹ Thuật Viên</th>
                         <th class="p-3">Chi Phí Vật Tư</th>
-                        <th class="p-3 text-right pr-4" id="colRepairActionHeader">Hành động</th>
+                        <th class="p-3 text-right pr-4">Hành động</th>
                     </tr>
                 </thead>
                 <tbody id="repairTableBody" class="divide-y divide-slate-100"></tbody>
@@ -355,7 +355,7 @@
                         <th class="p-3">⏰ Bắt Đầu</th>
                         <th class="p-3">⏳ Đếm Ngược</th>
                         <th class="p-3">Trạng Thái</th>
-                        <th class="p-3 text-right pr-4" id="colTaskActionHeader">Xóa</th>
+                        <th class="p-3 text-right pr-4">Xóa</th>
                     </tr>
                 </thead>
                 <tbody id="taskTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
@@ -416,31 +416,31 @@
             "Đường đi gian khổ không sờn lòng, kỷ luật lao động giữ an toàn cho nhà máy."
         ];
 
-        // 🌟 FIX TRIỆT ĐỂ: SỬ DỤNG ENGINE TIÊU CHUẨN QUỐC TẾ KHÔNG BAO GIỜ LỖI
+        // 🌟 NÂNG CẤP: Tạo đường dẫn động (URL) chứa ID thiết bị
+        function makeQRTextContent(dev) { 
+            // Lấy địa chỉ trang web hiện tại (bất kể là localhost, file:/// hay tên miền thật)
+            const currentUrl = window.location.origin + window.location.pathname;
+            return `${currentUrl}?view_id=${dev.id}`; 
+        }
+
         window.generateLocalQR = function(domElement, text, size = 140) {
             if (!domElement) return;
-            domElement.innerHTML = ""; // Xóa dữ liệu cũ
+            domElement.innerHTML = "";
             try {
-                // Sử dụng thư viện QRCode tiêu chuẩn để dựng hình tự động
                 new QRCode(domElement, {
                     text: text,
                     width: size,
                     height: size,
                     colorDark : "#000000",
                     colorLight : "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.L // Mức độ tối ưu hóa dung lượng ký tự dài
+                    correctLevel : QRCode.CorrectLevel.L
                 });
             } catch (e) {
                 console.error("Lỗi vẽ QR: ", e);
-                domElement.innerHTML = "<span class='text-red-500 text-[10px] font-bold block leading-tight'>Lỗi vẽ đồ họa</span>";
+                domElement.innerHTML = "<span class='text-red-500 text-[10px] font-bold block leading-tight'>Lỗi đồ họa</span>";
             }
         }
 
-        function makeQRTextContent(dev) { 
-            return `VINAPACO-${dev.id}`; 
-        }
-
-        // KHỞI TẠO BẢO MẬT PHIÊN ĐĂNG NHẬP (SESSIONSTORAGE)
         if(!localStorage.getItem('vinapaco_accounts_v3')) {
             localStorage.setItem('vinapaco_accounts_v3', JSON.stringify([{ username: 'admin', pass: 'vinapaco2026', role: 'Admin' }]));
         }
@@ -449,7 +449,6 @@
         const savedUser = sessionStorage.getItem('vinapaco_logged_in_user');
         if(savedUser) { loggedInUser = JSON.parse(savedUser); }
 
-        // BẮT SỰ KIỆN ENTER ĐĂNG NHẬP NHANH CHÓNG
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
                 const activeEl = document.activeElement;
@@ -594,6 +593,20 @@
             else { d.className = "w-1/2 py-1.5 rounded-md font-bold bg-amber-500 text-white text-sm text-center"; l.className = "w-1/2 py-1.5 rounded-md font-bold bg-white text-slate-600 text-sm text-center"; document.getElementById('syncBadgeText').innerText = "DEMO CHẠY THỬ"; }
         }
 
+        // 🌟 NÂNG CẤP: Sau khi tải dữ liệu từ Cloud, kiểm tra xem trên URL điện thoại có tham số quét mã QR không
+        function checkUrlParamsForScannedQR() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const scannedId = urlParams.get('view_id');
+            if (scannedId) {
+                // Đợi bảng dựng xong rồi kích hoạt mở xem thông tin chi tiết tự động
+                setTimeout(() => {
+                    window.previewAndSelectQR(scannedId);
+                    // Cuộn màn hình đến khu vực xem trước nhãn in để người dùng thấy ngay
+                    document.getElementById('webPreviewQRBox')?.scrollIntoView({ behavior: 'smooth' });
+                }, 800);
+            }
+        }
+
         function fetchCloudData() {
             const key = currentEnv === 'live' ? 'root' : 'demo_root';
             get(ref(db, key)).then((s) => {
@@ -601,6 +614,7 @@
                 const parse = (t) => t ? (Array.isArray(t) ? t.filter(Boolean) : Object.values(t)) : [];
                 depts = parse(data.depts); users = parse(data.users); devices = parse(data.devices); repairs = parse(data.repairs); tasks = parse(data.tasks); procurements = parse(data.procurements);
                 updateDropdownOptions(); renderAllTables(); autoGenDeviceId(); checkMaintenanceAlerts();
+                checkUrlParamsForScannedQR(); // Chạy kiểm tra quét mã QR
             });
         }
         window.triggerManualFetch = function() { fetchCloudData(); }
