@@ -27,7 +27,7 @@
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200">
             <div class="bg-emerald-700 text-white p-6 text-center relative">
                 <div class="w-16 h-16 bg-white/10 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-3 border border-white/20">
-                    <i class="fa-solid fa-lock text-amber-400"></i>
+                    <i class="fa-solid fa-shield-halved text-amber-400"></i>
                 </div>
                 <h2 class="text-xs font-bold tracking-widest text-emerald-200 uppercase">Hệ Thống Cấp Khóa Vận Hành</h2>
                 <h1 class="text-xl font-black mt-1">VINAPACO - LOGIN</h1>
@@ -35,19 +35,29 @@
             <div class="p-6 space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Chọn Tài Khoản Ca Trực</label>
-                    <select id="loginRole" class="w-full border border-slate-300 rounded-lg p-2.5 font-bold text-slate-800 bg-slate-50 focus:outline-none focus:border-emerald-600">
+                    <select id="loginRole" onchange="updateLoginPlaceholder()" class="w-full border border-slate-300 rounded-lg p-2.5 font-bold text-slate-800 bg-slate-50 focus:outline-none focus:border-emerald-600">
                         <option value="admin">🔑 Quản Trị Viên (Admin - Toàn Quyền)</option>
                         <option value="sub_user_1">🧑 Tài khoản con (Vận hành Ca 1)</option>
                         <option value="sub_user_2">🧑 Tài khoản con (Vận hành Ca 2)</option>
                     </select>
                 </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5 text-center">Phương thức xác thực</label>
+                    <div class="grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-lg border border-slate-200">
+                        <button type="button" id="btnAuthTypePassword" onclick="switchAuthMethod('password')" class="py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer bg-white text-emerald-700 shadow-sm">Mật Khẩu</button>
+                        <button type="button" id="btnAuthTypePin" onclick="switchAuthMethod('pin')" class="py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer text-slate-600 hover:bg-slate-50">Mã PIN Số</button>
+                    </div>
+                </div>
+
                 <div>
                     <div class="flex justify-between items-center mb-1">
-                        <label class="block text-xs font-bold text-slate-500 uppercase">Mã PIN hoặc Mật Khẩu</label>
+                        <label id="lblAuthInputTitle" class="block text-xs font-bold text-slate-500 uppercase">Mật Khẩu Đăng Nhập</label>
                         <button onclick="triggerForgotPassword()" class="text-xs text-blue-600 hover:underline font-bold cursor-pointer">Quên mật khẩu?</button>
                     </div>
                     <input type="password" id="loginPin" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Mặc định: vinapaco2026" class="w-full border border-slate-300 rounded-lg p-2.5 font-bold tracking-wider text-center focus:outline-none focus:border-emerald-600 bg-slate-50">
                 </div>
+
                 <div id="loginErrorMsg" class="text-red-500 font-bold text-xs text-center hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> Thông tin xác thực không chính xác!</div>
                 <button onclick="executeSystemLogin()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-lg transition-colors shadow-md cursor-pointer uppercase text-sm tracking-wider">Xác Thực Vào Hệ Thống</button>
             </div>
@@ -72,7 +82,7 @@
                 </div>
                 <div class="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded border border-slate-700 text-xs font-bold text-emerald-400">
                     <span id="currentRoleBadge">🔑 Quản Trị Viên (Admin)</span>
-                    <button onclick="openChangePasswordModal()" class="text-amber-400 hover:text-amber-300 ml-2 cursor-pointer text-[11px] uppercase tracking-tighter"><i class="fa-solid fa-key mr-0.5"></i> [Đổi PIN/Mật khẩu]</button>
+                    <button onclick="openChangePasswordModal()" class="text-amber-400 hover:text-amber-300 ml-2 cursor-pointer text-[11px] uppercase tracking-tighter"><i class="fa-solid fa-key mr-0.5"></i> [Đổi Đăng Nhập]</button>
                     <button onclick="logoutSystem()" class="text-slate-400 hover:text-red-400 ml-2 cursor-pointer text-[11px] uppercase tracking-tighter">[Đăng xuất]</button>
                 </div>
             </div>
@@ -85,14 +95,18 @@
                     <button onclick="closeChangePasswordModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <div class="p-4 space-y-3">
-                    <p class="text-slate-500 text-[11px] italic font-medium leading-relaxed">* Bạn có thể nhập chuỗi ký tự chữ hoặc mã số PIN tùy chọn. Hệ thống chấp nhận cả hai định dạng.</p>
+                    <p class="text-slate-500 text-[11px] italic font-medium leading-relaxed">* Hệ thống lưu trữ đồng thời cả Mật khẩu chữ và Mã PIN số. Bạn cấu hình đổi thông tin nào vui lòng nhập ô đó bên dưới.</p>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Mã PIN/Mật khẩu cũ hiện tại</label>
-                        <input type="password" id="oldPinInput" class="w-full border border-slate-300 rounded p-2 focus:outline-none focus:border-slate-600 font-bold tracking-wide text-center">
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Mã xác thực ĐÚNG hiện tại</label>
+                        <input type="password" id="oldPinInput" placeholder="Nhập mật khẩu hoặc PIN hiện tại" class="w-full border border-slate-300 rounded p-2 focus:outline-none focus:border-slate-600 font-bold tracking-wide text-center">
+                    </div>
+                    <div class="border-t border-slate-200 pt-2">
+                        <label class="block text-xs font-bold text-emerald-700 mb-1">Cấu hình MẬT KHẨU chữ mới</label>
+                        <input type="password" id="newPasswordInput" placeholder="Bỏ trống nếu không muốn đổi mật khẩu" class="w-full border border-slate-300 rounded p-2 focus:outline-none focus:border-emerald-600 text-center font-bold">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Mã PIN/Mật khẩu mới mong muốn</label>
-                        <input type="password" id="newPinInput" class="w-full border border-slate-300 rounded p-2 focus:outline-none focus:border-slate-600 font-bold tracking-wide text-center">
+                        <label class="block text-xs font-bold text-blue-700 mb-1">Cấu hình MÃ PIN số mới</label>
+                        <input type="text" id="newPinInput" placeholder="Bỏ trống nếu không muốn đổi mã PIN" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full border border-slate-300 rounded p-2 focus:outline-none focus:border-blue-600 text-center font-bold tracking-widest">
                     </div>
                     <button onclick="submitChangePassword()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded cursor-pointer transition-colors text-sm">Cập Nhật Thông Tin</button>
                 </div>
@@ -101,7 +115,7 @@
 
         <header class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
             <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-600 via-teal-600 to-blue-600"></div>
-            <div class="flex flex-col md flex-row items-center justify-between gap-4">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div class="flex items-center gap-3.5">
                     <div class="w-12 h-12 md:w-14 md:h-14 bg-emerald-50 rounded-xl flex items-center justify-center border border-emerald-100 text-emerald-600 text-xl md:text-2xl font-black">
                         <i class="fa-solid fa-industry"></i>
@@ -235,10 +249,48 @@
                         <label class="block font-bold text-slate-500 mb-1">Tên thiết bị tài sản</label>
                         <input type="text" id="deviceName" required placeholder="Ví dụ: Máy nghiền thủy lực..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-slate-600">
                     </div>
+                    
                     <div class="sm:col-span-4">
-                        <label class="block font-bold text-slate-500 mb-1">Chủng loại nhóm (Tự nhập)</label>
-                        <input type="text" id="deviceCategory" required placeholder="Ví dụ: Hệ thống xeo bột..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-slate-600 font-bold text-slate-800">
+                        <label class="block font-bold text-slate-500 mb-1">Chủng loại nhóm (Chọn/Tự nhập)</label>
+                        <input type="text" id="deviceCategory" list="categorySuggestions" required placeholder="Chọn hoặc nhập nhóm..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-slate-600 font-bold text-slate-800">
+                        <datalist id="categorySuggestions">
+                            <option value="Hệ thống chuẩn bị bột (Stock Preparation)">
+                            <option value="Máy nghiền thủy lực (Hydrapulper)">
+                            <option value="Máy nghiền đĩa (Disc Refiner)">
+                            <option value="Hệ thống sàng chọn & Sàng rác (Screening System)">
+                            <option value="Hệ thống lọc cát & Phân ly (Cleaner System)">
+                            <option value="Hệ thống xeo bột - Thùng đầu (Headbox)">
+                            <option value="Bộ phận lưới dài (Wire Section)">
+                            <option value="Bộ phận ép (Press Section)">
+                            <option value="Hệ thống sấy khô (Dryer Section)">
+                            <option value="Lô ép sấy & Gia keo bề mặt (Size Press)">
+                            <option value="Dàn lô cán láng (Calender Stock)">
+                            <option value="Máy cuộn giấy (Popping Reel)">
+                            <option value="Máy cắt cuộn / Máy chia cuộn (Slitter Rewinder)">
+                            <option value="Máy cắt ram / Cắt tờ (Sheet Cutter)">
+                            <option value="Hệ thống đóng gói & Đai kiện tự động">
+                            <option value="Hệ thống cân điện tử & Kiểm ca">
+                            <option value="Hệ thống lò hơi & Cấp hơi (Boiler System)">
+                            <option value="Trạm phát điện & Turbine hơi">
+                            <option value="Hệ thống máy nén khí (Compressed Air)">
+                            <option value="Hệ thống bơm hút chân không (Vacuum Pump)">
+                            <option value="Hệ thống điều hòa & Thông gió nhà xưởng (HVAC)">
+                            <option value="Hệ thống trạm nguồn thủy lực (Hydraulic Unit)">
+                            <option value="Hệ thống van điều khiển tuyến tính (Control Valve)">
+                            <option value="Hệ thống bơm hóa chất & Bơm dịch bột">
+                            <option value="Hệ thống tủ điện động lực & Tủ MCC">
+                            <option value="Biến tần & Động cơ công suất lớn (Inverter & Motor)">
+                            <option value="Hệ thống điều khiển phân tán DCS / Hệ thống PLC">
+                            <option value="Thiết bị đo lưu lượng, áp suất, nhiệt độ (Sensors)">
+                            <option value="Hệ thống kiểm tra chất lượng giấy online (QMS)">
+                            <option value="Hệ thống thu hồi xơ sợi & Đĩa lọc cô đặc">
+                            <option value="Trạm xử lý nước thải (WWT Plant)">
+                            <option value="Trạm xử lý nước cấp sản xuất (Water Treatment)">
+                            <option value="Thiết bị nâng hạ / Cầu trục nhà xưởng">
+                            <option value="Thiết bị văn phòng & Thiết bị CNTT">
+                        </datalist>
                     </div>
+
                     <div class="sm:col-span-6">
                         <label class="block font-bold text-amber-700 mb-1">Đơn vị quản lý</label>
                         <select id="deviceDept" required onchange="updateUserDropdownByDept()" class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold text-slate-700 focus:outline-none"></select>
@@ -326,7 +378,7 @@
                 </div>
                 <div class="md:col-span-2 flex items-end gap-2">
                     <input type="number" id="repairCost" required value="0" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-slate-800">
-                    <button type="submit" class="px-5 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 shadow-sm transition-colors h-[38px] cursor-pointer">Lưu</button>
+                    <button type="submit" class="px-5 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 shadow-sm h-[38px] cursor-pointer">Lưu</button>
                 </div>
             </form>
             <div class="overflow-x-auto custom-scrollbar max-h-[240px] bg-white text-sm">
@@ -461,12 +513,13 @@
 
         let currentEnv = localStorage.getItem('vinapaco_current_env') || 'live'; 
         let currentRole = 'admin';
+        let activeAuthMethod = 'password'; // 'password' hoặc 'pin'
 
-        // Hệ thống lưu trữ PIN mặc định là vinapaco2026
-        let systemPins = {
-            admin: "vinapaco2026",
-            sub_user_1: "vinapaco2026",
-            sub_user_2: "vinapaco2026"
+        // CẤU TRÚC LƯU TRỮ SONG SONG MẬT KHẨU VÀ MÃ PIN MẶC ĐỊNH
+        let credentialsConfig = {
+            admin: { password: "vinapaco2026", pin: "123456", isPassChanged: false, isPinChanged: false },
+            sub_user_1: { password: "vinapaco2026", pin: "1111", isPassChanged: false, isPinChanged: false },
+            sub_user_2: { password: "vinapaco2026", pin: "2222", isPassChanged: false, isPinChanged: false }
         };
 
         let depts = [], users = [], devices = [], repairs = [], tasks = [], procurements = [];
@@ -477,22 +530,70 @@
         const mockUsers = [{ id: "u1", name: "Nguyễn Văn Phú", title: "Trưởng Ca Vận Hành", dept: "Xưởng Xeo 1" }];
         const mockDevices = [{ id: "TB-67149", name: "Máy Nghiền Thủy Lực Lực Ly Tâm", cat: "Hệ thống xeo bột", dept: "Xưởng Xeo 1", user: "Nguyễn Văn Phú", status: "Hoạt động tốt" }];
 
-        // ĐĂNG NHẬP XÁC THỰC
+        // ĐIỀU HƯỚNG GIAO DIỆN PHƯƠNG THỨC ĐĂNG NHẬP
+        window.switchAuthMethod = function(method) {
+            activeAuthMethod = method;
+            const btnPass = document.getElementById('btnAuthTypePassword');
+            const btnPin = document.getElementById('btnAuthTypePin');
+            const lblTitle = document.getElementById('lblAuthInputTitle');
+
+            if(method === 'password') {
+                btnPass.className = "py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer bg-white text-emerald-700 shadow-sm";
+                btnPin.className = "py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer text-slate-600 hover:bg-slate-50";
+                lblTitle.innerText = "Mật Khẩu Đăng Nhập";
+            } else {
+                btnPin.className = "py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer bg-white text-emerald-700 shadow-sm";
+                btnPass.className = "py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer text-slate-600 hover:bg-slate-50";
+                lblTitle.innerText = "Mã PIN Xác Thực (Số)";
+            }
+            updateLoginPlaceholder();
+        }
+
+        // CƠ CHẾ CHỈ HIỂN THỊ MẶC ĐỊNH KHI CHƯA ĐỔI
+        window.updateLoginPlaceholder = function() {
+            const role = document.getElementById('loginRole').value;
+            const inputField = document.getElementById('loginPin');
+            const accountData = credentialsConfig[role];
+
+            if(activeAuthMethod === 'password') {
+                inputField.type = "password";
+                if(accountData && !accountData.isPassChanged) {
+                    inputField.placeholder = "Mặc định: " + accountData.password;
+                } else {
+                    inputField.placeholder = "Nhập mật khẩu của bạn...";
+                }
+            } else {
+                inputField.type = "text";
+                if(accountData && !accountData.isPinChanged) {
+                    inputField.placeholder = "Mặc định mã số: " + accountData.pin;
+                } else {
+                    inputField.placeholder = "Nhập mã số PIN...";
+                }
+            }
+        }
+
+        // THỰC THI ĐĂNG NHẬP HỆ THỐNG
         window.executeSystemLogin = function() {
             const role = document.getElementById('loginRole').value;
             const inputAuth = document.getElementById('loginPin').value.trim();
             const errorLabel = document.getElementById('loginErrorMsg');
             const basePath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
             
-            get(ref(db, `${basePath}/security_pins`)).then((snapshot) => {
+            get(ref(db, `${basePath}/secure_credentials`)).then((snapshot) => {
                 if(snapshot.exists()) {
-                    systemPins = snapshot.val();
+                    credentialsConfig = snapshot.val();
                 }
                 
-                const correctCredential = systemPins[role] || "vinapaco2026";
+                const accountData = credentialsConfig[role];
+                let isMatch = false;
 
-                // CHẤP NHẬN ĐĂNG NHẬP (Chữ hay số đều hợp lệ nếu trùng khớp)
-                if(inputAuth === correctCredential) { 
+                if(activeAuthMethod === 'password' && inputAuth === accountData.password) {
+                    isMatch = true;
+                } else if(activeAuthMethod === 'pin' && inputAuth === accountData.pin) {
+                    isMatch = true;
+                }
+
+                if(isMatch) { 
                     currentRole = role;
                     errorLabel.classList.add('hidden');
                     document.getElementById('loginOverlaySystem').classList.add('hidden');
@@ -508,9 +609,10 @@
             });
         }
 
-        // ĐỔI MẬT KHẨU / PIN TRONG DASHBOARD
+        // ĐỔI THÔNG TIN BẢO MẬT TRONG DASHBOARD
         window.openChangePasswordModal = function() {
             document.getElementById('oldPinInput').value = '';
+            document.getElementById('newPasswordInput').value = '';
             document.getElementById('newPinInput').value = '';
             document.getElementById('changePasswordModal').style.display = 'flex';
         }
@@ -521,27 +623,39 @@
 
         window.submitChangePassword = function() {
             const oldAuth = document.getElementById('oldPinInput').value.trim();
-            const newAuth = document.getElementById('newPinInput').value.trim();
+            const newPass = document.getElementById('newPasswordInput').value.trim();
+            const newPin = document.getElementById('newPinInput').value.trim();
             const basePath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
 
-            if(!newAuth) {
-                alert("Vui lòng nhập chuỗi xác thực mới!");
+            const targetAcc = credentialsConfig[currentRole];
+
+            if(oldAuth !== targetAcc.password && oldAuth !== targetAcc.pin) {
+                alert("Mật khẩu hoặc Mã PIN cũ hiện tại không chính xác!");
                 return;
             }
 
-            if(oldAuth !== systemPins[currentRole]) {
-                alert("Mật khẩu / Mã PIN cũ không chính xác!");
+            if(!newPass && !newPin) {
+                alert("Vui lòng nhập ít nhất một trường thông tin mới muốn thay đổi!");
                 return;
             }
 
-            systemPins[currentRole] = newAuth;
-            set(ref(db, `${basePath}/security_pins`), systemPins).then(() => {
-                alert(`Cập nhật thông tin tài khoản [${currentRole}] thành công!`);
+            if(newPass) {
+                targetAcc.password = newPass;
+                targetAcc.isPassChanged = true;
+            }
+            if(newPin) {
+                targetAcc.pin = newPin;
+                targetAcc.isPinChanged = true;
+            }
+
+            set(ref(db, `${basePath}/secure_credentials`), credentialsConfig).then(() => {
+                alert(`Cập nhật thông tin tài khoản [${currentRole}] thành công! Trạng thái mặc định đã được gỡ bỏ.`);
+                updateLoginPlaceholder();
                 closeChangePasswordModal();
             });
         }
 
-        // QUÊN MẬT KHẨU
+        // QUÊN MẬT KHẨU / PIN
         window.triggerForgotPassword = function() {
             const role = document.getElementById('loginRole').value;
             const basePath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
@@ -549,27 +663,37 @@
             if(role === 'admin') {
                 const masterKey = prompt("HỆ THỐNG BẢO MẬT VINAPACO:\nNhập mã khôi phục Master Key của nhà máy:");
                 if(masterKey === "VINAPACO2026_MASTER") {
-                    const newAdminAuth = prompt("Xác thực đúng! Nhập mã PIN hoặc Mật khẩu mới cho Admin:");
-                    if(newAdminAuth && newAdminAuth.trim() !== "") {
-                        systemPins.admin = newAdminAuth.trim();
-                        set(ref(db, `${basePath}/security_pins`), systemPins).then(() => {
-                            alert("Đã reset thông tin Admin thành công!");
-                        });
+                    const chooseOpt = prompt("Xác thực đúng! Nhập '1' để khôi phục Mật khẩu chữ, Nhập '2' để khôi phục Mã PIN:");
+                    if(chooseOpt === '1') {
+                        const val = prompt("Nhập Mật khẩu chữ mới cho Admin:");
+                        if(val) { credentialsConfig.admin.password = val.trim(); credentialsConfig.admin.isPassChanged = true; }
+                    } else if(chooseOpt === '2') {
+                        const val = prompt("Nhập mã số PIN mới cho Admin:");
+                        if(val) { credentialsConfig.admin.pin = val.trim().replace(/[^0-9]/g, ''); credentialsConfig.admin.isPinChanged = true; }
                     }
+                    set(ref(db, `${basePath}/secure_credentials`), credentialsConfig).then(() => { alert("Đã cập nhật!"); updateLoginPlaceholder(); });
                 } else if (masterKey !== null) {
                     alert("Sai mã Master Key!");
                 }
             } else {
-                const adminVerifyPin = prompt(`Bạn đang yêu cầu cấp lại mật khẩu cho [${role}].\nYêu cầu Quản Trị Viên (Admin) nhập thông tin xác thực của Admin vào đây:`);
+                const adminVerifyPin = prompt(`Yêu cầu Quản Trị Viên (Admin) nhập Mật khẩu hoặc PIN của Admin để xác thực cấp lại cho [${role}]:`);
                 if(adminVerifyPin) {
-                    get(ref(db, `${basePath}/security_pins`)).then((snapshot) => {
-                        const currentPins = snapshot.val() || systemPins;
-                        if(adminVerifyPin === currentPins.admin) {
-                            const newSubAuth = prompt(`Xác thực Admin thành công!\nNhập PIN hoặc Mật khẩu mới cho [${role}]:`);
-                            if(newSubAuth && newSubAuth.trim() !== "") {
-                                systemPins[role] = newSubAuth.trim();
-                                set(ref(db, `${basePath}/security_pins`), systemPins).then(() => {
-                                    alert(`Đổi mật khẩu cho ca trực [${role}] thành công!`);
+                    get(ref(db, `${basePath}/secure_credentials`)).then((snapshot) => {
+                        const currentCreds = snapshot.val() || credentialsConfig;
+                        if(adminVerifyPin === currentCreds.admin.password || adminVerifyPin === currentCreds.admin.pin) {
+                            const val = prompt(`Xác thực Admin thành công!\nNhập chuỗi xác thực mới cho [${role}] (Hệ thống tự động nhận diện Chữ/Số):`);
+                            if(val && val.trim() !== "") {
+                                const pureNum = val.trim().replace(/[^0-9]/g, '');
+                                if(pureNum === val.trim()) {
+                                    credentialsConfig[role].pin = pureNum;
+                                    credentialsConfig[role].isPinChanged = true;
+                                } else {
+                                    credentialsConfig[role].password = val.trim();
+                                    credentialsConfig[role].isPassChanged = true;
+                                }
+                                set(ref(db, `${basePath}/secure_credentials`), credentialsConfig).then(() => {
+                                    alert(`Đổi thành công!`);
+                                    updateLoginPlaceholder();
                                 });
                             }
                         } else {
@@ -584,6 +708,7 @@
             document.getElementById('loginPin').value = '';
             document.getElementById('mainSystemContentDashboard').classList.add('hidden');
             document.getElementById('loginOverlaySystem').classList.remove('hidden');
+            updateLoginPlaceholder();
         }
 
         // ĐỌC / GHI DỮ LIỆU ĐỒNG BỘ HÓA TÀI SẢN
@@ -594,11 +719,12 @@
             get(ref(db, basePath)).then((adminSnapshot) => {
                 const adminData = adminSnapshot.val() || {};
                 
-                if(adminData.security_pins) {
-                    systemPins = adminData.security_pins;
+                if(adminData.secure_credentials) {
+                    credentialsConfig = adminData.secure_credentials;
                 } else {
-                    set(ref(db, `${basePath}/security_pins`), systemPins);
+                    set(ref(db, `${basePath}/secure_credentials`), credentialsConfig);
                 }
+                updateLoginPlaceholder();
 
                 get(ref(db, readPath)).then((snapshot) => {
                     const data = snapshot.val() || {};
@@ -621,7 +747,7 @@
         function pushDataToCloud() {
             const basePath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
             if(currentRole === 'admin') {
-                set(ref(db, basePath), { depts, users, devices, repairs, tasks, procurements, security_pins: systemPins }).then(() => fetchCloudData());
+                set(ref(db, basePath), { depts, users, devices, repairs, tasks, procurements, secure_credentials: credentialsConfig }).then(() => fetchCloudData());
             } else {
                 set(ref(db, `${basePath}/sub_channels/${currentRole}`), { users, devices, repairs, tasks, procurements });
                 fetchCloudData();
@@ -942,6 +1068,13 @@
         }
 
         window.renderAllTables = function() { renderDeviceTableOnly(); renderUserTableOnly(); renderRepairTableOnly(); renderProcurementTableOnly(); }
+        
+        // Khởi động đọc cấu hình đăng nhập đầu tiên
+        get(ref(db, `${currentEnv === 'live' ? 'root_v4' : 'demo_root_v4'}/secure_credentials`)).then((snapshot) => {
+            if(snapshot.exists()) credentialsConfig = snapshot.val();
+            updateLoginPlaceholder();
+        });
+
         setInterval(() => { if(document.getElementById('liveClockText')) document.getElementById('liveClockText').innerText = new Date().toLocaleTimeString('vi-VN'); }, 1000);
     </script>
 </body>
