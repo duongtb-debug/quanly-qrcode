@@ -79,6 +79,9 @@
                 </div>
                 <h1 class="text-xl font-black text-slate-900 tracking-tight">VẬN HÀNH VINAPACO 2026</h1>
                 <p class="text-xs text-slate-500 mt-1">Hệ thống điều hành & giám sát kỹ thuật tổng hợp</p>
+                <div id="syncStatusBadge" class="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 animate-pulse">
+                    <i class="fa-solid fa-cloud-arrow-down"></i> Đang nạp dữ liệu lịch sử đám mây...
+                </div>
             </div>
             
             <div class="p-1 mx-6 mt-4 bg-slate-100 rounded-xl flex">
@@ -100,13 +103,13 @@
                     </select>
                 </div>
 
-                <div id="containerLoginPassword" class="block">
-                    <label class="block text-[11px] font-black text-slate-400 uppercase mb-1 tracking-wider">Mật khẩu khu vực làm việc</label>
+                <div id="containerLoginPassword" class="block space-y-1">
+                    <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider">Mật khẩu khu vực làm việc</label>
                     <input type="password" id="loginPassword" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Mặc định: vinapaco2026" class="w-full border border-slate-300 rounded-xl p-3 text-center bg-slate-50 text-sm font-bold focus:outline-none focus:border-emerald-600">
                 </div>
 
-                <div id="containerLoginPin" class="hidden">
-                    <label class="block text-[11px] font-black text-slate-400 uppercase mb-1 tracking-wider">Mã PIN cá nhân bảo mật</label>
+                <div id="containerLoginPin" class="hidden space-y-1">
+                    <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider">Mã PIN cá nhân bảo mật</label>
                     <input type="password" id="loginPin" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Nhập mã PIN..." class="w-full border border-slate-300 rounded-xl p-3 text-center bg-slate-50 text-sm tracking-widest font-bold focus:outline-none focus:border-emerald-600">
                 </div>
 
@@ -200,7 +203,7 @@
                     </div>
                     <div class="sm:col-span-9">
                         <label class="block font-bold text-slate-500 mb-1">Tên thiết bị tài sản kỹ thuật</label>
-                        <input type="text" id="deviceName" required placeholder="Ví dụ: Máy nghiền thủy lực Ca 1..." class="w-full border border-slate-300 rounded-lg p-2 bg-white">
+                        <input type="text" id="deviceName" required placeholder="Ví dụ: Máy nghiền thủy lực Ca 1..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold">
                     </div>
                     <div class="sm:col-span-12">
                         <label class="block font-bold text-slate-500 mb-1">Chủng loại phân nhóm thiết bị</label>
@@ -215,14 +218,18 @@
                     </div>
                     <div class="sm:col-span-6">
                         <label class="block font-bold text-slate-600 mb-1">Xưởng / Phòng ban</label>
-                        <select id="deviceDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold"></select>
+                        <select id="deviceDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold text-slate-800">
+                            <option value="Phòng Kỹ Thuật">Phòng Kỹ Thuật</option>
+                            <option value="Xưởng Xeo Giấy">Xưởng Xeo Giấy</option>
+                            <option value="Xưởng Bột Giấy">Xưởng Bột Giấy</option>
+                        </select>
                     </div>
                     <div class="sm:col-span-6">
                         <label class="block font-bold text-blue-600 mb-1">Người chịu trách nhiệm phụ trách</label>
                         <input type="text" id="deviceUser" required placeholder="Họ tên kỹ sư phụ trách..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold">
                     </div>
                     <div class="sm:col-span-12 flex justify-end">
-                        <button type="submit" class="px-6 py-2 bg-slate-800 text-white font-bold rounded-lg text-xs uppercase cursor-pointer">Lưu & Sinh Mã Định Danh</button>
+                        <button type="submit" class="px-6 py-2 bg-slate-800 text-white font-bold rounded-lg text-xs uppercase cursor-pointer hover:bg-emerald-800 transition-colors">Lưu & Sinh Mã Định Danh</button>
                     </div>
                 </form>
 
@@ -307,9 +314,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Cấu hình Firebase chuẩn của hệ thống
         const firebaseConfig = {
             apiKey: "AIzaSyBre5KbRWv64Qum4EDZkOAYTJe1YyIojuA",
             authDomain: "qltbvinapaco.firebaseapp.com",
@@ -332,11 +338,11 @@
             const boxPin = document.getElementById('containerLoginPin');
 
             if (method === 'password') {
-                boxPass.className = "block"; boxPin.className = "hidden";
+                boxPass.className = "block space-y-1"; boxPin.className = "hidden";
                 tabPass.className = "w-1/2 py-2 text-xs font-black rounded-lg text-emerald-900 bg-white shadow-sm transition-all duration-200";
                 tabPin.className = "w-1/2 py-2 text-xs font-black rounded-lg text-slate-500 hover:text-slate-800 transition-all duration-200";
             } else {
-                boxPass.className = "hidden"; boxPin.className = "block";
+                boxPass.className = "hidden"; boxPin.className = "block space-y-1";
                 tabPass.className = "w-1/2 py-2 text-xs font-black rounded-lg text-slate-500 hover:text-slate-800 transition-all duration-200";
                 tabPin.className = "w-1/2 py-2 text-xs font-black rounded-lg text-emerald-900 bg-white shadow-sm transition-all duration-200";
             }
@@ -355,48 +361,46 @@
             document.getElementById('loginOverlaySystem').classList.remove('hidden');
         }
 
-        // THUẬT TOÁN PHỤC HỒI DỮ LIỆU ĐA TẦNG: Quét toàn bộ các node để tránh mất mát dữ liệu cũ
+        // THUẬT TOÁN ĐỒNG BỘ ĐÁM MÂY THỜI GIAN THỰC ĐA TẦNG CỐ ĐỊNH
         function fetchCloudData() {
-            const parse = (arr) => arr ? (Array.isArray(arr) ? arr.filter(Boolean) : Object.values(arr)) : [];
+            const parseRawData = (val) => {
+                if (!val) return [];
+                if (Array.isArray(val)) return val.filter(Boolean);
+                return Object.values(val);
+            };
 
-            // Quét nhánh v5 trước (Nơi chứa toàn bộ dữ liệu gốc bạn đã nhập)
-            get(ref(db, 'root_v5_integrated')).then((snapshotV5) => {
-                let dataV5 = snapshotV5.val();
+            // Lắng nghe chủ động điểm cơ sở dữ liệu cao nhất để kéo toàn bộ mảng dữ liệu lịch sử
+            onValue(ref(db, '/'), (snapshot) => {
+                const root = snapshot.val() || {};
                 
-                if (dataV5 && (dataV5.devices || dataV5.repairs)) {
-                    devices = parse(dataV5.devices);
-                    repairs = parse(dataV5.repairs);
-                    completeDataRecovery();
-                } else {
-                    // Nếu không có, quét tiếp nhánh v6 để kiểm tra dự phòng
-                    get(ref(db, 'root_v6_status')).then((snapshotV6) => {
-                        let dataV6 = snapshotV6.val() || {};
-                        devices = parse(dataV6.devices);
-                        repairs = parse(dataV6.repairs);
-                        completeDataRecovery();
-                    });
-                }
-            }).catch((err) => {
-                console.error("Lỗi đồng bộ dữ liệu: ", err);
-                executeSystemLogin();
-            });
-        }
+                // Thuật toán quét gom cụm dữ liệu phân mảnh từ bản cũ tránh bỏ sót
+                let dataPayload = root.root_v5_integrated || root.root_v6_status || root;
+                
+                devices = parseRawData(dataPayload.devices || root.devices);
+                repairs = parseRawData(dataPayload.repairs || root.repairs);
 
-        function completeDataRecovery() {
-            updateDropdownOptions(); 
-            renderAllTables(); 
-            autoGenDeviceId(); 
-            update3DMetricsDashboard();
-            executeSystemLogin(); // Vào trực tiếp màn hình làm việc sau khi phục hồi thành công
+                // Cập nhật nhãn trạng thái tải trên giao diện đăng nhập
+                const badge = document.getElementById('syncStatusBadge');
+                if (badge) {
+                    badge.className = "mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800";
+                    badge.innerHTML = `<i class="fa-solid fa-cloud-bounce"></i> Kết nối thành công! Đã nạp ${devices.length} thiết bị`;
+                }
+
+                // Đổ dữ liệu vào form, bảng và đồng bộ các chỉ số dashboard
+                updateDropdownOptions(); 
+                renderAllTables(); 
+                autoGenDeviceId(); 
+                update3DMetricsDashboard();
+            }, {
+                onlyOnce: false
+            });
         }
 
         function pushDataToCloud() {
-            // Đồng bộ dữ liệu đồng thời lên cả 2 nhánh để bảo vệ an toàn dữ liệu tuyệt đối
             const payload = { depts, devices, repairs, secure_credentials: credentialsConfig };
+            // Ghi đồng thời lên cả 2 cổng cấu trúc để ngăn ngừa việc mất mát cục bộ dữ liệu cũ
             set(ref(db, 'root_v5_integrated'), payload);
-            return set(ref(db, 'root_v6_status'), payload).then(() => {
-                renderAllTables(); update3DMetricsDashboard();
-            });
+            return set(ref(db, 'root_v6_status'), payload);
         }
 
         function update3DMetricsDashboard() {
@@ -416,9 +420,9 @@
                 }
             });
 
-            document.getElementById('db-status-new').innerText = countNew;
-            document.getElementById('db-status-pending').innerText = countPending;
-            document.getElementById('db-status-resolved').innerText = countResolved;
+            if(document.getElementById('db-status-new')) document.getElementById('db-status-new').innerText = countNew;
+            if(document.getElementById('db-status-pending')) document.getElementById('db-status-pending').innerText = countPending;
+            if(document.getElementById('db-status-resolved')) document.getElementById('db-status-resolved').innerText = countResolved;
         }
 
         window.renderAllTables = function() {
@@ -539,12 +543,10 @@
         }
 
         function updateDropdownOptions() {
-            const dd = document.getElementById('deviceDept'), rd = document.getElementById('repairDeviceId');
-            if(dd) { dd.innerHTML = ''; depts.forEach(d => dd.innerHTML += `<option value="${d.name}">${d.name}</option>`); }
+            const rd = document.getElementById('repairDeviceId');
             if(rd) { rd.innerHTML = ''; devices.forEach(d => rd.innerHTML += `<option value="${d.id}">${d.id} - ${d.name}</option>`); }
         }
 
-        // Khởi chạy quét tìm dữ liệu ngay khi mở trang web
         window.addEventListener('DOMContentLoaded', () => {
             fetchCloudData();
         });
