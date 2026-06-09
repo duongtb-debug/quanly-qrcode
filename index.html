@@ -251,19 +251,48 @@
                         <label class="block font-bold text-slate-500 mb-1">Tên thiết bị tài sản</label>
                         <input type="text" id="deviceName" required placeholder="Ví dụ: Máy nghiền..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
                     </div>
+                    
                     <div class="sm:col-span-5">
-                        <label class="block font-bold text-slate-500 mb-1">Chủng loại nhóm</label>
-                        <input type="text" id="deviceCategory" list="categorySuggestions" required placeholder="Chọn hoặc nhập mới..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold">
+                        <label class="block font-bold text-slate-500 mb-1">Chủng loại nhóm (Chọn hoặc Tự nhập)</label>
+                        <input type="text" id="deviceCategory" list="categorySuggestions" required placeholder="Chọn gợi ý hoặc gõ chủng loại mới..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-emerald-800">
                         <datalist id="categorySuggestions">
-                            <option value="Hệ thống chuẩn bị bột (Stock Preparation)">
-                            <option value="Máy nghiền thủy lực (Hydrapulper)">
-                            <option value="Máy nghiền đĩa (Disc Refiner)">
-                            <option value="Hệ thống sấy khô (Dryer Section)">
-                            <option value="Hệ thống bọc gói thành phẩm (Finishing)">
-                            <option value="Hệ thống lò hơi động lực (Boiler House)">
-                            <option value="Trạm xử lý hóa chất & nước thải (Wastewater)">
+                            <option value="[Bột] Máy nghiền thủy lực (Hydrapulper)">
+                            <option value="[Bột] Máy nghiền đĩa (Disc Refiner)">
+                            <option value="[Bột] Sàng áp lực (Pressure Screen)">
+                            <option value="[Bột] Bể chứa & Khuấy trộn bột (Chest & Agitator)">
+                            <option value="[Bột] Máy cô đặc / Máy rửa (Thickeners/Washers)">
+                            
+                            <option value="[Xeo] Thùng đầu (Headbox)">
+                            <option value="[Xeo] Bộ phận lưới (Wire Section)">
+                            <option value="[Xeo] Bộ phận ép (Press Section)">
+                            <option value="[Xeo] Lô sấy / Hệ thống sấy (Dryer Cylinder)">
+                            <option value="[Xeo] Ép keo / Tráng phủ (Size Press/Coater)">
+                            <option value="[Xeo] Máy cuộn / Lô cuộn (Pope Reel)">
+                            
+                            <option value="[Thành Phẩm] Máy cắt cuộn (Slitter Rewinder)">
+                            <option value="[Thành Phẩm] Máy cắt tờ rời (Sheet Cutter)">
+                            <option value="[Thành Phẩm] Hệ thống đóng gói / Đóng đai tự động">
+                            
+                            <option value="[Năng Lượng] Lò hơi tầng sôi (CFB Boiler)">
+                            <option value="[Năng Lượng] Lò thu hồi hóa chất (Recovery Boiler)">
+                            <option value="[Năng Lượng] Tuabin phát điện (Steam Turbine Generator)">
+                            <option value="[Năng Lượng] Máy nén khí trung tâm (Air Compressor)">
+                            
+                            <option value="[Phụ Trợ] Bơm bột giấy chuyên dụng (Stock Pump)">
+                            <option value="[Phụ Trợ] Bơm nước ly tâm định lượng (Water Pump)">
+                            <option value="[Phụ Trợ] Quạt hút / Quạt thổi khí độc lập (Fan/Blower)">
+                            <option value="[Phụ Trợ] Van điều khiển hành trình (Control Valve)">
+                            
+                            <option value="[Môi Trường] Trạm hóa chất thô (Thu hồi kiềm)">
+                            <option value="[Môi Trường] Hệ thống xử lý nước cấp (WTP)">
+                            <option value="[Môi Trường] Hệ thống xử lý nước thải nhà máy (WWTP)">
+                            
+                            <option value="[Điện - TĐH] Biến tần điều khiển tốc độ (Inverter/VFD)">
+                            <option value="[Điện - TĐH] Tủ điện phân phối trung thế/hạ thế (MSB)">
+                            <option value="[Điện - TĐH] Hệ thống điều khiển phân tán (DCS/PLC)">
                         </datalist>
                     </div>
+                    
                     <div class="sm:col-span-6">
                         <label class="block font-bold text-amber-600 mb-1">Đơn vị quản lý</label>
                         <select id="deviceDept" required onchange="updateUserDropdownByDept()" class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold focus:outline-none"></select>
@@ -463,7 +492,6 @@
 
         let depts = [], users = [], devices = [], repairs = [], docRecords = [];
 
-        // --- HÀM CHUYỂN TAB MƯỢT MÀ CHUYÊN NGHIỆP ---
         window.switchLoginMethod = function(method) {
             loginMethod = method;
             const tabPass = document.getElementById('tabLoginPassword');
@@ -472,25 +500,17 @@
             const containerPin = document.getElementById('containerLoginPin');
 
             if (method === 'password') {
-                // UI Tab
                 tabPass.className = "w-1/2 py-2 text-xs font-bold rounded-md transition-all duration-300 z-10 text-emerald-800 bg-white shadow-sm";
                 tabPin.className = "w-1/2 py-2 text-xs font-bold rounded-md transition-all duration-300 z-10 text-slate-500 hover:text-slate-800";
-                
-                // Form Animation Smooth
                 containerPass.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
                 containerPass.classList.add('opacity-100', 'scale-100', 'pointer-events-auto');
-                
                 containerPin.classList.remove('opacity-100', 'scale-100', 'pointer-events-auto');
                 containerPin.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
             } else {
-                // UI Tab
                 tabPin.className = "w-1/2 py-2 text-xs font-bold rounded-md transition-all duration-300 z-10 text-emerald-800 bg-white shadow-sm";
                 tabPass.className = "w-1/2 py-2 text-xs font-bold rounded-md transition-all duration-300 z-10 text-slate-500 hover:text-slate-800";
-                
-                // Form Animation Smooth
                 containerPin.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
                 containerPin.classList.add('opacity-100', 'scale-100', 'pointer-events-auto');
-                
                 containerPass.classList.remove('opacity-100', 'scale-100', 'pointer-events-auto');
                 containerPass.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
             }
@@ -720,7 +740,6 @@
         }
 
         window.renderAllTables = function() {
-            // Render Thiết Bị
             const devBody = document.getElementById('deviceTableBody'); devBody.innerHTML = '';
             devices.forEach(d => {
                 devBody.innerHTML += `<tr>
@@ -741,7 +760,6 @@
             });
             document.getElementById('count-device').innerText = `${devices.length} tài sản`;
 
-            // Render Nhân Sự
             const userBody = document.getElementById('userTableBody'); userBody.innerHTML = '';
             users.forEach(u => {
                 userBody.innerHTML += `<tr>
@@ -752,7 +770,6 @@
             });
             document.getElementById('count-user').innerText = `${users.length} nhân sự`;
 
-            // Render Nhật Ký Sửa Chữa (Có nút Xem file tài liệu đính kèm)
             const repBody = document.getElementById('repairTableBody'); repBody.innerHTML = '';
             repairs.forEach((r, idx) => {
                 const fileBtn = r.fileData ? `<button onclick="openRepairAttachedDocument(${idx})" class="px-2 py-0.5 bg-indigo-600 text-white font-bold rounded text-xs cursor-pointer"><i class="fa-solid fa-eye"></i> Xem File</button>` : `<span class="text-slate-400 italic text-xs">Không có</span>`;
@@ -766,7 +783,6 @@
                 </tr>`;
             });
 
-            // Render Hồ Sơ Chứng Từ Sửa Chữa
             const docBody = document.getElementById('docRecordsTableBody'); docBody.innerHTML = '';
             docRecords.forEach((p, idx) => {
                 const docBtn = p.fileData ? `<button onclick="openRecordAttachedDocument(${idx})" class="px-2.5 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded font-bold text-xs cursor-pointer"><i class="fa-solid fa-folder-open"></i> Xem File</button>` : `<span class="text-slate-400 italic text-xs">Trống</span>`;
