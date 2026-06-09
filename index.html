@@ -19,7 +19,6 @@
         .tab-active { border-bottom-width: 4px; font-weight: bold; }
         .auth-tab-active { border-bottom-width: 3px; border-color: #3b82f6; color: #3b82f6; font-weight: bold; }
         
-        /* GIAO DIỆN TÙY BIẾN (THEMES) */
         body.theme-slate { --main-bg: #f1f5f9; --card-bg: #ffffff; --text-color: #1e293b; --header-panel: #0f172a; }
         body.theme-dark { --main-bg: #0f172a; --card-bg: #1e293b; --text-color: #f1f5f9; --header-panel: #334155; }
         body.theme-emerald { --main-bg: #f0fdf4; --card-bg: #ffffff; --text-color: #166534; --header-panel: #065f46; }
@@ -35,7 +34,7 @@
                     <i class="fa-solid fa-industry"></i>
                 </div>
                 <div>
-                    <h2 class="text-[11px] font-bold tracking-widest text-slate-400 uppercase">Hệ Thống Tổng Lực Quản Trị Nhà Máy & Cấp Phát QR Code</h2>
+                    <h2 class="text-[11px] font-bold tracking-widest text-slate-400 uppercase">Hệ Thống Tổng Lực Quản Trị Nhà Máy & Cấp Phát QR Code Phân Quyền</h2>
                     <h1 class="text-lg md:text-xl font-black text-slate-900 tracking-tight mt-0.5" id="ui-title-text">TỔNG CÔNG TY GIẤY VIỆT NAM</h1>
                 </div>
             </div>
@@ -59,21 +58,23 @@
                 <div id="guestAuthForm" class="space-y-2">
                     <div class="flex border-b border-slate-200 mb-2">
                         <button onclick="switchAuthTab('login')" id="tabAuthLogin" class="w-1/2 pb-1.5 text-center font-bold auth-tab-active cursor-pointer">Đăng Nhập</button>
-                        <button onclick="switchAuthTab('register')" id="tabAuthRegister" class="w-1/2 pb-1.5 text-center font-bold text-slate-400 cursor-pointer">Đăng Ký</button>
+                        <button onclick="switchAuthTab('register')" id="tabAuthRegister" class="w-1/2 pb-1.5 text-center font-bold text-slate-400 cursor-pointer">Đăng Ký Đơn Vị Con</button>
                     </div>
                     <div class="flex gap-2">
                         <input type="text" id="authUsername" placeholder="Tài khoản..." class="w-1/2 border bg-white p-2 rounded focus:outline-none font-bold">
                         <input type="password" id="authPassword" placeholder="Mật khẩu..." class="w-1/2 border bg-white p-2 rounded focus:outline-none font-bold">
                     </div>
-                    <div id="registerRoleBox" class="hidden">
-                        <select id="authDesiredRole" class="w-full border bg-white p-2 rounded focus:outline-none font-bold text-blue-700">
-                            <option value="Kỹ thuật">🛠️ Kỹ thuật</option>
-                            <option value="Viewer">👁️ Viewer</option>
+                    <div id="registerRoleBox" class="hidden grid grid-cols-2 gap-2">
+                        <select id="authDesiredRole" class="border bg-white p-2 rounded focus:outline-none font-bold text-blue-700">
+                            <option value="Kỹ thuật">🛠️ Kỹ thuật (Đơn vị)</option>
+                            <option value="Viewer">👁️ Viewer (Xem)</option>
                         </select>
+                        <select id="authAssignedDept" class="border bg-white p-2 rounded focus:outline-none font-bold text-emerald-700">
+                            </select>
                     </div>
                     <div class="flex justify-between items-center pt-1">
                         <span class="text-xs text-red-500 font-bold hidden" id="authErrorMsg">⚠️ Thông tin sai!</span>
-                        <button onclick="processAuthSubmit()" class="ml-auto px-5 py-2 bg-slate-800 text-white font-bold rounded hover:bg-slate-900 cursor-pointer">Xác Nhận (Enter)</button>
+                        <button onclick="processAuthSubmit()" class="ml-auto px-5 py-2 bg-slate-800 text-white font-bold rounded hover:bg-slate-900 cursor-pointer">Xác Nhận</button>
                     </div>
                 </div>
                 <div id="userLoggedInDashboard" class="hidden flex justify-between items-center h-full py-1">
@@ -90,7 +91,7 @@
         </div>
         <div class="mt-3 flex flex-col sm:flex-row gap-2 items-center justify-between text-sm bg-slate-50 border p-3 rounded-lg">
             <div class="flex items-center gap-2"><span id="envStatusIndicator" class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span><span id="syncBadgeText" class="font-bold text-slate-600">Đang đồng bộ...</span></div>
-            <button onclick="triggerManualFetch()" class="px-4 py-1.5 bg-slate-700 text-white font-bold rounded hover:bg-slate-800 cursor-pointer"><i class="fa-solid fa-arrows-rotate"></i> Tải Lại Dữ Liệu</button>
+            <button onclick="triggerManualFetch()" class="px-4 py-1.5 bg-slate-700 text-white font-bold rounded hover:bg-slate-800 cursor-pointer"><i class="fa-solid fa-arrows-rotate"></i> Tải Lại Toàn Hệ Thống</button>
         </div>
     </header>
 
@@ -108,11 +109,19 @@
         </div>
         <div class="lg:col-span-8 bg-slate-900 text-white p-4 rounded-xl border border-slate-800 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="space-y-1">
-                <h3 class="font-bold text-base flex items-center gap-2 text-amber-400"><i class="fa-solid fa-stopwatch"></i> Nhắc Nhở Thời Gian Làm Việc & Nghỉ Ngơi Linh Hoạt</h3>
-                <p class="text-xs text-slate-400">Tự động nhắc nhở kỹ sư nghỉ ngơi sau chu kỳ làm việc căng thẳng.</p>
+                <h3 class="font-bold text-base flex items-center gap-2 text-amber-400"><i class="fa-solid fa-stopwatch"></i> Cấu Hình Nhắc Nhở & Chu Kỳ Làm Việc Tùy Chỉnh</h3>
+                <p class="text-xs text-slate-400">Cho phép người điều hành tự thiết lập thời gian làm việc/nghỉ ngơi linh hoạt.</p>
             </div>
             <div class="flex items-center gap-4 bg-slate-800 p-3 rounded-lg border border-slate-700 w-full md:w-auto justify-center">
-                <div class="text-center">
+                <div class="flex flex-col gap-1 items-center bg-slate-900 p-2 rounded border border-slate-700">
+                    <span class="text-[10px] text-slate-400 font-bold uppercase">Làm việc (Phút)</span>
+                    <input type="number" id="cfgPomoWork" value="25" min="1" class="w-16 bg-slate-800 text-white border border-slate-600 rounded text-center font-bold focus:outline-none" onchange="applyCustomPomoConfig()">
+                </div>
+                <div class="flex flex-col gap-1 items-center bg-slate-900 p-2 rounded border border-slate-700">
+                    <span class="text-[10px] text-slate-400 font-bold uppercase">Nghỉ ngơi (Phút)</span>
+                    <input type="number" id="cfgPomoBreak" value="5" min="1" class="w-16 bg-slate-800 text-white border border-slate-600 rounded text-center font-bold focus:outline-none" onchange="applyCustomPomoConfig()">
+                </div>
+                <div class="text-center px-2">
                     <span id="pomoMinutes" class="text-3xl font-black font-mono text-white">25</span><span class="text-slate-500 font-bold mx-0.5">:</span><span id="pomoSeconds" class="text-3xl font-black font-mono text-white">00</span>
                     <p id="pomoStatusLabel" class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mt-0.5">Thời gian làm việc</p>
                 </div>
@@ -134,15 +143,16 @@
 
     <section id="adminUserManagementBlock" class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hidden">
         <div class="bg-slate-900 text-white font-bold p-3.5 text-base flex items-center gap-1.5 header-panel-bg">
-            <i class="fa-solid fa-user-shield text-amber-400"></i> Trục Quản Lý Thành Viên & Phê Duyệt / Phân Quyền Hệ Thống
+            <i class="fa-solid fa-user-shield text-amber-400"></i> Quản Lý Tài Khoản Đơn Vị Con & Phân Quyền Hệ Thống (Chỉ Admin Tổng thấy)
         </div>
         <div class="overflow-x-auto text-sm bg-white table-container-bg">
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="border-b bg-slate-100 text-slate-600 font-bold sub-header-bg">
-                        <th class="p-3 pl-4">Tên tài khoản (Username)</th>
+                        <th class="p-3 pl-4">Tên tài khoản</th>
                         <th class="p-3">Mật khẩu</th>
-                        <th class="p-3">Phân cấp quyền hạn hiện tại</th>
+                        <th class="p-3">Đơn Vị Quản Lý Dữ Liệu</th>
+                        <th class="p-3">Quyền hạn</th>
                         <th class="p-3 text-right pr-4">Tác vụ quản trị</th>
                     </tr>
                 </thead>
@@ -153,13 +163,14 @@
 
     <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col" id="ui-user-card">
         <div class="bg-emerald-700 text-white font-bold p-3.5 text-base flex items-center justify-between header-panel-bg">
-            <span><i class="fa-solid fa-users-gear mr-1.5 text-slate-300"></i> Quản Lý Hồ Sơ Nhân Sự & Sơ ĐỒ Phòng Ban</span>
+            <span><i class="fa-solid fa-users-gear mr-1.5 text-slate-300"></i> Quản Lý Hồ Sơ Nhân Sự & Sơ Đồ Phòng Ban</span>
             <span class="text-sm bg-emerald-600 px-2.5 py-1 rounded font-mono" id="count-user">0 nhân sự</span>
         </div>
+        
         <div id="formUserAction" class="p-4 grid grid-cols-1 lg:grid-cols-12 gap-5 border-b border-slate-100 bg-slate-50/50 text-sm hidden">
             <div class="lg:col-span-4 border-r border-slate-200 pr-4">
-                <span id="deptFormTitle" class="block font-bold text-slate-400 text-xs uppercase mb-1.5">THÊM PHÒNG BAN MỚI</span>
-                <form onsubmit="handleDeptSubmit(event)" class="space-y-2">
+                <span id="deptFormTitle" class="block font-bold text-slate-400 text-xs uppercase mb-1.5">THÊM PHÒNG BAN MỚI (CHỈ ADMIN)</span>
+                <form onsubmit="handleDeptSubmit(event)" class="space-y-2" id="internalDeptForm">
                     <input type="hidden" id="editDeptId" value="">
                     <input type="text" id="deptName" required placeholder="Tên đơn vị..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none text-slate-800">
                     <div class="flex gap-2">
@@ -169,15 +180,24 @@
                 </form>
             </div>
             <div class="lg:col-span-8">
-                <span id="userFormTitle" class="block font-bold text-slate-400 text-xs uppercase mb-1.5">THÊM HỒ SƠ NHÂN SỰ MỚI</span>
-                <form onsubmit="handleUserSubmit(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <span id="userFormTitle" class="block font-bold text-slate-400 text-xs uppercase mb-1.5">NHẬP HỒ SƠ NHÂN SỰ ĐƠN VỊ (GÕ XONG CHỨC VỤ NHẤN ENTER SẼ TỰ ĐỘNG LƯU VÀ QUAY LẠI Ô TÊN)</span>
+                <form onsubmit="handleUserSubmit(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="internalUserForm">
                     <input type="hidden" id="editUserId" value="">
-                    <div class="sm:col-span-2"><input type="text" id="userName" required placeholder="Họ và tên..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none text-slate-800"></div>
-                    <div><input type="text" id="userTitle" required placeholder="Chức vụ" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none text-slate-800"></div>
-                    <div class="flex gap-2">
-                        <select id="userDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none text-slate-800"></select>
-                        <button type="submit" id="btnUserSubmit" class="px-5 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 cursor-pointer whitespace-nowrap">Lưu Hồ Sơ</button>
-                        <button type="button" id="btnCancelUserEdit" onclick="resetUserForm()" class="px-3 bg-slate-300 text-slate-700 font-bold rounded-lg cursor-pointer hidden">Hủy</button>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Họ và tên</label>
+                        <input type="text" id="userName" required placeholder="Nguyễn Văn A..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none text-slate-800 font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Chức vụ (Nhấn Enter tại đây để lưu luôn)</label>
+                        <input type="text" id="userTitle" required placeholder="Kỹ sư vận hành..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none text-slate-800 font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Đơn vị tiếp quản</label>
+                        <select id="userDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none text-slate-800 font-bold"></select>
+                    </div>
+                    <div class="sm:col-span-3 flex justify-end gap-2 pt-1">
+                        <button type="button" id="btnCancelUserEdit" onclick="resetUserForm()" class="px-4 py-2 bg-slate-300 text-slate-700 font-bold rounded-lg cursor-pointer hidden">Hủy</button>
+                        <button type="submit" id="btnUserSubmit" class="px-8 py-2 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 cursor-pointer">Lưu Hồ Sơ (Enter)</button>
                     </div>
                 </form>
             </div>
@@ -215,7 +235,7 @@
                 </div>
                 
                 <div class="sm:col-span-4">
-                    <label class="block font-bold text-slate-500 mb-1">Chủng loại/Nhóm tài sản (Tự do nhập)</label>
+                    <label class="block font-bold text-slate-500 mb-1">Chủng loại/Nhóm tài sản</label>
                     <input type="text" id="deviceCategory" list="assetCategories" required placeholder="Chọn hoặc gõ nhóm mới..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-blue-800">
                     <datalist id="assetCategories">
                         <option value="Dây chuyền chuẩn bị bột giấy & Tẩy trắng">
@@ -223,19 +243,6 @@
                         <option value="Hệ thống Giao keo & Gác sấy sơ cấp, thứ cấp">
                         <option value="Hệ thống Cuộn & Cắt ram giấy tự động">
                         <option value="Hệ thống Lò hơi tầng sôi công nghiệp (Boiler)">
-                        <option value="Hệ thống Tuabin hơi phát điện & Đồng phát nhiệt">
-                        <option value="Trạm biến áp trung thế & Mạng lưới phân phối điện nội bộ">
-                        <option value="Hệ thống Máy nén khí trung tâm & Sấy khí">
-                        <option value="Dây chuyền thu hồi hóa chất & Cô đặc dịch đen">
-                        <option value="Trạm xử lý nước cấp sản xuất (Demin/Chất lượng cao)">
-                        <option value="Hệ thống xử lý nước thải tập trung đạt chuẩn môi trường">
-                        <option value="Hệ thống điều khiển phân tán DCS / Tủ PLC điều khiển độc lập">
-                        <option value="Thiết bị đo quét biên độ chất lượng giấy (QCS)">
-                        <option value="Cảm biến thông minh, Van điều khiển tuyến tính khí nén">
-                        <option value="Xe nâng xúc lật kẹp cuộn, kẹp kiện chuyên dụng">
-                        <option value="Cầu trục, Cổng trục nhà xưởng, Băng tải nguyên liệu thô">
-                        <option value="Hệ thống Máy chủ Server, Mạng nội bộ & Camera giám sát nhà máy">
-                        <option value="Máy tính làm việc kỹ thuật, Máy in tem nhãn QR chuyên nghiệp">
                     </datalist>
                 </div>
                 
@@ -255,7 +262,7 @@
                 </div>
             </form>
             <div class="p-3 bg-slate-100/60 border-b border-slate-200 text-sm sub-header-bg">
-                <input type="text" id="searchDeviceInput" oninput="renderDeviceTableOnly()" placeholder="Nhập mã định danh, tên thiết bị, chủng loại để lọc..." class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-white focus:outline-none font-bold text-slate-800">
+                <input type="text" id="searchDeviceInput" oninput="renderDeviceTableOnly()" placeholder="Nhập mã định danh, tên thiết bị để lọc..." class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-white focus:outline-none font-bold text-slate-800">
             </div>
             <div class="overflow-x-auto custom-scrollbar max-h-96 bg-white text-sm table-container-bg">
                 <table class="w-full text-left border-collapse">
@@ -400,15 +407,13 @@
                 <label class="block font-bold text-slate-600 mb-1">Dự Kiến Chi Phí</label>
                 <input type="number" id="procuEstimatedCost" required value="0" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-slate-800">
             </div>
-            
             <div class="md:col-span-3 relative">
-                <label class="block font-bold text-blue-700 mb-1"><i class="fa-solid fa-cloud-arrow-up"></i> Đính kèm tài liệu (Không giới hạn dung lượng)</label>
+                <label class="block font-bold text-blue-700 mb-1"><i class="fa-solid fa-cloud-arrow-up"></i> Đính kèm tài liệu không giới hạn</label>
                 <input type="file" id="procuFileAttached" class="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
-                <div id="uploadStatusBadge" class="hidden text-xs font-bold mt-1 text-emerald-600"><i class="fa-solid fa-circle-notch animate-spin"></i> Đang tải lên Đám Mây Đám Mây...</div>
+                <div id="uploadStatusBadge" class="hidden text-xs font-bold mt-1 text-emerald-600"><i class="fa-solid fa-circle-notch animate-spin"></i> Đang tải lên Cloud...</div>
                 <input type="hidden" id="procuFileBase64" value="">
                 <input type="hidden" id="procuFileName" value="">
             </div>
-            
             <div class="md:col-span-12 flex justify-end gap-2 mt-1">
                 <button type="submit" id="btnProcurementSubmit" class="px-6 py-2 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 cursor-pointer shadow-sm">Tạo Đề Xuất</button>
                 <button type="button" id="btnCancelProcurementEdit" onclick="resetProcurementForm()" class="px-4 py-2 bg-slate-300 text-slate-700 font-bold rounded-lg cursor-pointer hidden">Hủy</button>
@@ -418,11 +423,11 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 font-bold sticky top-0 sub-header-bg">
-                        <th class="p-3 pl-4">Hạng Mục Thiết Bị/Vật Tư</th>
+                        <th class="p-3 pl-4">Hạng Mục</th>
                         <th class="p-3">Đơn Vị</th>
                         <th class="p-3 text-center">Số Lượng</th>
                         <th class="p-3">Dự Toán Chi Phí</th>
-                        <th class="p-3 text-center"><i class="fa-solid fa-paperclip"></i> Tài Liệu Pháp Lý</th>
+                        <th class="p-3 text-center">Tài Liệu Pháp Lý</th>
                         <th class="p-3 text-center">Trạng Thái Phê Duyệt</th>
                         <th class="p-3 text-right pr-4">Tác Vụ</th>
                     </tr>
@@ -444,8 +449,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // CẤU HÌNH KÊNH LƯU TRỮ ĐÁM MÂY KHÔNG GIỚI HẠN DUNG LƯỢNG (IMGBB API)
-        const IMGBB_API_KEY = "646b96e6d1c8f1e56cfde38e8ecf4e41"; // API key mẫu công cộng
+        const IMGBB_API_KEY = "646b96e6d1c8f1e56cfde38e8ecf4e41"; 
 
         const firebaseConfig = {
             apiKey: "AIzaSyBre5KbRWv64Qum4EDZkOAYTJe1YyIojuA",
@@ -463,23 +467,20 @@
         let pomoInterval = null, pomoTimeLeft = 25 * 60, pomoIsRunning = false, pomoCurrentMode = 'work';
         
         let lastInactivityTime = Date.now();
-        const INACTIVITY_TIMEOUT_LIMIT = 15 * 60 * 1000; 
+        const INACTIVITY_TIMEOUT_LIMIT = 30 * 60 * 1000; 
 
         const localQuotesList = [
-            "Ăn quả nhớ kẻ trồng cây, ăn khoai nhớ kẻ đâm cỏ ngày xưa.",
             "Có công mài sắt, có ngày nên kim.",
             "Một cây làm chẳng nên non, ba cây chụm lại nên hòn núi cao.",
-            "Đường đi gian khổ không sờn lòng, kỷ luật lao động giữ an toàn cho nhà máy."
+            "Kỷ luật lao động nghiêm túc là nền tảng cốt lõi của VINAPACO."
         ];
 
         window.changeSystemTheme = function(themeName) {
             document.body.className = `${themeName} bg-slate-100 text-slate-800 font-sans min-h-screen p-4 md:p-6 space-y-6 text-sm md:text-base transition-colors duration-300`;
             localStorage.setItem('vinapaco_saved_theme', themeName);
-            
             const uiHeader = document.getElementById('ui-header-card');
             const titleText = document.getElementById('ui-title-text');
             const selectors = document.querySelectorAll('.header-panel-bg');
-            
             if(themeName === 'theme-dark') {
                 if(uiHeader) uiHeader.style.backgroundColor = '#1e293b';
                 if(titleText) titleText.style.color = '#ffffff';
@@ -494,164 +495,67 @@
                 selectors.forEach(s => s.style.backgroundColor = '#334155');
             }
         }
-        const initialTheme = localStorage.getItem('vinapaco_saved_theme') || 'theme-slate';
-        document.getElementById('ui-theme-selector').value = initialTheme;
-        setTimeout(() => window.changeSystemTheme(initialTheme), 300);
+        
+        // THIẾT LẬP POMODORO TÙY CHỈNH THEO Ý MUỐN
+        window.applyCustomPomoConfig = function() {
+            const wMins = parseInt(document.getElementById('cfgPomoWork').value) || 25;
+            if(!pomoIsRunning) {
+                pomoTimeLeft = wMins * 60;
+                document.getElementById('pomoMinutes').innerText = String(wMins).padStart(2, '0');
+                document.getElementById('pomoSeconds').innerText = "00";
+            }
+        }
 
-        // NÂNG CẤP XỬ LÝ ĐÍNH KÈM KHÔNG GIỚI HẠN QUA CLOUD API
         document.getElementById('procuFileAttached')?.addEventListener('change', async function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
+            const file = e.target.files[0]; if (!file) return;
             const badge = document.getElementById('uploadStatusBadge');
             const submitBtn = document.getElementById('btnProcurementSubmit');
-            
             badge.classList.remove('hidden');
             badge.className = "text-xs font-bold mt-1 text-blue-600 animate-pulse";
-            badge.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i> Đang truyền tải lên máy chủ Cloud...`;
             submitBtn.disabled = true;
-
-            // Tiến hành đẩy file lên ImgBB (Cloud API phi tập trung)
-            const formData = new FormData();
-            formData.append("image", file);
-
+            const formData = new FormData(); formData.append("image", file);
             try {
-                const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-                    method: "POST",
-                    body: formData
-                });
+                const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
                 const result = await response.json();
-                
                 if(result.success) {
-                    // Lưu đường dẫn URL tuyệt đối do Cloud cấp phát, không tốn 1 byte bộ nhớ DB của bạn
                     document.getElementById('procuFileBase64').value = result.data.url;
                     document.getElementById('procuFileName').value = file.name;
-                    
                     badge.className = "text-xs font-bold mt-1 text-emerald-600";
-                    badge.innerHTML = `<i class="fa-solid fa-cloud-check"></i> Đã đồng bộ lên đám mây thành công!`;
-                } else {
-                    throw new Error("Cloud từ chối tệp.");
-                }
-            } catch (error) {
-                console.error(error);
-                alert("❌ Lỗi cổng tải file lên Cloud! Đã tự động kích hoạt chế độ sao lưu cục bộ.");
-                // Chế độ dự phòng nếu Cloud nghẽn: Chuyển sang Base64 nội bộ
+                    badge.innerHTML = `<i class="fa-solid fa-cloud-check"></i> Đã tải lên Cloud an toàn!`;
+                } else { throw new Error(); }
+            } catch {
+                alert("Lỗi tải file lên Cloud Storage. Chuyển sang sao lưu cục bộ.");
                 const reader = new FileReader();
-                reader.onload = function(event) {
-                    document.getElementById('procuFileBase64').value = event.target.result;
+                reader.onload = function(evt) {
+                    document.getElementById('procuFileBase64').value = evt.target.result;
                     document.getElementById('procuFileName').value = file.name;
                     badge.className = "text-xs font-bold mt-1 text-amber-600";
-                    badge.innerHTML = `⚠️ Đã lưu trữ tạm thời tại bộ nhớ trình duyệt`;
+                    badge.innerHTML = `⚠️ Lưu bộ nhớ tạm`;
                 };
                 reader.readAsDataURL(file);
-            } finally {
-                submitBtn.disabled = false;
-            }
+            } finally { submitBtn.disabled = false; }
         });
 
-        window.openAttachedFileWindow = function(cloudUrl, filename) {
-            if(!cloudUrl) { alert("Không tìm thấy tệp đính kèm."); return; }
-            // Mở trực tiếp link Cloud tốc độ cao không giới hạn
-            window.open(cloudUrl, '_blank');
-        }
-
-        function makeQRTextContent(dev) { 
-            const currentUrl = window.location.origin + window.location.pathname;
-            return `${currentUrl}?view_id=${dev.id}`; 
-        }
+        window.openAttachedFileWindow = function(cloudUrl) { if(cloudUrl) window.open(cloudUrl, '_blank'); }
+        function makeQRTextContent(dev) { return `${window.location.origin}${window.location.pathname}?view_id=${dev.id}`; }
 
         window.generateLocalQR = function(domElement, text, size = 140) {
-            if (!domElement) return;
-            domElement.innerHTML = "";
-            try {
-                new QRCode(domElement, {
-                    text: text,
-                    width: size,
-                    height: size,
-                    colorDark : "#000000",
-                    colorLight : "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.L
-                });
-            } catch (e) {
-                console.error("Lỗi vẽ QR: ", e);
-                domElement.innerHTML = "<span class='text-red-500 text-[10px] font-bold block leading-tight'>Lỗi đồ họa</span>";
-            }
+            if (!domElement) return; domElement.innerHTML = "";
+            try { new QRCode(domElement, { text: text, width: size, height: size, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.L }); }
+            catch (e) { domElement.innerHTML = "<span class='text-red-500 text-[10px]'>Lỗi</span>"; }
         }
 
-        if(!localStorage.getItem('vinapaco_accounts_v3')) {
-            localStorage.setItem('vinapaco_accounts_v3', JSON.stringify([{ username: 'admin', pass: 'vinapaco2026', role: 'Admin' }]));
+        if(!localStorage.getItem('vinapaco_accounts_v4')) {
+            localStorage.setItem('vinapaco_accounts_v4', JSON.stringify([{ username: 'admin', pass: 'vinapaco2026', role: 'Admin', dept: 'All' }]));
         }
-        systemAccounts = JSON.parse(localStorage.getItem('vinapaco_accounts_v3'));
-
+        systemAccounts = JSON.parse(localStorage.getItem('vinapaco_accounts_v4'));
         const savedUser = sessionStorage.getItem('vinapaco_logged_in_user');
         if(savedUser) { loggedInUser = JSON.parse(savedUser); }
 
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                const activeEl = document.activeElement;
-                if (activeEl && (activeEl.id === 'authUsername' || activeEl.id === 'authPassword')) {
-                    event.preventDefault();
-                    window.processAuthSubmit();
-                }
-            }
-        });
-
-        function resetInactivityTimer() { lastInactivityTime = Date.now(); }
-        ['click', 'mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt => {
-            document.addEventListener(evt, resetInactivityTimer, true);
-        });
-
         setInterval(() => {
-            const d = new Date();
-            if(document.getElementById('liveClockText')) document.getElementById('liveClockText').innerText = d.toLocaleTimeString('vi-VN');
+            if(document.getElementById('liveClockText')) document.getElementById('liveClockText').innerText = new Date().toLocaleTimeString('vi-VN');
             updateCountdownTimers();
-
-            if (loggedInUser && (Date.now() - lastInactivityTime > INACTIVITY_TIMEOUT_LIMIT)) {
-                alert("🔒 Phiên làm việc đã hết hạn do bạn không tương tác trong thời gian dài. Vui lòng đăng nhập lại!");
-                window.handleLogoutSystem();
-            }
         }, 1000);
-
-        window.refreshQuoteOnline = function() {
-            const rand = localQuotesList[Math.floor(Math.random() * localQuotesList.length)];
-            if(document.getElementById('txtVietnameseQuote')) document.getElementById('txtVietnameseQuote').innerText = `"${rand}"`;
-        }
-
-        window.togglePomoTimer = function() {
-            if (pomoIsRunning) {
-                clearInterval(pomoInterval); pomoIsRunning = false;
-                document.getElementById('btnStartPomo').innerText = "Tiếp Tục";
-            } else {
-                pomoIsRunning = true; document.getElementById('btnStartPomo').innerText = "Tạm Dừng";
-                pomoInterval = setInterval(() => {
-                    if (pomoTimeLeft <= 0) {
-                        clearInterval(pomoInterval); pomoIsRunning = false;
-                        if (pomoCurrentMode === 'work') {
-                            alert("⏰ Hết giờ làm việc! Nghỉ ngơi 5 phút.");
-                            pomoCurrentMode = 'break'; pomoTimeLeft = 5 * 60;
-                            document.getElementById('pomoStatusLabel').innerText = "Thời gian nghỉ ngơi";
-                        } else {
-                            alert("🛠️ Hết giờ nghỉ! Bắt đầu làm việc.");
-                            pomoCurrentMode = 'work'; pomoTimeLeft = 25 * 60;
-                            document.getElementById('pomoStatusLabel').innerText = "Thời gian làm việc";
-                        }
-                        togglePomoTimer();
-                    } else {
-                        pomoTimeLeft--;
-                        const m = Math.floor(pomoTimeLeft / 60), s = pomoTimeLeft % 60;
-                        document.getElementById('pomoMinutes').innerText = String(m).padStart(2, '0');
-                        document.getElementById('pomoSeconds').innerText = String(s).padStart(2, '0');
-                    }
-                }, 1000);
-            }
-        }
-
-        window.resetPomoTimer = function() {
-            clearInterval(pomoInterval); pomoIsRunning = false; pomoCurrentMode = 'work'; pomoTimeLeft = 25 * 60;
-            document.getElementById('pomoMinutes').innerText = "25"; document.getElementById('pomoSeconds').innerText = "00";
-            document.getElementById('pomoStatusLabel').innerText = "Thời gian làm việc";
-            document.getElementById('btnStartPomo').innerText = "Bắt Đầu";
-        }
 
         window.switchAuthTab = function(tab) {
             currentAuthTab = tab;
@@ -665,6 +569,13 @@
                 tabR.className = "w-1/2 pb-1.5 text-center font-bold auth-tab-active cursor-pointer";
                 tabL.className = "w-1/2 pb-1.5 text-center font-bold text-slate-400 cursor-pointer";
                 roleBox.classList.remove('hidden');
+                
+                // Nạp danh sách đơn vị vào form đăng ký để phân quyền luôn
+                const authDeptSel = document.getElementById('authAssignedDept');
+                if(authDeptSel) {
+                    authDeptSel.innerHTML = '';
+                    depts.forEach(d => authDeptSel.innerHTML += `<option value="${d.name}">${d.name}</option>`);
+                }
             }
         }
 
@@ -674,49 +585,30 @@
             if(!user || !pass) { alert("Vui lòng điền đủ!"); return; }
             if(currentAuthTab === 'login') {
                 const found = systemAccounts.find(a => a.username === user && a.pass === pass);
-                if(found) { 
-                    loggedInUser = found; 
-                    sessionStorage.setItem('vinapaco_logged_in_user', JSON.stringify(found)); 
-                    lastInactivityTime = Date.now(); 
-                    executeLoginSuccess(); 
-                }
+                if(found) { loggedInUser = found; sessionStorage.setItem('vinapaco_logged_in_user', JSON.stringify(found)); executeLoginSuccess(); }
                 else { document.getElementById('authErrorMsg').classList.remove('hidden'); }
             } else {
                 if(systemAccounts.some(a => a.username === user)) { alert("Tài khoản đã tồn tại!"); return; }
-                systemAccounts.push({ username: user, pass, role: document.getElementById('authDesiredRole').value });
-                localStorage.setItem('vinapaco_accounts_v3', JSON.stringify(systemAccounts));
-                alert("Đăng ký thành công!"); switchAuthTab('login');
+                const chosenDept = document.getElementById('authAssignedDept').value;
+                systemAccounts.push({ username: user, pass, role: document.getElementById('authDesiredRole').value, dept: chosenDept });
+                localStorage.setItem('vinapaco_accounts_v4', JSON.stringify(systemAccounts));
+                alert("Đăng ký đơn vị con thành công! Hãy đăng nhập."); switchAuthTab('login');
             }
         }
 
         function executeLoginSuccess() {
             document.getElementById('guestAuthForm').classList.add('hidden');
             document.getElementById('userLoggedInDashboard').classList.remove('hidden');
-            document.getElementById('txtHelloUser').innerText = `Kỹ sư: ${loggedInUser.username}`;
-            document.getElementById('txtUserRoleBadge').innerText = `Quyền: ${loggedInUser.role}`;
-            
-            document.getElementById('authUsername').value = "";
-            document.getElementById('authPassword').value = "";
-            
+            document.getElementById('txtHelloUser').innerText = `Tài khoản: ${loggedInUser.username}`;
+            document.getElementById('txtUserRoleBadge').innerText = `Đơn vị: ${loggedInUser.dept} (${loggedInUser.role})`;
             applyPermissionRulesUI(); renderAllTables();
-            window.changeSystemTheme(localStorage.getItem('vinapaco_saved_theme') || 'theme-slate');
         }
 
         window.handleLogoutSystem = function() {
-            loggedInUser = null; 
-            sessionStorage.removeItem('vinapaco_logged_in_user');
+            loggedInUser = null; sessionStorage.removeItem('vinapaco_logged_in_user');
             document.getElementById('userLoggedInDashboard').classList.add('hidden');
             document.getElementById('guestAuthForm').classList.remove('hidden');
             applyPermissionRulesUI(); renderAllTables();
-        }
-
-        window.openChangePassInline = function() {
-            const newPass = prompt("Nhập mật khẩu mới:");
-            if(!newPass || newPass.trim().length < 4) return;
-            systemAccounts.forEach(a => { if(a.username === loggedInUser.username) { a.pass = newPass.trim(); loggedInUser.pass = newPass.trim(); } });
-            localStorage.setItem('vinapaco_accounts_v3', JSON.stringify(systemAccounts));
-            sessionStorage.setItem('vinapaco_logged_in_user', JSON.stringify(loggedInUser));
-            alert("Đã cập nhật mật khẩu.");
         }
 
         function applyPermissionRulesUI() {
@@ -725,179 +617,92 @@
             if(role === 'Admin') renderAccountSubTable();
             ['formDeviceAction', 'formRepairAction', 'formUserAction', 'formTaskAction', 'formProcurementAction'].forEach(id => {
                 if(document.getElementById(id)) {
-                    document.getElementById(id).className = (role === 'Admin' || role === 'Kỹ thuật') ? document.getElementById(id).className.replace('hidden', '').trim() : "hidden";
+                    document.getElementById(id).className = (role === 'Admin' || role === 'Kỹ thuật') ? "p-4 border-b border-slate-100 bg-slate-50/50 text-sm" : "hidden";
                 }
             });
         }
 
         function renderAccountSubTable() {
-            const body = document.getElementById('accountSubTableBody'); body.innerHTML = '';
+            const body = document.getElementById('accountSubTableBody'); if(!body) return; body.innerHTML = '';
             systemAccounts.forEach(a => {
-                let options = `<select onchange="changeRoleDirectly('${a.username}', this.value)" class="border bg-white text-slate-800 font-bold p-1"><option value="Admin" ${a.role==='Admin'?'selected':''}>Admin</option><option value="Kỹ thuật" ${a.role==='Kỹ thuật'?'selected':''}>Kỹ thuật</option><option value="Viewer" ${a.role==='Viewer'?'selected':''}>Viewer</option></select>`;
                 body.innerHTML += `<tr class="border-b">
-                    <td class="p-3 pl-4 font-bold">${a.username}</td><td class="p-3 font-mono">${a.pass}</td><td>${options}</td>
-                    <td class="p-3 text-right pr-4">${a.username==='admin'?'Gốc':`<button onclick="deleteAccountSub('${a.username}')" class="text-red-600 font-bold">Xóa</button>`}</td>
+                    <td class="p-3 pl-4 font-bold text-slate-900">${a.username}</td>
+                    <td class="p-3 font-mono text-xs">${a.pass}</td>
+                    <td class="p-3 font-bold text-blue-700">${a.dept}</td>
+                    <td class="p-3 text-xs uppercase font-black">${a.role}</td>
+                    <td class="p-3 text-right pr-4">${a.username==='admin'?'Mặc định':`<button onclick="deleteAccountSub('${a.username}')" class="text-red-600 font-bold hover:underline">Xóa</button>`}</td>
                 </tr>`;
             });
         }
-
-        window.changeRoleDirectly = function(uname, role) { systemAccounts.forEach(a => { if(a.username === uname) a.role = role; }); localStorage.setItem('vinapaco_accounts_v3', JSON.stringify(systemAccounts)); }
-        window.deleteAccountSub = function(uname) { systemAccounts = systemAccounts.filter(a => a.username !== uname); localStorage.setItem('vinapaco_accounts_v3', JSON.stringify(systemAccounts)); renderAccountSubTable(); }
+        window.deleteAccountSub = function(un) { systemAccounts = systemAccounts.filter(a => a.username !== un); localStorage.setItem('vinapaco_accounts_v4', JSON.stringify(systemAccounts)); renderAccountSubTable(); }
 
         window.switchEnvironment = function(env) { currentEnv = env; localStorage.setItem('vinapaco_current_env', env); updateEnvButtonsUI(); fetchCloudData(); }
         function updateEnvButtonsUI() {
             const l = document.getElementById('envBtn-live'), d = document.getElementById('envBtn-demo');
-            if(currentEnv === 'live') { l.className = "w-1/2 py-1.5 rounded-md font-bold bg-emerald-600 text-white text-sm text-center"; d.className = "w-1/2 py-1.5 rounded-md font-bold bg-white text-slate-600 text-sm text-center"; document.getElementById('syncBadgeText').innerText = "LIVE - Tổng công ty Giấy Việt Nam"; }
-            else { d.className = "w-1/2 py-1.5 rounded-md font-bold bg-amber-500 text-white text-sm text-center"; l.className = "w-1/2 py-1.5 rounded-md font-bold bg-white text-slate-600 text-sm text-center"; document.getElementById('syncBadgeText').innerText = "DEMO CHẠY THỬ"; }
-        }
-
-        function checkUrlParamsForScannedQR() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const scannedId = urlParams.get('view_id');
-            if (scannedId) {
-                setTimeout(() => {
-                    window.previewAndSelectQR(scannedId);
-                    document.getElementById('webPreviewQRBox')?.scrollIntoView({ behavior: 'smooth' });
-                }, 800);
-            }
+            if(currentEnv === 'live') { l.className = "w-1/2 py-1 bg-emerald-600 text-white text-xs font-bold rounded-md"; d.className = "w-1/2 py-1 text-slate-500 text-xs font-bold"; }
+            else { d.className = "w-1/2 py-1 bg-amber-50 text-amber-700 text-xs font-bold rounded-md"; l.className = "w-1/2 py-1 text-slate-500 text-xs font-bold"; }
         }
 
         function fetchCloudData() {
-            const key = currentEnv === 'live' ? 'root' : 'demo_root';
+            const key = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
             get(ref(db, key)).then((s) => {
                 const data = s.val() || {};
                 const parse = (t) => t ? (Array.isArray(t) ? t.filter(Boolean) : Object.values(t)) : [];
                 depts = parse(data.depts); users = parse(data.users); devices = parse(data.devices); repairs = parse(data.repairs); tasks = parse(data.tasks); procurements = parse(data.procurements);
                 updateDropdownOptions(); renderAllTables(); autoGenDeviceId(); checkMaintenanceAlerts();
-                checkUrlParamsForScannedQR();
             });
         }
         window.triggerManualFetch = function() { fetchCloudData(); }
-        function pushDataToCloud() { set(ref(db, currentEnv === 'live' ? 'root' : 'demo_root'), { depts, users, devices, repairs, tasks, procurements }).then(() => fetchCloudData()); }
+        function pushDataToCloud() { set(ref(db, currentEnv === 'live' ? 'root_v4' : 'demo_root_v4'), { depts, users, devices, repairs, tasks, procurements }).then(() => fetchCloudData()); }
 
-        window.previewAndSelectQR = function(id) {
-            const dev = devices.find(d => d.id === id); if(!dev) return;
-            const text = makeQRTextContent(dev);
-            
-            document.getElementById('webPreviewEmptyText').classList.add('hidden');
-            document.getElementById('webPreviewQRBox').classList.remove('hidden');
-            document.getElementById('btnActionPrintNow').classList.remove('hidden');
-            
-            document.getElementById('wpTitle').innerText = dev.name;
-            document.getElementById('wpId').innerText = dev.id;
-            document.getElementById('wpDept').innerText = "ĐV: " + dev.dept;
-            document.getElementById('wpUser').innerText = "Phụ trách: " + (dev.user === "Chưa cấp phát" ? "Trong kho" : dev.user);
-            generateLocalQR(document.getElementById('wpCanvas'), text, 140);
-            
-            document.getElementById('qrPrintTitle').innerText = dev.name;
-            document.getElementById('qrPrintId').innerText = dev.id;
-            document.getElementById('qrPrintDept').innerText = "ĐV: " + dev.dept;
-            document.getElementById('qrPrintUser').innerText = "Phụ trách: " + (dev.user === "Chưa cấp phát" ? "Trong kho" : dev.user);
-            generateLocalQR(document.getElementById('qrPrintCanvas'), text, 140);
-        }
-
-        function autoGenDeviceId() {
-            if(document.getElementById('editDeviceMode').value === 'edit') return;
-            let max = 67148;
-            devices.forEach(d => { if(d.id && d.id.startsWith("TB-")) { const n = parseInt(d.id.substring(3)); if(!isNaN(n) && n > max) max = n; } });
-            document.getElementById('deviceId').value = `TB-${max + 1}`;
-        }
-
-        window.updateUserDropdownByDept = function() {
-            const dDept = document.getElementById('deviceDept').value, dUser = document.getElementById('deviceUser');
-            const currentSelected = dUser.value;
-            dUser.innerHTML = '<option value="Chưa cấp phát">-- Giữ lưu kho --</option>';
-            users.filter(u => u.dept === dDept).forEach(u => dUser.innerHTML += `<option value="${u.name}">${u.name}</option>`);
-            if([...dUser.options].some(o => o.value === currentSelected)) dUser.value = currentSelected;
-        }
-
-        window.editDeptInline = function(id) {
-            const target = depts.find(d => d.id === id); if(!target) return;
-            document.getElementById('editDeptId').value = target.id;
-            document.getElementById('deptName').value = target.name;
-            document.getElementById('deptFormTitle').innerText = "⚡ ĐANG SỬA PHÒNG BAN";
-            document.getElementById('btnDeptSubmit').innerText = "Cập Nhật";
-            document.getElementById('btnCancelDeptEdit').classList.remove('hidden');
-        }
-        window.resetDeptForm = function() {
-            document.getElementById('editDeptId').value = "";
-            document.getElementById('deptName').value = "";
-            document.getElementById('deptFormTitle').innerText = "THÊM PHÒNG BAN MỚI";
-            document.getElementById('btnDeptSubmit').innerText = "Thêm Đơn Vị";
-            document.getElementById('btnCancelDeptEdit').classList.add('hidden');
-        }
-        window.handleDeptSubmit = function(e) { 
-            e.preventDefault(); 
-            const dId = document.getElementById('editDeptId').value;
-            const nameVal = document.getElementById('deptName').value.trim();
-            if(dId) {
-                depts.forEach(d => { if(d.id === dId) d.name = nameVal; });
-                resetDeptForm();
-            } else {
-                depts.push({ id: Date.now().toString(), name: nameVal });
-                document.getElementById('deptName').value = "";
-            }
-            pushDataToCloud(); 
-        }
-
-        window.editUserInline = function(id) {
-            const target = users.find(u => u.id === id); if(!target) return;
-            document.getElementById('editUserId').value = target.id;
-            document.getElementById('userName').value = target.name;
-            document.getElementById('userTitle').value = target.title;
-            document.getElementById('userDept').value = target.dept;
-            document.getElementById('userFormTitle').innerText = "⚡ ĐANG SỬA HỒ SƠ NHÂN SỰ";
-            document.getElementById('btnUserSubmit').innerText = "Cập Nhật";
-            document.getElementById('btnCancelUserEdit').classList.remove('hidden');
-        }
-        window.resetUserForm = function() {
-            document.getElementById('editUserId').value = "";
-            document.getElementById('userName').value = "";
-            document.getElementById('userTitle').value = "";
-            document.getElementById('userFormTitle').innerText = "THÊM HỒ SƠ NHÂN SỰ MỚI";
-            document.getElementById('btnUserSubmit').innerText = "Lưu Hồ Sơ";
-            document.getElementById('btnCancelUserEdit').classList.add('hidden');
-        }
+        // KIỂM TRA TRÙNG LẶP VÀ TỰ ĐỘNG FOCUS KHI NHẤN ENTER
         window.handleUserSubmit = function(e) { 
             e.preventDefault(); 
             const uId = document.getElementById('editUserId').value;
             const nVal = document.getElementById('userName').value.trim();
             const tVal = document.getElementById('userTitle').value.trim();
             const dVal = document.getElementById('userDept').value;
+            
+            if(!nVal || !tVal) return;
+
             if(uId) {
                 users.forEach(u => { if(u.id === uId) { u.name = nVal; u.title = tVal; u.dept = dVal; } });
                 resetUserForm();
             } else {
-                users.push({ id: Date.now().toString(), name: nVal, title: tVal, dept: dVal });
-                document.getElementById('userName').value = ""; document.getElementById('userTitle').value = "";
+                // KIỂM TRA CHỐNG TRÙNG LẶP NHÂN SỰ ĐÃ CÓ (Theo Tên và Phòng Ban)
+                const isExisted = users.some(u => u.name.toLowerCase() === nVal.toLowerCase() && u.dept === dVal);
+                if(isExisted) {
+                    // Nếu đã có rồi thì chỉ cập nhật chức danh mới, không tạo thêm dòng mới
+                    users.forEach(u => {
+                        if(u.name.toLowerCase() === nVal.toLowerCase() && u.dept === dVal) { u.title = tVal; }
+                    });
+                } else {
+                    // Nếu chưa có thì đẩy mới vào hệ thống dữ liệu đám mây chung
+                    users.push({ id: Date.now().toString(), name: nVal, title: tVal, dept: dVal });
+                }
+                
+                // Xóa trắng ô nhập để tiếp tục nhập người tiếp theo
+                document.getElementById('userName').value = "";
+                document.getElementById('userTitle').value = "";
             }
+            
+            // ĐỒNG BỘ NGAY VỀ FIREBASE CLOUD CHO ADMIN NHÌN THẤY THỜI GIAN THỰC
+            set(ref(db, currentEnv === 'live' ? 'root_v4' : 'demo_root_v4'), { depts, users, devices, repairs, tasks, procurements }).then(() => {
+                updateDropdownOptions(); 
+                renderUserTableOnly();
+                // TỰ ĐỘNG NHẢY CON TRỎ CHUỘT VỀ Ô HỌ VÀ TÊN ĐỂ NHẬP TIẾP KHÔNG CẦN CHẠM CHUỘT
+                document.getElementById('userName').focus();
+            });
+        }
+
+        window.handleDeptSubmit = function(e) { 
+            e.preventDefault(); 
+            const nameVal = document.getElementById('deptName').value.trim();
+            depts.push({ id: Date.now().toString(), name: nameVal });
+            document.getElementById('deptName').value = "";
             pushDataToCloud(); 
         }
 
-        window.editDeviceInline = function(id) {
-            const target = devices.find(d => d.id === id); if(!target) return;
-            document.getElementById('editDeviceMode').value = "edit";
-            document.getElementById('deviceId').value = target.id;
-            document.getElementById('deviceName').value = target.name;
-            document.getElementById('deviceCategory').value = target.cat;
-            document.getElementById('deviceDept').value = target.dept;
-            window.updateUserDropdownByDept();
-            document.getElementById('deviceUser').value = target.user;
-            
-            document.getElementById('lblDeviceId').innerText = "⚡ Đang Sửa Mã Tài Sản";
-            document.getElementById('btnDeviceSubmit').innerText = "Cập Nhật Thiết Bị";
-            document.getElementById('btnCancelDeviceEdit').classList.remove('hidden');
-            document.getElementById('formDeviceAction').scrollIntoView({ behavior: 'smooth' });
-        }
-        window.resetDeviceForm = function() {
-            document.getElementById('editDeviceMode').value = "create";
-            document.getElementById('deviceName').value = "";
-            document.getElementById('deviceCategory').value = "";
-            document.getElementById('lblDeviceId').innerText = "Mã Tài Sản Định Danh";
-            document.getElementById('btnDeviceSubmit').innerText = "Lưu & Sinh Mã QR";
-            document.getElementById('btnCancelDeviceEdit').classList.add('hidden');
-            autoGenDeviceId();
-        }
         window.handleDeviceSubmit = function(e) { 
             e.preventDefault(); 
             const mode = document.getElementById('editDeviceMode').value;
@@ -906,348 +711,218 @@
             const cat = document.getElementById('deviceCategory').value.trim();
             const dept = document.getElementById('deviceDept').value;
             const user = document.getElementById('deviceUser').value;
-            const status = user === "Chưa cấp phát" ? "Trong kho" : "Hoạt động tốt";
+            
+            // Kiểm tra phân quyền biên tập dữ liệu đơn vị con
+            if(loggedInUser && loggedInUser.dept !== 'All' && loggedInUser.dept !== dept) {
+                alert("Bạn không có quyền quản lý thiết bị của phòng ban khác!"); return;
+            }
 
             if(mode === 'edit') {
-                devices.forEach(d => { if(d.id === dId) { d.name = name; d.cat = cat; d.dept = dept; d.user = user; d.status = status; } });
+                devices.forEach(d => { if(d.id === dId) { d.name = name; d.cat = cat; d.dept = dept; d.user = user; d.status = (user==="Chưa cấp phát"?"Trong kho":"Hoạt động tốt"); } });
                 resetDeviceForm();
             } else {
-                devices.push({ id: dId, name, cat, dept, user, status });
+                devices.push({ id: dId, name, cat, dept, user, status: (user==="Chưa cấp phát"?"Trong kho":"Hoạt động tốt") });
                 document.getElementById('deviceName').value = "";
-                document.getElementById('deviceCategory').value = "";
             }
             pushDataToCloud(); 
         }
 
-        window.editRepairInline = function(id) {
-            const target = repairs.find(r => r.id === id); if(!target) return;
-            document.getElementById('editRepairId').value = target.id;
-            document.getElementById('repairDeviceId').value = target.devId;
-            document.getElementById('repairDesc').value = target.desc;
-            document.getElementById('repairUser').value = target.repUser;
-            document.getElementById('repairCost').value = target.cost;
-            document.getElementById('btnRepairSubmit').innerText = "Sửa";
-            document.getElementById('btnCancelRepairEdit').classList.remove('hidden');
-        }
-        window.resetRepairForm = function() {
-            document.getElementById('editRepairId').value = "";
-            document.getElementById('repairDesc').value = "";
-            document.getElementById('repairCost').value = "0";
-            document.getElementById('btnRepairSubmit').innerText = "Lưu";
-            document.getElementById('btnCancelRepairEdit').classList.add('hidden');
-        }
         window.handleRepairSubmit = function(e) { 
             e.preventDefault(); 
-            const rId = document.getElementById('editRepairId').value;
             const devId = document.getElementById('repairDeviceId').value;
-            const desc = document.getElementById('repairDesc').value.trim();
-            const repUser = document.getElementById('repairUser').value;
-            const cost = document.getElementById('repairCost').value;
-
-            if(rId) {
-                repairs.forEach(r => { if(r.id === rId) { r.devId = devId; r.desc = desc; r.repUser = repUser; r.cost = cost; } });
-                resetRepairForm();
-            } else {
-                repairs.push({ id: Date.now().toString(), devId, desc, date: new Date().toLocaleDateString('vi-VN'), repUser, cost });
-                document.getElementById('repairDesc').value = "";
+            const dev = devices.find(d => d.id === devId);
+            if(loggedInUser && loggedInUser.dept !== 'All' && dev && dev.dept !== loggedInUser.dept) {
+                alert("Thiết bị này thuộc phòng ban khác, bạn không có quyền ghi nhật ký!"); return;
             }
-            pushDataToCloud(); 
+            repairs.push({ id: Date.now().toString(), devId, desc: document.getElementById('repairDesc').value.trim(), date: new Date().toLocaleDateString('vi-VN'), repUser: document.getElementById('repairUser').value, cost: document.getElementById('repairCost').value });
+            document.getElementById('repairDesc').value = ""; pushDataToCloud(); 
         }
 
-        window.editTaskInline = function(id) {
-            const target = tasks.find(t => t.id === id); if(!target) return;
-            document.getElementById('editTaskId').value = target.id;
-            document.getElementById('taskName').value = target.name;
-            document.getElementById('taskDeviceId').value = target.devId;
-            document.getElementById('taskUser').value = target.user;
-            document.getElementById('taskLevel').value = target.level;
-            document.getElementById('taskTimeStart').value = target.start;
-            document.getElementById('taskDuration').value = target.duration;
-            document.getElementById('btnTaskSubmit').innerText = "Cập Nhật Việc";
-            document.getElementById('btnCancelTaskEdit').classList.remove('hidden');
-        }
-        window.resetTaskForm = function() {
-            document.getElementById('editTaskId').value = "";
-            document.getElementById('taskName').value = "";
-            document.getElementById('taskTimeStart').value = "";
-            document.getElementById('taskDuration').value = "30";
-            document.getElementById('btnTaskSubmit').innerText = "Lưu Phân Công";
-            document.getElementById('btnCancelTaskEdit').classList.add('hidden');
-        }
         window.handleTaskSubmit = function() {
-            const tId = document.getElementById('editTaskId').value;
-            const name = document.getElementById('taskName').value.trim();
             const devId = document.getElementById('taskDeviceId').value;
-            const user = document.getElementById('taskUser').value;
-            const level = document.getElementById('taskLevel').value;
-            const start = document.getElementById('taskTimeStart').value;
-            const duration = parseInt(document.getElementById('taskDuration').value);
-            if(!name || !start || isNaN(duration)) { alert("Vui lòng nhập đủ!"); return; }
-
-            if(tId) {
-                tasks.forEach(t => { if(t.id === tId) { t.name = name; t.devId = devId; t.user = user; t.level = level; t.start = start; t.duration = duration; } });
-                resetTaskForm();
-            } else {
-                tasks.push({ id: Date.now().toString(), name, devId, user, level, start, duration });
-                document.getElementById('taskName').value = "";
+            const dev = devices.find(d => d.id === devId);
+            if(loggedInUser && loggedInUser.dept !== 'All' && dev && dev.dept !== loggedInUser.dept) {
+                alert("Thiết bị thuộc đơn vị khác, không thể phân công!"); return;
             }
-            pushDataToCloud();
+            tasks.push({ id: Date.now().toString(), name: document.getElementById('taskName').value.trim(), devId, user: document.getElementById('taskUser').value, level: document.getElementById('taskLevel').value, start: document.getElementById('taskTimeStart').value, duration: parseInt(document.getElementById('taskDuration').value)||30 });
+            document.getElementById('taskName').value = ""; pushDataToCloud();
         }
 
-        window.editProcurementInline = function(id) {
-            const target = procurements.find(p => p.id === id); if(!target) return;
-            document.getElementById('editProcurementId').value = target.id;
-            document.getElementById('procuName').value = target.name;
-            document.getElementById('procuQty').value = target.qty;
-            document.getElementById('procuDept').value = target.dept;
-            document.getElementById('procuEstimatedCost').value = target.cost;
-            document.getElementById('procuFileBase64').value = target.fileData || "";
-            document.getElementById('procuFileName').value = target.fileName || "";
-            
-            document.getElementById('btnProcurementSubmit').innerText = "Cập Nhật";
-            document.getElementById('btnCancelProcurementEdit').classList.remove('hidden');
-            document.getElementById('uploadStatusBadge').classList.add('hidden');
-        }
-        window.resetProcurementForm = function() {
-            document.getElementById('editProcurementId').value = "";
-            document.getElementById('procuName').value = "";
-            document.getElementById('procuQty').value = "1";
-            document.getElementById('procuEstimatedCost').value = "0";
-            document.getElementById('procuFileAttached').value = "";
-            document.getElementById('procuFileBase64').value = "";
-            document.getElementById('procuFileName').value = "";
-            document.getElementById('btnProcurementSubmit').innerText = "Tạo Đề Xuất";
-            document.getElementById('btnCancelProcurementEdit').classList.add('hidden');
-            document.getElementById('uploadStatusBadge').classList.add('hidden');
-        }
         window.handleProcurementSubmit = function(e) {
             e.preventDefault();
-            const pId = document.getElementById('editProcurementId').value;
-            const name = document.getElementById('procuName').value.trim();
-            const qty = document.getElementById('procuQty').value;
             const dept = document.getElementById('procuDept').value;
-            const cost = document.getElementById('procuEstimatedCost').value;
-            const fileData = document.getElementById('procuFileBase64').value;
-            const fileName = document.getElementById('procuFileName').value;
-
-            if(pId) {
-                procurements.forEach(p => { if(p.id === pId) { p.name = name; p.qty = qty; p.dept = dept; p.cost = cost; p.fileData = fileData; p.fileName = fileName; } });
-                resetProcurementForm();
-            } else {
-                procurements.push({ id: Date.now().toString(), name, qty, dept, cost, fileData, fileName, status: 'Chờ phê duyệt' });
-                document.getElementById('procuName').value = "";
+            if(loggedInUser && loggedInUser.dept !== 'All' && loggedInUser.dept !== dept) {
+                alert("Bạn chỉ có quyền tạo đề xuất mua sắm vật tư cho chính đơn vị mình!"); return;
             }
-            pushDataToCloud();
+            procurements.push({ id: Date.now().toString(), name: document.getElementById('procuName').value.trim(), qty: document.getElementById('procuQty').value, dept, cost: document.getElementById('procuEstimatedCost').value, fileData: document.getElementById('procuFileBase64').value, fileName: document.getElementById('procuFileName').value, status: 'Chờ phê duyệt' });
+            resetProcurementForm(); pushDataToCloud();
         }
 
-        window.approveProcurement = function(id) { procurements.forEach(p => { if(p.id === id) p.status = 'Đã bàn giao kho'; }); pushDataToCloud(); }
-        window.deleteItem = function(t, id) { if(confirm("Xóa bản ghi này?")) { if(t==='dept') depts=depts.filter(i=>i.id!==id); if(t==='user') users=users.filter(i=>i.id!==id); if(t==='device') devices=devices.filter(i=>i.id!==id); if(t==='repair') repairs=repairs.filter(i=>i.id!==id); if(t==='task') tasks=tasks.filter(i=>i.id!==id); if(t==='procurement') procurements=procurements.filter(i=>i.id!==id); pushDataToCloud(); } }
-        window.filterUserByDept = function(name) { activeUserDeptFilter = name; document.querySelectorAll('#deptTabsContainer button').forEach(b => b.className = "px-3 py-1 cursor-pointer text-slate-500 font-bold text-xs"); const clean = name==='all'?'all':btoa(encodeURIComponent(name)).replace(/=/g,''); if(document.getElementById(`tab-dept-${clean}`)) document.getElementById(`tab-dept-${clean}`).className = "px-3 py-1 tab-active cursor-pointer text-xs"; renderUserTableOnly(); }
-
-        function updateDropdownOptions() {
-            const ud = document.getElementById('userDept'), dd = document.getElementById('deviceDept'), rd = document.getElementById('repairDeviceId'), ru = document.getElementById('repairUser'), td = document.getElementById('taskDeviceId'), tu = document.getElementById('taskUser'), pd = document.getElementById('procuDept');
-            const currentUd = ud?.value, currentDd = dd?.value, currentRd = rd?.value, currentRu = ru?.value, currentTd = td?.value, currentTu = tu?.value, currentPd = pd?.value;
-
-            if(ud) ud.innerHTML = ''; if(dd) dd.innerHTML = '<option value="">-- Chọn đơn vị --</option>'; if(rd) rd.innerHTML = ''; if(ru) ru.innerHTML = ''; if(td) td.innerHTML = '<option value="Không">Không</option>'; if(tu) tu.innerHTML = ''; if(pd) pd.innerHTML = '';
-            
-            depts.forEach(d => { if(ud) ud.innerHTML += `<option value="${d.name}">${d.name}</option>`; if(dd) dd.innerHTML += `<option value="${d.name}">${d.name}</option>`; if(pd) pd.innerHTML += `<option value="${d.name}">${d.name}</option>`; });
-            devices.forEach(d => { if(rd) rd.innerHTML += `<option value="${d.id}">${d.id} - ${d.name}</option>`; if(td) td.innerHTML += `<option value="${d.id}">${d.id}</option>`; });
-            users.forEach(u => { if(ru) ru.innerHTML += `<option value="${u.name}">${u.name}</option>`; if(tu) tu.innerHTML += `<option value="${u.name}">${u.name}</option>`; });
-
-            if(currentUd && [...ud.options].some(o => o.value === currentUd)) ud.value = currentUd;
-            if(currentDd && [...dd.options].some(o => o.value === currentDd)) dd.value = currentDd;
-            if(currentRd && [...rd.options].some(o => o.value === currentRd)) rd.value = currentRd;
-            if(currentRu && [...ru.options].some(o => o.value === currentRu)) ru.value = currentRu;
-            if(currentTd && [...td.options].some(o => o.value === currentTd)) td.value = currentTd;
-            if(currentTu && [...tu.options].some(o => o.value === currentTu)) tu.value = currentTu;
-            if(currentPd && [...pd.options].some(o => o.value === currentPd)) pd.value = currentPd;
-
-            const container = document.getElementById('deptTabsContainer');
-            if(container) {
-                container.innerHTML = `<button onclick="filterUserByDept('all')" id="tab-dept-all" class="px-3 py-1 cursor-pointer text-xs">Tất Cả</button>`;
-                depts.forEach(d => { 
-                    const clean = btoa(encodeURIComponent(d.name)).replace(/=/g,''); 
-                    container.innerHTML += `
-                        <span class="inline-flex items-center bg-white border rounded pl-2 pr-1 py-0.5 text-xs gap-1 text-slate-800">
-                            <button onclick="filterUserByDept('${d.name}')" id="tab-dept-${clean}" class="cursor-pointer font-medium">${d.name}</button>
-                            <button onclick="editDeptInline('${d.id}')" class="text-blue-500 hover:text-blue-700 p-0.5"><i class="fa-solid fa-pen text-[10px]"></i></button>
-                            <button onclick="deleteItem('dept','${d.id}')" class="text-red-400 hover:text-red-600 p-0.5"><i class="fa-solid fa-xmark text-[10px]"></i></button>
-                        </span>`; 
-                });
-            }
-        }
-
-        function checkMaintenanceAlerts() {
-            const zone = document.getElementById('maintenanceAlertZone'); if(!zone) return; zone.innerHTML = '';
-            let count = 0;
-            devices.forEach(d => {
-                const logs = repairs.filter(r => r.devId === d.id);
-                if(logs.length === 0 && d.status !== "Trong kho") {
-                    count++;
-                    zone.innerHTML += `<div class="bg-white text-slate-800 p-3 border-l-4 border-amber-500 rounded shadow-xs flex justify-between items-center">
-                        <div><p class="font-bold">${d.id}</p><p class="text-xs text-slate-500">${d.name}</p><p class="text-[11px] text-red-600 font-bold mt-1">⚠️ Quá 6 tháng chưa bảo dưỡng định kỳ!</p></div>
-                        <button onclick="document.getElementById('repairDeviceId').value='${d.id}';" class="px-2 py-1 bg-amber-600 text-white font-bold text-xs rounded hover:bg-amber-700 cursor-pointer">Bảo Trì Ngay</button>
-                    </div>`;
-                }
-            });
-            if(count === 0) zone.innerHTML = `<p class="text-slate-500 italic text-sm col-span-3">🟢 Thiết bị nhà máy vận hành an toàn.</p>`;
+        // CHỨC NĂNG LỌC VÀ CHỈ HIỂN THỊ DỮ LIỆU ĐỘC LẬP THEO QUYỀN TRUY CẬP USER CON
+        function checkUserAccessScope(itemDept) {
+            if(!loggedInUser) return true; // Viewer công cộng nhìn thấy hết
+            if(loggedInUser.dept === 'All') return true; // Admin tổng nhìn thấy hết toàn bộ nhà máy
+            return loggedInUser.dept === itemDept; // User con chỉ hiển thị dữ liệu của chính mình
         }
 
         window.renderDeviceTableOnly = function() {
-            const body = document.getElementById('deviceTableBody'); if(!body) return;
-            body.innerHTML = ''; 
+            const body = document.getElementById('deviceTableBody'); if(!body) return; body.innerHTML = ''; 
             const key = document.getElementById('searchDeviceInput').value.trim().toLowerCase();
             const role = loggedInUser ? loggedInUser.role : 'Viewer';
-            const filteredDevices = devices.filter(d => d.name.toLowerCase().includes(key) || d.id.toLowerCase().includes(key) || (d.cat && d.cat.toLowerCase().includes(key)));
 
-            filteredDevices.forEach(d => {
-                const tr = document.createElement('tr');
-                tr.className = "border-b font-medium text-slate-800";
-                let actions = `<button class="btn-preview-qr px-2 py-1 bg-slate-900 text-amber-400 font-black rounded text-xs border border-amber-400 cursor-pointer">Xem & In</button>`;
+            devices.forEach(d => {
+                if(!checkUserAccessScope(d.dept)) return; // BỘ LỌC BẢO MẬT PHÒNG BAN ĐỘC LẬP
+                if(key && !d.name.toLowerCase().includes(key) && !d.id.toLowerCase().includes(key)) return;
+
+                let actions = `<button onclick="previewAndSelectQR('${d.id}')" class="px-2 py-1 bg-slate-900 text-amber-400 font-bold rounded text-xs border border-amber-400 cursor-pointer">Xem & In</button>`;
                 if(role === 'Admin' || role === 'Kỹ thuật') {
                     actions += `
-                        <button class="btn-edit-device text-blue-600 hover:text-blue-800 ml-2 cursor-pointer" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></button>
-                        <button class="btn-delete-device text-slate-400 hover:text-red-600 ml-1.5 cursor-pointer" title="Xóa"><i class="fa-solid fa-trash-can"></i></button>
+                        <button onclick="editDeviceInline('${d.id}')" class="text-blue-600 ml-2"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="deleteItem('device', '${d.id}')" class="text-slate-400 hover:text-red-600 ml-1.5"><i class="fa-solid fa-trash-can"></i></button>
                     `;
                 }
-                tr.innerHTML = `
+                body.innerHTML += `<tr>
                     <td class="p-3 pl-4 font-mono font-bold text-slate-900">${d.id}</td>
-                    <td class="p-3 font-bold">${d.name}<span class="block text-[11px] text-blue-600 font-bold italic">Chủng loại: ${d.cat || 'Chưa phân nhóm'}</span></td>
+                    <td class="p-3 font-bold">${d.name}<span class="block text-[11px] text-blue-600 font-medium">Nhóm: ${d.cat||'Chưa xếp loại'}</span></td>
                     <td class="p-3">${d.dept}</td>
-                    <td class="p-1 text-center bg-white w-28 flex justify-center items-center"><div class="qr-holder-cell py-1 flex justify-center items-center w-[48px] h-[48px] bg-slate-50 border border-slate-200 rounded cursor-pointer"></div></td>
-                    <td class="p-3 text-blue-600 font-bold">${d.user==='Chưa cấp phát'?'📦 Kho': d.user}</td>
-                    <td class="p-3 text-center"><span class="px-2 py-0.5 text-xs rounded font-bold ${d.status==='Trong kho'?'bg-amber-100 text-amber-700':'bg-emerald-100 text-emerald-700'}">${d.status}</span></td>
+                    <td class="p-1 text-center bg-white"><div id="cell-qr-${d.id}" class="w-10 h-10 mx-auto"></div></td>
+                    <td class="p-3 font-medium">${d.user==='Chưa cấp phát'?'📦 Lưu Kho':d.user}</td>
+                    <td class="p-3 text-center"><span class="px-2 py-0.5 text-xs font-bold rounded ${d.status==='Trong kho'?'bg-amber-100 text-amber-700':'bg-emerald-100 text-emerald-700'}">${d.status}</span></td>
                     <td class="p-3 text-right pr-4">${actions}</td>
-                `;
-
-                const qrHolder = tr.querySelector('.qr-holder-cell');
-                generateLocalQR(qrHolder, makeQRTextContent(d), 44);
-
-                tr.querySelector('.btn-preview-qr').onclick = () => previewAndSelectQR(d.id);
-                qrHolder.onclick = () => previewAndSelectQR(d.id);
-                
-                const btnEdit = tr.querySelector('.btn-edit-device');
-                if(btnEdit) btnEdit.onclick = () => editDeviceInline(d.id);
-                const btnDel = tr.querySelector('.btn-delete-device');
-                if(btnDel) btnDel.onclick = () => deleteItem('device', d.id);
-
-                body.appendChild(tr);
+                </tr>`;
+                setTimeout(() => generateLocalQR(document.getElementById(`cell-qr-${d.id}`), makeQRTextContent(d), 40), 50);
             });
             document.getElementById('count-device').innerText = `${devices.length} tài sản`;
         }
 
-        function renderUserTableOnly() {
+        window.renderUserTableOnly = function() {
             const body = document.getElementById('userTableBody'); if(!body) return; body.innerHTML = '';
             const role = loggedInUser ? loggedInUser.role : 'Viewer';
-            users.filter(u => activeUserDeptFilter === 'all' || u.dept === activeUserDeptFilter).forEach(u => {
-                let actionBtn = '';
-                if(role === 'Admin' || role === 'Kỹ thuật') {
-                    actionBtn = `
-                        <button onclick="editUserInline('${u.id}')" class="text-blue-600 font-medium mr-2 hover:underline">Sửa</button>
-                        <button onclick="deleteItem('user','${u.id}')" class="text-red-500 font-medium hover:underline">Xóa</button>
-                    `;
-                }
+            users.forEach(u => {
+                if(!checkUserAccessScope(u.dept)) return; // BỘ LỌC BẢO MẬT PHÒNG BAN ĐỘC LẬP
+                if(activeUserDeptFilter !== 'all' && u.dept !== activeUserDeptFilter) return;
+
+                let actionBtn = (role==='Admin'||role==='Kỹ thuật')?`<button onclick="deleteItem('user','${u.id}')" class="text-red-500 hover:underline">Xóa</button>`:'';
                 body.innerHTML += `<tr class="border-b">
                     <td class="p-3 pl-4 font-bold text-slate-900">${u.name}<span class="block text-xs text-slate-400 font-normal">${u.title}</span></td>
-                    <td class="p-3 font-medium">${u.dept}</td>
+                    <td class="p-3 font-medium text-slate-600">${u.dept}</td>
                     <td class="p-3 text-right pr-4">${actionBtn}</td>
                 </tr>`;
             });
             document.getElementById('count-user').innerText = `${users.length} nhân sự`;
         }
 
-        function renderRepairTableOnly() {
+        window.renderRepairTableOnly = function() {
             const body = document.getElementById('repairTableBody'); if(!body) return; body.innerHTML = '';
-            const role = loggedInUser ? loggedInUser.role : 'Viewer';
             repairs.forEach(r => {
-                let actionBtn = '';
-                if(role === 'Admin' || role === 'Kỹ thuật') {
-                    actionBtn = `
-                        <button onclick="editRepairInline('${r.id}')" class="text-blue-500 hover:text-blue-700 mr-2"><i class="fa-solid fa-pen-to-square"></i></button>
-                        <button onclick="deleteItem('repair','${r.id}')" class="text-slate-400 hover:text-red-600"><i class="fa-solid fa-trash-can"></i></button>
-                    `;
-                }
-                body.innerHTML += `<tr class="border-b text-sm">
-                    <td class="p-3 pl-4 font-mono font-bold">${r.devId}</td><td>${r.desc}</td><td>${r.date || '--'}</td><td>${r.repUser}</td><td class="font-bold">${Number(r.cost).toLocaleString()}đ</td>
-                    <td class="p-3 text-right pr-4">${actionBtn}</td>
+                const dev = devices.find(d => d.id === r.devId);
+                if(dev && !checkUserAccessScope(dev.dept)) return; // BIÊN GIỚI DỮ LIỆU ĐƠN VỊ CON
+                body.innerHTML += `<tr class="border-b">
+                    <td class="p-3 pl-4 font-mono font-bold">${r.devId}</td><td>${r.desc}</td><td>${r.date}</td><td>${r.repUser}</td><td class="font-bold">${Number(r.cost).toLocaleString()}đ</td>
+                    <td class="p-3 text-right pr-4"><button onclick="deleteItem('repair','${r.id}')" class="text-slate-400 hover:text-red-600"><i class="fa-solid fa-trash-can"></i></button></td>
                 </tr>`;
             });
         }
 
-        function renderTaskTableOnly() {
+        window.renderTaskTableOnly = function() {
             const body = document.getElementById('taskTableBody'); if(!body) return; body.innerHTML = '';
-            const role = loggedInUser ? loggedInUser.role : 'Viewer';
             tasks.forEach(t => {
-                let actionBtn = '';
-                if(role === 'Admin' || role === 'Kỹ thuật') {
-                    actionBtn = `
-                        <button onclick="editTaskInline('${t.id}')" class="text-blue-400 hover:text-blue-300 mr-2"><i class="fa-solid fa-pen-to-square"></i></button>
-                        <button onclick="deleteItem('task','${t.id}')" class="text-slate-600 hover:text-red-500"><i class="fa-solid fa-trash-can"></i></button>
-                    `;
-                }
-                body.innerHTML += `<tr class="border-b border-slate-800 text-sm">
-                    <td class="p-3 pl-4 font-bold text-white">${t.name}</td><td class="p-3 font-mono">${t.devId}</td><td>${t.user}</td><td class="font-bold text-amber-400">${t.level}</td><td>${t.start}</td><td class="font-bold text-emerald-400 font-mono" id="timer-${t.id}">--:--</td><td><span class="px-2 py-0.5 rounded bg-slate-800 text-xs text-slate-300">Đang chạy</span></td>
-                    <td class="p-3 text-right pr-4">${actionBtn}</td>
+                const dev = devices.find(d => d.id === t.devId);
+                if(dev && !checkUserAccessScope(dev.dept)) return; // BIÊN GIỚI DỮ LIỆU ĐƠN VỊ CON
+                body.innerHTML += `<tr class="border-b border-slate-800">
+                    <td class="p-3 pl-4 font-bold text-white">${t.name}</td><td class="p-3 font-mono">${t.devId}</td><td>${t.user}</td><td class="text-amber-400 font-bold">${t.level}</td><td>${t.start}</td><td class="font-bold text-emerald-400 font-mono" id="timer-${t.id}">--:--</td><td>Chạy</td>
+                    <td class="p-3 text-right pr-4"><button onclick="deleteItem('task','${t.id}')" class="text-slate-600"><i class="fa-solid fa-trash-can"></i></button></td>
                 </tr>`;
             });
         }
 
-        function renderProcurementTableOnly() {
+        window.renderProcurementTableOnly = function() {
             const body = document.getElementById('procurementTableBody'); if(!body) return; body.innerHTML = '';
             const role = loggedInUser ? loggedInUser.role : 'Viewer';
             procurements.forEach(p => {
-                let actionBtn = '';
-                if((role==='Admin' || role==='Kỹ thuật') && p.status === 'Chờ phê duyệt') {
-                    actionBtn = `<button onclick="approveProcurement('${p.id}')" class="px-2 py-0.5 bg-emerald-600 text-white font-bold rounded text-xs mr-2 cursor-pointer">Duyệt Nhập Kho</button>`;
-                }
-                if(role==='Admin' || role==='Kỹ thuật') {
-                    actionBtn += `
-                        <button onclick="editProcurementInline('${p.id}')" class="text-blue-600 hover:text-blue-800 mr-2 cursor-pointer"><i class="fa-solid fa-pen-to-square"></i></button>
-                        <button onclick="deleteItem('procurement','${p.id}')" class="text-slate-400 hover:text-red-500 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
-                    `;
-                }
-                
-                let fileBadge = `<span class="text-slate-400 text-xs italic"><i class="fa-solid fa-file-excel"></i> Không đính kèm</span>`;
-                if(p.fileData) {
-                    fileBadge = `<button onclick="openAttachedFileWindow(\`${p.fileData}\`, \`${p.fileName}\`)" class="px-2.5 py-1 bg-blue-100 text-blue-700 font-bold rounded hover:bg-blue-200 text-xs cursor-pointer flex items-center gap-1 mx-auto"><i class="fa-solid fa-arrow-up-right-from-square"></i> Truy cập Tài Liệu</button>`;
-                }
-
-                body.innerHTML += `<tr class="border-b text-slate-800">
-                    <td class="p-3 pl-4 font-bold">${p.name}</td>
-                    <td class="p-3">${p.dept}</td>
-                    <td class="p-3 text-center font-bold">${p.qty}</td>
-                    <td class="p-3 font-mono font-bold text-blue-700">${Number(p.cost).toLocaleString()}đ</td>
-                    <td class="p-3 text-center">${fileBadge}</td>
-                    <td class="p-3 text-center"><span class="px-2 py-0.5 text-xs font-bold rounded ${p.status==='Chờ phê duyệt'?'bg-amber-100 text-amber-700':'bg-blue-100 text-blue-700'}">${p.status}</span></td>
-                    <td class="p-3 text-right pr-4">${actionBtn}</td>
+                if(!checkUserAccessScope(p.dept)) return; // BIÊN GIỚI DỮ LIỆU ĐƠN VỊ CON
+                let act = (role==='Admin' && p.status==='Chờ phê duyệt')?`<button onclick="approveProcurement('${p.id}')" class="px-2 py-0.5 bg-emerald-600 text-white font-bold rounded text-xs mr-2">Phê Duyệt</button>`:'';
+                let fileBadge = p.fileData?`<button onclick="openAttachedFileWindow('${p.fileData}')" class="px-2 py-1 bg-blue-100 text-blue-700 font-bold rounded text-xs">Mở Tài Liệu</button>`:'Không';
+                body.innerHTML += `<tr class="border-b">
+                    <td class="p-3 pl-4 font-bold">${p.name}</td><td>${p.dept}</td><td class="text-center font-bold">${p.qty}</td><td class="font-bold text-blue-700">${Number(p.cost).toLocaleString()}đ</td><td class="text-center">${fileBadge}</td><td class="text-center"><span class="px-2 py-0.5 text-xs rounded font-bold ${p.status==='Chờ phê duyệt'?'bg-amber-100 text-amber-700':'bg-blue-100 text-blue-700'}">${p.status}</span></td><td class="p-3 text-right pr-4">${act} <button onclick="deleteItem('procurement','${p.id}')" class="text-slate-400"><i class="fa-solid fa-trash-can"></i></button></td>
                 </tr>`;
             });
             document.getElementById('count-procurement').innerText = `${procurements.length} yêu cầu`;
         }
 
+        window.approveProcurement = function(id) { procurements.forEach(p => { if(p.id === id) p.status = 'Đã bàn giao kho'; }); pushDataToCloud(); }
+        window.deleteItem = function(t, id) { if(confirm("Xác nhận xóa bản ghi này?")) { if(t==='dept') depts=depts.filter(i=>i.id!==id); if(t==='user') users=users.filter(i=>i.id!==id); if(t==='device') devices=devices.filter(i=>i.id!==id); if(t==='repair') repairs=repairs.filter(i=>i.id!==id); if(t==='task') tasks=tasks.filter(i=>i.id!==id); if(t==='procurement') procurements=procurements.filter(i=>i.id!==id); pushDataToCloud(); } }
+        window.filterUserByDept = function(name) { activeUserDeptFilter = name; renderUserTableOnly(); }
+
+        window.previewAndSelectQR = function(id) {
+            const dev = devices.find(d => d.id === id); if(!dev) return;
+            document.getElementById('webPreviewEmptyText').classList.add('hidden');
+            document.getElementById('webPreviewQRBox').classList.remove('hidden');
+            document.getElementById('btnActionPrintNow').classList.remove('hidden');
+            document.getElementById('wpTitle').innerText = dev.name;
+            document.getElementById('wpId').innerText = dev.id;
+            document.getElementById('wpDept').innerText = "ĐV: " + dev.dept;
+            document.getElementById('wpUser').innerText = "Phụ trách: " + dev.user;
+            generateLocalQR(document.getElementById('wpCanvas'), makeQRTextContent(dev), 140);
+        }
+
+        function autoGenDeviceId() {
+            let max = 67148; devices.forEach(d => { if(d.id && d.id.startsWith("TB-")) { const n = parseInt(d.id.substring(3)); if(!isNaN(n) && n > max) max = n; } });
+            document.getElementById('deviceId').value = `TB-${max + 1}`;
+        }
+
+        window.updateUserDropdownByDept = function() {
+            const dDept = document.getElementById('deviceDept').value, dUser = document.getElementById('deviceUser');
+            dUser.innerHTML = '<option value="Chưa cấp phát">-- Giữ lưu kho --</option>';
+            users.filter(u => u.dept === dDept).forEach(u => dUser.innerHTML += `<option value="${u.name}">${u.name}</option>`);
+        }
+
+        function updateDropdownOptions() {
+            const ud = document.getElementById('userDept'), dd = document.getElementById('deviceDept'), rd = document.getElementById('repairDeviceId'), ru = document.getElementById('repairUser'), td = document.getElementById('taskDeviceId'), tu = document.getElementById('taskUser'), pd = document.getElementById('procuDept');
+            if(ud) ud.innerHTML = ''; if(dd) dd.innerHTML = '<option value="">-- Chọn đơn vị --</option>'; if(rd) rd.innerHTML = ''; if(ru) ru.innerHTML = ''; if(td) td.innerHTML = '<option value="Không">Không</option>'; if(tu) tu.innerHTML = ''; if(pd) pd.innerHTML = '';
+            depts.forEach(d => { if(ud) ud.innerHTML += `<option value="${d.name}">${d.name}</option>`; if(dd) dd.innerHTML += `<option value="${d.name}">${d.name}</option>`; if(pd) pd.innerHTML += `<option value="${d.name}">${d.name}</option>`; });
+            devices.forEach(d => { if(rd) rd.innerHTML += `<option value="${d.id}">${d.id} - ${d.name}</option>`; if(td) td.innerHTML += `<option value="${d.id}">${d.id}</option>`; });
+            users.forEach(u => { if(ru) ru.innerHTML += `<option value="${u.name}">${u.name}</option>`; if(tu) tu.innerHTML += `<option value="${u.name}">${u.name}</option>`; });
+
+            const container = document.getElementById('deptTabsContainer');
+            if(container) {
+                container.innerHTML = `<button onclick="filterUserByDept('all')" class="px-3 py-1 text-xs font-bold border rounded bg-white text-slate-700">Tất Cả</button>`;
+                depts.forEach(d => { container.innerHTML += `<button onclick="filterUserByDept('${d.name}')" class="px-3 py-1 text-xs font-bold border bg-white text-slate-600 rounded ml-1">${d.name}</button>`; });
+            }
+        }
+
+        function checkMaintenanceAlerts() {
+            const zone = document.getElementById('maintenanceAlertZone'); if(!zone) return; zone.innerHTML = '';
+            devices.forEach(d => {
+                if(!checkUserAccessScope(d.dept)) return;
+                const logs = repairs.filter(r => r.devId === d.id);
+                if(logs.length === 0 && d.status !== "Trong kho") {
+                    zone.innerHTML += `<div class="bg-white p-3 border-l-4 border-amber-500 rounded flex justify-between items-center text-xs">
+                        <div><p class="font-bold text-slate-900">${d.id}</p><p class="text-slate-500">${d.name}</p></div>
+                        <button onclick="document.getElementById('repairDeviceId').value='${d.id}';" class="px-2 py-1 bg-amber-600 text-white rounded font-bold">Bảo Trì</button>
+                    </div>`;
+                }
+            });
+        }
+
         function updateCountdownTimers() {
             tasks.forEach(t => {
                 const el = document.getElementById(`timer-${t.id}`); if(!el) return;
-                const now = new Date();
-                const [h, m] = t.start.split(':').map(Number);
+                const now = new Date(); const [h, m] = t.start.split(':').map(Number);
                 const startTime = new Date(); startTime.setHours(h, m, 0, 0);
                 const endTime = new Date(startTime.getTime() + t.duration * 60 * 1000);
-                
-                if (now < startTime) { el.innerText = "Chờ giờ"; el.className = "text-slate-400 font-bold font-mono"; }
+                if (now < startTime) { el.innerText = "Chờ giờ"; }
                 else if (now > endTime) { el.innerText = "Hết hạn"; el.className = "text-red-500 font-bold font-mono"; }
                 else {
                     const left = Math.floor((endTime - now) / 1000);
-                    const remM = Math.floor(left / 60), remS = left % 60;
-                    el.innerText = `${String(remM).padStart(2,'0')}:${String(remS).padStart(2,'0')}`;
-                    el.className = "text-emerald-400 font-bold font-mono";
+                    el.innerText = `${String(Math.floor(left / 60)).padStart(2,'0')}:${String(left % 60).padStart(2,'0')}`;
                 }
             });
         }
 
         window.renderAllTables = function() { renderDeviceTableOnly(); renderUserTableOnly(); renderRepairTableOnly(); renderTaskTableOnly(); renderProcurementTableOnly(); }
-
         if (loggedInUser) { executeLoginSuccess(); } else { applyPermissionRulesUI(); }
-        updateEnvButtonsUI(); fetchCloudData(); refreshQuoteOnline();
+        updateEnvButtonsUI(); fetchCloudData();
     </script>
 </body>
 </html>
