@@ -23,7 +23,6 @@
         /* --- NỀN XANH THƯƠNG HIỆU VINAPACO TIÊU CHUẨN --- */
         body {
             background-color: #044333;
-            /* Tạo họa tiết lưới hình khối hình học mờ sang trọng tương đồng hình mẫu */
             background-image: 
                 linear-gradient(30deg, #033629 12%, transparent 12.5%, transparent 87%, #033629 87.5%, #033629),
                 linear-gradient(150deg, #033629 12%, transparent 12.5%, transparent 87%, #033629 87.5%, #033629),
@@ -36,7 +35,6 @@
             position: relative;
         }
 
-        /* Hiệu ứng dải sáng xanh mờ ảo (Glow Aura) quét ngang nền như ảnh mẫu */
         body::before {
             content: "";
             position: fixed;
@@ -48,7 +46,7 @@
             pointer-events: none;
         }
 
-        /* --- THEME TÙY BIẾN HIỆN ĐẠI (CYBER GLASS DASHBOARD) --- */
+        /* --- THEME CYBER GLASS --- */
         body.theme-cyberpunk {
             background: radial-gradient(circle at 50% 50%, #0a0f1d 0%, #02040a 100%) !important;
             color: #f1f5f9;
@@ -419,6 +417,7 @@
                     </table>
                 </div>
             </div>
+            
             <div class="lg:col-span-4">
                 <div class="glass-panel bg-white/95 rounded-xl shadow-md border border-slate-200 overflow-hidden sticky top-6 backdrop-blur-sm">
                     <div class="bg-slate-800 text-white p-3.5 font-bold text-sm flex items-center justify-between inner-dark-box">
@@ -501,7 +500,7 @@
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="border-b border-slate-800 bg-slate-800/80 text-slate-400 font-bold">
-                            <th class="p-3 pl-4">Hạng Mục</th>
+                            <th class="p-3 pl-4">HANG MỤC</th>
                             <th class="p-3">Thiết Bị</th>
                             <th class="p-3">Phụ Trách</th>
                             <th class="p-3">Mức Độ</th>
@@ -560,7 +559,7 @@
                             <th class="p-3">Dự Toán Chi Phí</th>
                             <th class="p-3">Chứng Từ Đính Kèm</th>
                             <th class="p-3 text-center">Trạng Thái</th>
-                            <th class="p-3 text-right pr-4">Tác Vu</th>
+                            <th class="p-3 text-right pr-4">Tác Vụ</th>
                         </tr>
                     </thead>
                     <tbody id="procurementTableBody" class="divide-y divide-slate-100"></tbody>
@@ -605,7 +604,6 @@
         let activeUserDeptFilter = 'all';
         let pomoInterval = null, pomoTimeLeft = 25 * 60, pomoIsRunning = false, pomoCurrentMode = 'work';
 
-        // --- HÀM THỰC THI CHUYỂN ĐỔI GIAO DIỆN HIỆN ĐẠI (CYBER GLASS) ---
         window.changeSystemTheme = function(themeType) {
             const body = document.getElementById('systemBody');
             const btnClassic = document.getElementById('themeBtn-classic');
@@ -788,7 +786,6 @@
             }
         }
 
-        // --- XỬ LÝ TẢI ẢNH NHÂN SỰ TO RÕ ---
         window.handleUserAvatarUpload = function(e) {
             const file = e.target.files[0]; if (!file) return;
             const reader = new FileReader();
@@ -801,7 +798,6 @@
             reader.readAsDataURL(file);
         }
 
-        // --- XỬ LÝ TẢI LÊN TÀI LIỆU HỒ SƠ NHÂN SỰ ---
         window.handleUserDocUpload = function(e) {
             const file = e.target.files[0]; if (!file) return;
             const indicator = document.getElementById('userDocStatusIndicator');
@@ -832,11 +828,16 @@
                             deptExist = { id: Date.now().toString() + Math.random().toString(36).substring(2,5), name: fDept };
                             depts.push(deptExist);
                         }
-                        users.push({ id: Date.now().toString() + Math.random().toString(36).substring(2,5), name: fName, title: fTitle, dept: deptExist.name, avatar: "", userDoc: "" });
-                        count++;
+                        
+                        // Chống trùng lặp khi import file
+                        const isDuplicate = users.some(u => u.name.toLowerCase() === fName.toLowerCase() && u.dept.toLowerCase() === deptExist.name.toLowerCase());
+                        if (!isDuplicate) {
+                            users.push({ id: Date.now().toString() + Math.random().toString(36).substring(2,5), name: fName, title: fTitle, dept: deptExist.name, avatar: "", userDoc: "" });
+                            count++;
+                        }
                     }
                 });
-                alert(`Tải lên thành công ${count} nhân sự vào hệ thống!`); pushDataToCloud();
+                alert(`Tải lên thành công ${count} nhân sự mới vào hệ thống (Đã tự động lọc bỏ các nhân sự bị trùng)!`); pushDataToCloud();
             };
             reader.readAsText(file);
         }
@@ -899,6 +900,7 @@
 
         window.switchEnvironment = function(env) { currentEnv = env; localStorage.setItem('vinapaco_current_env', env); fetchCloudData(); }
 
+        // --- CƠ CHẾ CHỐNG TRÙNG NHÂN SỰ ---
         window.handleUserSubmit = function(e) { 
             e.preventDefault(); 
             const uId = document.getElementById('editUserId').value;
@@ -907,6 +909,19 @@
             const dept = document.getElementById('userDept').value;
             const avatar = document.getElementById('userAvatarData').value;
             const userDoc = document.getElementById('userDocData').value;
+
+            // Kiểm tra trùng lặp (trùng cả tên và phòng ban thực tế)
+            const checkDuplicate = users.some(u => 
+                u.id !== uId && 
+                u.name.toLowerCase().replace(/\s+/g, '') === name.toLowerCase().replace(/\s+/g, '') && 
+                u.dept === dept
+            );
+
+            if (checkDuplicate) {
+                alert(`⚠️ LỖI: Nhân sự "${name}" đã tồn tại trong đơn vị "${dept}". Vui lòng không nhập trùng!`);
+                document.getElementById('userName').focus();
+                return;
+            }
 
             if(uId) {
                 users.forEach(u => { 
@@ -922,7 +937,6 @@
             resetUserForm(); pushDataToCloud(); 
         }
 
-        // --- CẬP NHẬT: TỰ ĐỘNG FOCUS & CUỘN LÊN KHUNG NHẬP LIỆU HỒ SƠ ---
         window.editUserInline = function(id) {
             const u = users.find(item => item.id === id); if(!u) return;
             document.getElementById('editUserId').value = u.id;
@@ -945,7 +959,6 @@
             document.getElementById('btnCancelUserEdit').classList.remove('hidden');
             document.getElementById('btnUserSubmit').innerText = "Cập Nhật Hồ Sơ";
 
-            // Thực hiện cuộn mượt đến form nhập liệu và focus trực tiếp vào ô Tên
             document.getElementById('userFormAnchor').scrollIntoView({ behavior: 'smooth', block: 'center' });
             setTimeout(() => { nameField.focus(); nameField.select(); }, 400);
         }
@@ -961,10 +974,22 @@
             document.getElementById('btnUserSubmit').innerText = "Lưu Hồ Sơ";
         }
 
+        // --- CƠ CHẾ CHỐNG TRÙNG PHÒNG BAN ---
         window.handleDeptSubmit = function(e) { 
             e.preventDefault(); 
             const dId = document.getElementById('editDeptId').value;
             const name = document.getElementById('deptName').value.trim();
+
+            const checkDuplicate = depts.some(d => 
+                d.id !== dId && 
+                d.name.toLowerCase().replace(/\s+/g, '') === name.toLowerCase().replace(/\s+/g, '')
+            );
+
+            if (checkDuplicate) {
+                alert(`⚠️ LỖI: Tên phòng ban/xưởng "${name}" đã tồn tại trên hệ thống!`);
+                document.getElementById('deptName').focus();
+                return;
+            }
 
             if (dId) {
                 const oldDept = depts.find(d => d.id === dId);
@@ -986,6 +1011,7 @@
             document.getElementById('btnDeptSubmit').innerText = "Sửa";
         }
 
+        // --- CƠ CHẾ CHỐNG TRÙNG THIẾT BỊ TÀI SẢN ---
         window.handleDeviceSubmit = function(e) { 
             e.preventDefault(); 
             const mode = document.getElementById('editDeviceMode').value;
@@ -994,6 +1020,18 @@
             const cat = document.getElementById('deviceCategory').value.trim(); 
             const dept = document.getElementById('deviceDept').value;
             const user = document.getElementById('deviceUser').value;
+
+            const checkDuplicate = devices.some(d => 
+                d.id !== dId && 
+                d.name.toLowerCase().replace(/\s+/g, '') === name.toLowerCase().replace(/\s+/g, '') && 
+                d.dept === dept
+            );
+
+            if (checkDuplicate) {
+                alert(`⚠️ LỖI: Thiết bị "${name}" đã được đăng ký quản lý tại "${dept}". Tránh nhập trùng lặp!`);
+                document.getElementById('deviceName').focus();
+                return;
+            }
 
             if(mode === 'edit') {
                 devices.forEach(d => { if(d.id === dId) { d.name = name; d.cat = cat; d.dept = dept; d.user = user; d.status = (user==="Chưa cấp phát"?"Trong kho":"Hoạt động tốt"); } });
@@ -1065,7 +1103,6 @@
             document.getElementById('count-device').innerText = `${devices.length} tài sản`;
         }
 
-        // --- CẬP NHẬT RENDER BẢNG NHÂN SỰ: BẤM VÀO TÊN HOẶC NÚT SỬA ĐỀU FOCUS CHUẨN XÁC ---
         window.renderUserTableOnly = function() {
             const body = document.getElementById('userTableBody'); if(!body) return; body.innerHTML = '';
             let hasData = false;
