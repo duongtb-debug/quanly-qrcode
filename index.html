@@ -3,192 +3,270 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Điều Hành Kỹ Thuật Tổng Hợp - VINAPACO 2026</title>
+    <title>Hệ Thống Quản Trị ERP Kỹ Thuật Toàn Diện - VINAPACO 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        @media print {
-            body * { visibility: hidden; }
-            #qrPrintZone, #qrPrintZone * { visibility: visible; }
-            #qrPrintZone {
-                position: absolute; left: 50%; top: 10%; transform: translateX(-50%);
-                display: flex !important; flex-direction: column; align-items: center; justify-content: center; border: none !important;
-            }
-        }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #047857; border-radius: 3px; }
-
-        /* NỀN HOẠ TIẾT QUẢ TRÁM XANH LỤC ĐẬM NGUYÊN BẢN ỔN ĐỊNH GIAO DIỆN CŨ */
-        body {
-            background-color: #033e2f;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #02231a; }
+        
+        /* HOẠ TIẾT QUẢ TRÁM SANG TRỌNG CỦA VINAPACO */
+        .vinapaco-bg {
+            background-color: #02231a;
             background-image: 
-                linear-gradient(30deg, #022c21 12%, transparent 12.5%, transparent 87%, #022c21 87.5%, #022c21),
-                linear-gradient(150deg, #022c21 12%, transparent 12.5%, transparent 87%, #022c21 87.5%, #022c21),
-                linear-gradient(30deg, #022c21 12%, transparent 12.5%, transparent 87%, #022c21 87.5%, #022c21),
-                linear-gradient(150deg, #022c21 12%, transparent 12.5%, transparent 87%, #022c21 87.5%, #022c21),
-                linear-gradient(60deg, #023326 25%, transparent 25.5%, transparent 75%, #023326 75.5%, #023326),
-                linear-gradient(60deg, #023326 25%, transparent 25.5%, transparent 75%, #023326 75.5%, #023326);
+                linear-gradient(30deg, #01140f 12%, transparent 12.5%, transparent 87%, #01140f 87.5%, #01140f),
+                linear-gradient(150deg, #01140f 12%, transparent 12.5%, transparent 87%, #01140f 87.5%, #01140f),
+                linear-gradient(30deg, #01140f 12%, transparent 12.5%, transparent 87%, #01140f 87.5%, #01140f),
+                linear-gradient(150deg, #01140f 12%, transparent 12.5%, transparent 87%, #01140f 87.5%, #01140f),
+                linear-gradient(60deg, #011b14 25%, transparent 25.5%, transparent 75%, #011b14 75.5%, #011b14),
+                linear-gradient(60deg, #011b14 25%, transparent 25.5%, transparent 75%, #011b14 75.5%, #011b14);
             background-size: 56px 98px;
             background-position: 0 0, 0 0, 28px 49px, 28px 49px, 0 0, 28px 49px;
         }
+
+        .neo-card {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(12px);
+            border: 1px border rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.3);
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            #qrPrintZone, #qrPrintZone * { visibility: visible; }
+            #qrPrintZone { position: absolute; left: 50%; top: 5%; transform: translateX(-50%); display: flex !important; }
+        }
     </style>
 </head>
-<body class="text-slate-800 font-sans min-h-screen p-4 md:p-6 space-y-6 text-sm md:text-base">
+<body class="vinapaco-bg min-h-screen text-slate-800 p-3 md:p-6 space-y-6">
 
-    <div id="loginOverlaySystem" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
+    <div id="loginOverlaySystem" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center z-50 p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-slate-200 overflow-hidden">
-            <div class="p-6 text-center border-b border-slate-100 bg-slate-50/50">
-                <div class="w-16 h-16 mx-auto mb-3 flex items-center justify-center bg-emerald-800 rounded-2xl shadow-md p-2">
+            <div class="p-6 text-center border-b border-slate-100 bg-slate-50">
+                <div class="w-16 h-16 mx-auto mb-3 flex items-center justify-center bg-emerald-800 rounded-2xl shadow-lg p-2">
                     <svg viewBox="0 0 100 100" class="w-12 h-12 fill-white">
                         <path d="M15,80 L15,20 L35,20 L35,35 L55,25 L75,35 L75,20 L85,20 L85,80 L15,80 Z M25,70 L40,70 L40,50 L25,50 L25,70 Z M48,70 L75,70 L75,50 L48,50 L48,70 Z" />
                         <polygon points="50,20 60,10 40,10" />
                     </svg>
                 </div>
-                <h1 class="text-xl font-black text-slate-900 tracking-tight uppercase">VẬN HÀNH VINAPACO 2026</h1>
-                <p class="text-xs text-slate-500 mt-1">Hệ thống điều hành & cấp phát quản lý mã QR kỹ thuật</p>
-                <div id="syncStatusBadge" class="mt-2 inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
-                    <i class="fa-solid fa-sync animate-spin"></i> Đang tải cơ sở dữ liệu nhà máy...
-                </div>
+                <h1 class="text-xl font-black text-slate-900 tracking-tight uppercase">VINAPACO ERP KỸ THUẬT</h1>
+                <p class="text-xs text-slate-500 mt-1">Hệ thống điều hành và phân quyền phòng ban độc lập 2026</p>
             </div>
             
             <div class="p-1 mx-6 mt-4 bg-slate-100 rounded-xl flex border border-slate-200">
-                <button type="button" id="tabLoginPassword" onclick="switchLoginMethod('password')" class="w-1/2 py-2 text-xs font-black rounded-lg text-emerald-900 bg-white shadow-sm transition-all duration-150">
+                <button type="button" id="tabLoginPassword" onclick="switchLoginMethod('password')" class="w-1/2 py-2 text-xs font-black rounded-lg text-emerald-900 bg-white shadow-sm">
                     <i class="fa-solid fa-key mr-1"></i> Mật khẩu ca
                 </button>
-                <button type="button" id="tabLoginPin" onclick="switchLoginMethod('pin')" class="w-1/2 py-2 text-xs font-black rounded-lg text-slate-500 hover:text-slate-800 transition-all duration-150">
+                <button type="button" id="tabLoginPin" onclick="switchLoginMethod('pin')" class="w-1/2 py-2 text-xs font-black rounded-lg text-slate-500 hover:text-slate-800">
                     <i class="fa-solid fa-id-card-clip mr-1"></i> Mã PIN cá nhân
                 </button>
             </div>
 
             <div class="p-6 space-y-4">
                 <div>
-                    <label class="block text-[11px] font-black text-slate-400 uppercase mb-1 tracking-wider">Phân quyền trực ban</label>
-                    <select id="loginRole" class="w-full border border-slate-300 rounded-xl p-3 font-bold text-slate-800 bg-slate-50 text-sm focus:outline-none focus:border-emerald-600">
-                        <option value="admin">🔑 Quản Trị Viên (Admin - Toàn Quyền)</option>
-                        <option value="sub_user_1">🧑 Vận Hành Kỹ Thuật Ca 1</option>
-                        <option value="sub_user_2">🧑 Vận Hành Kỹ Thuật Ca 2</option>
+                    <label class="block text-[11px] font-black text-slate-400 uppercase mb-1 tracking-wider">Phân Quyền Truy Cập Hệ Thống</label>
+                    <select id="loginRole" onchange="onRoleChange()" class="w-full border border-slate-300 rounded-xl p-3 font-bold text-slate-800 bg-slate-50 text-sm focus:outline-none">
+                        <option value="admin">🔑 Quản Trị Viên Toàn Quyền (Admin)</option>
+                        <option value="Xưởng Xeo Giấy">🧑 Phòng ban / Xưởng Xeo Giấy</option>
+                        <option value="Xưởng Bột Giấy">🧑 Phòng ban / Xưởng Bột Giấy</option>
+                        <option value="Phòng Kỹ Thuật">🧑 Phòng ban / Phòng Kỹ Thuật Phụ Trợ</option>
                     </select>
                 </div>
 
                 <div id="containerLoginPassword" class="space-y-1 block">
-                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-wider mb-1">Mật khẩu khu vực vận hành</label>
-                    <input type="password" id="loginPassword" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Mặc định: vinapaco2026" class="w-full border border-slate-300 rounded-xl p-3 text-center bg-slate-50 text-sm font-bold focus:outline-none focus:border-emerald-600">
+                    <div class="flex justify-between items-center">
+                        <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider">Mật khẩu bảo mật</label>
+                        <button type="button" onclick="triggerForgotPassword()" class="text-xs text-emerald-700 font-bold hover:underline">Quên mật khẩu?</button>
+                    </div>
+                    <input type="password" id="loginPassword" placeholder="Mặc định: vinapaco2026" class="w-full border border-slate-300 rounded-xl p-3 text-center text-sm font-bold bg-slate-50 focus:outline-none">
                 </div>
 
                 <div id="containerLoginPin" class="space-y-1 hidden">
-                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-wider mb-1">Mã PIN bảo mật cán bộ</label>
-                    <input type="password" id="loginPin" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Nhập mã PIN trực ban..." class="w-full border border-slate-300 rounded-xl p-3 text-center bg-slate-50 text-sm tracking-widest font-bold focus:outline-none focus:border-emerald-600">
+                    <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1">Mã PIN cán bộ trực ca</label>
+                    <input type="password" id="loginPin" placeholder="Nhập mã PIN bất kỳ để test nhanh..." class="w-full border border-slate-300 rounded-xl p-3 text-center text-sm tracking-widest font-bold bg-slate-50 focus:outline-none">
                 </div>
 
-                <div id="loginErrorMsg" class="text-red-500 font-bold text-xs text-center hidden">❌ Thông tin đăng nhập không chính xác! Vui lòng thử lại.</div>
+                <div id="loginErrorMsg" class="text-red-500 font-bold text-xs text-center hidden">❌ Xác thực thất bại! Vui lòng kiểm tra lại.</div>
                 
                 <button onclick="executeSystemLogin()" class="w-full py-3.5 bg-slate-900 hover:bg-emerald-800 text-white font-bold rounded-xl uppercase text-xs tracking-wider transition-colors shadow-lg">
-                    XÁC THỰC TRUY CẬP
+                    XÁC THỰC VÀO PHÂN KHU ĐỘC LẬP
                 </button>
             </div>
         </div>
     </div>
 
-    <div id="mainSystemContentDashboard" class="space-y-6 hidden max-w-7xl mx-auto">
+
+    <div id="mainSystemContentDashboard" class="hidden max-w-7xl mx-auto space-y-6">
         
-        <div class="bg-slate-900/90 text-white p-3 rounded-xl flex flex-wrap items-center justify-between gap-3 shadow-xl">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-shield-halved text-amber-400 text-sm"></i>
-                <span class="font-bold text-xs md:text-sm uppercase tracking-wider">Hệ Thống Quản Lý Kỹ Thuật Nội Bộ - VINAPACO 2026</span>
+        <div class="bg-slate-900/95 text-white p-3 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-2xl border border-slate-800">
+            <div class="flex items-center gap-3">
+                <svg viewBox="0 0 100 100" class="w-7 h-7 fill-emerald-400">
+                    <path d="M15,80 L15,20 L35,20 L35,35 L55,25 L75,35 L75,20 L85,20 L85,80 L15,80 Z" />
+                </svg>
+                <span class="font-black text-xs md:text-sm uppercase tracking-widest text-slate-100">VINAPACO DIGITAL ERP 2026</span>
             </div>
-            <div class="flex items-center gap-4 text-xs font-bold text-emerald-400">
-                <span id="currentRoleBadge">🔑 Quản Trị Viên</span>
-                <button onclick="logoutSystem()" class="text-slate-400 hover:text-red-400 font-black uppercase">[Rời Ca Trực]</button>
+            
+            <div class="hidden lg:flex flex-1 mx-8 text-xs font-medium text-amber-300 italic max-w-md truncate bg-black/30 px-3 py-1.5 rounded-xl border border-white/5" id="proverbBox">
+                "Ăn quả nhớ kẻ trồng cây - Muốn lành nghề phải dày công luyện."
+            </div>
+
+            <div class="flex items-center gap-4 text-xs font-bold">
+                <span id="currentRoleBadge" class="bg-emerald-800 text-white px-3 py-1 rounded-lg border border-emerald-600">🔑 Admin</span>
+                <button onclick="logoutSystem()" class="text-slate-400 hover:text-red-400 uppercase font-black tracking-wider">[Đăng Xuất]</button>
             </div>
         </div>
 
-        <header class="bg-white rounded-xl shadow-md p-4 border border-slate-200">
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-emerald-800 rounded-xl flex items-center justify-center p-1.5 shadow-inner">
-                        <svg viewBox="0 0 100 100" class="w-9 h-9 fill-white">
-                            <path d="M15,80 L15,20 L35,20 L35,35 L55,25 L75,35 L75,20 L85,20 L85,80 L15,80 Z M25,70 L40,70 L40,50 L25,50 L25,70 Z M48,70 L75,70 L75,50 L48,50 L48,70 Z" />
-                            <polygon points="50,20 60,10 40,10" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h1 class="text-lg md:text-xl font-black text-slate-900 tracking-tight uppercase">TỔNG CÔNG TY GIẤY VIỆT NAM - VINAPACO</h1>
-                    </div>
+        <header class="neo-card rounded-2xl p-4 border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-emerald-800 rounded-xl flex items-center justify-center p-2 shadow-md">
+                    <svg viewBox="0 0 100 100" class="w-10 h-10 fill-white">
+                        <path d="M15,80 L15,20 L35,20 L35,35 L55,25 L75,35 L75,20 L85,20 L85,80 L15,80 Z M25,70 L40,70 L40,50 L25,50 L25,70 Z M48,70 L75,70 L75,50 L48,50 L48,70 Z" />
+                        <polygon points="50,20 60,10 40,10" />
+                    </svg>
                 </div>
-                <div class="font-mono bg-slate-900 text-emerald-400 px-3 py-1 rounded-md font-bold text-sm" id="liveClockText">00:00:00</div>
+                <div>
+                    <h1 class="text-xl font-black text-slate-900 tracking-tight uppercase">TỔNG CÔNG TY GIẤY VIỆT NAM - VINAPACO</h1>
+                    <p class="text-xs text-slate-500 font-bold">Hệ thống đồng bộ dữ liệu tập trung phòng ban & Thống kê tài chính</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div id="syncIndicator" class="text-xs bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full"><i class="fa-solid fa-cloud"></i> Đang kết nối đám mây</div>
+                <div class="font-mono bg-slate-900 text-emerald-400 px-3 py-1.5 rounded-xl font-bold text-sm shadow-inner" id="liveClockText">00:00:00</div>
             </div>
         </header>
 
-        <div id="qrScanAlertBox" class="hidden bg-amber-50 border-2 border-amber-500 p-4 rounded-xl flex items-center justify-between shadow-sm animate-fade-in">
-            <div class="flex items-center gap-2 text-amber-900 text-xs md:text-sm">
+        <div class="neo-card rounded-2xl p-4 border border-emerald-200 bg-emerald-50/50 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-emerald-700 text-white flex items-center justify-center shadow-md animate-pulse">
+                    <i id="pomoIcon" class="fa-solid fa-brain text-sm"></i>
+                </div>
+                <div>
+                    <h3 class="font-black text-slate-900 text-xs md:text-sm uppercase tracking-wide">Trợ lý Tập trung & Nhắc nghỉ ngơi linh động</h3>
+                    <p id="pomoStatusText" class="text-xs text-slate-500 font-medium">Đang trong ca làm việc tập trung cao độ...</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <span id="pomoClock" class="font-mono text-xl font-black text-emerald-900 bg-white border px-4 py-1 rounded-xl">25:00</span>
+                <button onclick="togglePomoMode()" id="btnPomo" class="px-4 py-1.5 bg-slate-900 text-white font-bold text-xs uppercase rounded-lg hover:bg-emerald-800">Tạm Dừng</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="neo-card rounded-2xl p-5 border border-slate-200 lg:col-span-1 flex flex-col justify-between">
+                <div>
+                    <h3 class="font-black text-slate-900 text-xs uppercase tracking-wider text-slate-500 mb-4"><i class="fa-solid fa-chart-pie text-emerald-700 mr-1.5"></i> Biểu đồ trạng thái tài sản (Mô phỏng 3D)</h3>
+                    <div class="relative w-full max-w-[200px] mx-auto">
+                        <canvas id="chartStatus3D"></canvas>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center text-xs font-bold mt-4 pt-4 border-t">
+                    <div class="p-2 bg-sky-50 rounded-lg text-sky-800">📂 Cấp mới<span class="block text-sm font-black mt-1" id="statCapMoi">0</span></div>
+                    <div class="p-2 bg-amber-50 rounded-lg text-amber-800">🛠️ Trước SC<span class="block text-sm font-black mt-1" id="statTruocSC">0</span></div>
+                    <div class="p-2 bg-emerald-50 rounded-lg text-emerald-800">✅ Sau SC<span class="block text-sm font-black mt-1" id="statSauSC">0</span></div>
+                </div>
+            </div>
+
+            <div class="neo-card rounded-2xl p-5 border border-slate-200 lg:col-span-2 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                        <h3 class="font-black text-slate-900 text-xs uppercase tracking-wider text-slate-500"><i class="fa-solid fa-chart-column text-indigo-700 mr-1.5"></i> Thống kê tổng tiền bảo dưỡng sửa chữa đa trục</h3>
+                        <div class="flex rounded-lg border p-0.5 bg-slate-100 text-xs font-bold">
+                            <button onclick="setFinancialView('month')" id="btnViewMonth" class="px-3 py-1 rounded-md bg-white shadow-sm text-slate-900">Tháng</button>
+                            <button onclick="setFinancialView('quarter')" id="btnViewQuarter" class="px-3 py-1 rounded-md text-slate-500">Quý</button>
+                            <button onclick="setFinancialView('year')" id="btnViewYear" class="px-3 py-1 rounded-md text-slate-500">Năm</button>
+                        </div>
+                    </div>
+                    <div class="h-[160px] relative w-full">
+                        <canvas id="chartFinance3D"></canvas>
+                    </div>
+                </div>
+                <div class="bg-slate-900 text-white p-3 rounded-xl flex items-center justify-between text-xs font-bold mt-4 shadow-inner">
+                    <span id="labelTotalFinanceTitle">TỔNG DOANH CHI PHÍ TRONG NĂM 2026:</span>
+                    <span class="text-sm font-black text-emerald-400 font-mono" id="textTotalFinanceSum">0 VNĐ</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="qrScanAlertBox" class="hidden bg-amber-50 border-2 border-amber-500 p-4 rounded-xl flex items-center justify-between shadow-md">
+            <div class="flex items-center gap-3 text-amber-900 text-xs md:text-sm">
                 <i class="fa-solid fa-qrcode text-xl text-amber-600 animate-pulse"></i>
                 <div>
-                    <span class="font-black">ĐÃ LỌC THÀNH CÔNG THIẾT BỊ TỪ MÃ QR:</span>
+                    <span class="font-black">ĐÃ TRÍCH XUẤT THÀNH CÔNG THIẾT BỊ TỪ QR CODE:</span>
                     <span id="qrScanAlertDetail" class="font-mono font-bold bg-white px-2 py-0.5 rounded border ml-1 text-emerald-800">TB-XXXXX</span>
                 </div>
             </div>
-            <button onclick="clearQRFilter()" class="px-3 py-1 bg-amber-600 text-white font-bold text-xs rounded hover:bg-amber-700">Xem Tất Cả</button>
+            <button onclick="clearQRFilter()" class="px-3 py-1 bg-amber-600 text-white font-bold text-xs rounded-lg shadow">Hủy bộ lọc QR</button>
         </div>
 
+
         <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden lg:col-span-8">
-                <div class="bg-slate-800 text-white font-bold p-3 flex items-center justify-between text-xs md:text-sm">
-                    <span><i class="fa-solid fa-boxes-stacked mr-1.5"></i> 1. Danh Mục Quản Lý Thiết Bị Vật Tư Toàn Nhà Máy</span>
+            <div class="neo-card rounded-2xl border border-slate-200 overflow-hidden lg:col-span-8">
+                <div class="bg-slate-800 text-white font-bold p-3.5 flex items-center justify-between text-xs md:text-sm">
+                    <span><i class="fa-solid fa-boxes-stacked text-emerald-400 mr-2"></i> 1. Quản lý danh mục thiết bị vật tư kỹ thuật chuyên sâu</span>
                     <span class="bg-black/20 px-2 py-0.5 rounded font-mono" id="count-device">0 tài sản</span>
                 </div>
                 
-                <form id="formDeviceAction" onsubmit="handleDeviceSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs md:text-sm bg-slate-50/50">
+                <form id="formDeviceAction" onsubmit="handleDeviceSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs md:text-sm bg-slate-50/50 border-b">
                     <div class="sm:col-span-3">
-                        <label class="block font-bold text-slate-500 mb-1">Mã Thiết Bị</label>
-                        <input type="text" id="deviceId" readonly class="w-full border bg-slate-100 font-mono font-bold p-2 rounded-lg text-slate-600">
+                        <label class="block font-bold text-slate-500 mb-1">Mã Thiết Bị (Tự sinh)</label>
+                        <input type="text" id="deviceId" readonly class="w-full border bg-slate-100 font-mono font-bold p-2.5 rounded-xl text-slate-700 text-center">
                     </div>
-                    <div class="sm:col-span-9">
-                        <label class="block font-bold text-slate-500 mb-1">Tên thiết bị tài sản kỹ thuật</label>
-                        <input type="text" id="deviceName" required placeholder="Ví dụ: Máy nghiền thủy lực Ca 1..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold">
+                    <div class="sm:col-span-5">
+                        <label class="block font-bold text-slate-500 mb-1">Tên thiết bị tài sản</label>
+                        <input type="text" id="deviceName" required placeholder="Tên máy nghiền, lô sấy, van..." class="w-full border border-slate-300 rounded-xl p-2.5 bg-white font-bold">
                     </div>
-                    <div class="sm:col-span-12">
-                        <label class="block font-bold text-slate-500 mb-1">Chủng loại phân nhóm thiết bị</label>
-                        <input type="text" id="deviceCategory" list="categorySuggestions" required placeholder="Chọn hoặc nhập loại thiết bị..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold text-emerald-800">
-                        <datalist id="categorySuggestions">
-                            <option value="[Bột] Máy nghiền thủy lực (Hydrapulper)"></option>
-                            <option value="[Bột] Máy nghiền đĩa (Disc Refiner)"></option>
-                            <option value="[Xeo] Thùng đầu (Headbox)"></option>
-                            <option value="[Xeo] Bộ phận ép (Press Section)"></option>
-                            <option value="[Xeo] Lô sấy / Hệ thống sấy (Dryer Cylinder)"></option>
-                        </datalist>
-                    </div>
-                    <div class="sm:col-span-6">
-                        <label class="block font-bold text-slate-500 mb-1">Xưởng / Phòng ban</label>
-                        <select id="deviceDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold">
-                            <option value="Phòng Kỹ Thuật">Phòng Kỹ Thuật</option>
-                            <option value="Xưởng Xeo Giấy">Xưởng Xeo Giấy</option>
-                            <option value="Xưởng Bột Giấy">Xưởng Bột Giấy</option>
+                    <div class="sm:col-span-4">
+                        <label class="block font-bold text-slate-500 mb-1">Trạng thái kỹ thuật</label>
+                        <select id="deviceStatus" class="w-full border border-slate-300 rounded-xl p-2.5 bg-white font-bold text-emerald-800">
+                            <option value="Cấp mới">🟢 Cấp mới hoàn toàn</option>
+                            <option value="Trước sửa chữa">🟡 Trước sửa chữa / Bảo dưỡng</option>
+                            <option value="Sau sửa chữa">🔵 Sau sửa chữa / Đã xử lý</option>
                         </select>
                     </div>
-                    <div class="sm:col-span-6">
-                        <label class="block font-bold text-blue-600 mb-1">Người chịu trách nhiệm kỹ thuật</label>
-                        <input type="text" id="deviceUser" required placeholder="Tên kỹ sư phụ trách..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold">
+                    <div class="sm:col-span-8">
+                        <label class="block font-bold text-slate-500 mb-1">Chủng loại phân nhóm thiết bị (Chọn hoặc Tự nhập)</label>
+                        <input type="text" id="deviceCategory" list="categorySuggestions" required placeholder="Gõ từ khóa tìm kiếm hoặc gõ tay chủng loại mới..." class="w-full border border-slate-300 rounded-xl p-2.5 bg-white font-bold text-emerald-900">
+                        <datalist id="categorySuggestions">
+                            <option value="[Hệ Bột] Máy nghiền thủy lực công suất lớn (Hydrapulper)"></option>
+                            <option value="[Hệ Bột] Máy nghiền đĩa nón tinh lực (Disc Refiner)"></option>
+                            <option value="[Hệ Bột] Máy sàng áp lực công đoạn làm sạch (Pressure Screen)"></option>
+                            <option value="[Dây Chuyền Xeo] Thùng đầu kiểm soát độ đều (Headbox)"></option>
+                            <option value="[Dây Chuyền Xeo] Lô ép gia cường cơ học (Press Roll)"></option>
+                            <option value="[Dây Chuyền Xeo] Lô sấy hơi gia nhiệt gián tiếp (Dryer Cylinder)"></option>
+                            <option value="[Dây Chuyền Xeo] Máy cuộn giấy thành phẩm (Pope Reel)"></option>
+                            <option value="[Hệ Trợ Lực] Van tiết lưu điều khiển điện khí nén (Control Valve)"></option>
+                            <option value="[Hệ Trợ Lực] Bơm ly tâm luân chuyển bột đậm đặc (Centrifugal Pump)"></option>
+                        </datalist>
+                    </div>
+                    <div class="sm:col-span-4">
+                        <label class="block font-bold text-slate-500 mb-1">Đơn vị / Xưởng quản lý</label>
+                        <select id="deviceDept" class="w-full border border-slate-300 rounded-xl p-2.5 bg-white font-bold text-slate-700">
+                            <option value="Xưởng Xeo Giấy">Xưởng Xeo Giấy</option>
+                            <option value="Xưởng Bột Giấy">Xưởng Bột Giấy</option>
+                            <option value="Phòng Kỹ Thuật">Phòng Kỹ Thuật Phụ Trợ</option>
+                        </select>
                     </div>
                     <div class="sm:col-span-12 flex justify-end">
-                        <button type="submit" class="px-5 py-2 bg-slate-900 text-white font-bold rounded-lg text-xs uppercase hover:bg-emerald-800">Lưu Thiết Bị & Cấp Mã</button>
+                        <button type="submit" class="px-6 py-2.5 bg-slate-950 text-white font-black rounded-xl uppercase text-xs hover:bg-emerald-800 transition-colors">Đăng Ký Tài Sản & Sinh Mã QR</button>
                     </div>
                 </form>
 
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-xs md:text-sm">
                         <thead>
-                            <tr class="border-b bg-slate-50 text-slate-500 font-bold uppercase text-[11px]">
-                                <th class="p-3 pl-4">Mã Số</th>
-                                <th class="p-3">Tên Thiết Bị / Chủng Loại</th>
-                                <th class="p-3">Hiện Trạng Trực</th>
-                                <th class="p-3 text-center">Tạo QR</th>
-                                <th class="p-3 text-right pr-4">Xóa</th>
+                            <tr class="border-b bg-slate-100 text-slate-500 font-bold uppercase text-[11px]">
+                                <th class="p-3.5 pl-4">Mã Tài Sản</th>
+                                <th class="p-3.5">Tên Thiết Bị / Phân Nhóm</th>
+                                <th class="p-3.5">Đơn Vị Quản Lý</th>
+                                <th class="p-3.5">Trạng Thái</th>
+                                <th class="p-3.5 text-center">In QR</th>
+                                <th class="p-3.5 text-right pr-4">Hành Động</th>
                             </tr>
                         </thead>
                         <tbody id="deviceTableBody" class="divide-y divide-slate-100 bg-white"></tbody>
@@ -196,55 +274,68 @@
                 </div>
             </div>
             
-            <div class="lg:col-span-4 sticky top-6">
-                <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-                    <div class="bg-slate-800 text-white p-3 font-bold text-xs md:text-sm flex items-center justify-between">
-                        <span><i class="fa-solid fa-eye text-amber-400 mr-1.5"></i> Nhãn QR Đóng Khối Kỹ Thuật</span>
-                        <button onclick="window.print()" id="btnActionPrintNow" class="hidden px-2 py-0.5 bg-amber-500 text-slate-950 font-black text-xs rounded hover:bg-amber-400">🖨️ In Ngay</button>
+            <div class="lg:col-span-4 sticky top-6 space-y-6">
+                <div class="neo-card rounded-2xl border border-slate-200 overflow-hidden">
+                    <div class="bg-slate-800 text-white p-3.5 font-bold text-xs md:text-sm flex items-center justify-between">
+                        <span><i class="fa-solid fa-eye text-amber-400 mr-1.5"></i> Nhãn QR Độc Trên Mọi Thiết Bị</span>
+                        <button onclick="window.print()" id="btnActionPrintNow" class="hidden px-3 py-1 bg-amber-500 text-slate-950 font-black text-xs rounded-lg shadow">🖨️ Kích in giấy dán</button>
                     </div>
-                    <div class="p-6 flex flex-col items-center justify-center bg-slate-50/50 min-h-[200px]">
-                        <div id="webPreviewQRBox" class="p-3 bg-white border border-slate-300 rounded-xl text-center flex flex-col items-center justify-center hidden w-[180px]">
-                            <h4 id="wpTitle" class="text-[11px] font-black uppercase text-slate-900 max-w-[160px] truncate mb-1.5"></h4>
+                    <div class="p-6 flex flex-col items-center justify-center bg-slate-50/50 min-h-[220px]">
+                        <div id="webPreviewQRBox" class="p-4 bg-white border border-slate-300 rounded-2xl text-center flex flex-col items-center justify-center hidden shadow-lg w-[190px]">
+                            <h4 id="wpTitle" class="text-[10px] font-black uppercase text-slate-900 max-w-[160px] truncate mb-2"></h4>
                             <div id="wpCanvas" class="bg-white p-1"></div>
-                            <p id="wpId" class="text-xs font-mono font-black text-slate-800 mt-1.5 tracking-wider"></p>
+                            <p id="wpId" class="text-xs font-mono font-black text-emerald-800 mt-2 tracking-widest"></p>
                         </div>
-                        <p id="webPreviewEmptyText" class="text-slate-400 italic text-center text-xs">Vui lòng bấm nút [In QR] ở danh sách thiết bị phía đối diện.</p>
+                        <p id="webPreviewEmptyText" class="text-slate-400 italic text-center text-xs px-4">Bấm chọn [In QR] tại dòng thiết bị tài sản tương ứng để nạp phôi nhãn.</p>
+                    </div>
+                </div>
+
+                <div class="neo-card rounded-2xl border border-slate-200 overflow-hidden p-4 space-y-3">
+                    <h4 class="font-black text-slate-900 text-xs uppercase tracking-wider"><i class="fa-solid fa-list-check text-indigo-700 mr-1.5"></i> Sổ tay ghi chú nhắc việc ca trực</h4>
+                    <div class="space-y-2 max-h-[150px] overflow-y-auto custom-scrollbar" id="todoBoxContainer">
+                        </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="inputNewTodo" placeholder="Thêm công việc cần lưu ý..." class="flex-1 border text-xs p-2 rounded-lg bg-slate-50 focus:outline-none">
+                        <button onclick="addNewTodoTask()" class="px-3 bg-slate-900 text-white font-bold rounded-lg text-xs"><i class="fa-solid fa-plus"></i></button>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-            <div class="bg-indigo-900 text-white font-bold p-3 flex items-center justify-between text-xs md:text-sm">
-                <span><i class="fa-solid fa-screwdriver-wrench mr-2"></i> 2. Nhật Ký Sự Cố & Hành Động Sửa Chữa Kịp Thời</span>
+
+        <section class="neo-card rounded-2xl border border-slate-200 overflow-hidden">
+            <div class="bg-indigo-950 text-white font-bold p-3.5 flex items-center justify-between text-xs md:text-sm">
+                <span><i class="fa-solid fa-screwdriver-wrench text-amber-400 mr-2"></i> 2. Biên bản ghi nhận nhật ký hỏng hóc & Chi phí sửa chữa</span>
                 <span class="bg-black/20 px-2 py-0.5 rounded font-mono" id="count-repair">0 lượt</span>
             </div>
             
-            <form id="formRepairAction" onsubmit="handleRepairSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-12 gap-3 text-xs md:text-sm bg-slate-50/50">
-                <div class="md:col-span-4">
-                    <label class="block font-bold text-red-600 mb-1">Thiết bị gặp sự cố hỏng hóc</label>
-                    <select id="repairDeviceId" required class="w-full border border-slate-300 rounded-lg p-2 bg-white font-mono font-bold h-[36px]"></select>
+            <form id="formRepairAction" onsubmit="handleRepairSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-12 gap-3 text-xs md:text-sm bg-slate-50/50 border-b">
+                <div class="md:col-span-3">
+                    <label class="block font-bold text-red-600 mb-1">Thiết bị báo sự cố lỗi</label>
+                    <select id="repairDeviceId" required class="w-full border border-slate-300 rounded-xl p-2.5 bg-white font-mono font-bold h-[42px]"></select>
                 </div>
                 <div class="md:col-span-5">
-                    <label class="block font-bold text-slate-600 mb-1">Mô tả hiện trạng / Phương án khắc phục nhanh</label>
-                    <input type="text" id="repairDesc" required placeholder="Ghi chú lỗi hỏng hóc chi tiết..." class="w-full border border-slate-300 rounded-lg p-2 bg-white h-[36px]">
+                    <label class="block font-bold text-slate-600 mb-1">Nội dung khắc phục kỹ thuật</label>
+                    <input type="text" id="repairDesc" required placeholder="Ghi nhận chi tiết hỏng hóc, phương án căn chỉnh thay thế..." class="w-full border border-slate-300 rounded-xl p-2.5 bg-white h-[42px]">
                 </div>
-                <div class="md:col-span-3 flex items-end">
-                    <button type="submit" class="w-full bg-rose-600 text-white font-bold rounded-lg hover:bg-rose-700 h-[36px] text-xs uppercase tracking-wider font-black">
-                        🚨 Ghi Nhận Sự Cố Ca
-                    </button>
+                <div class="md:col-span-2">
+                    <label class="block font-bold text-emerald-700 mb-1">Tổng tiền vật tư (VNĐ)</label>
+                    <input type="number" id="repairCost" required placeholder="Ví dụ: 15000000" class="w-full border border-slate-300 rounded-xl p-2.5 bg-white font-mono font-bold text-right h-[42px]">
+                </div>
+                <div class="md:col-span-2 flex items-end">
+                    <button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-black rounded-xl uppercase tracking-wider text-xs h-[42px]">⚠️ Ghi Sự Cố</button>
                 </div>
             </form>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-xs md:text-sm">
                     <thead>
-                        <tr class="border-b bg-slate-50 text-slate-500 font-bold uppercase text-[11px]">
-                            <th class="p-3 pl-4">Mã Thiết Bị</th>
-                            <th class="p-3">Biên Bản Lỗi Kỹ Thuật</th>
-                            <th class="p-3">Thời Gian Ghi Nhận</th>
-                            <th class="p-3">Tình Trạng</th>
-                            <th class="p-3 text-right pr-4">Hành Động Khắc Phục</th>
+                        <tr class="border-b bg-slate-100 text-slate-500 font-bold uppercase text-[11px]">
+                            <th class="p-3.5 pl-4">Mã Thiết Bị</th>
+                            <th class="p-3.5">Biên Bản Chi Tiết Sự Cố Ca Trực</th>
+                            <th class="p-3.5">Thời Điểm</th>
+                            <th class="p-3.5 text-right">Chi Phí Linh Kiện</th>
+                            <th class="p-3.5">Hành Động Nghiệm Thu</th>
                         </tr>
                     </thead>
                     <tbody id="repairTableBody" class="divide-y divide-slate-100 bg-white"></tbody>
@@ -252,40 +343,61 @@
             </div>
         </section>
 
-        <section class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-            <div class="bg-emerald-800 text-white font-bold p-3 flex items-center justify-between text-xs md:text-sm">
-                <span><i class="fa-solid fa-users mr-2"></i> 3. Quản Lý Nhân Sự & Điều Động Cán Bộ Kỹ Thuật Trực Ca</span>
+
+        <section class="neo-card rounded-2xl border border-slate-200 overflow-hidden">
+            <div class="bg-emerald-900 text-white font-bold p-3.5 flex items-center justify-between text-xs md:text-sm">
+                <span><i class="fa-solid fa-users-gear text-emerald-300 mr-2"></i> 3. Quản lý hồ sơ nhân sự điều động cán bộ kỹ sư trực ban</span>
                 <span class="bg-black/20 px-2 py-0.5 rounded font-mono" id="count-staff">0 nhân sự</span>
             </div>
             
-            <form id="formStaffAction" onsubmit="handleStaffSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs md:text-sm bg-slate-50/50">
-                <input type="hidden" id="staffEditId" value="">
-                <div class="sm:col-span-3">
-                    <label class="block font-bold text-slate-600 mb-1">Mã Số Thẻ</label>
-                    <input type="text" id="staffId" required placeholder="Ví dụ: CB-505" class="w-full border border-slate-300 rounded-lg p-2 bg-white font-mono font-bold">
+            <div class="p-4 bg-slate-100/70 border-b grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+                <div class="lg:col-span-5 bg-white p-3 rounded-xl border border-dashed border-emerald-400">
+                    <label class="block font-black text-emerald-900 text-xs uppercase mb-1"><i class="fa-solid fa-file-import mr-1"></i> Tải danh sách tự động lọc trùng</label>
+                    <div class="flex gap-2">
+                        <input type="file" id="inputFileStaffList" accept=".csv,.txt" class="text-xs flex-1 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                        <button onclick="processImportStaffFile()" class="px-3 py-1 bg-emerald-700 text-white font-bold text-xs rounded-lg hover:bg-emerald-800">Khớp dữ liệu</button>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-1">Hệ thống chấp nhận định dạng phẳng CSV (Mã_Thẻ, Họ_Tên, Chức_Vụ, Đơn_Vị)</p>
                 </div>
-                <div class="sm:col-span-4">
-                    <label class="block font-bold text-slate-600 mb-1">Họ tên nhân viên</label>
-                    <input type="text" id="staffName" required placeholder="Nhập họ tên đầy đủ..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold">
-                </div>
-                <div class="sm:col-span-5">
-                    <label class="block font-bold text-slate-600 mb-1">Chức vụ phụ trách / Phân công ca trực</label>
-                    <input type="text" id="staffRole" required placeholder="Ví dụ: Kỹ sư trưởng ca nghiền..." class="w-full border border-slate-300 rounded-lg p-2 bg-white">
-                </div>
-                <div class="sm:col-span-12 flex justify-end gap-2">
-                    <button type="button" id="btnCancelStaffEdit" onclick="cancelStaffEditState()" class="px-3 py-1.5 bg-slate-200 text-slate-700 font-bold rounded-lg text-xs hidden">Hủy Bỏ Sửa</button>
-                    <button type="submit" id="btnSubmitStaffText" class="px-5 py-2 bg-emerald-700 text-white font-bold rounded-lg text-xs uppercase hover:bg-emerald-800">Lưu Hồ Sơ Cán Bộ</button>
-                </div>
-            </form>
+
+                <form id="formStaffAction" onsubmit="handleStaffSubmit(event)" class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-12 gap-2 text-xs">
+                    <input type="hidden" id="staffEditId" value="">
+                    <div class="sm:col-span-3">
+                        <label class="block font-bold text-slate-500 mb-0.5">Mã Thẻ (Tự Sinh)</label>
+                        <input type="text" id="staffId" readonly class="w-full border bg-slate-100 font-mono font-bold p-2 rounded-lg text-center text-slate-700">
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label class="block font-bold text-slate-500 mb-0.5">Họ tên cán bộ</label>
+                        <input type="text" id="staffName" required placeholder="Tên nhân viên..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold">
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label class="block font-bold text-slate-500 mb-0.5">Chức vụ trực ban</label>
+                        <input type="text" id="staffRole" required placeholder="Ví dụ: Trưởng ca xeo..." class="w-full border border-slate-300 rounded-lg p-2 bg-white">
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label class="block font-bold text-slate-500 mb-0.5">Phòng ban làm việc</label>
+                        <select id="staffDept" class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold">
+                            <option value="Xưởng Xeo Giấy">Xưởng Xeo Giấy</option>
+                            <option value="Xưởng Bột Giấy">Xưởng Bột Giấy</option>
+                            <option value="Phòng Kỹ Thuật">Phòng Kỹ Thuật</option>
+                        </select>
+                    </div>
+                    <div class="sm:col-span-12 flex justify-end gap-2 mt-1">
+                        <button type="button" id="btnCancelStaffEdit" onclick="cancelStaffEditState()" class="px-3 py-1 bg-slate-200 text-slate-700 font-bold rounded-lg hidden">Hủy sửa</button>
+                        <button type="submit" id="btnSubmitStaffText" class="px-4 py-1.5 bg-emerald-800 text-white font-bold rounded-lg uppercase tracking-wider">Lưu Cán Bộ</button>
+                    </div>
+                </form>
+            </div>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-xs md:text-sm">
                     <thead>
-                        <tr class="border-b bg-slate-50 text-slate-500 font-bold uppercase text-[11px]">
-                            <th class="p-3 pl-4">Mã Số Thẻ</th>
-                            <th class="p-3">Họ Tên Cán Bộ</th>
-                            <th class="p-3">Chức Phụ Ca Trực Ban</th>
-                            <th class="p-3 text-right pr-4">Hành Động Quản Lý</th>
+                        <tr class="border-b bg-slate-100 text-slate-500 font-bold uppercase text-[11px]">
+                            <th class="p-3.5 pl-4">Mã Cán Bộ</th>
+                            <th class="p-3.5">Họ Và Tên</th>
+                            <th class="p-3.5">Chức Vụ Chuyên Môn</th>
+                            <th class="p-3.5">Phòng Ban Đơn Vị</th>
+                            <th class="p-3.5 text-right pr-4">Hành Động Thay Đổi</th>
                         </tr>
                     </thead>
                     <tbody id="staffTableBody" class="divide-y divide-slate-100 bg-white"></tbody>
@@ -293,24 +405,25 @@
             </div>
         </section>
 
-        <section class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
-            <div class="bg-slate-700 text-white font-bold p-3 flex items-center justify-between text-xs md:text-sm">
-                <span><i class="fa-solid fa-file-invoice mr-2"></i> 4. Lưu Trữ Tài Liệu Hướng Dẫn Vận Hành & Sơ Đồ Quy Trình</span>
-                <span class="bg-black/20 px-2 py-0.5 rounded font-mono" id="count-doc">0 tài liệu</span>
+
+        <section class="neo-card rounded-2xl border border-slate-200 overflow-hidden">
+            <div class="bg-slate-700 text-white font-bold p-3.5 flex items-center justify-between text-xs md:text-sm">
+                <span><i class="fa-solid fa-file-shield text-emerald-400 mr-2"></i> 4. Quản lý kho sơ đồ quy trình công nghệ kỹ thuật & Xem trước tài liệu</span>
+                <span class="bg-black/20 px-2 py-0.5 rounded font-mono" id="count-doc">0 hồ sơ</span>
             </div>
             
-            <form id="formDocAction" onsubmit="handleDocSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs md:text-sm bg-slate-50/50">
-                <div class="sm:col-span-5">
-                    <label class="block font-bold text-slate-600 mb-1">Tên văn bản / Quy chuẩn thiết bị phụ trợ</label>
-                    <input type="text" id="docTitle" required placeholder="Ví dụ: Sơ đồ vận hành dây chuyền xeo..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold">
+            <form id="formDocAction" onsubmit="handleDocSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs md:text-sm bg-slate-50/50 border-b">
+                <div class="sm:col-span-4">
+                    <label class="block font-bold text-slate-600 mb-1">Tên văn bản hướng dẫn quy trình</label>
+                    <input type="text" id="docTitle" required placeholder="Ví dụ: Quy trình nạp hơi lô sấy số 3..." class="w-full border border-slate-300 rounded-xl p-2.5 bg-white font-bold">
                 </div>
                 <div class="sm:col-span-5">
-                    <label class="block font-bold text-slate-600 mb-1">Đường dẫn liên kết đám mây (Google Drive / Dropbox)</label>
-                    <input type="url" id="docUrl" required placeholder="Dán liên kết URL file PDF/Hình ảnh tại đây..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-mono text-xs">
+                    <label class="block font-bold text-slate-600 mb-1">Đường dẫn đám mây tải file (Link PDF/Hình ảnh hoặc nạp mã giả lập)</label>
+                    <input type="text" id="docUrl" required placeholder="Dán link Google Drive hoặc nhập chuỗi ký tự hình ảnh..." class="w-full border border-slate-300 rounded-xl p-2.5 bg-white font-mono text-xs">
                 </div>
-                <div class="sm:col-span-2 flex items-end">
-                    <button type="submit" class="w-full bg-slate-800 text-white font-bold rounded-lg hover:bg-slate-900 h-[36px] text-xs uppercase">
-                        <i class="fa-solid fa-cloud-arrow-up mr-1"></i> Thêm File
+                <div class="sm:col-span-3 flex items-end">
+                    <button type="submit" class="w-full bg-slate-900 hover:bg-slate-950 text-white font-black rounded-xl uppercase text-xs h-[42px] tracking-wider">
+                        <i class="fa-solid fa-cloud-arrow-up mr-1"></i> Lưu Hướng Dẫn Kỹ Thuật
                     </button>
                 </div>
             </form>
@@ -318,11 +431,11 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-xs md:text-sm">
                     <thead>
-                        <tr class="border-b bg-slate-50 text-slate-500 font-bold uppercase text-[11px]">
-                            <th class="p-3 pl-4">Tên Văn Bản Quy Trình</th>
-                            <th class="p-3">Đường Dẫn Đám Mây</th>
-                            <th class="p-3 text-center">Xem Lại File Trực Tiếp</th>
-                            <th class="p-3 text-right pr-4">Xóa</th>
+                        <tr class="border-b bg-slate-100 text-slate-500 font-bold uppercase text-[11px]">
+                            <th class="p-3.5 pl-4">Văn Bản Quy Trình Công Nghệ</th>
+                            <th class="p-3.5">Liên Kết Đám Mây</th>
+                            <th class="p-3.5 text-center">Xem Trước Trực Tiếp (Live Preview)</th>
+                            <th class="p-3.5 text-right pr-4">Hành Động</th>
                         </tr>
                     </thead>
                     <tbody id="docTableBody" class="divide-y divide-slate-100 bg-white"></tbody>
@@ -333,13 +446,30 @@
     </div>
 
     <div id="qrPrintZone" class="hidden flex-col items-center justify-center p-4 bg-white text-black text-center w-[55mm] h-[55mm]">
-        <h2 id="qrPrintTitle" class="text-[10px] font-black uppercase tracking-tight mb-1"></h2>
+        <h2 id="qrPrintTitle" class="text-[9px] font-black uppercase tracking-tight mb-1"></h2>
         <div id="qrPrintCanvas" class="bg-white p-0.5"></div>
-        <p id="qrPrintId" class="text-xs font-mono font-black mt-1 tracking-widest pt-0.5 w-full"></p>
+        <p id="qrPrintId" class="text-xs font-mono font-black mt-1 tracking-widest pt-0.5 w-full border-t border-black"></p>
     </div>
 
+    <div id="forgotPasswordModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 hidden">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full space-y-4">
+            <h3 class="font-black text-slate-950 text-sm uppercase tracking-wider text-center">🔐 CẤP LẠI MẬT KHẨU TỰ ĐỘNG NỘI BỘ</h3>
+            <p class="text-xs text-slate-500">Mật khẩu khôi phục khẩn cấp sẽ tự động gửi qua bộ nhớ máy chủ cục bộ khi bạn xác nhận đúng mã định danh của xưởng quản lý.</p>
+            <div>
+                <label class="block text-[11px] font-bold uppercase text-slate-400 mb-1">Nhập mã xác minh phân xưởng</label>
+                <input type="text" id="inputResetKey" placeholder="Gõ: VINAPACO_RESET" class="w-full border p-2.5 rounded-xl text-center font-mono font-bold text-sm">
+            </div>
+            <div id="txtResetResult" class="text-xs font-bold text-emerald-800 hidden text-center bg-emerald-50 p-2 rounded-lg border"></div>
+            <div class="flex gap-2">
+                <button onclick="executeResetPassword()" class="w-1/2 py-2 bg-emerald-700 text-white font-bold text-xs uppercase rounded-xl">Cấp Lại</button>
+                <button onclick="document.getElementById('forgotPasswordModal').classList.add('hidden')" class="w-1/2 py-2 bg-slate-200 text-slate-700 font-bold text-xs uppercase rounded-xl">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+
     <script>
-        // CẤU HÌNH LIÊN KẾT DATABASE CHUỖI PHẲNG GỐC TRÊN FIREBASE 
+        // CẤU HÌNH LIÊN KẾT DATABASE PHẲNG GỐC TRÊN FIREBASE 
         var firebaseConfig = {
             apiKey: "AIzaSyBre5KbRWv64Qum4EDZkOAYTJe1YyIojuA",
             authDomain: "qltbvinapaco.firebaseapp.com",
@@ -347,17 +477,37 @@
             projectId: "qltbvinapaco"
         };
 
-        // Khởi động SDK v8 nguyên bản
+        // Khởi động kết nối SDK v8 nguyên bản
         firebase.initializeApp(firebaseConfig);
         var db = firebase.database();
 
+        // Biến toàn cục quản lý State ứng dụng
+        var currentSessionRole = "admin"; // Phân quyền linh hoạt mặc định ban đầu
         var devices = []; 
         var repairs = [];
         var staffs = [];
         var documents = [];
+        var todos = [
+            { id: 1, text: "Kiểm tra định kỳ áp suất hơi lô sấy Ca 1", done: false },
+            { id: 2, text: "Nghiệm thu máy nghiền thủy lực sau bảo dưỡng", done: true }
+        ];
         var activeQRFilterId = null;
+        var financialViewMode = "year"; // Mặc định hiển thị báo cáo tài chính theo trục Năm
 
-        // ---------------- ĐĂNG NHẬP CHUYỂN TAB MƯỢT MÀ KHÔNG CHỒNG CHỮ ----------------
+        // Khởi tạo các đối tượng Đồ thị 3D ChartJS bóng mờ sâu
+        var chartStatusInstance = null;
+        var chartFinanceInstance = null;
+
+        // Kho dữ liệu tục ngữ thành ngữ ca dao phong phú luân phiên
+        var proverbs = [
+            "Có công mài sắt, có ngày nên kim - Bảo dưỡng thiết bị bền bỉ dài lâu.",
+            "Muốn lành nghề phải dày công luyện - Vận hành an toàn là hạnh phúc nhà máy.",
+            "Ăn quả nhớ kẻ trồng cây - Giữ gìn máy móc như đôi mắt của mình.",
+            "Sai một ly đi một dặm - Kỹ thuật chính xác, giấy xuất xưởng chuẩn bao bì.",
+            "Lửa thử vàng gian nan thử sức - Anh em kỹ sư VINAPACO vững tay nghề cao."
+        ];
+
+        // ---------------- ĐĂNG NHẬP CHUYỂN ĐỔI TAB MƯỢT MÀ CHỐNG ĐÈ CHỮ ----------------
         window.switchLoginMethod = function(method) {
             var tabPass = document.getElementById('tabLoginPassword');
             var tabPin = document.getElementById('tabLoginPin');
@@ -377,6 +527,11 @@
             }
         }
 
+        window.onRoleChange = function() {
+            // Khi chuyển đổi chức vụ, tự động reset thông báo lỗi cũ
+            document.getElementById('loginErrorMsg').classList.add('hidden');
+        }
+
         window.executeSystemLogin = function() {
             var role = document.getElementById('loginRole').value;
             var pass = document.getElementById('loginPassword').value;
@@ -388,20 +543,44 @@
             if(isPassMode) {
                 if(pass === "vinapaco2026") loginValid = true;
             } else {
-                if(pin.trim() !== "") loginValid = true;
+                if(pin.trim() !== "") loginValid = true; // Cho phép mã PIN ca trực hoạt động nhanh
             }
 
             if(loginValid) {
-                errorMsg.className = 'hidden';
+                errorMsg.classList.add('hidden');
+                currentSessionRole = role; // Ghi nhận phiên làm việc phân quyền độc lập
+                
                 document.getElementById('loginOverlaySystem').style.display = 'none';
                 document.getElementById('mainSystemContentDashboard').classList.remove('hidden');
                 
-                var labelRole = "🔑 Quản Trị Viên";
-                if(role === 'sub_user_1') labelRole = "🧑 Vận Hành Ca 1";
-                if(role === 'sub_user_2') labelRole = "🧑 Vận Hành Ca 2";
+                var labelRole = "🔑 Quản Trị Viên (Toàn Quyền)";
+                if(role !== 'admin') {
+                    labelRole = "🧑 Phòng ban: " + role;
+                }
                 document.getElementById('currentRoleBadge').innerText = labelRole;
+
+                // Đồng bộ và render cô lập giao diện theo phân quyền phòng ban tương thích
+                renderAllTables();
+                initOrUpdate3DCharts();
             } else {
                 errorMsg.classList.remove('hidden');
+            }
+        }
+
+        window.triggerForgotPassword = function() {
+            document.getElementById('forgotPasswordModal').classList.remove('hidden');
+            document.getElementById('txtResetResult').classList.add('hidden');
+            document.getElementById('inputResetKey').value = "";
+        }
+
+        window.executeResetPassword = function() {
+            var key = document.getElementById('inputResetKey').value.trim();
+            var boxResult = document.getElementById('txtResetResult');
+            if(key === "VINAPACO_RESET") {
+                boxResult.classList.remove('hidden');
+                boxResult.innerText = "Mật khẩu khôi phục phân quyền là: vinapaco2026";
+            } else {
+                alert("Mã xác minh sai, liên hệ Phòng Kỹ Thuật Thông Tin để lấy token mã!");
             }
         }
 
@@ -413,7 +592,7 @@
             switchLoginMethod('password');
         }
 
-        // ---------------- ĐỒNG BỘ DỮ LIỆU ĐÁM MÂY GỐC FIREBASE V8 ----------------
+        // ---------------- ĐỒNG BỘ DỮ LIỆU ĐÁM MÂY TẬP TRUNG GỐC V8 ----------------
         function startCloudDataListening() {
             var toArray = function(snap) {
                 if(!snap) return [];
@@ -423,19 +602,16 @@
 
             db.ref('devices').on('value', function(snapshot) {
                 devices = toArray(snapshot.val());
-                var badge = document.getElementById('syncStatusBadge');
-                if(badge) {
-                    badge.className = "mt-2 inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800";
-                    badge.innerHTML = `<i class="fa-solid fa-cloud-check"></i> Kết nối cơ sở dữ liệu gốc thành công.`;
-                }
+                document.getElementById('syncIndicator').innerHTML = `🟢 Liên kết đám mây ổn định`;
                 updateDropdownOptions();
                 checkUrlParamForQRFilter();
                 renderAllTables();
                 autoGenDeviceId();
+                initOrUpdate3DCharts();
             });
 
-            db.ref('repairs').on('value', function(snapshot) { repairs = toArray(snapshot.val()); renderAllTables(); });
-            db.ref('staffs').on('value', function(snapshot) { staffs = toArray(snapshot.val()); renderAllTables(); });
+            db.ref('repairs').on('value', function(snapshot) { repairs = toArray(snapshot.val()); renderAllTables(); initOrUpdate3DCharts(); });
+            db.ref('staffs').on('value', function(snapshot) { staffs = toArray(snapshot.val()); renderAllTables(); autoGenStaffId(); });
             db.ref('documents').on('value', function(snapshot) { documents = toArray(snapshot.val()); renderAllTables(); });
         }
 
@@ -444,105 +620,133 @@
         function pushStaffs() { db.ref('staffs').set(staffs); }
         function pushDocs() { db.ref('documents').set(documents); }
 
-        // ---------------- RENDER BẢNG DỮ LIỆU LÊN MÀN HÌNH NGUYÊN BẢN ----------------
+        // ---------------- BIỂU DIỄN GIAO DIỆN PHÂN QUYỀN ĐỘC LẬP PHÒNG BAN ----------------
         window.renderAllTables = function() {
-            // Render Thiết bị
+            // Lọc dữ liệu theo phòng ban nếu user không phải Admin tối cao
+            var filterDept = function(item) {
+                if(currentSessionRole === "admin") return true;
+                return (item.dept === currentSessionRole || item.donvi === currentSessionRole);
+            }
+
+            // Render Danh mục Thiết bị tài sản
             var devBody = document.getElementById('deviceTableBody');
             if(devBody) {
                 devBody.innerHTML = '';
-                var listFiltered = activeQRFilterId ? devices.filter(function(x){return x.id === activeQRFilterId;}) : devices;
+                var listFiltered = devices.filter(filterDept);
+                if(activeQRFilterId) {
+                    listFiltered = listFiltered.filter(function(x){return x.id === activeQRFilterId;});
+                }
+                
                 listFiltered.forEach(function(d) {
-                    var errorFound = repairs.some(function(r) { return r.devId === d.id && !r.isResolved; });
-                    var badgeStatus = errorFound ? 
-                        `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 animate-pulse">🔴 Sự cố</span>` : 
-                        `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">🟢 Bình thường</span>`;
+                    var colorStatus = "text-sky-600 bg-sky-50";
+                    if(d.status === "Trước sửa chữa") colorStatus = "text-amber-600 bg-amber-50 animate-pulse";
+                    if(d.status === "Sau sửa chữa") colorStatus = "text-emerald-600 bg-emerald-50";
 
-                    devBody.innerHTML += `<tr class="${activeQRFilterId === d.id ? 'bg-amber-50 font-bold border-l-4 border-amber-500' : ''}">
-                        <td class="p-3 font-mono font-bold">${d.id}</td>
-                        <td class="p-3 font-bold">${d.name}<span class="block text-xs text-slate-400 font-medium">${d.cat || ''} (${d.dept || ''})</span></td>
-                        <td class="p-3">${badgeStatus}</td>
+                    devBody.innerHTML += `<tr class="${activeQRFilterId === d.id ? 'bg-amber-100 font-bold' : ''}">
+                        <td class="p-3 font-mono font-black text-slate-900">${d.id}</td>
+                        <td class="p-3">
+                            <span class="font-black text-slate-800 block">${d.name}</span>
+                            <span class="text-[11px] text-slate-400 font-medium">${d.cat || 'Chưa phân nhóm'}</span>
+                        </td>
+                        <td class="p-3 font-bold text-xs text-slate-600">${d.dept || ''}</td>
+                        <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[11px] font-black uppercase ${colorStatus}">${d.status || 'Cấp mới'}</span></td>
                         <td class="p-1 text-center">
-                            <button type="button" onclick="previewAndSelectQR('${d.id}')" class="px-2 py-0.5 text-xs bg-slate-100 border text-slate-700 rounded font-bold hover:bg-slate-200">In QR</button>
+                            <button type="button" onclick="previewAndSelectQR('${d.id}')" class="px-2.5 py-1 text-xs bg-slate-900 text-white rounded-lg font-bold hover:bg-emerald-800 transition-colors">In QR</button>
                         </td>
                         <td class="p-3 text-right pr-4">
                             <button type="button" onclick="deleteItem('device','${d.id}')" class="text-red-400 hover:text-red-600"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>`;
                 });
-                document.getElementById('count-device').innerText = devices.length + " tài sản";
+                document.getElementById('count-device').innerText = listFiltered.length + " thiết bị khả dụng";
             }
 
-            // Render Nhật ký bảo dưỡng sửa chữa
+            // Render Nhật ký Sự cố & Chi phí
             var repBody = document.getElementById('repairTableBody');
             if(repBody) {
                 repBody.innerHTML = '';
-                repairs.forEach(function(r) {
-                    var btnAction = r.isResolved ? `<span class="text-slate-400 text-xs italic">Đã khắc phục</span>` : 
-                        `<button type="button" onclick="resolveRepairTask('${r.id}')" class="px-2 py-0.5 bg-emerald-700 text-white font-bold rounded text-xs hover:bg-emerald-800">✔️ Báo Sửa Xong</button>`;
-                    var textStatus = r.isResolved ? `<span class="text-xs font-bold text-sky-600">🔵 Hoàn thành</span>` : `<span class="text-xs font-bold text-rose-600 animate-pulse">🚨 Chờ xử lý</span>`;
+                // Lọc biên bản sửa chữa dựa theo thiết bị thuộc phòng ban quản lý độc lập
+                var listRepFiltered = repairs.filter(function(r) {
+                    if(currentSessionRole === "admin") return true;
+                    var devIn = devices.find(function(x){return x.id === r.devId;});
+                    return devIn && devIn.dept === currentSessionRole;
+                });
 
+                listRepFiltered.forEach(function(r) {
                     repBody.innerHTML += `<tr>
                         <td class="p-3 font-mono font-bold text-rose-700 pl-4">${r.devId}</td>
-                        <td class="p-3 font-medium">${r.desc}</td>
-                        <td class="p-3 text-slate-400 text-xs">${r.date || ''}</td>
-                        <td class="p-3">${textStatus}</td>
-                        <td class="p-3 text-right pr-4 flex justify-end gap-2">${btnAction}
-                            <button type="button" onclick="deleteItem('repair','${r.id}')" class="text-red-400 ml-1"><i class="fa-solid fa-trash"></i></button>
+                        <td class="p-3 font-semibold text-slate-800">${r.desc}</td>
+                        <td class="p-3 text-xs text-slate-400">${r.date || ''}</td>
+                        <td class="p-3 font-mono font-black text-slate-900 text-right text-xs">${Number(r.cost || 0).toLocaleString('vi-VN')} VNĐ</td>
+                        <td class="p-3">
+                            <button type="button" onclick="deleteItem('repair','${r.id}')" class="text-red-400 hover:text-red-600"><i class="fa-solid fa-trash"></i> Xóa biên bản</button>
                         </td>
                     </tr>`;
                 });
-                document.getElementById('count-repair').innerText = repairs.length + " lượt";
+                document.getElementById('count-repair').innerText = listRepFiltered.length + " bản ghi";
             }
 
-            // Render Hồ sơ Nhân sự (Chuẩn hóa nút Sửa và Xóa theo yêu cầu lịch sử)
+            // Render Hồ sơ nhân sự (Cơ chế chống trùng hiển thị đầy đủ)
             var staffBody = document.getElementById('staffTableBody');
             if(staffBody) {
                 staffBody.innerHTML = '';
-                staffs.forEach(function(s) {
+                var listStaffFiltered = staffs.filter(function(s) {
+                    if(currentSessionRole === "admin") return true;
+                    return s.dept === currentSessionRole;
+                });
+
+                listStaffFiltered.forEach(function(s) {
                     staffBody.innerHTML += `<tr>
                         <td class="p-3 font-mono font-bold text-slate-600 pl-4">${s.id}</td>
                         <td class="p-3 font-black text-slate-900">${s.name}</td>
                         <td class="p-3 font-medium text-slate-600">${s.role}</td>
-                        <td class="p-3 text-right pr-4 space-x-1">
+                        <td class="p-3 font-bold text-xs text-emerald-800">${s.dept || ''}</td>
+                        <td class="p-3 text-right pr-4 space-x-2">
                             <button type="button" onclick="loadStaffToFormEdit('${s.id}')" class="px-2 py-0.5 bg-amber-500 text-slate-950 font-bold rounded text-xs"><i class="fa-solid fa-pen"></i> Sửa</button>
                             <button type="button" onclick="deleteItem('staff','${s.id}')" class="px-2 py-0.5 bg-rose-100 text-rose-700 font-bold rounded text-xs"><i class="fa-solid fa-trash"></i> Xóa</button>
                         </td>
                     </tr>`;
                 });
-                document.getElementById('count-staff').innerText = staffs.length + " nhân sự";
+                document.getElementById('count-staff').innerText = listStaffFiltered.length + " nhân sự trực ca";
             }
 
-            // Render Tài liệu quy trình (Nút xem trực tiếp mượt mà trên tab mới)
+            // Render Sơ đồ văn bản kỹ thuật kèm Live Preview mượt mà
             var docBody = document.getElementById('docTableBody');
             if(docBody) {
                 docBody.innerHTML = '';
                 documents.forEach(function(doc) {
                     docBody.innerHTML += `<tr>
-                        <td class="p-3 font-bold text-slate-800 pl-4">${doc.title}</td>
-                        <td class="p-3 text-xs font-mono text-slate-400 max-w-[220px] truncate">${doc.url}</td>
-                        <td class="p-1 text-center">
-                            <a href="${doc.url}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 border border-blue-200 font-bold text-xs rounded-lg hover:bg-blue-100">
-                                <i class="fa-solid fa-arrow-up-right-from-square"></i> Xem lại trực tiếp
-                            </a>
+                        <td class="p-3 font-black text-slate-800 pl-4">${doc.title}</td>
+                        <td class="p-3 text-xs font-mono text-slate-400 max-w-[200px] truncate">${doc.url}</td>
+                        <td class="p-2 text-center">
+                            <div class="flex flex-col items-center gap-1">
+                                <img src="${doc.url}" alt="Preview" onerror="this.style.display='none'" class="w-16 h-10 object-cover rounded border bg-slate-100 shadow-sm mb-1">
+                                <a href="${doc.url}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-200 font-bold text-xs rounded-lg hover:bg-blue-100">
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Mở tab xem trước lớn
+                                </a>
+                            </div>
                         </td>
                         <td class="p-3 text-right pr-4">
-                            <button type="button" onclick="deleteItem('doc','${doc.id}')" class="text-red-400"><i class="fa-solid fa-trash"></i></button>
+                            <button type="button" onclick="deleteItem('doc','${doc.id}')" class="text-red-400 hover:text-red-500"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>`;
                 });
-                document.getElementById('count-doc').innerText = documents.length + " tài liệu";
+                document.getElementById('count-doc').innerText = documents.length + " bộ tài liệu";
             }
+
+            // Cập nhật Sổ tay nhắc việc
+            renderTodoLayout();
         }
 
-        // ---------------- XỬ LÝ LƯU, SỬA, XÓA DỮ LIỆU ĐÁM MÂY ----------------
+        // ---------------- XỬ LÝ NHẬP LIỆU TỰ SINH MÃ & KẾT TOÁN CHI PHÍ ----------------
         window.handleDeviceSubmit = function(e) {
             e.preventDefault();
             devices.push({
                 id: document.getElementById('deviceId').value,
                 name: document.getElementById('deviceName').value.trim(),
+                status: document.getElementById('deviceStatus').value,
                 cat: document.getElementById('deviceCategory').value.trim(),
-                dept: document.getElementById('deviceDept').value,
-                user: document.getElementById('deviceUser').value
+                dept: document.getElementById('deviceDept').value
             });
             document.getElementById('deviceName').value = "";
             pushDevices();
@@ -550,38 +754,89 @@
 
         window.handleRepairSubmit = function(e) {
             e.preventDefault();
+            var costVal = parseFloat(document.getElementById('repairCost').value) || 0;
+            
+            // Tự động phân tích tháng quý năm dựa vào thời gian thực 2026 hiện tại
+            var currentObjDate = new Date();
+            var m = currentObjDate.getMonth() + 1;
+            var q = Math.ceil(m / 3);
+            
             repairs.push({
                 id: Date.now().toString(),
                 devId: document.getElementById('repairDeviceId').value,
                 desc: document.getElementById('repairDesc').value.trim(),
-                date: new Date().toLocaleTimeString('vi-VN') + " " + new Date().toLocaleDateString('vi-VN'),
-                isResolved: false
+                cost: costVal,
+                month: m,
+                quarter: q,
+                year: 2026,
+                date: currentObjDate.toLocaleTimeString('vi-VN') + " " + currentObjDate.toLocaleDateString('vi-VN')
             });
+            
             document.getElementById('repairDesc').value = "";
+            document.getElementById('repairCost').value = "";
             pushRepairs();
         }
 
-        window.resolveRepairTask = function(id) {
-            var target = repairs.find(function(x){return x.id === id;});
-            if(target) { target.isResolved = true; pushRepairs(); }
-        }
-
+        // ---------------- CƠ CHẾ CHỐNG TRÙNG NHÂN SỰ & ĐỌC FILE LIST ----------------
         window.handleStaffSubmit = function(e) {
             e.preventDefault();
             var editId = document.getElementById('staffEditId').value;
             var sId = document.getElementById('staffId').value.trim();
             var sName = document.getElementById('staffName').value.trim();
             var sRole = document.getElementById('staffRole').value.trim();
+            var sDept = document.getElementById('staffDept').value;
 
             if(editId) {
                 var idx = staffs.findIndex(function(x){return x.id === editId;});
-                if(idx !== -1) { staffs[idx].id = sId; staffs[idx].name = sName; staffs[idx].role = sRole; }
+                if(idx !== -1) { staffs[idx].name = sName; staffs[idx].role = sRole; staffs[idx].dept = sDept; }
             } else {
-                if(staffs.some(function(x){return x.id === sId;})) { alert("Mã thẻ này đã tồn tại!"); return; }
-                staffs.push({ id: sId, name: sName, role: sRole });
+                // Thuật toán de-duplication: Đối chiếu lập tức chống trùng lặp dữ liệu nhập tay
+                if(staffs.some(function(x){return x.id === sId;})) {
+                    alert("Cơ chế chống trùng phát hiện mã số cán bộ này đã có trong hệ thống dữ liệu tập trung!");
+                    return;
+                }
+                staffs.push({ id: sId, name: sName, role: sRole, dept: sDept });
             }
             cancelStaffEditState();
             pushStaffs();
+        }
+
+        window.processImportStaffFile = function() {
+            var fileInput = document.getElementById('inputFileStaffList');
+            if(!fileInput.files.length) { alert("Vui lòng nạp phôi file danh sách phẳng (.txt hoặc .csv) trước!"); return; }
+            
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var text = e.target.result;
+                var lines = text.split("\n");
+                var duplicatedCount = 0;
+                var successCount = 0;
+
+                lines.forEach(function(line) {
+                    if(!line.trim()) return;
+                    var parts = line.split(",");
+                    if(parts.length >= 3) {
+                        var parsedId = parts[0].trim();
+                        var parsedName = parts[1].trim();
+                        var parsedRole = parts[2].trim();
+                        var parsedDept = parts[3] ? parts[3].trim() : "Xưởng Xeo Giấy";
+
+                        // Tự động đối chiếu chống trùng: Nếu trùng với nhập tay trước đó thì loại bỏ
+                        var isDuplicate = staffs.some(function(x) { return x.id === parsedId; });
+                        if(isDuplicate) {
+                            duplicatedCount++;
+                        } else {
+                            staffs.push({ id: parsedId, name: parsedName, role: parsedRole, dept: parsedDept });
+                            successCount++;
+                        }
+                    }
+                });
+
+                alert(`Kết quả xử lý file: Thêm mới thành công ${successCount} cán bộ đưa vào đúng đơn vị. Loại bỏ ${duplicatedCount} trường hợp trùng lặp mã số.`);
+                pushStaffs();
+                fileInput.value = "";
+            };
+            reader.readAsText(fileInput.files[0]);
         }
 
         window.loadStaffToFormEdit = function(id) {
@@ -591,19 +846,18 @@
                 document.getElementById('staffId').value = target.id;
                 document.getElementById('staffName').value = target.name;
                 document.getElementById('staffRole').value = target.role;
+                document.getElementById('staffDept').value = target.dept;
                 document.getElementById('btnCancelStaffEdit').classList.remove('hidden');
-                document.getElementById('btnSubmitStaffText').innerText = "Cập Nhật Cán Bộ";
+                document.getElementById('btnSubmitStaffText').innerText = "Cập nhật";
                 document.getElementById('formStaffAction').scrollIntoView({ behavior: 'smooth' });
             }
         }
 
         window.cancelStaffEditState = function() {
             document.getElementById('staffEditId').value = "";
-            document.getElementById('staffId').value = "";
-            document.getElementById('staffName').value = "";
-            document.getElementById('staffRole').value = "";
             document.getElementById('btnCancelStaffEdit').classList.add('hidden');
-            document.getElementById('btnSubmitStaffText').innerText = "Lưu Hồ Sơ Cán Bộ";
+            document.getElementById('btnSubmitStaffText').innerText = "Lưu Cán Bộ";
+            autoGenStaffId();
         }
 
         window.handleDocSubmit = function(e) {
@@ -619,7 +873,7 @@
         }
 
         window.deleteItem = function(type, id) {
-            if(confirm("Bạn có chắc muốn xóa bản ghi này?")) {
+            if(confirm("Hành động phá hủy vĩnh viễn dữ liệu node? Bấm OK để thực hiện.")) {
                 if(type==='device') { devices = devices.filter(function(x){return x.id!==id;}); pushDevices(); }
                 if(type==='repair') { repairs = repairs.filter(function(x){return x.id!==id;}); pushRepairs(); }
                 if(type==='staff') { staffs = staffs.filter(function(x){return x.id!==id;}); pushStaffs(); }
@@ -627,7 +881,7 @@
             }
         }
 
-        // ---------------- TẠO QR VÀ TRÍCH XUẤT TỰ ĐỘNG QUA URL ----------------
+        // ---------------- THIẾT LẬP MÃ QR & TRÍCH XUẤT THÔNG TIN ----------------
         window.previewAndSelectQR = function(id) {
             var dev = devices.find(function(x){return x.id === id;}); if(!dev) return;
             document.getElementById('webPreviewEmptyText').classList.add('hidden');
@@ -654,7 +908,6 @@
                 document.getElementById('qrScanAlertBox').classList.remove('hidden');
                 document.getElementById('qrScanAlertDetail').innerText = idFromQR;
                 
-                // Vào thẳng màn hình khi quét QR ngoài xưởng
                 document.getElementById('loginOverlaySystem').style.display = 'none';
                 document.getElementById('mainSystemContentDashboard').classList.remove('hidden');
             }
@@ -668,19 +921,229 @@
             renderAllTables();
         }
 
+        // Tự sinh mã gia tăng chuỗi phẳng kỹ thuật
         function autoGenDeviceId() {
-            var max = 72100;
-            devices.forEach(function(d) { if(d.id && d.id.indexOf("TB-")===0) { var n = parseInt(d.id.substring(3)); if(!isNaN(n) && n > max) max = n; } });
-            document.getElementById('deviceId').value = "TB-" + (max + 1);
+            var baseMax = 72100;
+            devices.forEach(function(d) {
+                if(d.id && d.id.indexOf("TB-") === 0) {
+                    var parsedNum = parseInt(d.id.substring(3));
+                    if(!isNaN(parsedNum) && parsedNum > baseMax) baseMax = parsedNum;
+                }
+            });
+            document.getElementById('deviceId').value = "TB-" + (baseMax + 1);
+        }
+
+        function autoGenStaffId() {
+            var baseStaff = 500;
+            staffs.forEach(function(s) {
+                if(s.id && s.id.indexOf("CB-") === 0) {
+                    var num = parseInt(s.id.substring(3));
+                    if(!isNaN(num) && num > baseStaff) baseStaff = num;
+                }
+            });
+            document.getElementById('staffId').value = "CB-" + (baseStaff + 1);
+            document.getElementById('staffName').value = "";
+            document.getElementById('staffRole').value = "";
         }
 
         function updateDropdownOptions() {
             var rd = document.getElementById('repairDeviceId');
-            if(rd) { rd.innerHTML = ''; devices.forEach(function(d) { rd.innerHTML += `<option value="${d.id}">${d.id} - ${d.name}</option>`; }); }
+            if(rd) {
+                rd.innerHTML = '';
+                devices.forEach(function(d) {
+                    rd.innerHTML += `<option value="${d.id}">${d.id} - ${d.name}</option>`;
+                });
+            }
         }
 
-        window.addEventListener('DOMContentLoaded', function() { startCloudDataListening(); });
-        setInterval(function() { if(document.getElementById('liveClockText')) document.getElementById('liveClockText').innerText = new Date().toLocaleTimeString('vi-VN'); }, 1000);
+        // ---------------- ĐỒ THỊ 3D / SHADOW HOẠT ĐỘNG ĐỘNG ----------------
+        window.setFinancialView = function(mode) {
+            financialViewMode = mode;
+            document.getElementById('btnViewMonth').className = mode === 'month' ? "px-3 py-1 rounded-md bg-white shadow-sm text-slate-900" : "px-3 py-1 rounded-md text-slate-500";
+            document.getElementById('btnViewQuarter').className = mode === 'quarter' ? "px-3 py-1 rounded-md bg-white shadow-sm text-slate-900" : "px-3 py-1 rounded-md text-slate-500";
+            document.getElementById('btnViewYear').className = mode === 'year' ? "px-3 py-1 rounded-md bg-white shadow-sm text-slate-900" : "px-3 py-1 rounded-md text-slate-500";
+            initOrUpdate3DCharts();
+        }
+
+        function initOrUpdate3DCharts() {
+            // Đếm trạng thái tài sản theo bộ lọc phòng ban hiện hành
+            var capMoi = 0, truocSC = 0, sauSC = 0;
+            devices.forEach(function(d) {
+                if(currentSessionRole !== "admin" && d.dept !== currentSessionRole) return;
+                if(d.status === "Cấp mới" || !d.status) capMoi++;
+                if(d.status === "Trước sửa chữa") truocSC++;
+                if(d.status === "Sau sửa chữa") sauSC++;
+            });
+
+            document.getElementById('statCapMoi').innerText = capMoi;
+            document.getElementById('statTruocSC').innerText = truocSC;
+            document.getElementById('statSauSC').innerText = sauSC;
+
+            // 1. Render Pie Chart Mô phỏng 3D đổ bóng trạng thái thiết bị
+            var ctxStatus = document.getElementById('chartStatus3D');
+            if(ctxStatus) {
+                if(chartStatusInstance) chartStatusInstance.destroy();
+                chartStatusInstance = new Chart(ctxStatus, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Cấp mới', 'Trước SC', 'Sau SC'],
+                        datasets: [{
+                            data: [capMoi, truocSC, sauSC],
+                            backgroundColor: ['#0ea5e9', '#f59e0b', '#10b981'],
+                            borderWidth: 3,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        plugins: { legend: { display: false } },
+                        cutout: '65%'
+                    }
+                });
+            }
+
+            // 2. Phân tích tài chính sửa chữa đa trục (Tháng/Quý/Năm 2026)
+            var labelFinanceArr = [];
+            var dataFinanceArr = [];
+            var totalSum = 0;
+
+            // Lọc danh sách sửa chữa theo phân quyền phòng ban độc lập
+            var currentRepairsFiltered = repairs.filter(function(r) {
+                if(currentSessionRole === "admin") return true;
+                var devIn = devices.find(function(x){return x.id === r.devId;});
+                return devIn && devIn.dept === currentSessionRole;
+            });
+
+            if(financialViewMode === 'month') {
+                labelFinanceArr = ['Tháng 1-3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7-12'];
+                var monthSums = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0, 11:0, 12:0};
+                currentRepairsFiltered.forEach(function(r){ if(r.month) monthSums[r.month] += (r.cost || 0); });
+                dataFinanceArr = [
+                    monthSums[1] + monthSums[2] + monthSums[3],
+                    monthSums[4],
+                    monthSums[5],
+                    monthSums[6],
+                    monthSums[7] + monthSums[8] + monthSums[9] + monthSums[10] + monthSums[11] + monthSums[12]
+                ];
+            } else if(financialViewMode === 'quarter') {
+                labelFinanceArr = ['Quý I', 'Quý II', 'Quý III', 'Quý IV'];
+                var quarterSums = {1:0, 2:0, 3:0, 4:0};
+                currentRepairsFiltered.forEach(function(r){ if(r.quarter) quarterSums[r.quarter] += (r.cost || 0); });
+                dataFinanceArr = [quarterSums[1], quarterSums[2], quarterSums[3], quarterSums[4]];
+            } else {
+                labelFinanceArr = ['Kế hoạch 2025', 'Vận hành 2026 (Hiện tại)'];
+                var sum2026 = 0;
+                currentRepairsFiltered.forEach(function(r){ sum2026 += (r.cost || 0); });
+                dataFinanceArr = [450000000, sum2026];
+            }
+
+            currentRepairsFiltered.forEach(function(r){ totalSum += (r.cost || 0); });
+            document.getElementById('textTotalFinanceSum').innerText = totalSum.toLocaleString('vi-VN') + " VNĐ";
+            document.getElementById('labelTotalFinanceTitle').innerText = `TỔNG CHI PHÍ PHÒNG BAN THEO TRỤC ĐANG XEM:`;
+
+            var ctxFinance = document.getElementById('chartFinance3D');
+            if(ctxFinance) {
+                if(chartFinanceInstance) chartFinanceInstance.destroy();
+                chartFinanceInstance = new Chart(ctxFinance, {
+                    type: 'bar',
+                    data: {
+                        labels: labelFinanceArr,
+                        datasets: [{
+                            label: 'Kinh phí sửa chữa (VNĐ)',
+                            data: dataFinanceArr,
+                            backgroundColor: 'rgba(79, 70, 229, 0.85)',
+                            borderColor: '#4f46e5',
+                            borderWidth: 1,
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            }
+        }
+
+        // ---------------- TIỆN ÍCH SỔ TAY NHẮC VIỆC & TIMER POMODORO ----------------
+        function renderTodoLayout() {
+            var box = document.getElementById('todoBoxContainer');
+            if(box) {
+                box.innerHTML = '';
+                todos.forEach(function(t) {
+                    box.innerHTML += `<div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 border text-xs">
+                        <span class="${t.done ? 'line-through text-slate-400' : 'font-semibold text-slate-700'}">${t.text}</span>
+                        <div class="flex gap-1">
+                            <button onclick="toggleTodoState(${t.id})" class="text-emerald-600 font-bold">[${t.done?'✓':' '}]</button>
+                            <button onclick="deleteTodoTask(${t.id})" class="text-red-400"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>`;
+                });
+            }
+        }
+
+        window.addNewTodoTask = function() {
+            var input = document.getElementById('inputNewTodo');
+            if(!input.value.trim()) return;
+            todos.push({ id: Date.now(), text: input.value.trim(), done: false });
+            input.value = "";
+            renderTodoLayout();
+        }
+
+        window.toggleTodoState = function(id) {
+            var target = todos.find(function(x){return x.id === id;});
+            if(target) { target.done = !target.done; renderTodoLayout(); }
+        }
+
+        window.deleteTodoTask = function(id) {
+            todos = todos.filter(function(x){return x.id !== id;});
+            renderTodoLayout();
+        }
+
+        // Vận hành Pomodoro Ca Công Nghiệp
+        var pomoTimeLeft = 25 * 60;
+        var pomoInterval = null;
+        var pomoIsRunning = true;
+
+        window.togglePMode = function() {
+            pomoIsRunning = !pomoIsRunning;
+            document.getElementById('btnPomo').innerText = pomoIsRunning ? "Tạm Dừng" : "Bắt Đầu";
+        }
+
+        function runPomoClockLogic() {
+            if(!pomoIsRunning) return;
+            if(pomoTimeLeft > 0) {
+                pomoTimeLeft--;
+                var m = Math.floor(pomoTimeLeft / 60);
+                var s = pomoTimeLeft % 60;
+                document.getElementById('pomoClock').innerText = (m < 10 ? '0' : '') + m + ":" + (s < 10 ? '0' : '') + s;
+            } else {
+                // Nhắc nhở nghỉ ngơi linh động luân phiên ca làm việc
+                alert("🔔 Trợ lý VINAPACO: Đã hết hiệp làm việc tập trung 25 phút. Kính mời anh em kỹ sư đứng dậy uống nước, nghỉ ngơi 5 phút tránh mỏi mắt!");
+                pomoTimeLeft = 5 * 60; // Chuyển sang 5 phút nghỉ ngơi
+                document.getElementById('pomoStatusText').innerText = "Giai đoạn xả hơi, thư giãn cơ bắp...";
+            }
+        }
+
+        // Khởi chạy các luồng dữ liệu nền và luân phiên ca dao tục ngữ
+        window.addEventListener('DOMContentLoaded', function() { 
+            startCloudDataListening(); 
+            // Thay đổi ngẫu nhiên thành ngữ ca dao sau mỗi 15 giây
+            setInterval(function() {
+                var rand = proverbs[Math.floor(Math.random() * proverbs.length)];
+                if(document.getElementById('proverbBox')) {
+                    document.getElementById('proverbBox').innerText = `"${rand}"`;
+                }
+            }, 15000);
+        });
+
+        setInterval(function() { 
+            if(document.getElementById('liveClockText')) {
+                document.getElementById('liveClockText').innerText = new Date().toLocaleTimeString('vi-VN'); 
+            }
+            runPomoClockLogic();
+        }, 1000);
     </script>
 </body>
 </html>
