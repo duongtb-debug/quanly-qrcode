@@ -344,10 +344,10 @@
         window.openForgotPasswordModal = function() { document.getElementById('forgotPasswordModal').style.display = 'flex'; }
         window.closeForgotPasswordModal = function() { document.getElementById('forgotPasswordModal').style.display = 'none'; }
 
+        // SỬA ĐỔI QUAN TRỌNG: Mở khóa trực tiếp và hiển thị toàn bộ giao diện quản trị ngay lập tức
         window.executeSystemLogin = function() {
             document.getElementById('loginOverlaySystem').classList.add('hidden');
             document.getElementById('mainSystemContentDashboard').classList.remove('hidden');
-            fetchCloudData();
         }
 
         window.logoutSystem = function() {
@@ -355,30 +355,26 @@
             document.getElementById('loginOverlaySystem').classList.remove('hidden');
         }
 
-        // CHỨC NĂNG THÔNG MINH: Tự động quét và kéo dữ liệu cũ về cấu trúc mới
         function fetchCloudData() {
             const newPath = 'root_v6_status';
-            const oldPath = 'root_v5_integrated'; // Đường dẫn cũ chứa dữ liệu gốc của bạn
+            const oldPath = 'root_v5_integrated'; 
 
             get(ref(db, newPath)).then((snapshot) => {
                 let data = snapshot.val();
-                
                 const parse = (arr) => arr ? (Array.isArray(arr) ? arr.filter(Boolean) : Object.values(arr)) : [];
 
                 if (data && (data.devices || data.repairs)) {
-                    // Nếu đã có sẵn dữ liệu ở nhánh mới thì chạy bình thường
                     devices = parse(data.devices);
                     repairs = parse(data.repairs);
                     updateDropdownOptions(); renderAllTables(); autoGenDeviceId(); update3DMetricsDashboard();
+                    executeSystemLogin(); // Tự động vào thẳng giao diện nếu có dữ liệu mới
                 } else {
-                    // Nếu chưa có, truy cập ngay vào kho dữ liệu cũ để phục hồi toàn bộ cho bạn
                     get(ref(db, oldPath)).then((oldSnapshot) => {
                         let oldData = oldSnapshot.val() || {};
                         devices = parse(oldData.devices);
                         repairs = parse(oldData.repairs);
-                        
-                        // Đồng bộ hóa ngược lại dữ liệu cũ vào môi trường mới để lưu giữ lâu dài
                         pushDataToCloud();
+                        executeSystemLogin(); // Tự động vào thẳng giao diện sau khi đồng bộ dữ liệu cũ thành công
                     });
                 }
             });
@@ -533,6 +529,11 @@
             if(dd) { dd.innerHTML = ''; depts.forEach(d => dd.innerHTML += `<option value="${d.name}">${d.name}</option>`); }
             if(rd) { rd.innerHTML = ''; devices.forEach(d => rd.innerHTML += `<option value="${d.id}">${d.id} - ${d.name}</option>`); }
         }
+
+        // Tự kích hoạt lấy dữ liệu khi khởi chạy trang web
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchCloudData();
+        });
 
         setInterval(() => { if(document.getElementById('liveClockText')) document.getElementById('liveClockText').innerText = new Date().toLocaleTimeString('vi-VN'); }, 1000);
     </script>
