@@ -248,7 +248,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs md:text-sm" id="maintenanceAlertZone"></div>
         </section>
 
-        <section class="glass-panel bg-white/95 rounded-xl shadow-md border border-slate-200 overflow-hidden flex flex-col backdrop-blur-sm">
+        <section id="sec-user-management-panel" class="glass-panel bg-white/95 rounded-xl shadow-md border border-slate-200 overflow-hidden flex flex-col backdrop-blur-sm">
             <div class="bg-gradient-to-r from-emerald-800 to-teal-800 text-white font-bold p-3.5 text-base flex items-center justify-between header-gradient">
                 <span><i class="fa-solid fa-users-gear mr-1.5 text-slate-300"></i> Quản Lý Hồ Sơ Nhân Sự & Danh Sách Phòng Ban</span>
                 <span class="text-sm bg-black/20 px-2.5 py-1 rounded font-mono" id="count-user">0 nhân sự</span>
@@ -273,7 +273,7 @@
                     </div>
                 </div>
 
-                <div class="lg:col-span-8 space-y-4">
+                <div id="userFormAnchor" class="lg:col-span-8 space-y-4">
                     <span class="block font-bold text-slate-500 text-xs uppercase label-sub-text"><i class="fa-solid fa-user-pen text-emerald-700"></i> NHẬP LIỆU HỒ SƠ NHÂN SỰ</span>
                     <form onsubmit="handleUserSubmit(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 form-bg-panel">
                         <input type="hidden" id="editUserId" value="">
@@ -922,10 +922,12 @@
             resetUserForm(); pushDataToCloud(); 
         }
 
+        // --- CẬP NHẬT: TỰ ĐỘNG FOCUS & CUỘN LÊN KHUNG NHẬP LIỆU HỒ SƠ ---
         window.editUserInline = function(id) {
             const u = users.find(item => item.id === id); if(!u) return;
             document.getElementById('editUserId').value = u.id;
-            document.getElementById('userName').value = u.name;
+            const nameField = document.getElementById('userName');
+            nameField.value = u.name;
             document.getElementById('userTitle').value = u.title;
             document.getElementById('userDept').value = u.dept;
             if(u.avatar) {
@@ -942,6 +944,10 @@
             }
             document.getElementById('btnCancelUserEdit').classList.remove('hidden');
             document.getElementById('btnUserSubmit').innerText = "Cập Nhật Hồ Sơ";
+
+            // Thực hiện cuộn mượt đến form nhập liệu và focus trực tiếp vào ô Tên
+            document.getElementById('userFormAnchor').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => { nameField.focus(); nameField.select(); }, 400);
         }
 
         window.resetUserForm = function() {
@@ -1059,7 +1065,7 @@
             document.getElementById('count-device').innerText = `${devices.length} tài sản`;
         }
 
-        // --- RENDER BẢNG NHÂN SỰ VỚI KHUNG ẢNH RÕ NÉT & DOWNLOAD HỒ SƠ ---
+        // --- CẬP NHẬT RENDER BẢNG NHÂN SỰ: BẤM VÀO TÊN HOẶC NÚT SỬA ĐỀU FOCUS CHUẨN XÁC ---
         window.renderUserTableOnly = function() {
             const body = document.getElementById('userTableBody'); if(!body) return; body.innerHTML = '';
             let hasData = false;
@@ -1068,15 +1074,15 @@
                 if(activeUserDeptFilter !== 'all' && u.dept !== activeUserDeptFilter) return;
                 hasData = true;
                 
-                // Khung ảnh chân dung mở rộng 48x48 px nhìn cực kì rõ ràng
                 const avaImg = u.avatar ? `<img src="${u.avatar}" class="w-12 h-12 rounded-xl object-cover border border-slate-300 mx-auto shadow-sm">` : `<div class="w-12 h-12 rounded-xl bg-slate-200 text-slate-500 flex items-center justify-center text-lg font-bold mx-auto"><i class="fa-solid fa-user-tie"></i></div>`;
-                
-                // Nút tải xuống/Xem tài liệu đính kèm
                 const docActionBtn = u.userDoc ? `<button onclick="downloadUserDocument('${u.id}')" class="px-2.5 py-1 bg-purple-100 text-purple-700 hover:bg-purple-200 font-bold rounded text-xs cursor-pointer transition-all"><i class="fa-solid fa-file-arrow-down"></i> Tải Hồ Sơ</button>` : `<span class="text-slate-400 text-xs italic">Không có tệp</span>`;
 
                 body.innerHTML += `<tr class="hover:bg-white/5">
                     <td class="p-3 text-center">${avaImg}</td>
-                    <td class="p-3 font-bold text-base">${u.name}<span class="block text-xs text-slate-400 font-medium">${u.title}</span></td>
+                    <td class="p-3 font-bold text-base cursor-pointer hover:text-emerald-400 transition-colors" onclick="editUserInline('${u.id}')">
+                        ${u.name}
+                        <span class="block text-xs text-slate-400 font-medium">${u.title}</span>
+                    </td>
                     <td class="p-3 font-semibold">${u.dept}</td>
                     <td class="p-3 text-center">${docActionBtn}</td>
                     <td class="p-3 text-right pr-4">
@@ -1089,7 +1095,6 @@
             document.getElementById('count-user').innerText = `${users.length} nhân sự`;
         }
 
-        // --- HÀM XỬ LÝ TẢI FILE TÀI LIỆU HỒ SƠ ---
         window.downloadUserDocument = function(id) {
             const u = users.find(item => item.id === id); if(!u || !u.userDoc) return;
             const link = document.createElement('a');
