@@ -18,12 +18,43 @@
         }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #047857; border-radius: 3px; }
+
+        /* --- NỀN XANH THƯƠNG HIỆU VINAPACO TIÊU CHUẨN --- */
+        body {
+            background-color: #044333;
+            /* Tạo họa tiết lưới hình khối hình học mờ sang trọng tương đồng hình mẫu */
+            background-image: 
+                linear-gradient(30deg, #033629 12%, transparent 12.5%, transparent 87%, #033629 87.5%, #033629),
+                linear-gradient(150deg, #033629 12%, transparent 12.5%, transparent 87%, #033629 87.5%, #033629),
+                linear-gradient(30deg, #033629 12%, transparent 12.5%, transparent 87%, #033629 87.5%, #033629),
+                linear-gradient(150deg, #033629 12%, transparent 12.5%, transparent 87%, #033629 87.5%, #033629),
+                linear-gradient(60deg, #033e2f 25%, transparent 25.5%, transparent 75%, #033e2f 75.5%, #033e2f),
+                linear-gradient(60deg, #033e2f 25%, transparent 25.5%, transparent 75%, #033e2f 75.5%, #033e2f);
+            background-size: 80px 140px;
+            background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
+            position: relative;
+        }
+
+        /* Hiệu ứng dải sáng xanh mờ ảo (Glow Aura) quét ngang nền như ảnh mẫu */
+        body::before {
+            content: "";
+            position: fixed;
+            top: -20%; left: -10%;
+            width: 140%; height: 140%;
+            background: radial-gradient(circle at 80% 30%, rgba(16, 185, 129, 0.18) 0%, transparent 50%),
+                        radial-gradient(circle at 20% 80%, rgba(52, 211, 153, 0.12) 0%, transparent 40%);
+            z-index: -1;
+            pointer-events: none;
+        }
 
         /* --- THEME TÙY BIẾN HIỆN ĐẠI (CYBER GLASS DASHBOARD) --- */
         body.theme-cyberpunk {
-            background: radial-gradient(circle at 50% 50%, #0a0f1d 0%, #02040a 100%);
+            background: radial-gradient(circle at 50% 50%, #0a0f1d 0%, #02040a 100%) !important;
             color: #f1f5f9;
+        }
+        body.theme-cyberpunk::before {
+            background: radial-gradient(circle at 70% 20%, rgba(56, 189, 248, 0.15) 0%, transparent 55%);
         }
         body.theme-cyberpunk .glass-panel {
             background: rgba(13, 20, 38, 0.6) !important;
@@ -54,11 +85,11 @@
         }
     </style>
 </head>
-<body id="systemBody" class="bg-slate-100 text-slate-800 font-sans min-h-screen p-4 md:p-6 space-y-6 text-sm md:text-base relative transition-all duration-300">
+<body id="systemBody" class="text-slate-800 font-sans min-h-screen p-4 md:p-6 space-y-6 text-sm md:text-base transition-all duration-300">
 
-    <div id="loginOverlaySystem" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200">
-            <div class="bg-emerald-700 text-white p-6 text-center relative">
+    <div id="loginOverlaySystem" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-emerald-800/30">
+            <div class="bg-emerald-800 text-white p-6 text-center relative">
                 <div class="w-16 h-16 bg-white/10 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-3 border border-white/20">
                     <i class="fa-solid fa-shield-halved text-amber-400"></i>
                 </div>
@@ -68,7 +99,7 @@
             <div class="p-6 space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Chọn Tài Khoản Ca Trực</label>
-                    <select id="loginRole" onchange="updateLoginPlaceholder()" class="w-full border border-slate-300 rounded-lg p-2.5 font-bold text-slate-800 bg-slate-50 focus:outline-none focus:border-emerald-600">
+                    <select id="loginRole" onchange="updateLoginPlaceholder()" class="w-full border border-slate-300 rounded-lg p-2.5 font-bold text-slate-800 bg-slate-50 focus:outline-none focus:border-emerald-700">
                         <option value="admin">🔑 Quản Trị Viên (Admin - Toàn Quyền)</option>
                         <option value="sub_user_1">🧑 Tài khoản con (Vận hành Ca 1)</option>
                         <option value="sub_user_2">🧑 Tài khoản con (Vận hành Ca 2)</option>
@@ -77,7 +108,7 @@
                 <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5 text-center">Phương thức xác thực</label>
                     <div class="grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-lg border border-slate-200">
-                        <button type="button" id="btnAuthTypePassword" onclick="switchAuthMethod('password')" class="py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer bg-white text-emerald-700 shadow-sm">Mật Khẩu</button>
+                        <button type="button" id="btnAuthTypePassword" onclick="switchAuthMethod('password')" class="py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer bg-white text-emerald-800 shadow-sm">Mật Khẩu</button>
                         <button type="button" id="btnAuthTypePin" onclick="switchAuthMethod('pin')" class="py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer text-slate-600 hover:bg-slate-50">Mã PIN Số</button>
                     </div>
                 </div>
@@ -86,10 +117,10 @@
                         <label id="lblAuthInputTitle" class="block text-xs font-bold text-slate-500 uppercase">Mật Khẩu Đăng Nhập</label>
                         <button onclick="triggerForgotPassword()" class="text-xs text-blue-600 hover:underline font-bold cursor-pointer">Quên mật khẩu?</button>
                     </div>
-                    <input type="password" id="loginPin" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Mặc định: vinapaco2026" class="w-full border border-slate-300 rounded-lg p-2.5 font-bold tracking-wider text-center focus:outline-none focus:border-emerald-600 bg-slate-50">
+                    <input type="password" id="loginPin" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Mặc định: vinapaco2026" class="w-full border border-slate-300 rounded-lg p-2.5 font-bold tracking-wider text-center focus:outline-none focus:border-emerald-700 bg-slate-50">
                 </div>
                 <div id="loginErrorMsg" class="text-red-500 font-bold text-xs text-center hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> Thông tin xác thực không chính xác!</div>
-                <button onclick="executeSystemLogin()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-lg transition-colors shadow-md cursor-pointer uppercase text-sm tracking-wider">Xác Thực Vào Hệ Thống</button>
+                <button onclick="executeSystemLogin()" class="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-black rounded-lg transition-colors shadow-md cursor-pointer uppercase text-sm tracking-wider">Xác Thực Vào Hệ Thống</button>
             </div>
             <div class="bg-slate-50 px-6 py-3 text-center border-t border-slate-100 text-[11px] font-medium text-slate-400">
                 An toàn thông tin nhà máy &copy; Tổng Công Ty Giấy Việt Nam 2026
@@ -97,9 +128,9 @@
         </div>
     </div>
 
-    <div id="mainSystemContentDashboard" class="space-y-6 hidden">
+    <div id="mainSystemContentDashboard" class="space-y-6 hidden max-w-7xl mx-auto">
         
-        <div class="bg-slate-900 text-white p-3 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-3 shadow-md">
+        <div class="bg-slate-900/90 text-white p-3 rounded-xl border border-emerald-800/30 flex flex-wrap items-center justify-between gap-3 shadow-xl backdrop-blur-sm">
             <div class="flex items-center gap-2">
                 <i class="fa-solid fa-shield-halved text-amber-400 text-lg"></i>
                 <span class="font-bold text-xs md:text-sm uppercase tracking-wider">Cơ Chế Phân Quyền & Bảo Mật Ca Trực Active</span>
@@ -107,7 +138,7 @@
             <div class="flex items-center gap-3">
                 <div class="flex items-center bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700 text-xs gap-2">
                     <span class="text-slate-400 font-bold"><i class="fa-solid fa-palette text-sky-400"></i> Giao diện:</span>
-                    <button onclick="changeSystemTheme('classic')" id="themeBtn-classic" class="px-2 py-0.5 rounded font-bold transition-all bg-emerald-600 text-white">Cổ điển</button>
+                    <button onclick="changeSystemTheme('classic')" id="themeBtn-classic" class="px-2 py-0.5 rounded font-bold transition-all bg-emerald-700 text-white">Màu gốc 🌲</button>
                     <button onclick="changeSystemTheme('cyber')" id="themeBtn-cyber" class="px-2 py-0.5 rounded font-bold transition-all text-slate-400 hover:text-white">Cyber Glass ✨</button>
                 </div>
                 <div class="flex items-center gap-1.5 bg-slate-800 px-2 py-1 rounded text-xs">
@@ -135,28 +166,28 @@
                         <input type="password" id="oldPinInput" placeholder="Nhập mật khẩu hoặc PIN hiện tại" class="w-full border border-slate-300 rounded p-2 focus:outline-none focus:border-slate-600 font-bold tracking-wide text-center">
                     </div>
                     <div class="border-t border-slate-200 pt-2">
-                        <label class="block text-xs font-bold text-emerald-700 mb-1">Cấu hình MẬT KHẨU chữ mới</label>
-                        <input type="password" id="newPasswordInput" placeholder="Bỏ trống nếu không muốn đổi mật khẩu" class="w-full border border-slate-300 rounded p-2 focus:outline-none focus:border-emerald-600 text-center font-bold">
+                        <label class="block text-xs font-bold text-emerald-800 mb-1">Cấu hình MẬT KHẨU chữ mới</label>
+                        <input type="password" id="newPasswordInput" placeholder="Bỏ trống nếu không muốn đổi mật khẩu" class="w-full border border-slate-300 rounded p-2 focus:outline-none focus:border-emerald-700 text-center font-bold">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-blue-700 mb-1">Cấu hình MÃ PIN số mới</label>
                         <input type="text" id="newPinInput" placeholder="Bỏ trống nếu không muốn đổi mã PIN" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full border border-slate-300 rounded p-2 focus:outline-none focus:border-blue-600 text-center font-bold tracking-widest">
                     </div>
-                    <button onclick="submitChangePassword()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded cursor-pointer transition-colors text-sm">Cập Nhật Thông Tin</button>
+                    <button onclick="submitChangePassword()" class="w-full py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded cursor-pointer transition-colors text-sm">Cập Nhật Thông Tin</button>
                 </div>
             </div>
         </div>
 
-        <header class="glass-panel bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
-            <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-600 via-teal-600 to-blue-600"></div>
+        <header class="glass-panel bg-white/95 rounded-xl shadow-md border border-emerald-800/10 p-5 relative overflow-hidden backdrop-blur-sm">
+            <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-700 via-teal-600 to-emerald-500"></div>
             <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div class="flex items-center gap-3.5">
-                    <div class="w-12 h-12 md:w-14 md:h-14 bg-emerald-50 rounded-xl flex items-center justify-center border border-emerald-100 text-emerald-600 text-xl md:text-2xl font-black">
+                    <div class="w-12 h-12 md:w-14 md:h-14 bg-emerald-50 rounded-xl flex items-center justify-center border border-emerald-100 text-emerald-700 text-xl md:text-2xl font-black">
                         <i class="fa-solid fa-industry"></i>
                     </div>
                     <div>
                         <h2 class="text-[10px] md:text-xs font-bold tracking-widest text-slate-400 uppercase">Hệ Thống Tổng Lực Quản Trị Nhà Máy</h2>
-                        <h1 class="text-xl md:text-2xl font-black tracking-tight mt-0.5 header-main-title">TỔNG CÔNG TY GIẤY VIỆT NAM</h1>
+                        <h1 class="text-xl md:text-2xl font-black tracking-tight mt-0.5 header-main-title text-slate-900">TỔNG CÔNG TY GIẤY VIỆT NAM</h1>
                     </div>
                 </div>
                 <div class="flex items-center gap-2 self-stretch md:self-auto justify-end bg-slate-50 p-1.5 rounded-lg border border-slate-200 env-panel">
@@ -173,17 +204,17 @@
         </header>
 
         <section id="sec-pomo" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div class="glass-panel lg:col-span-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between min-h-[140px]">
+            <div class="glass-panel lg:col-span-4 bg-white/95 p-4 rounded-xl border border-slate-200 shadow-md flex flex-col justify-between min-h-[140px] backdrop-blur-sm">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-2 border-panel">
-                    <span class="font-bold text-slate-700 text-xs md:text-sm uppercase tracking-wider flex items-center gap-2 label-text-panel"><i class="fa-solid fa-calendar-days text-emerald-600"></i> Lịch & Văn Hóa Việt Nam</span>
+                    <span class="font-bold text-slate-700 text-xs md:text-sm uppercase tracking-wider flex items-center gap-2 label-text-panel"><i class="fa-solid fa-calendar-days text-emerald-700"></i> Lịch & Văn Hóa Việt Nam</span>
                 </div>
                 <div class="py-3">
                     <p id="txtVietnameseQuote" class="text-slate-700 font-medium italic text-center text-sm quote-text-panel">"An toàn để sản xuất, sản xuất phải an toàn."</p>
                     <p class="text-right text-xs font-bold text-slate-400 mt-1">— Phương châm nhà máy</p>
                 </div>
-                <button onclick="refreshQuoteOnline()" class="text-xs text-emerald-600 hover:text-emerald-700 font-bold text-left flex items-center gap-1 cursor-pointer"><i class="fa-solid fa-rotate"></i> Đổi câu ca dao tục ngữ khác</button>
+                <button onclick="refreshQuoteOnline()" class="text-xs text-emerald-700 hover:text-emerald-800 font-bold text-left flex items-center gap-1 cursor-pointer"><i class="fa-solid fa-rotate"></i> Đổi câu ca dao tục ngữ khác</button>
             </div>
-            <div class="glass-panel lg:col-span-8 bg-slate-900 text-white p-4 rounded-xl border border-slate-800 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="glass-panel lg:col-span-8 bg-slate-900/95 text-white p-4 rounded-xl border border-emerald-800/20 shadow-md flex flex-col md:flex-row items-center justify-between gap-4 backdrop-blur-sm">
                 <div class="space-y-1">
                     <h3 class="font-bold text-base flex items-center gap-2 text-amber-400"><i class="fa-solid fa-stopwatch"></i> Cấu Hình Nhắc Nhở & Chu Kỳ Làm Việc</h3>
                     <p class="text-xs text-slate-400">Người vận hành tự điều chỉnh thời gian nhắc nhở phù hợp với ca làm việc.</p>
@@ -209,7 +240,7 @@
             </div>
         </section>
 
-        <section class="glass-panel bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-3 shadow-sm alert-panel">
+        <section class="glass-panel bg-amber-50/95 border border-amber-200 rounded-xl p-4 space-y-3 shadow-md alert-panel backdrop-blur-sm">
             <div class="flex items-center gap-2 text-amber-800 font-bold text-sm md:text-base alert-text-panel">
                 <i class="fa-solid fa-triangle-exclamation text-xl text-amber-600"></i> 
                 <span>Hệ Thống Tự Động Cảnh Báo Đến Thời Hạn Bảo Dưỡng Thiết Bị (Chu Kỳ Định Kỳ)</span>
@@ -217,8 +248,8 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs md:text-sm" id="maintenanceAlertZone"></div>
         </section>
 
-        <section class="glass-panel bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-            <div class="bg-gradient-to-r from-emerald-700 to-teal-700 text-white font-bold p-3.5 text-base flex items-center justify-between header-gradient">
+        <section class="glass-panel bg-white/95 rounded-xl shadow-md border border-slate-200 overflow-hidden flex flex-col backdrop-blur-sm">
+            <div class="bg-gradient-to-r from-emerald-800 to-teal-800 text-white font-bold p-3.5 text-base flex items-center justify-between header-gradient">
                 <span><i class="fa-solid fa-users-gear mr-1.5 text-slate-300"></i> Quản Lý Hồ Sơ Nhân Sự & Danh Sách Phòng Ban</span>
                 <span class="text-sm bg-black/20 px-2.5 py-1 rounded font-mono" id="count-user">0 nhân sự</span>
             </div>
@@ -226,10 +257,10 @@
             <div class="p-4 grid grid-cols-1 lg:grid-cols-12 gap-6 text-sm">
                 <div class="lg:col-span-4 border-r border-slate-200 pr-4 space-y-4 border-panel">
                     <div>
-                        <span class="block font-bold text-slate-500 text-xs uppercase mb-2 label-sub-text"><i class="fa-solid fa-folder-plus text-emerald-600"></i> THÊM PHÒNG BAN / ĐƠN VỊ MỚI</span>
+                        <span class="block font-bold text-slate-500 text-xs uppercase mb-2 label-sub-text"><i class="fa-solid fa-folder-plus text-emerald-700"></i> THÊM PHÒNG BAN / ĐƠN VỊ MỚI</span>
                         <form onsubmit="handleDeptSubmit(event)" class="flex gap-2">
                             <input type="hidden" id="editDeptId" value="">
-                            <input type="text" id="deptName" required placeholder="Tên xưởng, phòng ban..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-emerald-600 font-medium">
+                            <input type="text" id="deptName" required placeholder="Tên xưởng, phòng ban..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-emerald-700 font-medium">
                             <button type="submit" id="btnDeptSubmit" class="px-4 py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 transition-colors cursor-pointer whitespace-nowrap btn-dark-panel">Thêm</button>
                         </form>
                     </div>
@@ -243,7 +274,7 @@
                 </div>
 
                 <div class="lg:col-span-8 space-y-4">
-                    <span class="block font-bold text-slate-500 text-xs uppercase label-sub-text"><i class="fa-solid fa-user-pen text-emerald-600"></i> NHẬP LIỆU HỒ SƠ NHÂN SỰ</span>
+                    <span class="block font-bold text-slate-500 text-xs uppercase label-sub-text"><i class="fa-solid fa-user-pen text-emerald-700"></i> NHẬP LIỆU HỒ SƠ NHÂN SỰ</span>
                     <form onsubmit="handleUserSubmit(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 form-bg-panel">
                         <input type="hidden" id="editUserId" value="">
                         <div>
@@ -284,7 +315,7 @@
 
                         <div class="sm:col-span-3 flex justify-end items-end gap-2 pt-2 border-t border-slate-200/50">
                             <button type="button" id="btnCancelUserEdit" onclick="resetUserForm()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-lg hidden text-xs">Hủy</button>
-                            <button type="submit" id="btnUserSubmit" class="px-6 py-2 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 shadow-sm transition-colors text-xs uppercase tracking-wider cursor-pointer">Lưu Hồ Sơ Nhân Sự</button>
+                            <button type="submit" id="btnUserSubmit" class="px-6 py-2 bg-emerald-700 text-white font-bold rounded-lg hover:bg-emerald-800 shadow-sm transition-colors text-xs uppercase tracking-wider cursor-pointer">Lưu Hồ Sơ Nhân Sự</button>
                         </div>
                     </form>
 
@@ -324,7 +355,7 @@
         </section>
 
         <section id="sec-device" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            <div class="glass-panel lg:col-span-8 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+            <div class="glass-panel bg-white/95 rounded-xl shadow-md border border-slate-200 overflow-hidden flex flex-col lg:col-span-8 backdrop-blur-sm">
                 <div class="bg-gradient-to-r from-slate-700 to-slate-800 text-white font-bold p-3.5 text-base flex items-center justify-between header-gradient">
                     <span><i class="fa-solid fa-boxes-stacked mr-1.5 text-slate-300"></i> Quản Lý Thiết Bị Tài Sản & Cấp Phát QR</span>
                     <span class="text-sm bg-black/20 px-2.5 py-1 rounded font-mono" id="count-device">0 tài sản</span>
@@ -351,13 +382,13 @@
                         </datalist>
                     </div>
                     <div class="sm:col-span-6">
-                        <label class="block font-bold text-amber-500 mb-1">Đơn vị quản lý</label>
+                        <label class="block font-bold text-amber-600 mb-1">Đơn vị quản lý</label>
                         <select id="deviceDept" required onchange="updateUserDropdownByDept()" class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold text-slate-700 focus:outline-none">
                             <option value="">-- Cần thêm đơn vị trước --</option>
                         </select>
                     </div>
                     <div class="sm:col-span-6">
-                        <label class="block font-bold text-blue-500 mb-1">Người phụ trách trực tiếp</label>
+                        <label class="block font-bold text-blue-600 mb-1">Người phụ trách trực tiếp</label>
                         <select id="deviceUser" class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold text-slate-700 focus:outline-none">
                             <option value="Chưa cấp phát">-- Giữ lưu kho --</option>
                         </select>
@@ -389,7 +420,7 @@
                 </div>
             </div>
             <div class="lg:col-span-4">
-                <div class="glass-panel bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden sticky top-6">
+                <div class="glass-panel bg-white/95 rounded-xl shadow-md border border-slate-200 overflow-hidden sticky top-6 backdrop-blur-sm">
                     <div class="bg-slate-800 text-white p-3.5 font-bold text-sm flex items-center justify-between inner-dark-box">
                         <span><i class="fa-solid fa-eye text-amber-400 mr-1.5"></i> Xem Trước Nhãn Tem In</span>
                         <button onclick="window.print()" id="btnActionPrintNow" class="hidden px-3 py-1 bg-amber-500 text-slate-950 font-extrabold text-xs rounded hover:bg-amber-400 transition-colors cursor-pointer">🖨️ Đặt Lệnh In</button>
@@ -401,7 +432,7 @@
                             <div class="w-full border-t border-dashed border-slate-300 my-2"></div>
                             <p id="wpId" class="text-xs font-mono font-black text-slate-800 tracking-wider">TB-67149</p>
                             <p id="wpDept" class="text-[10px] font-bold text-slate-500 mt-0.5">ĐV: Chưa xác định</p>
-                            <p id="wpUser" class="text-[11px] font-bold text-emerald-600 mt-0.5 italic">Phụ trách: Chưa cấp phát</p>
+                            <p id="wpUser" class="text-[11px] font-bold text-emerald-700 mt-0.5 italic">Phụ trách: Chưa cấp phát</p>
                         </div>
                         <p id="webPreviewEmptyText" class="text-slate-400 italic text-center text-sm p-4">Nhấn nút <strong>"Xem & In"</strong> tại danh mục bên để hiển thị cấu trúc nhãn.</p>
                     </div>
@@ -409,8 +440,8 @@
             </div>
         </section>
 
-        <section class="glass-panel bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-            <div class="bg-gradient-to-r from-purple-700 to-indigo-700 text-white font-bold p-3.5 text-base header-gradient"><i class="fa-solid fa-screwdriver-wrench mr-2"></i>Nhật Ký Bảo Trì, Sửa Chữa Kỹ Thuật</div>
+        <section class="glass-panel bg-white/95 rounded-xl shadow-md border border-slate-200 overflow-hidden flex flex-col backdrop-blur-sm">
+            <div class="bg-gradient-to-r from-purple-800 to-indigo-800 text-white font-bold p-3.5 text-base header-gradient"><i class="fa-solid fa-screwdriver-wrench mr-2"></i>Nhật Ký Bảo Trì, Sửa Chữa Kỹ Thuật</div>
             <form id="formRepairAction" onsubmit="handleRepairSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 text-sm bg-slate-50/50 border-b border-slate-100 form-bg-panel border-panel">
                 <div class="md:col-span-3">
                     <select id="repairDeviceId" required class="w-full border border-slate-300 rounded-lg p-2 bg-white font-mono font-bold text-slate-700 focus:outline-none">
@@ -427,7 +458,7 @@
                 </div>
                 <div class="md:col-span-2 flex items-end gap-2">
                     <input type="number" id="repairCost" required value="0" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-slate-800">
-                    <button type="submit" class="px-5 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 shadow-sm h-[38px] cursor-pointer">Lưu</button>
+                    <button type="submit" class="px-5 bg-purple-700 text-white font-bold rounded-lg hover:bg-purple-800 shadow-sm h-[38px] cursor-pointer">Lưu</button>
                 </div>
             </form>
             <div class="overflow-x-auto custom-scrollbar max-h-[240px] bg-white text-sm table-container-panel">
@@ -447,7 +478,7 @@
             </div>
         </section>
 
-        <section class="glass-panel bg-slate-900 text-white rounded-xl shadow-sm overflow-hidden flex flex-col border border-slate-800">
+        <section class="glass-panel bg-slate-900/95 text-white rounded-xl shadow-md overflow-hidden flex flex-col border border-emerald-800/20 backdrop-blur-sm">
             <div class="p-3.5 font-bold text-base bg-slate-800 flex items-center gap-1.5 border-b border-slate-800 inner-dark-box">
                 <i class="fa-solid fa-list-check text-emerald-400"></i> Phân Công Công Việc Vận Hành & Đếm Ngược Thời Gian Thực
             </div>
@@ -484,7 +515,7 @@
             </div>
         </section>
 
-        <section class="glass-panel bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+        <section class="glass-panel bg-white/95 rounded-xl shadow-md border border-slate-200 overflow-hidden flex flex-col backdrop-blur-sm">
             <div class="bg-gradient-to-r from-slate-800 to-slate-900 text-white font-bold p-3.5 text-base flex items-center justify-between header-gradient">
                 <span><i class="fa-solid fa-cart-shopping mr-1.5 text-amber-400"></i> Đề Xuất Mua Sắm Vật Tư Mới & Số Hóa Chứng Từ Kỹ Thuật</span>
                 <span class="text-sm bg-black/20 px-2.5 py-1 rounded font-mono" id="count-procurement">0 đề xuất</span>
@@ -507,7 +538,7 @@
                     <div class="flex gap-2">
                         <input type="hidden" id="procuDocLink">
                         <input type="file" id="uploadProcurementFile" class="hidden" onchange="handleProcurementFileUpload(event)">
-                        <button type="button" onclick="document.getElementById('uploadProcurementFile').click()" id="btnUploadFileIndicator" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-colors cursor-pointer text-xs whitespace-nowrap"><i class="fa-solid fa-cloud-arrow-up"></i> Tải Tài Liệu</button>
+                        <button type="button" onclick="document.getElementById('uploadProcurementFile').click()" id="btnUploadFileIndicator" class="px-3 py-2 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-lg transition-colors cursor-pointer text-xs whitespace-nowrap"><i class="fa-solid fa-cloud-arrow-up"></i> Tải Tài Liệu</button>
                         <input type="text" id="procuDocUrlManual" oninput="document.getElementById('procuDocLink').value=this.value" placeholder="Hoặc dán URL Drive..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none text-xs text-blue-600">
                     </div>
                 </div>
@@ -516,7 +547,7 @@
                         <label class="block font-bold text-slate-600 mb-1 label-text-panel">Dự Kiến Chi Phí</label>
                         <input type="number" id="procuEstimatedCost" required value="0" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-slate-800">
                     </div>
-                    <button type="submit" class="px-6 py-2 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 shadow-sm h-[38px] cursor-pointer whitespace-nowrap">Đề Xuất</button>
+                    <button type="submit" class="px-6 py-2 bg-emerald-700 text-white font-bold rounded-lg hover:bg-emerald-800 shadow-sm h-[38px] cursor-pointer whitespace-nowrap">Đề Xuất</button>
                 </div>
             </form>
             <div class="overflow-x-auto text-sm bg-white table-container-panel">
@@ -598,11 +629,11 @@
                 document.querySelectorAll('.env-panel').forEach(el => el.style.backgroundColor = 'rgba(7, 11, 22, 0.6)');
             } else {
                 body.classList.remove('theme-cyberpunk');
-                btnClassic.className = "px-2 py-0.5 rounded font-bold transition-all bg-emerald-600 text-white";
+                btnClassic.className = "px-2 py-0.5 rounded font-bold transition-all bg-emerald-700 text-white";
                 btnCyber.className = "px-2 py-0.5 rounded font-bold transition-all text-slate-400 hover:text-white";
                 
                 document.querySelectorAll('.glass-panel').forEach(el => {
-                    if(!el.classList.contains('bg-slate-900') && !el.classList.contains('bg-amber-50')) el.style.backgroundColor = '#ffffff';
+                    if(!el.classList.contains('bg-slate-900') && !el.classList.contains('bg-amber-50')) el.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
                 });
                 document.querySelectorAll('.form-bg-panel').forEach(el => el.style.backgroundColor = '#f8fafc');
                 document.querySelectorAll('.label-text-panel').forEach(el => el.style.color = '#334155');
@@ -622,11 +653,11 @@
             const lblTitle = document.getElementById('lblAuthInputTitle');
 
             if(method === 'password') {
-                btnPass.className = "py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer bg-white text-emerald-700 shadow-sm";
+                btnPass.className = "py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer bg-white text-emerald-800 shadow-sm";
                 btnPin.className = "py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer text-slate-600 hover:bg-slate-50";
                 lblTitle.innerText = "Mật Khẩu Đăng Nhập";
             } else {
-                btnPin.className = "py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer bg-white text-emerald-700 shadow-sm";
+                btnPin.className = "py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer bg-white text-emerald-800 shadow-sm";
                 btnPass.className = "py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer text-slate-600 hover:bg-slate-50";
                 lblTitle.innerText = "Mã PIN Xác Thực (Số)";
             }
@@ -1012,7 +1043,7 @@
                 if(key && !d.name.toLowerCase().includes(key) && !d.id.toLowerCase().includes(key)) return;
                 body.innerHTML += `<tr>
                     <td class="p-3 pl-4 font-mono font-bold">${d.id}</td>
-                    <td class="p-3 font-bold">${d.name}<span class="block text-[11px] text-sky-400">Nhóm: ${d.cat||'Thiết bị'}</span></td>
+                    <td class="p-3 font-bold">${d.name}<span class="block text-[11px] text-sky-500">Nhóm: ${d.cat||'Thiết bị'}</span></td>
                     <td class="p-3">${d.dept}</td>
                     <td class="p-1 text-center bg-white"><div id="cell-qr-${d.id}" class="w-9 h-9 mx-auto"></div></td>
                     <td class="p-3">${d.user==='Chưa cấp phát'?'📦 Lưu Kho':d.user}</td>
@@ -1037,7 +1068,7 @@
                 if(activeUserDeptFilter !== 'all' && u.dept !== activeUserDeptFilter) return;
                 hasData = true;
                 
-                // Khung ảnh chân dung mở rộng $48\times48\text{ px}$ nhìn cực kì rõ ràng
+                // Khung ảnh chân dung mở rộng 48x48 px nhìn cực kì rõ ràng
                 const avaImg = u.avatar ? `<img src="${u.avatar}" class="w-12 h-12 rounded-xl object-cover border border-slate-300 mx-auto shadow-sm">` : `<div class="w-12 h-12 rounded-xl bg-slate-200 text-slate-500 flex items-center justify-center text-lg font-bold mx-auto"><i class="fa-solid fa-user-tie"></i></div>`;
                 
                 // Nút tải xuống/Xem tài liệu đính kèm
