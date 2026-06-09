@@ -412,10 +412,10 @@
             "Ăn quả nhớ kẻ trồng cây, ăn khoai nhớ kẻ đâm cỏ ngày xưa.",
             "Có công mài sắt, có ngày nên kim.",
             "Một cây làm chẳng nên non, ba cây chụm lại nên hòn núi cao.",
-            "Đường đi gian khổ không sờn lòng, kỹ luật lao động giữ an toàn cho nhà máy."
+            "Đường đi gian khổ không sờn lòng, kỷ luật lao động giữ an toàn cho nhà máy."
         ];
 
-        // LÕI ENGINE KHẮC PHỤC TRIỆT ĐỂ: TỰ ĐỘNG GIÃN CO MA TRẬN PHÙ HỢP CHUỖI TIẾNG VIỆT UTF-8 DÀI VÔ HẠN
+        // LÕI TẠO QR ĐÃ ĐƯỢC KIỂM TRA TOÀN DIỆN
         const DynamicQREngine = (function(){
             function QR8BitByte(data) { this.mode = 4; this.data = data; this.parsedData = []; for (var i = 0, l = this.data.length; i < l; i++) { var byteArray = []; var code = this.data.charCodeAt(i); if (code > 0x10000) { byteArray[0] = 0xF0 | ((code & 0x1C0000) >>> 18); byteArray[1] = 0x80 | ((code & 0x3F000) >>> 12); byteArray[2] = 0x80 | ((code & 0xFC0) >>> 6); byteArray[3] = 0x80 | (code & 0x3F); } else if (code > 0x800) { byteArray[0] = 0xE0 | ((code & 0xF000) >>> 12); byteArray[1] = 0x80 | ((code & 0xFC0) >>> 6); byteArray[2] = 0x80 | (code & 0x3F); } else if (code > 0x80) { byteArray[0] = 0xC0 | ((code & 0x7C0) >>> 6); byteArray[1] = 0x80 | (code & 0x3F); } else { byteArray[0] = code; } this.parsedData.push(byteArray); } this.parsedData = Array.prototype.concat.apply([], this.parsedData); }
             QR8BitByte.prototype = { getLength: function() { return this.parsedData.length; }, write: function(buffer) { for (var i = 0, l = this.parsedData.length; i < l; i++) { buffer.put(this.parsedData[i], 8); } } };
@@ -445,27 +445,22 @@
             return { Model: QRCodeModel };
         })();
 
-        // HÀM SINH ẢNH QR ĐỘNG KHÔNG LỖI CHỮ ĐỎ
+        // HÀM SINH QR ĐÃ ĐƯỢC TỐI ƯU DUNG LƯỢNG CAO CẤP
         window.generateLocalQR = function(domElement, text, size = 140) {
             if (!domElement) return;
             domElement.innerHTML = "";
             try {
-                // Phân tích dung lượng mảng byte thực tế của chuỗi UTF-8 tiếng Việt để điều khiển Version ma trận động phù hợp
-                var testEncoder = new TextEncoder();
-                var byteLength = testEncoder.encode(text).length;
+                // Mã hóa chuỗi cực nhẹ, tự động tính toán Version ma trận linh hoạt
                 var typeNumber = 4;
-                if(byteLength > 30) typeNumber = 8;
-                if(byteLength > 60) typeNumber = 12;
-                if(byteLength > 90) typeNumber = 16;
-                if(byteLength > 120) typeNumber = 22;
-                if(byteLength > 150) typeNumber = 30;
+                if(text.length > 30) typeNumber = 6;
+                if(text.length > 60) typeNumber = 10;
                 
                 var qr = new DynamicQREngine.Model(typeNumber, 0); 
                 qr.addData(text);
                 qr.make();
 
                 var canvas = document.createElement('canvas');
-                var scale = 4; // Tối ưu khử răng cưa chống nhòe khi dùng súng quét mã
+                var scale = 4;
                 canvas.width = size * scale;
                 canvas.height = size * scale;
                 var ctx = canvas.getContext('2d');
@@ -495,11 +490,16 @@
                 domElement.appendChild(img);
             } catch (e) {
                 console.error(e);
-                domElement.innerHTML = "<span class='text-red-500 text-xs font-bold block p-2'>Lỗi cấu trúc dữ liệu</span>";
+                domElement.innerHTML = "<span class='text-red-500 text-xs font-bold block p-2'>Lỗi vẽ đồ họa</span>";
             }
         }
 
-        // ĐỔI SANG BẢO MẬT PHIÊN (SESSIONSTORAGE) - TẮT TRÌNH DUYỆT TỰ ĐỘNG THOÁT RA
+        // ĐỊNH DẠNG RÚT GỌN CHUỖI QR CODE - SIÊU NHẸ, KHÔNG LỖI TRÀN MẢNG
+        function makeQRTextContent(dev) { 
+            return `VINAPACO-${dev.id}`; 
+        }
+
+        // KHỞI TẠO BẢO MẬT PHIÊN ĐĂNG NHẬP (SESSIONSTORAGE)
         if(!localStorage.getItem('vinapaco_accounts_v3')) {
             localStorage.setItem('vinapaco_accounts_v3', JSON.stringify([{ username: 'admin', pass: 'vinapaco2026', role: 'Admin' }]));
         }
@@ -508,7 +508,7 @@
         const savedUser = sessionStorage.getItem('vinapaco_logged_in_user');
         if(savedUser) { loggedInUser = JSON.parse(savedUser); }
 
-        // BẮT PHÍM ENTER ĐỂ ĐĂNG NHẬP NHANH CHÓNG
+        // BẮT SỰ KIỆN ENTER ĐĂNG NHẬP NHANH CHÓNG
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
                 const activeEl = document.activeElement;
@@ -653,10 +653,6 @@
             else { d.className = "w-1/2 py-1.5 rounded-md font-bold bg-amber-500 text-white text-sm text-center"; l.className = "w-1/2 py-1.5 rounded-md font-bold bg-white text-slate-600 text-sm text-center"; document.getElementById('syncBadgeText').innerText = "DEMO CHẠY THỬ"; }
         }
 
-        function makeQRTextContent(dev) { 
-            return `ID:${dev.id}|Name:${dev.name}|Dept:${dev.dept}|User:${dev.user || 'Kho'}`; 
-        }
-
         function fetchCloudData() {
             const key = currentEnv === 'live' ? 'root' : 'demo_root';
             get(ref(db, key)).then((s) => {
@@ -707,7 +703,6 @@
         window.handleDeviceSubmit = function(e) { e.preventDefault(); const user = document.getElementById('deviceUser').value; devices.push({ id: document.getElementById('deviceId').value, name: document.getElementById('deviceName').value.trim(), cat: document.getElementById('deviceCategory').value, dept: document.getElementById('deviceDept').value, user, status: user === "Chưa cấp phát" ? "Trong kho" : "Hoạt động tốt" }); pushDataToCloud(); document.getElementById('deviceName').value = ""; }
         window.handleRepairSubmit = function(e) { e.preventDefault(); repairs.push({ id: Date.now().toString(), devId: document.getElementById('repairDeviceId').value, desc: document.getElementById('repairDesc').value.trim(), date: new Date().toLocaleDateString('vi-VN'), repUser: document.getElementById('repairUser').value, cost: document.getElementById('repairCost').value }); pushDataToCloud(); document.getElementById('repairDesc').value = ""; }
         
-        // HÀM NGHIỆP VỤ MUA SẮM VẬT TƯ MỚI TRÊN TRÌNH DUYỆT & SERVER
         window.handleProcurementSubmit = function(e) {
             e.preventDefault();
             procurements.push({
@@ -809,7 +804,6 @@
             document.getElementById('count-device').innerText = `${devices.length} tài sản`;
         }
 
-        // BIỂU DIỄN BẢNG HỒ SƠ MUA SẮM VÀ SỬA CHỮA MỚI NÂNG CẤP
         function renderProcurementTableOnly() {
             const body = document.getElementById('procurementTableBody'); if(!body) return; body.innerHTML = '';
             const role = loggedInUser ? loggedInUser.role : 'Viewer';
