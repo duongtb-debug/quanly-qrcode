@@ -20,33 +20,37 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
 
-        /* --- THEME TÙY BIẾN HIỆN ĐẠI (CYBER GLASS) --- */
+        /* --- THEME TÙY BIẾN HIỆN ĐẠI (CYBER GLASS DASHBOARD) --- */
         body.theme-cyberpunk {
-            background: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
-            color: #e2e8f0;
+            background: radial-gradient(circle at 50% 50%, #0a0f1d 0%, #02040a 100%);
+            color: #f1f5f9;
         }
         body.theme-cyberpunk .glass-panel {
-            background: rgba(30, 41, 59, 0.45);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            background: rgba(13, 20, 38, 0.6) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(56, 189, 248, 0.15) !important;
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6);
         }
         body.theme-cyberpunk input, body.theme-cyberpunk select {
-            background: rgba(15, 23, 42, 0.6) !important;
-            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            background: rgba(7, 11, 22, 0.8) !important;
+            border: 1px solid rgba(56, 189, 248, 0.25) !important;
             color: #ffffff !important;
         }
         body.theme-cyberpunk input:focus, body.theme-cyberpunk select:focus {
             border-color: #38bdf8 !important;
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.35);
         }
         body.theme-cyberpunk th {
-            background: rgba(15, 23, 42, 0.5) !important;
+            background: rgba(15, 23, 42, 0.7) !important;
             color: #38bdf8 !important;
         }
         body.theme-cyberpunk td {
-            border-color: rgba(255, 255, 255, 0.05) !important;
+            border-color: rgba(56, 189, 248, 0.08) !important;
+        }
+        body.theme-cyberpunk .bg-gradient-to-r {
+            background: linear-gradient(90deg, #1e1b4b 0%, #311042 100%) !important;
+            border-bottom: 2px solid rgba(147, 51, 234, 0.3);
         }
     </style>
 </head>
@@ -240,7 +244,7 @@
 
                 <div class="lg:col-span-8 space-y-4">
                     <span class="block font-bold text-slate-500 text-xs uppercase label-sub-text"><i class="fa-solid fa-user-pen text-emerald-600"></i> NHẬP LIỆU HỒ SƠ NHÂN SỰ</span>
-                    <form onsubmit="handleUserSubmit(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200 form-bg-panel">
+                    <form onsubmit="handleUserSubmit(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 form-bg-panel">
                         <input type="hidden" id="editUserId" value="">
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1 label-text-panel">Họ và tên</label>
@@ -256,19 +260,31 @@
                                 <option value="">-- Chọn đơn vị --</option>
                             </select>
                         </div>
-                        <div class="sm:col-span-2">
-                            <label class="block text-xs font-bold text-slate-600 mb-1 label-text-panel">Ảnh chân dung nhân sự (Tùy chọn)</label>
+
+                        <div class="sm:col-span-1.5 bg-white p-2 rounded-lg border border-slate-200 flex flex-col justify-center">
+                            <label class="block text-[11px] font-black text-slate-500 uppercase mb-1">Ảnh chân dung</label>
                             <div class="flex items-center gap-3">
-                                <input type="file" id="userAvatarFile" accept="image/*" onchange="handleUserAvatarUpload(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
-                                <input type="hidden" id="userAvatarData" value="">
-                                <div id="avatarPreviewContainer" class="w-9 h-9 rounded-full bg-slate-200 border border-slate-300 overflow-hidden hidden flex-shrink-0">
-                                    <img id="imgAvatarPreview" src="" class="w-full h-full object-cover">
+                                <div id="avatarPreviewContainer" class="w-14 h-14 rounded-xl bg-slate-200 border border-slate-300 overflow-hidden flex-shrink-0 shadow-sm flex items-center justify-center">
+                                    <img id="imgAvatarPreview" src="" class="w-full h-full object-cover hidden">
+                                    <i id="imgAvatarPlaceholder" class="fa-solid fa-user-tie text-xl text-slate-400"></i>
                                 </div>
+                                <input type="file" id="userAvatarFile" accept="image/*" onchange="handleUserAvatarUpload(event)" class="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded file:border-0 file:text-xs file:font-bold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer">
+                                <input type="hidden" id="userAvatarData" value="">
                             </div>
                         </div>
-                        <div class="sm:col-span-1 flex justify-end items-end gap-2">
-                            <button type="button" id="btnCancelUserEdit" onclick="resetUserForm()" class="px-3 py-2 bg-slate-200 text-slate-700 font-bold rounded-lg hidden text-xs">Hủy</button>
-                            <button type="submit" id="btnUserSubmit" class="w-full py-2 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 shadow-sm transition-colors text-xs uppercase tracking-wider cursor-pointer">Lưu Hồ Sơ</button>
+
+                        <div class="sm:col-span-1.5 bg-white p-2 rounded-lg border border-slate-200 flex flex-col justify-center">
+                            <label class="block text-[11px] font-black text-purple-700 uppercase mb-1"><i class="fa-solid fa-file-pdf"></i> Tài liệu / Bằng cấp đính kèm</label>
+                            <div class="flex items-center gap-2">
+                                <input type="file" id="userDocFile" accept=".pdf,.doc,.docx,.jpg,.png" onchange="handleUserDocUpload(event)" class="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded file:border-0 file:text-xs file:font-bold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer">
+                                <input type="hidden" id="userDocData" value="">
+                                <div id="userDocStatusIndicator" class="text-slate-400 text-xs font-bold whitespace-nowrap"><i class="fa-solid fa-cloud"></i> Trống</div>
+                            </div>
+                        </div>
+
+                        <div class="sm:col-span-3 flex justify-end items-end gap-2 pt-2 border-t border-slate-200/50">
+                            <button type="button" id="btnCancelUserEdit" onclick="resetUserForm()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-lg hidden text-xs">Hủy</button>
+                            <button type="submit" id="btnUserSubmit" class="px-6 py-2 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 shadow-sm transition-colors text-xs uppercase tracking-wider cursor-pointer">Lưu Hồ Sơ Nhân Sự</button>
                         </div>
                     </form>
 
@@ -291,15 +307,16 @@
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="border-b border-slate-100 bg-slate-50/70 text-slate-500 font-bold">
-                            <th class="p-3 pl-4 w-[60px] text-center">Ảnh</th>
+                            <th class="p-3 pl-4 w-[80px] text-center">Chân Dung</th>
                             <th class="p-3">Họ Tên / Chức Danh</th>
                             <th class="p-3">Đơn Vị Quản Lý</th>
+                            <th class="p-3 text-center">Tài Liệu Hồ Sơ</th>
                             <th class="p-3 text-right pr-4">Tác Vụ</th>
                         </tr>
                     </thead>
                     <tbody id="userTableBody" class="divide-y divide-slate-100">
                         <tr>
-                            <td colspan="4" class="p-4 text-center text-slate-400 italic">Chưa có dữ liệu nhân sự. Hãy nhập mới dữ liệu ở trên hoặc tải file danh sách.</td>
+                            <td colspan="5" class="p-4 text-center text-slate-400 italic">Chưa có dữ liệu nhân sự. Hãy nhập mới dữ liệu ở trên hoặc tải file danh sách.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -350,18 +367,6 @@
                         <button type="submit" id="btnDeviceSubmit" class="px-6 py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 shadow-sm cursor-pointer btn-dark-panel">Lưu & Sinh Mã QR</button>
                     </div>
                 </form>
-
-                <div class="p-4 bg-slate-900 text-white border-t border-slate-700 text-xs space-y-3 inner-dark-box">
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                        <div>
-                            <span class="block font-bold text-amber-400 uppercase tracking-wide"><i class="fa-solid fa-file-import mr-1"></i> Nhập Danh Sách Hàng Loạt Bằng File (CSV/TXT)</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <input type="file" id="importDeviceFile" accept=".csv, .txt" class="hidden" onchange="processDeviceFileImport(event)">
-                            <button onclick="document.getElementById('importDeviceFile').click()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 font-bold rounded text-white cursor-pointer"><i class="fa-solid fa-upload mr-1"></i> Chọn File</button>
-                        </div>
-                    </div>
-                </div>
 
                 <div class="p-3 bg-slate-50 border-b border-slate-200 text-sm form-bg-panel border-panel">
                     <input type="text" id="searchDeviceInput" oninput="renderDeviceTableOnly()" placeholder="Nhập tên thiết bị hoặc mã định danh để tìm kiếm nhanh..." class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-white focus:outline-none font-bold text-slate-700">
@@ -580,24 +585,22 @@
                 btnCyber.className = "px-2 py-0.5 rounded font-bold transition-all bg-sky-500 text-white shadow-lg shadow-sky-500/30";
                 btnClassic.className = "px-2 py-0.5 rounded font-bold transition-all text-slate-400 hover:text-white";
                 
-                // Chuyển một số màu sắc thành phần động sang phối cảnh tối trong suốt
                 document.querySelectorAll('.glass-panel').forEach(el => {
-                    if(!el.classList.contains('bg-slate-900')) el.style.backgroundColor = 'rgba(30, 41, 59, 0.45)';
+                    if(!el.classList.contains('bg-slate-900')) el.style.backgroundColor = 'rgba(13, 20, 38, 0.6)';
                 });
-                document.querySelectorAll('.form-bg-panel').forEach(el => el.style.backgroundColor = 'rgba(15, 23, 42, 0.4)');
+                document.querySelectorAll('.form-bg-panel').forEach(el => el.style.backgroundColor = 'rgba(7, 11, 22, 0.4)');
                 document.querySelectorAll('.label-text-panel').forEach(el => el.style.color = '#94a3b8');
                 document.querySelectorAll('.quote-text-panel').forEach(el => el.style.color = '#cbd5e1');
-                document.querySelectorAll('.border-panel').forEach(el => el.style.borderColor = 'rgba(255,255,255,0.08)');
+                document.querySelectorAll('.border-panel').forEach(el => el.style.borderColor = 'rgba(56,189,248,0.15)');
                 document.querySelectorAll('.table-container-panel').forEach(el => el.style.backgroundColor = 'transparent');
                 document.querySelectorAll('.header-main-title').forEach(el => el.style.color = '#ffffff');
                 document.querySelectorAll('.bottom-header-panel').forEach(el => el.style.color = '#94a3b8');
-                document.querySelectorAll('.env-panel').forEach(el => el.style.backgroundColor = 'rgba(15, 23, 42, 0.6)');
+                document.querySelectorAll('.env-panel').forEach(el => el.style.backgroundColor = 'rgba(7, 11, 22, 0.6)');
             } else {
                 body.classList.remove('theme-cyberpunk');
                 btnClassic.className = "px-2 py-0.5 rounded font-bold transition-all bg-emerald-600 text-white";
                 btnCyber.className = "px-2 py-0.5 rounded font-bold transition-all text-slate-400 hover:text-white";
                 
-                // Khôi phục giao diện truyền thống sạch sẽ
                 document.querySelectorAll('.glass-panel').forEach(el => {
                     if(!el.classList.contains('bg-slate-900') && !el.classList.contains('bg-amber-50')) el.style.backgroundColor = '#ffffff';
                 });
@@ -739,7 +742,6 @@
                     procurements = parse(data.procurements || adminData.procurements);
 
                     updateDropdownOptions(); renderAllTables(); autoGenDeviceId(); checkMaintenanceAlerts();
-                    // Giữ nguyên bộ lọc theme đang chọn sau khi đồng bộ dữ liệu cloud
                     const isCyber = document.getElementById('systemBody').classList.contains('theme-cyberpunk');
                     changeSystemTheme(isCyber ? 'cyber' : 'classic');
                 });
@@ -755,13 +757,29 @@
             }
         }
 
+        // --- XỬ LÝ TẢI ẢNH NHÂN SỰ TO RÕ ---
         window.handleUserAvatarUpload = function(e) {
             const file = e.target.files[0]; if (!file) return;
             const reader = new FileReader();
             reader.onload = function(evt) {
                 document.getElementById('userAvatarData').value = evt.target.result;
                 document.getElementById('imgAvatarPreview').src = evt.target.result;
-                document.getElementById('avatarPreviewContainer').classList.remove('hidden');
+                document.getElementById('imgAvatarPreview').classList.remove('hidden');
+                document.getElementById('imgAvatarPlaceholder').classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // --- XỬ LÝ TẢI LÊN TÀI LIỆU HỒ SƠ NHÂN SỰ ---
+        window.handleUserDocUpload = function(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const indicator = document.getElementById('userDocStatusIndicator');
+            indicator.innerHTML = `<i class="fa-solid fa-spinner animate-spin text-purple-600"></i> Nén...`;
+            
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                document.getElementById('userDocData').value = evt.target.result;
+                indicator.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> Đã có file`;
             };
             reader.readAsDataURL(file);
         }
@@ -783,30 +801,11 @@
                             deptExist = { id: Date.now().toString() + Math.random().toString(36).substring(2,5), name: fDept };
                             depts.push(deptExist);
                         }
-                        users.push({ id: Date.now().toString() + Math.random().toString(36).substring(2,5), name: fName, title: fTitle, dept: deptExist.name, avatar: "" });
+                        users.push({ id: Date.now().toString() + Math.random().toString(36).substring(2,5), name: fName, title: fTitle, dept: deptExist.name, avatar: "", userDoc: "" });
                         count++;
                     }
                 });
                 alert(`Tải lên thành công ${count} nhân sự vào hệ thống!`); pushDataToCloud();
-            };
-            reader.readAsText(file);
-        }
-
-        window.processDeviceFileImport = function(e) {
-            const file = e.target.files[0]; if (!file) return;
-            const targetDept = document.getElementById('deviceDept').value;
-            if(!targetDept) { alert("Vui lòng chọn một Đơn vị ở Form!"); return; }
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                const lines = evt.target.result.split('\n');
-                lines.forEach(line => {
-                    if(!line.trim()) return;
-                    const parts = line.split(',');
-                    if(parts.length >= 2) {
-                        devices.push({ id: parts[0].trim(), name: parts[1].trim(), cat: parts[2]?parts[2].trim():"Thiết bị", dept: targetDept, user: "Chưa cấp phát", status: "Trong kho" });
-                    }
-                });
-                pushDataToCloud();
             };
             reader.readAsText(file);
         }
@@ -876,11 +875,18 @@
             const title = document.getElementById('userTitle').value.trim();
             const dept = document.getElementById('userDept').value;
             const avatar = document.getElementById('userAvatarData').value;
+            const userDoc = document.getElementById('userDocData').value;
 
             if(uId) {
-                users.forEach(u => { if(u.id === uId) { u.name = name; u.title = title; u.dept = dept; if(avatar) u.avatar = avatar; } });
+                users.forEach(u => { 
+                    if(u.id === uId) { 
+                        u.name = name; u.title = title; u.dept = dept; 
+                        if(avatar) u.avatar = avatar;
+                        if(userDoc) u.userDoc = userDoc;
+                    } 
+                });
             } else {
-                users.push({ id: Date.now().toString(), name, title, dept, avatar });
+                users.push({ id: Date.now().toString(), name, title, dept, avatar, userDoc });
             }
             resetUserForm(); pushDataToCloud(); 
         }
@@ -893,8 +899,15 @@
             document.getElementById('userDept').value = u.dept;
             if(u.avatar) {
                 document.getElementById('imgAvatarPreview').src = u.avatar;
-                document.getElementById('avatarPreviewContainer').classList.remove('hidden');
+                document.getElementById('imgAvatarPreview').classList.remove('hidden');
+                document.getElementById('imgAvatarPlaceholder').classList.add('hidden');
                 document.getElementById('userAvatarData').value = u.avatar;
+            }
+            if(u.userDoc) {
+                document.getElementById('userDocData').value = u.userDoc;
+                document.getElementById('userDocStatusIndicator').innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> Đã có file`;
+            } else {
+                document.getElementById('userDocStatusIndicator').innerHTML = `<i class="fa-solid fa-cloud"></i> Trống`;
             }
             document.getElementById('btnCancelUserEdit').classList.remove('hidden');
             document.getElementById('btnUserSubmit').innerText = "Cập Nhật Hồ Sơ";
@@ -903,7 +916,10 @@
         window.resetUserForm = function() {
             document.getElementById('editUserId').value = ""; document.getElementById('userName').value = ""; document.getElementById('userTitle').value = "";
             document.getElementById('userAvatarData').value = ""; document.getElementById('userAvatarFile').value = "";
-            document.getElementById('avatarPreviewContainer').classList.add('hidden');
+            document.getElementById('userDocData').value = ""; document.getElementById('userDocFile').value = "";
+            document.getElementById('imgAvatarPreview').classList.add('hidden');
+            document.getElementById('imgAvatarPlaceholder').classList.remove('hidden');
+            document.getElementById('userDocStatusIndicator').innerHTML = `<i class="fa-solid fa-cloud"></i> Trống`;
             document.getElementById('btnCancelUserEdit').classList.add('hidden');
             document.getElementById('btnUserSubmit').innerText = "Lưu Hồ Sơ";
         }
@@ -1012,6 +1028,7 @@
             document.getElementById('count-device').innerText = `${devices.length} tài sản`;
         }
 
+        // --- RENDER BẢNG NHÂN SỰ VỚI KHUNG ẢNH RÕ NÉT & DOWNLOAD HỒ SƠ ---
         window.renderUserTableOnly = function() {
             const body = document.getElementById('userTableBody'); if(!body) return; body.innerHTML = '';
             let hasData = false;
@@ -1019,20 +1036,35 @@
             users.forEach(u => {
                 if(activeUserDeptFilter !== 'all' && u.dept !== activeUserDeptFilter) return;
                 hasData = true;
-                const avaImg = u.avatar ? `<img src="${u.avatar}" class="w-8 h-8 rounded-full object-cover border mx-auto">` : `<div class="w-8 h-8 rounded-full bg-slate-300 text-slate-600 flex items-center justify-center text-xs font-bold mx-auto"><i class="fa-solid fa-user"></i></div>`;
                 
+                // Khung ảnh chân dung mở rộng $48\times48\text{ px}$ nhìn cực kì rõ ràng
+                const avaImg = u.avatar ? `<img src="${u.avatar}" class="w-12 h-12 rounded-xl object-cover border border-slate-300 mx-auto shadow-sm">` : `<div class="w-12 h-12 rounded-xl bg-slate-200 text-slate-500 flex items-center justify-center text-lg font-bold mx-auto"><i class="fa-solid fa-user-tie"></i></div>`;
+                
+                // Nút tải xuống/Xem tài liệu đính kèm
+                const docActionBtn = u.userDoc ? `<button onclick="downloadUserDocument('${u.id}')" class="px-2.5 py-1 bg-purple-100 text-purple-700 hover:bg-purple-200 font-bold rounded text-xs cursor-pointer transition-all"><i class="fa-solid fa-file-arrow-down"></i> Tải Hồ Sơ</button>` : `<span class="text-slate-400 text-xs italic">Không có tệp</span>`;
+
                 body.innerHTML += `<tr class="hover:bg-white/5">
-                    <td class="p-2 text-center">${avaImg}</td>
-                    <td class="p-3 font-bold">${u.name}<span class="block text-xs text-slate-400">${u.title}</span></td>
+                    <td class="p-3 text-center">${avaImg}</td>
+                    <td class="p-3 font-bold text-base">${u.name}<span class="block text-xs text-slate-400 font-medium">${u.title}</span></td>
                     <td class="p-3 font-semibold">${u.dept}</td>
+                    <td class="p-3 text-center">${docActionBtn}</td>
                     <td class="p-3 text-right pr-4">
                         <button onclick="editUserInline('${u.id}')" class="text-blue-500 font-bold mr-3 cursor-pointer"><i class="fa-solid fa-pen"></i> Sửa</button>
                         <button onclick="deleteItem('user','${u.id}')" class="text-red-400 font-bold cursor-pointer"><i class="fa-solid fa-trash"></i> Xóa</button>
                     </td>
                 </tr>`;
             });
-            if(!hasData) body.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 italic">Trống dữ liệu nhân sự.</td></tr>`;
+            if(!hasData) body.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400 italic">Trống dữ liệu nhân sự.</td></tr>`;
             document.getElementById('count-user').innerText = `${users.length} nhân sự`;
+        }
+
+        // --- HÀM XỬ LÝ TẢI FILE TÀI LIỆU HỒ SƠ ---
+        window.downloadUserDocument = function(id) {
+            const u = users.find(item => item.id === id); if(!u || !u.userDoc) return;
+            const link = document.createElement('a');
+            link.href = u.userDoc;
+            link.download = `HoSo_NhanSu_${u.name.replace(/\s+/g, '_')}`;
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
 
         window.renderRepairTableOnly = function() {
