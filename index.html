@@ -42,8 +42,11 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Mã Pin Xác Thực Access</label>
-                    <input type="password" id="loginPin" placeholder="Mặc định: 1234" class="w-full border border-slate-300 rounded-lg p-2.5 font-bold tracking-widest text-center focus:outline-none focus:border-emerald-600 bg-slate-50">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-xs font-bold text-slate-500 uppercase">Mã Pin Xác Thực Access</label>
+                        <button onclick="triggerForgotPassword()" class="text-xs text-blue-600 hover:underline font-bold cursor-pointer">Quên mật khẩu?</button>
+                    </div>
+                    <input type="password" id="loginPin" placeholder="Mặc định: vinapaco2026" class="w-full border border-slate-300 rounded-lg p-2.5 font-bold tracking-widest text-center focus:outline-none focus:border-emerald-600 bg-slate-50">
                 </div>
                 <div id="loginErrorMsg" class="text-red-500 font-bold text-xs text-center hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> Mã pin xác thực không chính xác!</div>
                 <button onclick="executeSystemLogin()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-lg transition-colors shadow-md cursor-pointer uppercase text-sm tracking-wider">Xác Thực Vào Hệ Thống</button>
@@ -69,7 +72,28 @@
                 </div>
                 <div class="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded border border-slate-700 text-xs font-bold text-emerald-400">
                     <span id="currentRoleBadge">🔑 Quản Trị Viên (Admin)</span>
+                    <button onclick="openChangePasswordModal()" class="text-amber-400 hover:text-amber-300 ml-2 cursor-pointer text-[11px] uppercase tracking-tighter"><i class="fa-solid fa-key mr-0.5"></i> [Đổi PIN]</button>
                     <button onclick="logoutSystem()" class="text-slate-400 hover:text-red-400 ml-2 cursor-pointer text-[11px] uppercase tracking-tighter">[Đăng xuất]</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="changePasswordModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden border border-slate-200">
+                <div class="bg-slate-800 text-white p-4 font-bold flex justify-between items-center">
+                    <span><i class="fa-solid fa-key text-amber-400 mr-1.5"></i> Thay Đổi Mã PIN Hệ Thống</span>
+                    <button onclick="closeChangePasswordModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="p-4 space-y-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Mã PIN cũ hiện tại</label>
+                        <input type="password" id="oldPinInput" class="w-full border border-slate-300 rounded p-2 focus:outline-none focus:border-slate-600 font-bold tracking-widest text-center">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Mã PIN mới mong muốn</label>
+                        <input type="password" id="newPinInput" class="w-full border border-slate-300 rounded p-2 focus:outline-none focus:border-slate-600 font-bold tracking-widest text-center">
+                    </div>
+                    <button onclick="submitChangePassword()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded cursor-pointer transition-colors text-sm">Cập Nhật Mã PIN Mới</button>
                 </div>
             </div>
         </div>
@@ -437,6 +461,13 @@
         let currentEnv = localStorage.getItem('vinapaco_current_env') || 'live'; 
         let currentRole = 'admin';
 
+        // Khởi tạo các mã pin bảo mật mặc định
+        let systemPins = {
+            admin: "vinapaco2026",
+            sub_user_1: "vinapaco2026",
+            sub_user_2: "vinapaco2026"
+        };
+
         let depts = [], users = [], devices = [], repairs = [], tasks = [], procurements = [];
         let activeUserDeptFilter = 'all';
         let pomoInterval = null, pomoTimeLeft = 25 * 60, pomoIsRunning = false, pomoCurrentMode = 'work';
@@ -445,34 +476,119 @@
         const mockUsers = [{ id: "u1", name: "Nguyễn Văn Phú", title: "Trưởng Ca Vận Hành", dept: "Xưởng Xeo 1" }];
         const mockDevices = [{ id: "TB-67149", name: "Máy Nghiền Thủy Lực Lực Ly Tâm", cat: "Hệ thống xeo bột", dept: "Xưởng Xeo 1", user: "Nguyễn Văn Phú", status: "Hoạt động tốt" }];
 
-        // ĐĂNG NHẬP XÁC THỰC
+        // ĐĂNG NHẬP XÁC THỰC VỚI MẬT KHẨU ĐỒNG BỘ CLOUD
         window.executeSystemLogin = function() {
             const role = document.getElementById('loginRole').value;
             const pin = document.getElementById('loginPin').value;
             const errorLabel = document.getElementById('loginErrorMsg');
 
-            if(pin === '1234') { 
-                currentRole = role;
-                errorLabel.classList.add('hidden');
-                document.getElementById('loginOverlaySystem').classList.add('hidden');
-                document.getElementById('mainSystemContentDashboard').classList.remove('hidden');
+            const basePath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
+            
+            // Lấy dữ liệu PIN từ Cloud trước để kiểm tra tránh dùng mã cũ
+            get(ref(db, `${basePath}/security_pins`)).then((snapshot) => {
+                if(snapshot.exists()) {
+                    systemPins = snapshot.val();
+                }
                 
-                const textBadge = role === 'admin' ? '🔑 Quản Trị Viên (Admin)' : `🧑 Tài Khoản Con [${role === 'sub_user_1' ? 'Ca 1' : 'Ca 2'}]`;
-                document.getElementById('currentRoleBadge').innerText = textBadge;
+                const correctPin = systemPins[role] || "vinapaco2026";
 
-                fetchCloudData();
+                if(pin === correctPin) { 
+                    currentRole = role;
+                    errorLabel.classList.add('hidden');
+                    document.getElementById('loginOverlaySystem').classList.add('hidden');
+                    document.getElementById('mainSystemContentDashboard').classList.remove('hidden');
+                    
+                    const textBadge = role === 'admin' ? '🔑 Quản Trị Viên (Admin)' : `🧑 Tài Khoản Con [${role === 'sub_user_1' ? 'Ca 1' : 'Ca 2'}]`;
+                    document.getElementById('currentRoleBadge').innerText = textBadge;
+
+                    fetchCloudData();
+                } else {
+                    errorLabel.classList.remove('hidden');
+                }
+            });
+        }
+
+        // TÍNH NĂNG ĐỔI MẬT KHẨU TRONG DASHBOARD
+        window.openChangePasswordModal = function() {
+            document.getElementById('oldPinInput').value = '';
+            document.getElementById('newPinInput').value = '';
+            document.getElementById('changePasswordModal').style.display = 'flex';
+        }
+
+        window.closeChangePasswordModal = function() {
+            document.getElementById('changePasswordModal').style.display = 'none';
+        }
+
+        window.submitChangePassword = function() {
+            const oldPin = document.getElementById('oldPinInput').value;
+            const newPin = document.getElementById('newPinInput').value.trim();
+            const basePath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
+
+            if(!newPin) {
+                alert("Vui lòng nhập mã PIN mới!");
+                return;
+            }
+
+            if(oldPin !== systemPins[currentRole]) {
+                alert("Mã PIN cũ nhập không chính xác! Hãy kiểm tra lại.");
+                return;
+            }
+
+            systemPins[currentRole] = newPin;
+            set(ref(db, `${basePath}/security_pins`), systemPins).then(() => {
+                alert(`Đã đổi mã PIN tài khoản [${currentRole}] thành công trên Cloud!`);
+                closeChangePasswordModal();
+            });
+        }
+
+        // TÍNH NĂNG QUÊN MẬT KHẨU (Xác thực chéo qua quyền Admin)
+        window.triggerForgotPassword = function() {
+            const role = document.getElementById('loginRole').value;
+            const basePath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
+
+            if(role === 'admin') {
+                // Luồng phục hồi khẩn cấp cho tài khoản Admin cấp cao nhất
+                const masterKey = prompt("HỆ THỐNG BẢO MẬT VINAPACO:\nĐể khôi phục mật khẩu Admin, vui lòng nhập mã số khôi phục Master Key của nhà máy:");
+                if(masterKey === "VINAPACO2026_MASTER") {
+                    const newAdminPin = prompt("Xác thực đúng! Vui lòng nhập mã PIN mới cho Admin:");
+                    if(newAdminPin && newAdminPin.trim() !== "") {
+                        systemPins.admin = newAdminPin.trim();
+                        set(ref(db, `${basePath}/security_pins`), systemPins).then(() => {
+                            alert("Đã reset mật khẩu Admin thành công! Bạn có thể đăng nhập bằng mã mới.");
+                        });
+                    }
+                } else if (masterKey !== null) {
+                    alert("Sai mã Master Key khôi phục! Vui lòng liên hệ bộ phận IT phòng điều hành trung tâm.");
+                }
             } else {
-                errorLabel.classList.remove('hidden');
+                // Luồng khôi phục cho tài khoản con (Yêu cầu nhập PIN Admin để phê duyệt cấp lại)
+                const adminVerifyPin = prompt(`Bạn đang yêu cầu cấp lại mật khẩu cho [${role}].\nĐể phê duyệt, vui lòng yêu cầu Quản Trị Viên (Admin) nhập mã PIN của Admin vào đây:`);
+                if(adminVerifyPin) {
+                    get(ref(db, `${basePath}/security_pins`)).then((snapshot) => {
+                        const currentPins = snapshot.val() || systemPins;
+                        if(adminVerifyPin === currentPins.admin) {
+                            const newSubPin = prompt(`Xác thực Admin thành công!\nNhập mã PIN mới cho tài khoản [${role}]:`);
+                            if(newSubPin && newSubPin.trim() !== "") {
+                                systemPins[role] = newSubPin.trim();
+                                set(ref(db, `${basePath}/security_pins`), systemPins).then(() => {
+                                    alert(`Đổi mật khẩu cho ca trực [${role}] thành công!`);
+                                });
+                            }
+                        } else {
+                            alert("Mã PIN của Admin không chính xác! Không thể phê duyệt đổi mật khẩu.");
+                        }
+                    });
+                }
             }
         }
 
         window.logoutSystem = function() {
             document.getElementById('loginPin').value = '';
             document.getElementById('mainSystemContentDashboard').classList.add('hidden');
-            document.getElementById('loginOverlaySystem').classList.remove('hidden');
+            document.getElementById('loginOverlaySystem').remove classList.remove('hidden');
         }
 
-        // ĐỌC / GHI DỮ LIỆU
+        // ĐỌC / GHI DỮ LIỆU ĐỒNG BỘ HÓA TÀI SẢN
         function fetchCloudData() {
             const basePath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
             const readPath = currentRole === 'admin' ? basePath : `${basePath}/sub_channels/${currentRole}`;
@@ -480,6 +596,14 @@
             get(ref(db, basePath)).then((adminSnapshot) => {
                 const adminData = adminSnapshot.val() || {};
                 
+                // Đồng bộ cấu trúc PIN từ dữ liệu tổng về biến cục bộ
+                if(adminData.security_pins) {
+                    systemPins = adminData.security_pins;
+                } else {
+                    // Nếu chưa có nhánh PIN trên Firebase, tự khởi tạo lưu cấu trúc mặc định vinapaco2026
+                    set(ref(db, `${basePath}/security_pins`), systemPins);
+                }
+
                 get(ref(db, readPath)).then((snapshot) => {
                     const data = snapshot.val() || {};
                     const parse = (arr) => arr ? (Array.isArray(arr) ? arr.filter(Boolean) : Object.values(arr)) : [];
@@ -501,7 +625,7 @@
         function pushDataToCloud() {
             const basePath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
             if(currentRole === 'admin') {
-                set(ref(db, basePath), { depts, users, devices, repairs, tasks, procurements }).then(() => fetchCloudData());
+                set(ref(db, basePath), { depts, users, devices, repairs, tasks, procurements, security_pins: systemPins }).then(() => fetchCloudData());
             } else {
                 set(ref(db, `${basePath}/sub_channels/${currentRole}`), { users, devices, repairs, tasks, procurements });
                 fetchCloudData();
