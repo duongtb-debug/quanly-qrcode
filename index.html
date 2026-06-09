@@ -24,7 +24,7 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #047857; border-radius: 3px; }
 
-        /* KHÔI PHỤC NỀN HOẠ TIẾT QUẢ TRÁM ĐẶC TRƯNG GIAO DIỆN CŨ ỔN ĐỊNH */
+        /* NỀN HOẠ TIẾT QUẢ TRÁM XANH LỤC ĐẬM NGUYÊN BẢN ỔN ĐỊNH GIAO DIỆN CŨ */
         body {
             background-color: #033e2f;
             background-image: 
@@ -42,7 +42,7 @@
 <body class="text-slate-800 font-sans min-h-screen p-4 md:p-6 space-y-6 text-sm md:text-base">
 
     <div id="loginOverlaySystem" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-slate-200 overflow-hidden animate-fade-in">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-slate-200 overflow-hidden">
             <div class="p-6 text-center border-b border-slate-100 bg-slate-50/50">
                 <div class="w-16 h-16 mx-auto mb-3 flex items-center justify-center bg-emerald-800 rounded-2xl shadow-md p-2">
                     <svg viewBox="0 0 100 100" class="w-12 h-12 fill-white">
@@ -51,9 +51,9 @@
                     </svg>
                 </div>
                 <h1 class="text-xl font-black text-slate-900 tracking-tight uppercase">VẬN HÀNH VINAPACO 2026</h1>
-                <p class="text-xs text-slate-500 mt-1">Hệ thống giám sát điều hành & cấp phát thiết bị mã QR</p>
+                <p class="text-xs text-slate-500 mt-1">Hệ thống điều hành & cấp phát quản lý mã QR kỹ thuật</p>
                 <div id="syncStatusBadge" class="mt-2 inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
-                    <i class="fa-solid fa-sync animate-spin"></i> Đang đồng bộ hóa Database đám mây...
+                    <i class="fa-solid fa-sync animate-spin"></i> Đang tải cơ sở dữ liệu nhà máy...
                 </div>
             </div>
             
@@ -68,28 +68,28 @@
 
             <div class="p-6 space-y-4">
                 <div>
-                    <label class="block text-[11px] font-black text-slate-400 uppercase mb-1 tracking-wider">Cấp phân quyền chức vụ</label>
+                    <label class="block text-[11px] font-black text-slate-400 uppercase mb-1 tracking-wider">Phân quyền trực ban</label>
                     <select id="loginRole" class="w-full border border-slate-300 rounded-xl p-3 font-bold text-slate-800 bg-slate-50 text-sm focus:outline-none focus:border-emerald-600">
                         <option value="admin">🔑 Quản Trị Viên (Admin - Toàn Quyền)</option>
-                        <option value="sub_user_1">🧑 Kỹ sư Vận hành Ca 1</option>
-                        <option value="sub_user_2">🧑 Kỹ sư Vận hành Ca 2</option>
+                        <option value="sub_user_1">🧑 Vận Hành Kỹ Thuật Ca 1</option>
+                        <option value="sub_user_2">🧑 Vận Hành Kỹ Thuật Ca 2</option>
                     </select>
                 </div>
 
                 <div id="containerLoginPassword" class="space-y-1 block">
-                    <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1">Mật khẩu phân khu trực trực ban</label>
+                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-wider mb-1">Mật khẩu khu vực vận hành</label>
                     <input type="password" id="loginPassword" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Mặc định: vinapaco2026" class="w-full border border-slate-300 rounded-xl p-3 text-center bg-slate-50 text-sm font-bold focus:outline-none focus:border-emerald-600">
                 </div>
 
                 <div id="containerLoginPin" class="space-y-1 hidden">
-                    <label class="block text-[11px] font-black text-slate-500 uppercase tracking-wider mb-1">Mã PIN bảo mật cá nhân</label>
-                    <input type="password" id="loginPin" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Nhập mã PIN trực ca..." class="w-full border border-slate-300 rounded-xl p-3 text-center bg-slate-50 text-sm tracking-widest font-bold focus:outline-none focus:border-emerald-600">
+                    <label class="block text-[11px] font-black text-slate-400 uppercase tracking-wider mb-1">Mã PIN bảo mật cán bộ</label>
+                    <input type="password" id="loginPin" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Nhập mã PIN trực ban..." class="w-full border border-slate-300 rounded-xl p-3 text-center bg-slate-50 text-sm tracking-widest font-bold focus:outline-none focus:border-emerald-600">
                 </div>
 
-                <div id="loginErrorMsg" class="text-red-500 font-bold text-xs text-center hidden">❌ Thông tin xác thực sai lệch! Vui lòng kiểm tra lại.</div>
+                <div id="loginErrorMsg" class="text-red-500 font-bold text-xs text-center hidden">❌ Thông tin đăng nhập không chính xác! Vui lòng thử lại.</div>
                 
                 <button onclick="executeSystemLogin()" class="w-full py-3.5 bg-slate-900 hover:bg-emerald-800 text-white font-bold rounded-xl uppercase text-xs tracking-wider transition-colors shadow-lg">
-                    XÁC THỰC VÀO HỆ THỐNG
+                    XÁC THỰC TRUY CẬP
                 </button>
             </div>
         </div>
@@ -100,11 +100,11 @@
         <div class="bg-slate-900/90 text-white p-3 rounded-xl flex flex-wrap items-center justify-between gap-3 shadow-xl">
             <div class="flex items-center gap-2">
                 <i class="fa-solid fa-shield-halved text-amber-400 text-sm"></i>
-                <span class="font-bold text-xs md:text-sm uppercase tracking-wider">Hệ Thống Phân Quyền Giám Sát VINAPACO 2026</span>
+                <span class="font-bold text-xs md:text-sm uppercase tracking-wider">Hệ Thống Quản Lý Kỹ Thuật Nội Bộ - VINAPACO 2026</span>
             </div>
             <div class="flex items-center gap-4 text-xs font-bold text-emerald-400">
                 <span id="currentRoleBadge">🔑 Quản Trị Viên</span>
-                <button onclick="logoutSystem()" class="text-slate-400 hover:text-red-400 font-black uppercase">[Đăng Xuất]</button>
+                <button onclick="logoutSystem()" class="text-slate-400 hover:text-red-400 font-black uppercase">[Rời Ca Trực]</button>
             </div>
         </div>
 
@@ -129,24 +129,24 @@
             <div class="flex items-center gap-2 text-amber-900 text-xs md:text-sm">
                 <i class="fa-solid fa-qrcode text-xl text-amber-600 animate-pulse"></i>
                 <div>
-                    <span class="font-black">ĐÃ TRÍCH XUẤT THÔNG TIN MÃ QR THÀNH CÔNG:</span>
+                    <span class="font-black">ĐÃ LỌC THÀNH CÔNG THIẾT BỊ TỪ MÃ QR:</span>
                     <span id="qrScanAlertDetail" class="font-mono font-bold bg-white px-2 py-0.5 rounded border ml-1 text-emerald-800">TB-XXXXX</span>
                 </div>
             </div>
-            <button onclick="clearQRFilter()" class="px-3 py-1 bg-amber-600 text-white font-bold text-xs rounded hover:bg-amber-700">Xem Toàn Bộ Thiết Bị</button>
+            <button onclick="clearQRFilter()" class="px-3 py-1 bg-amber-600 text-white font-bold text-xs rounded hover:bg-amber-700">Xem Tất Cả</button>
         </div>
 
         <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden lg:col-span-8">
                 <div class="bg-slate-800 text-white font-bold p-3 flex items-center justify-between text-xs md:text-sm">
-                    <span><i class="fa-solid fa-boxes-stacked mr-1.5"></i> 1. Cơ Sở Dữ Liệu Thiết Bị Tài Sản & Cấp Phát QR</span>
+                    <span><i class="fa-solid fa-boxes-stacked mr-1.5"></i> 1. Danh Mục Quản Lý Thiết Bị Vật Tư Toàn Nhà Máy</span>
                     <span class="bg-black/20 px-2 py-0.5 rounded font-mono" id="count-device">0 tài sản</span>
                 </div>
                 
                 <form id="formDeviceAction" onsubmit="handleDeviceSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs md:text-sm bg-slate-50/50">
                     <div class="sm:col-span-3">
-                        <label class="block font-bold text-slate-500 mb-1">Mã Định Danh</label>
-                        <input type="text" id="deviceId" readonly class="w-full border bg-slate-100 font-mono font-bold p-2 rounded-lg text-slate-700">
+                        <label class="block font-bold text-slate-500 mb-1">Mã Thiết Bị</label>
+                        <input type="text" id="deviceId" readonly class="w-full border bg-slate-100 font-mono font-bold p-2 rounded-lg text-slate-600">
                     </div>
                     <div class="sm:col-span-9">
                         <label class="block font-bold text-slate-500 mb-1">Tên thiết bị tài sản kỹ thuật</label>
@@ -154,7 +154,7 @@
                     </div>
                     <div class="sm:col-span-12">
                         <label class="block font-bold text-slate-500 mb-1">Chủng loại phân nhóm thiết bị</label>
-                        <input type="text" id="deviceCategory" list="categorySuggestions" required placeholder="Chọn hoặc gõ phân nhóm..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold text-emerald-800">
+                        <input type="text" id="deviceCategory" list="categorySuggestions" required placeholder="Chọn hoặc nhập loại thiết bị..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold text-emerald-800">
                         <datalist id="categorySuggestions">
                             <option value="[Bột] Máy nghiền thủy lực (Hydrapulper)"></option>
                             <option value="[Bột] Máy nghiền đĩa (Disc Refiner)"></option>
@@ -164,7 +164,7 @@
                         </datalist>
                     </div>
                     <div class="sm:col-span-6">
-                        <label class="block font-bold text-slate-500 mb-1">Xưởng / Phòng ban quản lý</label>
+                        <label class="block font-bold text-slate-500 mb-1">Xưởng / Phòng ban</label>
                         <select id="deviceDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold">
                             <option value="Phòng Kỹ Thuật">Phòng Kỹ Thuật</option>
                             <option value="Xưởng Xeo Giấy">Xưởng Xeo Giấy</option>
@@ -172,11 +172,11 @@
                         </select>
                     </div>
                     <div class="sm:col-span-6">
-                        <label class="block font-bold text-blue-600 mb-1">Người chịu trách nhiệm vận hành</label>
-                        <input type="text" id="deviceUser" required placeholder="Họ tên kỹ sư phụ trách..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold">
+                        <label class="block font-bold text-blue-600 mb-1">Người chịu trách nhiệm kỹ thuật</label>
+                        <input type="text" id="deviceUser" required placeholder="Tên kỹ sư phụ trách..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold">
                     </div>
                     <div class="sm:col-span-12 flex justify-end">
-                        <button type="submit" class="px-5 py-2 bg-slate-900 text-white font-bold rounded-lg text-xs uppercase hover:bg-emerald-800">Lưu Tài Sản Kỹ Thuật</button>
+                        <button type="submit" class="px-5 py-2 bg-slate-900 text-white font-bold rounded-lg text-xs uppercase hover:bg-emerald-800">Lưu Thiết Bị & Cấp Mã</button>
                     </div>
                 </form>
 
@@ -185,8 +185,8 @@
                         <thead>
                             <tr class="border-b bg-slate-50 text-slate-500 font-bold uppercase text-[11px]">
                                 <th class="p-3 pl-4">Mã Số</th>
-                                <th class="p-3">Tên Thiết Bị / Phân Loại</th>
-                                <th class="p-3">Hiện Trạng</th>
+                                <th class="p-3">Tên Thiết Bị / Chủng Loại</th>
+                                <th class="p-3">Hiện Trạng Trực</th>
                                 <th class="p-3 text-center">Tạo QR</th>
                                 <th class="p-3 text-right pr-4">Xóa</th>
                             </tr>
@@ -199,8 +199,8 @@
             <div class="lg:col-span-4 sticky top-6">
                 <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
                     <div class="bg-slate-800 text-white p-3 font-bold text-xs md:text-sm flex items-center justify-between">
-                        <span><i class="fa-solid fa-eye text-amber-400 mr-1.5"></i> Khối In Nhãn QR Thiết Bị</span>
-                        <button onclick="window.print()" id="btnActionPrintNow" class="hidden px-2 py-0.5 bg-amber-500 text-slate-950 font-black text-xs rounded hover:bg-amber-400">🖨️ Kích Hoạt In</button>
+                        <span><i class="fa-solid fa-eye text-amber-400 mr-1.5"></i> Nhãn QR Đóng Khối Kỹ Thuật</span>
+                        <button onclick="window.print()" id="btnActionPrintNow" class="hidden px-2 py-0.5 bg-amber-500 text-slate-950 font-black text-xs rounded hover:bg-amber-400">🖨️ In Ngay</button>
                     </div>
                     <div class="p-6 flex flex-col items-center justify-center bg-slate-50/50 min-h-[200px]">
                         <div id="webPreviewQRBox" class="p-3 bg-white border border-slate-300 rounded-xl text-center flex flex-col items-center justify-center hidden w-[180px]">
@@ -208,7 +208,7 @@
                             <div id="wpCanvas" class="bg-white p-1"></div>
                             <p id="wpId" class="text-xs font-mono font-black text-slate-800 mt-1.5 tracking-wider"></p>
                         </div>
-                        <p id="webPreviewEmptyText" class="text-slate-400 italic text-center text-xs">Vui lòng nhấp nút [In QR] ở cột thiết bị tài sản.</p>
+                        <p id="webPreviewEmptyText" class="text-slate-400 italic text-center text-xs">Vui lòng bấm nút [In QR] ở danh sách thiết bị phía đối diện.</p>
                     </div>
                 </div>
             </div>
@@ -216,22 +216,22 @@
 
         <section class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
             <div class="bg-indigo-900 text-white font-bold p-3 flex items-center justify-between text-xs md:text-sm">
-                <span><i class="fa-solid fa-screwdriver-wrench mr-2"></i> 2. Nhật Ký Hành Động Sửa Chữa Khắc Phục Sự Cố Ca Trực</span>
+                <span><i class="fa-solid fa-screwdriver-wrench mr-2"></i> 2. Nhật Ký Sự Cố & Hành Động Sửa Chữa Kịp Thời</span>
                 <span class="bg-black/20 px-2 py-0.5 rounded font-mono" id="count-repair">0 lượt</span>
             </div>
             
             <form id="formRepairAction" onsubmit="handleRepairSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-12 gap-3 text-xs md:text-sm bg-slate-50/50">
                 <div class="md:col-span-4">
-                    <label class="block font-bold text-red-600 mb-1">Khai báo mã thiết bị gặp lỗi hỏng</label>
+                    <label class="block font-bold text-red-600 mb-1">Thiết bị gặp sự cố hỏng hóc</label>
                     <select id="repairDeviceId" required class="w-full border border-slate-300 rounded-lg p-2 bg-white font-mono font-bold h-[36px]"></select>
                 </div>
                 <div class="md:col-span-5">
-                    <label class="block font-bold text-slate-600 mb-1">Hiện trạng chi tiết / Biện pháp xử lý kỹ thuật</label>
-                    <input type="text" id="repairDesc" required placeholder="Ghi nhận hỏng hóc, sự cố cần bảo dưỡng..." class="w-full border border-slate-300 rounded-lg p-2 bg-white h-[36px]">
+                    <label class="block font-bold text-slate-600 mb-1">Mô tả hiện trạng / Phương án khắc phục nhanh</label>
+                    <input type="text" id="repairDesc" required placeholder="Ghi chú lỗi hỏng hóc chi tiết..." class="w-full border border-slate-300 rounded-lg p-2 bg-white h-[36px]">
                 </div>
                 <div class="md:col-span-3 flex items-end">
                     <button type="submit" class="w-full bg-rose-600 text-white font-bold rounded-lg hover:bg-rose-700 h-[36px] text-xs uppercase tracking-wider font-black">
-                        ⚠️ Ghi Nhận Sự Cố Ca Trực
+                        🚨 Ghi Nhận Sự Cố Ca
                     </button>
                 </div>
             </form>
@@ -241,10 +241,10 @@
                     <thead>
                         <tr class="border-b bg-slate-50 text-slate-500 font-bold uppercase text-[11px]">
                             <th class="p-3 pl-4">Mã Thiết Bị</th>
-                            <th class="p-3">Biên Bản Mô Tả Lỗi Kỹ Thuật</th>
-                            <th class="p-3">Thời Điểm Ghi Nhận</th>
-                            <th class="p-3">Trạng Thái Xử Lý</th>
-                            <th class="p-3 text-right pr-4">Hành Động Đã Sửa</th>
+                            <th class="p-3">Biên Bản Lỗi Kỹ Thuật</th>
+                            <th class="p-3">Thời Gian Ghi Nhận</th>
+                            <th class="p-3">Tình Trạng</th>
+                            <th class="p-3 text-right pr-4">Hành Động Khắc Phục</th>
                         </tr>
                     </thead>
                     <tbody id="repairTableBody" class="divide-y divide-slate-100 bg-white"></tbody>
@@ -254,27 +254,27 @@
 
         <section class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
             <div class="bg-emerald-800 text-white font-bold p-3 flex items-center justify-between text-xs md:text-sm">
-                <span><i class="fa-solid fa-users mr-2"></i> 3. Quản Lý Hồ Sơ Nhân Sự / Điều Động Cán Bộ Kỹ Thuật Trực Ca</span>
+                <span><i class="fa-solid fa-users mr-2"></i> 3. Quản Lý Nhân Sự & Điều Động Cán Bộ Kỹ Thuật Trực Ca</span>
                 <span class="bg-black/20 px-2 py-0.5 rounded font-mono" id="count-staff">0 nhân sự</span>
             </div>
             
             <form id="formStaffAction" onsubmit="handleStaffSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs md:text-sm bg-slate-50/50">
                 <input type="hidden" id="staffEditId" value="">
                 <div class="sm:col-span-3">
-                    <label class="block font-bold text-slate-600 mb-1">Mã Thẻ Cán Bộ</label>
-                    <input type="text" id="staffId" required placeholder="Ví dụ: NV-101" class="w-full border border-slate-300 rounded-lg p-2 bg-white font-mono font-bold">
+                    <label class="block font-bold text-slate-600 mb-1">Mã Số Thẻ</label>
+                    <input type="text" id="staffId" required placeholder="Ví dụ: CB-505" class="w-full border border-slate-300 rounded-lg p-2 bg-white font-mono font-bold">
                 </div>
                 <div class="sm:col-span-4">
-                    <label class="block font-bold text-slate-600 mb-1">Họ và tên nhân viên</label>
-                    <input type="text" id="staffName" required placeholder="Nhập họ tên cán bộ..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold">
+                    <label class="block font-bold text-slate-600 mb-1">Họ tên nhân viên</label>
+                    <input type="text" id="staffName" required placeholder="Nhập họ tên đầy đủ..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold">
                 </div>
                 <div class="sm:col-span-5">
-                    <label class="block font-bold text-slate-600 mb-1">Chức vụ / Ca trực trực ban phân công</label>
-                    <input type="text" id="staffRole" required placeholder="Ví dụ: Kỹ sư trưởng ca Xeo Giấy..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-medium">
+                    <label class="block font-bold text-slate-600 mb-1">Chức vụ phụ trách / Phân công ca trực</label>
+                    <input type="text" id="staffRole" required placeholder="Ví dụ: Kỹ sư trưởng ca nghiền..." class="w-full border border-slate-300 rounded-lg p-2 bg-white">
                 </div>
                 <div class="sm:col-span-12 flex justify-end gap-2">
                     <button type="button" id="btnCancelStaffEdit" onclick="cancelStaffEditState()" class="px-3 py-1.5 bg-slate-200 text-slate-700 font-bold rounded-lg text-xs hidden">Hủy Bỏ Sửa</button>
-                    <button type="submit" id="btnSubmitStaffText" class="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg text-xs uppercase">Lưu Hồ Sơ Nhân Sự</button>
+                    <button type="submit" id="btnSubmitStaffText" class="px-5 py-2 bg-emerald-700 text-white font-bold rounded-lg text-xs uppercase hover:bg-emerald-800">Lưu Hồ Sơ Cán Bộ</button>
                 </div>
             </form>
 
@@ -282,9 +282,9 @@
                 <table class="w-full text-left border-collapse text-xs md:text-sm">
                     <thead>
                         <tr class="border-b bg-slate-50 text-slate-500 font-bold uppercase text-[11px]">
-                            <th class="p-3 pl-4">Mã Cán Bộ</th>
-                            <th class="p-3">Họ Và Tên</th>
-                            <th class="p-3">Chức Vụ / Phân Ca Trực Hoạt Động</th>
+                            <th class="p-3 pl-4">Mã Số Thẻ</th>
+                            <th class="p-3">Họ Tên Cán Bộ</th>
+                            <th class="p-3">Chức Phụ Ca Trực Ban</th>
                             <th class="p-3 text-right pr-4">Hành Động Quản Lý</th>
                         </tr>
                     </thead>
@@ -295,22 +295,22 @@
 
         <section class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
             <div class="bg-slate-700 text-white font-bold p-3 flex items-center justify-between text-xs md:text-sm">
-                <span><i class="fa-solid fa-file-pdf mr-2"></i> 4. Quản Lý Tài Liệu Quy Trình Bản Vẽ Kỹ Thuật Biểu Mẫu VINAPACO</span>
+                <span><i class="fa-solid fa-file-invoice mr-2"></i> 4. Lưu Trữ Tài Liệu Hướng Dẫn Vận Hành & Sơ Đồ Quy Trình</span>
                 <span class="bg-black/20 px-2 py-0.5 rounded font-mono" id="count-doc">0 tài liệu</span>
             </div>
             
             <form id="formDocAction" onsubmit="handleDocSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs md:text-sm bg-slate-50/50">
-                <div class="sm:col-span-4">
-                    <label class="block font-bold text-slate-600 mb-1">Tên tài liệu / Văn bản quy trình</label>
-                    <input type="text" id="docTitle" required placeholder="Ví dụ: Quy trình vận hành máy nghiền bột..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold">
+                <div class="sm:col-span-5">
+                    <label class="block font-bold text-slate-600 mb-1">Tên văn bản / Quy chuẩn thiết bị phụ trợ</label>
+                    <input type="text" id="docTitle" required placeholder="Ví dụ: Sơ đồ vận hành dây chuyền xeo..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold">
                 </div>
-                <div class="sm:col-span-6">
-                    <label class="block font-bold text-slate-600 mb-1">Đường dẫn tài liệu đính kèm (URL đám mây Google Drive / Dropbox)</label>
-                    <input type="url" id="docUrl" required placeholder="Dán link tài liệu bản vẽ kỹ thuật vào đây..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-mono text-xs">
+                <div class="sm:col-span-5">
+                    <label class="block font-bold text-slate-600 mb-1">Đường dẫn liên kết đám mây (Google Drive / Dropbox)</label>
+                    <input type="url" id="docUrl" required placeholder="Dán liên kết URL file PDF/Hình ảnh tại đây..." class="w-full border border-slate-300 rounded-lg p-2 bg-white font-mono text-xs">
                 </div>
                 <div class="sm:col-span-2 flex items-end">
                     <button type="submit" class="w-full bg-slate-800 text-white font-bold rounded-lg hover:bg-slate-900 h-[36px] text-xs uppercase">
-                        <i class="fa-solid fa-cloud-arrow-up mr-1"></i> Lưu Quy Trình
+                        <i class="fa-solid fa-cloud-arrow-up mr-1"></i> Thêm File
                     </button>
                 </div>
             </form>
@@ -347,7 +347,7 @@
             projectId: "qltbvinapaco"
         };
 
-        // Khởi động kết nối SDK v8 nguyên bản ổn định
+        // Khởi động SDK v8 nguyên bản
         firebase.initializeApp(firebaseConfig);
         var db = firebase.database();
 
@@ -357,7 +357,7 @@
         var documents = [];
         var activeQRFilterId = null;
 
-        // ---------------- ĐĂNG NHẬP CHUYỂN ĐỔI TAB MƯỢT MÀ, TRIỆT TIÊU LỖI CHỒNG CHỮ ----------------
+        // ---------------- ĐĂNG NHẬP CHUYỂN TAB MƯỢT MÀ KHÔNG CHỒNG CHỮ ----------------
         window.switchLoginMethod = function(method) {
             var tabPass = document.getElementById('tabLoginPassword');
             var tabPin = document.getElementById('tabLoginPin');
@@ -388,17 +388,17 @@
             if(isPassMode) {
                 if(pass === "vinapaco2026") loginValid = true;
             } else {
-                if(pin.trim() !== "") loginValid = true; // Chấp nhận mã PIN để đăng nhập mượt mà công việc trực ca
+                if(pin.trim() !== "") loginValid = true;
             }
 
             if(loginValid) {
-                errorMsg.classList.add('hidden');
-                document.getElementById('loginOverlaySystem').classList.add('hidden');
+                errorMsg.className = 'hidden';
+                document.getElementById('loginOverlaySystem').style.display = 'none';
                 document.getElementById('mainSystemContentDashboard').classList.remove('hidden');
                 
                 var labelRole = "🔑 Quản Trị Viên";
-                if(role === 'sub_user_1') labelRole = "🧑 Kỹ sư Vận hành Ca 1";
-                if(role === 'sub_user_2') labelRole = "🧑 Kỹ sư Vận hành Ca 2";
+                if(role === 'sub_user_1') labelRole = "🧑 Vận Hành Ca 1";
+                if(role === 'sub_user_2') labelRole = "🧑 Vận Hành Ca 2";
                 document.getElementById('currentRoleBadge').innerText = labelRole;
             } else {
                 errorMsg.classList.remove('hidden');
@@ -407,13 +407,9 @@
 
         window.logoutSystem = function() {
             document.getElementById('mainSystemContentDashboard').classList.add('hidden');
-            document.getElementById('loginOverlaySystem').classList.remove('hidden');
+            document.getElementById('loginOverlaySystem').style.display = 'flex';
             document.getElementById('loginPassword').value = "";
             document.getElementById('loginPin').value = "";
-            returnToLoginState();
-        }
-
-        function returnToLoginState() {
             switchLoginMethod('password');
         }
 
@@ -425,13 +421,12 @@
                 return Object.values(snap);
             }
 
-            // Đồng bộ Thiết bị tài sản cũ
             db.ref('devices').on('value', function(snapshot) {
                 devices = toArray(snapshot.val());
                 var badge = document.getElementById('syncStatusBadge');
                 if(badge) {
                     badge.className = "mt-2 inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800";
-                    badge.innerHTML = `<i class="fa-solid fa-cloud-check"></i> Đã đồng bộ kết nối dữ liệu lịch sử thành công.`;
+                    badge.innerHTML = `<i class="fa-solid fa-cloud-check"></i> Kết nối cơ sở dữ liệu gốc thành công.`;
                 }
                 updateDropdownOptions();
                 checkUrlParamForQRFilter();
@@ -439,11 +434,8 @@
                 autoGenDeviceId();
             });
 
-            // Đồng bộ Nhật ký sửa chữa hỏng hóc cũ
             db.ref('repairs').on('value', function(snapshot) { repairs = toArray(snapshot.val()); renderAllTables(); });
-            // Đồng bộ Hồ sơ nhân sự cũ
             db.ref('staffs').on('value', function(snapshot) { staffs = toArray(snapshot.val()); renderAllTables(); });
-            // Đồng bộ Quy trình tài liệu cũ
             db.ref('documents').on('value', function(snapshot) { documents = toArray(snapshot.val()); renderAllTables(); });
         }
 
@@ -452,7 +444,7 @@
         function pushStaffs() { db.ref('staffs').set(staffs); }
         function pushDocs() { db.ref('documents').set(documents); }
 
-        // ---------------- HIỂN THỊ CÁC KHỐI BẢNG DỮ LIỆU LÊN GAIO DIỆN GỐC ----------------
+        // ---------------- RENDER BẢNG DỮ LIỆU LÊN MÀN HÌNH NGUYÊN BẢN ----------------
         window.renderAllTables = function() {
             // Render Thiết bị
             var devBody = document.getElementById('deviceTableBody');
@@ -462,11 +454,11 @@
                 listFiltered.forEach(function(d) {
                     var errorFound = repairs.some(function(r) { return r.devId === d.id && !r.isResolved; });
                     var badgeStatus = errorFound ? 
-                        `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 animate-pulse">🔴 Có sự cố</span>` : 
-                        `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">🟢 Vận hành tốt</span>`;
+                        `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 animate-pulse">🔴 Sự cố</span>` : 
+                        `<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">🟢 Bình thường</span>`;
 
                     devBody.innerHTML += `<tr class="${activeQRFilterId === d.id ? 'bg-amber-50 font-bold border-l-4 border-amber-500' : ''}">
-                        <td class="p-3 font-mono font-bold text-slate-900">${d.id}</td>
+                        <td class="p-3 font-mono font-bold">${d.id}</td>
                         <td class="p-3 font-bold">${d.name}<span class="block text-xs text-slate-400 font-medium">${d.cat || ''} (${d.dept || ''})</span></td>
                         <td class="p-3">${badgeStatus}</td>
                         <td class="p-1 text-center">
@@ -480,14 +472,14 @@
                 document.getElementById('count-device').innerText = devices.length + " tài sản";
             }
 
-            // Render Nhật ký hành động sửa chữa
+            // Render Nhật ký bảo dưỡng sửa chữa
             var repBody = document.getElementById('repairTableBody');
             if(repBody) {
                 repBody.innerHTML = '';
                 repairs.forEach(function(r) {
-                    var btnAction = r.isResolved ? `<span class="text-slate-400 text-xs italic">Đã nghiệm thu</span>` : 
-                        `<button type="button" onclick="resolveRepairTask('${r.id}')" class="px-2 py-0.5 bg-emerald-700 text-white font-bold rounded text-xs hover:bg-emerald-800">✔️ Báo Đã Sửa</button>`;
-                    var textStatus = r.isResolved ? `<span class="text-xs font-bold text-sky-600">🔵 Hoàn thành</span>` : `<span class="text-xs font-bold text-rose-600 animate-pulse">🚨 Chờ sửa chữa</span>`;
+                    var btnAction = r.isResolved ? `<span class="text-slate-400 text-xs italic">Đã khắc phục</span>` : 
+                        `<button type="button" onclick="resolveRepairTask('${r.id}')" class="px-2 py-0.5 bg-emerald-700 text-white font-bold rounded text-xs hover:bg-emerald-800">✔️ Báo Sửa Xong</button>`;
+                    var textStatus = r.isResolved ? `<span class="text-xs font-bold text-sky-600">🔵 Hoàn thành</span>` : `<span class="text-xs font-bold text-rose-600 animate-pulse">🚨 Chờ xử lý</span>`;
 
                     repBody.innerHTML += `<tr>
                         <td class="p-3 font-mono font-bold text-rose-700 pl-4">${r.devId}</td>
@@ -502,7 +494,7 @@
                 document.getElementById('count-repair').innerText = repairs.length + " lượt";
             }
 
-            // Render Hồ sơ Nhân sự (Có đầy đủ chức năng Sửa và Xóa trả lại chuẩn xác bản cũ)
+            // Render Hồ sơ Nhân sự (Chuẩn hóa nút Sửa và Xóa theo yêu cầu lịch sử)
             var staffBody = document.getElementById('staffTableBody');
             if(staffBody) {
                 staffBody.innerHTML = '';
@@ -520,7 +512,7 @@
                 document.getElementById('count-staff').innerText = staffs.length + " nhân sự";
             }
 
-            // Render Tài liệu Quy trình đính kèm (Có thể xem lại trực tiếp)
+            // Render Tài liệu quy trình (Nút xem trực tiếp mượt mà trên tab mới)
             var docBody = document.getElementById('docTableBody');
             if(docBody) {
                 docBody.innerHTML = '';
@@ -574,7 +566,6 @@
             if(target) { target.isResolved = true; pushRepairs(); }
         }
 
-        // Xử lý Hồ sơ nhân sự: Thêm mới hoặc Cập nhật (Sửa)
         window.handleStaffSubmit = function(e) {
             e.preventDefault();
             var editId = document.getElementById('staffEditId').value;
@@ -586,7 +577,7 @@
                 var idx = staffs.findIndex(function(x){return x.id === editId;});
                 if(idx !== -1) { staffs[idx].id = sId; staffs[idx].name = sName; staffs[idx].role = sRole; }
             } else {
-                if(staffs.some(function(x){return x.id === sId;})) { alert("Mã thẻ cán bộ này đã tồn tại trên dữ liệu cũ!"); return; }
+                if(staffs.some(function(x){return x.id === sId;})) { alert("Mã thẻ này đã tồn tại!"); return; }
                 staffs.push({ id: sId, name: sName, role: sRole });
             }
             cancelStaffEditState();
@@ -601,7 +592,7 @@
                 document.getElementById('staffName').value = target.name;
                 document.getElementById('staffRole').value = target.role;
                 document.getElementById('btnCancelStaffEdit').classList.remove('hidden');
-                document.getElementById('btnSubmitStaffText').innerText = "Cập Nhật Thay Đổi";
+                document.getElementById('btnSubmitStaffText').innerText = "Cập Nhật Cán Bộ";
                 document.getElementById('formStaffAction').scrollIntoView({ behavior: 'smooth' });
             }
         }
@@ -612,7 +603,7 @@
             document.getElementById('staffName').value = "";
             document.getElementById('staffRole').value = "";
             document.getElementById('btnCancelStaffEdit').classList.add('hidden');
-            document.getElementById('btnSubmitStaffText').innerText = "Lưu Hồ Sơ Nhân Sự";
+            document.getElementById('btnSubmitStaffText').innerText = "Lưu Hồ Sơ Cán Bộ";
         }
 
         window.handleDocSubmit = function(e) {
@@ -628,7 +619,7 @@
         }
 
         window.deleteItem = function(type, id) {
-            if(confirm("Xác nhận xóa vĩnh viễn bản ghi lịch sử này khỏi cơ sở dữ liệu nhà máy?")) {
+            if(confirm("Bạn có chắc muốn xóa bản ghi này?")) {
                 if(type==='device') { devices = devices.filter(function(x){return x.id!==id;}); pushDevices(); }
                 if(type==='repair') { repairs = repairs.filter(function(x){return x.id!==id;}); pushRepairs(); }
                 if(type==='staff') { staffs = staffs.filter(function(x){return x.id!==id;}); pushStaffs(); }
@@ -636,7 +627,7 @@
             }
         }
 
-        // ---------------- TẠO MÃ QR VÀ QUÉT TRA CỨU TỰ ĐỘNG QUA URL ----------------
+        // ---------------- TẠO QR VÀ TRÍCH XUẤT TỰ ĐỘNG QUA URL ----------------
         window.previewAndSelectQR = function(id) {
             var dev = devices.find(function(x){return x.id === id;}); if(!dev) return;
             document.getElementById('webPreviewEmptyText').classList.add('hidden');
@@ -663,8 +654,8 @@
                 document.getElementById('qrScanAlertBox').classList.remove('hidden');
                 document.getElementById('qrScanAlertDetail').innerText = idFromQR;
                 
-                // Cho phép kỹ sư xem thẳng thông tin thiết bị khi quét QR ngoài phân xưởng
-                document.getElementById('loginOverlaySystem').classList.add('hidden');
+                // Vào thẳng màn hình khi quét QR ngoài xưởng
+                document.getElementById('loginOverlaySystem').style.display = 'none';
                 document.getElementById('mainSystemContentDashboard').classList.remove('hidden');
             }
         }
