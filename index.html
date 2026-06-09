@@ -12,65 +12,67 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; transition: all 0.4s ease; scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease, color 0.3s ease; scroll-behavior: smooth; }
         
-        /* GIAO DIỆN ĐĂNG NHẬP ĐẶC TRƯNG BẢN TRƯỚC */
+        /* GIAO DIỆN ĐĂNG NHẬP NỀN XANH TỐI NGUYÊN BẢN */
         .login-matrix-bg {
-            background: radial-gradient(circle at top right, #043e2b, #01140f);
+            background: radial-gradient(circle at center, #033626 0%, #01110d 100%);
         }
         
-        /* CÁC CHỦ ĐỀ GIAO DIỆN TÙY BIẾN */
+        /* BỘ GIAO DIỆN TÙY BIẾN ĐA DẠNG (THEME ENGINE) */
         body.theme-emerald { background-color: #02231a; color: #f8fafc; }
         body.theme-dark { background-color: #0f172a; color: #f8fafc; }
         body.theme-cyber { background-color: #050515; color: #00ffcc; }
         body.theme-light { background-color: #f1f5f9; color: #0f172a; }
 
-        .neo-card {
-            background: rgba(255, 255, 255, 0.98);
-            border: 1px solid rgba(226, 232, 240, 0.8);
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
-            color: #1e293b;
-        }
-        body.theme-dark .neo-card { background: #1e293b; border-color: #334155; color: #f8fafc; }
-        body.theme-cyber .neo-card { background: #0c0c24; border-color: #00ffcc; color: #00ffcc; box-shadow: 0 0 15px #00ffcc; }
+        /* ĐỊNH NGHĨA PHÂN BIỆT THẺ CARD THEO TỪNG THEME */
+        .neo-card { transition: all 0.3s ease; }
+        body.theme-emerald .neo-card { background: #ffffff; border: 1px solid #e2e8f0; color: #1e293b; }
+        body.theme-dark .neo-card { background: #1e293b; border: 1px solid #334155; color: #f8fafc; }
+        body.theme-cyber .neo-card { background: #0c0c24; border: 1px solid #00ffcc; color: #00ffcc; box-shadow: 0 0 15px rgba(0, 255, 204, 0.2); }
+        body.theme-light .neo-card { background: #ffffff; border: 1px solid #cbd5e1; color: #0f172a; }
+
+        /* ĐỂ CHỮ TRONG BẢNG RÕ RÀNG TRÊN CÁC NỀN */
+        body.theme-dark td, body.theme-cyber td { color: inherit; }
+        body.theme-dark th, body.theme-cyber th { background-color: rgba(0,0,0,0.3); color: inherit; }
     </style>
 </head>
-<body class="theme-emerald min-h-screen p-3 md:p-6 space-y-6" onclick="triggerBackgroundClickLogin()">
+<body class="theme-emerald min-h-screen p-3 md:p-6 space-y-6" onclick="handleBackgroundClick(event)">
 
-    <div id="loginOverlaySystem" class="fixed inset-0 login-matrix-bg flex items-center justify-center z-50 p-4" onclick="event.stopPropagation()">
-        <div class="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl w-full max-w-md border border-emerald-500/30 overflow-hidden p-6 space-y-6 text-slate-900">
+    <div id="loginOverlaySystem" class="fixed inset-0 login-matrix-bg flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md border border-emerald-500/20 overflow-hidden p-6 space-y-6 text-slate-900" onclick="event.stopPropagation()">
             <div class="text-center">
-                <div class="w-16 h-16 mx-auto mb-3 flex items-center justify-center bg-emerald-800 rounded-2xl shadow-lg text-white text-2xl">
-                    <i class="fa-solid fa-shield-halved"></i>
+                <div class="w-16 h-16 mx-auto mb-2 flex items-center justify-center bg-emerald-800 rounded-2xl shadow-lg text-white text-2xl">
+                    <i class="fa-solid fa-lock"></i>
                 </div>
-                <h1 class="text-xl font-black tracking-tight text-emerald-900 uppercase">VINAPACO ERP SECURITY</h1>
-                <p class="text-xs text-slate-500 mt-1">Hệ thống chuyển đổi linh hoạt Mật khẩu & Mã PIN</p>
+                <h1 class="text-xl font-black tracking-tight text-emerald-950 uppercase">VINAPACO ERP LOGIN</h1>
+                <p class="text-xs text-slate-500 mt-1">Đăng nhập nhanh bằng Mã PIN hoặc Mật khẩu</p>
             </div>
 
             <div class="flex bg-slate-100 p-1 rounded-xl gap-1">
                 <button id="tabPass" onclick="switchLoginMethod('pass')" class="w-1/2 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-emerald-950 transition-all">Mật Khẩu</button>
-                <button id="tabPin" onclick="switchLoginMethod('pin')" class="w-1/2 py-2 text-xs font-bold rounded-lg text-slate-500 transition-all">Mã PIN cá nhân</button>
+                <button id="tabPin" onclick="switchLoginMethod('pin')" class="w-1/2 py-2 text-xs font-bold rounded-lg text-slate-500 transition-all">Mã PIN Cá Nhân</button>
             </div>
 
             <div class="space-y-4">
                 <div>
-                    <label class="block text-[11px] font-black text-slate-500 uppercase mb-1">Tài khoản</label>
-                    <input type="text" id="loginUsername" placeholder="Nhập tên tài khoản..." class="w-full border border-slate-300 rounded-xl p-3 font-bold text-sm bg-slate-50 focus:outline-none" onkeypress="if(event.key === 'Enter') executeSystemLogin()">
+                    <label class="block text-[11px] font-black text-slate-400 uppercase mb-1">Tài khoản người dùng</label>
+                    <input type="text" id="loginUsername" placeholder="Tên đăng nhập..." class="w-full border border-slate-300 rounded-xl p-3 font-bold text-sm bg-slate-50 focus:outline-none" onkeypress="if(event.key === 'Enter') executeSystemLogin()">
                 </div>
 
                 <div id="inputSecretContainer">
-                    <label class="block text-[11px] font-black text-slate-500 uppercase mb-1">Mật khẩu hệ thống</label>
-                    <input type="password" id="loginSecret" placeholder="Mặc định: vinapaco2026" class="w-full border border-slate-300 rounded-xl p-3 text-sm font-bold bg-slate-50 focus:outline-none" onkeypress="if(event.key === 'Enter') executeSystemLogin()">
+                    <label class="block text-[11px] font-black text-slate-400 uppercase mb-1">Mật khẩu hệ thống</label>
+                    <input type="password" id="loginSecret" placeholder="Mặc định tài khoản admin: vinapaco2026" class="w-full border border-slate-300 rounded-xl p-3 text-sm font-bold bg-slate-50 focus:outline-none" onkeypress="if(event.key === 'Enter') executeSystemLogin()">
                 </div>
 
-                <div id="loginErrorMsg" class="text-red-500 font-bold text-xs text-center hidden">❌ Thông tin đăng nhập không chính xác hoặc đã bị vô hiệu hóa!</div>
+                <div id="loginErrorMsg" class="text-red-500 font-bold text-xs text-center hidden">❌ Sai thông tin tài khoản hoặc phương thức đăng nhập!</div>
                 
                 <button onclick="executeSystemLogin()" class="w-full py-3.5 bg-emerald-800 hover:bg-emerald-900 text-white font-bold rounded-xl uppercase text-xs tracking-wider transition-colors shadow-lg">
-                    Đăng Nhập (Enter / Chấm Chuột)
+                    ĐĂNG NHẬP (ENTER / CHẤM CHUỘT NGOÀI)
                 </button>
 
                 <div class="text-center">
-                    <button onclick="triggerForgotPassword()" class="text-xs text-blue-600 hover:underline font-medium">Bạn quên mật khẩu/Mã PIN?</button>
+                    <button onclick="triggerForgotPassword()" class="text-xs text-blue-600 hover:underline font-bold">Bạn quên mật khẩu hoặc Mã PIN?</button>
                 </div>
             </div>
         </div>
@@ -81,155 +83,163 @@
         
         <div class="bg-slate-900 text-white p-4 rounded-2xl flex flex-wrap items-center justify-between gap-4 shadow-2xl border border-slate-800">
             <div class="flex items-center gap-3">
-                <span class="font-black text-xs md:text-sm uppercase tracking-widest text-slate-100"><i class="fa-solid fa-industry mr-2 text-emerald-400"></i>VINAPACO ERP DIGITAL 2026</span>
+                <span class="font-black text-xs md:text-sm uppercase tracking-widest text-slate-100"><i class="fa-solid fa-industry mr-2 text-emerald-400"></i>VINAPACO ERP KỸ THUẬT 2026</span>
             </div>
             
-            <div class="flex flex-wrap items-center gap-3">
-                <div class="flex items-center gap-1.5 bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">
-                    <span class="text-[11px] font-bold text-slate-400 uppercase"><i class="fa-solid fa-palette mr-1"></i>Giao diện:</span>
+            <div class="flex flex-wrap items-center gap-4">
+                <div class="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase"><i class="fa-solid fa-palette mr-1"></i>Tùy biến giao diện:</span>
                     <button onclick="changeSystemTheme('theme-emerald')" class="w-4 h-4 rounded-full bg-emerald-600 border border-white" title="Xanh lục Vực Thẳm"></button>
-                    <button onclick="changeSystemTheme('theme-dark')" class="w-4 h-4 rounded-full bg-slate-700 border border-white" title="Không gian Tối"></button>
+                    <button onclick="changeSystemTheme('theme-dark')" class="w-4 h-4 rounded-full bg-slate-600 border border-white" title="Không gian Tối"></button>
                     <button onclick="changeSystemTheme('theme-cyber')" class="w-4 h-4 rounded-full bg-cyan-400 border border-white" title="Cyber Neon"></button>
                     <button onclick="changeSystemTheme('theme-light')" class="w-4 h-4 rounded-full bg-white border border-slate-400" title="Sáng Tối Giản"></button>
                 </div>
 
                 <div class="flex items-center gap-2 text-xs font-bold">
-                    <span id="currentRoleBadge" class="bg-emerald-800 text-white px-3 py-1.5 rounded-xl border border-emerald-600">🔑 Admin</span>
-                    <button onclick="logoutSystem()" class="bg-red-900/40 text-red-400 px-3 py-1.5 rounded-xl hover:bg-red-500 hover:text-white uppercase font-black tracking-wider transition-all">[Thoát]</button>
+                    <span id="currentRoleBadge" class="bg-emerald-800 text-white px-3 py-1.5 rounded-xl border border-emerald-600">🔑 Khách</span>
+                    <button onclick="logoutSystem()" class="bg-red-950/60 text-red-400 px-3 py-1.5 rounded-xl hover:bg-red-600 hover:text-white uppercase font-black transition-all">[Thoát]</button>
                 </div>
             </div>
         </div>
 
-        <section class="neo-card rounded-2xl overflow-hidden">
-            <div class="bg-slate-800 text-white font-bold p-3.5 flex items-center justify-between text-xs md:text-sm">
-                <span><i class="fa-solid fa-sitemap mr-2 text-amber-400"></i> Quản lý phân quyền tài khoản & Reset mật khẩu/Mã PIN</span>
+        <section class="neo-card rounded-2xl overflow-hidden shadow-xl">
+            <div class="bg-slate-800 text-white font-bold p-3.5 flex items-center justify-between text-xs md:text-sm border-b border-slate-700">
+                <span><i class="fa-solid fa-sitemap mr-2 text-amber-400"></i> Quản lý thiết lập tài khoản cấp dưới & Đổi mật khẩu/mã PIN trực thuộc</span>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-slate-200/20 p-4 gap-4">
                 <div class="lg:col-span-4 space-y-3">
-                    <h4 class="font-black text-xs uppercase"><i class="fa-solid fa-user-plus mr-1 text-emerald-500"></i> Cấp tài khoản cấp dưới</h4>
+                    <h4 class="font-black text-xs uppercase"><i class="fa-solid fa-user-plus mr-1 text-emerald-500"></i> Tạo tài khoản con quản lý</h4>
                     <div class="space-y-2 text-xs text-slate-800">
-                        <input type="text" id="newUserName" placeholder="Tên đăng nhập mới..." class="w-full border p-2 rounded-lg font-bold bg-slate-50">
-                        <input type="password" id="newUserPass" placeholder="Mật khẩu tài khoản..." class="w-full border p-2 rounded-lg bg-slate-50">
-                        <input type="text" id="newUserPin" placeholder="Mã PIN bảo mật nhanh (6 số)..." class="w-full border p-2 rounded-lg bg-slate-50">
-                        <button onclick="createUserChild()" class="w-full py-2 bg-emerald-800 text-white font-bold rounded-lg uppercase text-[11px] hover:bg-emerald-700">Tạo & Phân Cấp Quản Lý</button>
+                        <input type="text" id="newUserName" placeholder="Tên đăng nhập mới của user con..." class="w-full border p-2 rounded-lg font-bold bg-slate-50">
+                        <input type="password" id="newUserPass" placeholder="Mật khẩu khởi tạo..." class="w-full border p-2 rounded-lg bg-slate-50">
+                        <input type="text" id="newUserPin" placeholder="Mã PIN đăng nhập nhanh (6 số)..." class="w-full border p-2 rounded-lg bg-slate-50">
+                        <button onclick="createUserChild()" class="w-full py-2.5 bg-emerald-800 text-white font-bold rounded-lg uppercase text-[11px] hover:bg-emerald-700 transition-colors">Tạo và giao quyền cấp dưới</button>
                     </div>
                 </div>
                 <div class="lg:col-span-8 space-y-3">
-                    <h4 class="font-black text-xs uppercase"><i class="fa-solid fa-users-cog mr-1 text-blue-500"></i> Danh sách thành viên cấp dưới thuộc quyền quản lý trực tiếp</h4>
-                    <div class="overflow-x-auto border rounded-xl">
+                    <h4 class="font-black text-xs uppercase"><i class="fa-solid fa-users-cog mr-1 text-blue-400"></i> Nhóm tài khoản thuộc quyền quản lý trực thuộc của bạn</h4>
+                    <div class="overflow-x-auto border rounded-xl bg-white/5 text-slate-800">
                         <table class="w-full text-xs text-left">
                             <thead class="bg-slate-100 text-slate-600 font-bold uppercase text-[10px]">
                                 <tr>
-                                    <th class="p-2">Tên User</th>
-                                    <th class="p-2">Cấp trên trực tiếp</th>
-                                    <th class="p-2 text-center">Đặt lại Mật khẩu</th>
-                                    <th class="p-2 text-center">Đặt lại mã PIN</th>
-                                    <th class="p-2 text-right">Hành động</th>
+                                    <th class="p-2.5">Tên User</th>
+                                    <th class="p-2.5">Cấp trên tạo</th>
+                                    <th class="p-2.5 text-center">Cấp lại Mật khẩu</th>
+                                    <th class="p-2.5 text-center">Cấp lại mã PIN</th>
+                                    <th class="p-2.5 text-right">Hành động</th>
                                 </tr>
                             </thead>
-                            <tbody id="userTreeTableBody" class="divide-y bg-white text-slate-800"></tbody>
+                            <tbody id="userTreeTableBody" class="divide-y divide-slate-100 bg-white"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="sectionPersonnel" class="neo-card rounded-2xl overflow-hidden">
-            <div class="bg-emerald-950 text-white font-bold p-3.5 flex items-center justify-between text-xs md:text-sm">
-                <span><i class="fa-solid fa-users-gear text-emerald-400 mr-2"></i> 1. Cơ sở dữ liệu phòng ban đơn vị & Kiểm soát hồ sơ cán bộ kỹ thuật</span>
-                <span class="bg-emerald-800 px-2 py-0.5 rounded font-mono" id="count-staff">0 nhân sự</span>
+        <section id="sectionPersonnel" class="neo-card rounded-2xl overflow-hidden shadow-xl">
+            <div class="bg-emerald-950 text-white font-bold p-3.5 flex items-center justify-between text-xs md:text-sm border-b border-emerald-800">
+                <span><i class="fa-solid fa-users-gear text-emerald-400 mr-2"></i> 1. Cơ sở dữ liệu phòng ban đơn vị & Kiểm soát hồ sơ cán bộ kỹ thuật (Đã lược bỏ trực ban)</span>
+                <span class="bg-emerald-800 px-2 py-0.5 rounded font-mono text-xs" id="count-staff">0 cán bộ</span>
             </div>
             
             <div class="p-4 space-y-4">
-                <form id="formStaffAction" onsubmit="handleStaffSubmit(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs bg-slate-50/50 p-4 rounded-xl border text-slate-800">
+                <div class="bg-slate-50 p-3 rounded-xl border border-dashed border-emerald-400 flex flex-col md:flex-row justify-between items-center gap-3 text-slate-800">
+                    <div class="w-full md:w-2/3">
+                        <label class="block font-black text-emerald-950 text-xs uppercase mb-1">Đọc nhanh danh sách thô cán bộ kỹ thuật (Tự động lọc trùng)</label>
+                        <input type="file" id="inputFileStaffList" accept=".csv,.txt" class="text-xs w-full">
+                    </div>
+                    <button onclick="processImportStaffFile()" class="w-full md:w-auto px-5 py-2.5 bg-emerald-800 text-white font-black text-xs uppercase rounded-lg shadow">Đồng bộ khớp danh sách</button>
+                </div>
+
+                <form id="formStaffAction" onsubmit="handleStaffSubmit(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs bg-slate-100/50 p-4 rounded-xl border text-slate-900">
                     <input type="hidden" id="staffEditId" value="">
                     
                     <div class="sm:col-span-3">
-                        <label class="block font-bold text-slate-500 mb-1">Mã Thẻ Nhân Viên</label>
-                        <input type="text" id="staffId" placeholder="Hệ thống tự sinh..." readonly class="w-full border rounded-lg p-2 bg-slate-100 font-mono font-bold text-center text-emerald-800 focus:outline-none">
+                        <label class="block font-bold text-slate-500 mb-1">Mã Thẻ Nhân Sự (Hệ thống tự sinh)</label>
+                        <input type="text" id="staffId" readonly class="w-full border rounded-lg p-2.5 bg-slate-200 font-mono font-bold text-center text-emerald-900 focus:outline-none">
                     </div>
                     <div class="sm:col-span-3">
-                        <label class="block font-bold text-slate-500 mb-1">Họ tên cán bộ</label>
-                        <input type="text" id="staffName" required placeholder="Nhập tên..." class="w-full border rounded-lg p-2 bg-white font-bold">
+                        <label class="block font-bold text-slate-500 mb-1">Họ tên cán bộ nhân sự</label>
+                        <input type="text" id="staffName" required placeholder="Nhập họ và tên..." class="w-full border rounded-lg p-2.5 bg-white font-bold text-slate-900 focus:ring-2 focus:ring-emerald-500 outline-none">
                     </div>
                     <div class="sm:col-span-3">
-                        <label class="block font-bold text-slate-500 mb-1">Chức danh công tác</label>
-                        <input type="text" id="staffRole" required placeholder="Kỹ sư phụ trách..." class="w-full border rounded-lg p-2 bg-white">
+                        <label class="block font-bold text-slate-500 mb-1">Chức danh / Vị trí công tác</label>
+                        <input type="text" id="staffRole" required placeholder="Ví dụ: Kỹ sư trưởng, Kỹ thuật viên..." class="w-full border rounded-lg p-2.5 bg-white text-slate-900">
                     </div>
                     <div class="sm:col-span-3">
-                        <label class="block font-bold text-slate-500 mb-1">Đơn vị tiếp nhận</label>
-                        <select id="staffDept" class="w-full border rounded-lg p-2 bg-white font-bold text-slate-700">
+                        <label class="block font-bold text-slate-500 mb-1">Đoàn thể / Phòng ban tiếp nhận</label>
+                        <select id="staffDept" class="w-full border rounded-lg p-2.5 bg-white font-bold text-slate-700">
                             <option value="Xưởng Xeo Giấy">Xưởng Xeo Giấy</option>
                             <option value="Xưởng Bột Giấy">Xưởng Bột Giấy</option>
                             <option value="Phòng Kỹ Thuật">Phòng Kỹ Thuật</option>
                         </select>
                     </div>
                     <div class="sm:col-span-6">
-                        <label class="block font-bold text-slate-500 mb-1">Ảnh chân dung rõ nét (URL ảnh hoặc Base64)</label>
-                        <input type="text" id="staffAvatar" placeholder="Dán link ảnh chân dung kỹ sư..." class="w-full border rounded-lg p-2 bg-white">
+                        <label class="block font-bold text-slate-500 mb-1">Ảnh chân dung nhân sự rõ nét (URL ảnh trực tuyến hoặc chuỗi mã Base64)</label>
+                        <input type="text" id="staffAvatar" placeholder="Dán đường dẫn link ảnh chân dung hiển thị sắc nét..." class="w-full border rounded-lg p-2.5 bg-white">
                     </div>
                     <div class="sm:col-span-6">
-                        <label class="block font-bold text-slate-500 mb-1">Tài liệu quá trình đào tạo & công tác (Dung lượng không giới hạn)</label>
-                        <input type="text" id="staffTrainingDocs" placeholder="Liên kết văn bản đào tạo công tác..." class="w-full border rounded-lg p-2 bg-white">
+                        <label class="block font-bold text-slate-500 mb-1">Tài liệu đính kèm quá trình đào tạo công tác (Dung lượng không giới hạn)</label>
+                        <input type="text" id="staffTrainingDocs" placeholder="Liên kết lưu trữ chứng chỉ, lịch trình công tác, quyết định đào tạo..." class="w-full border rounded-lg p-2.5 bg-white">
                     </div>
 
                     <div class="sm:col-span-12 flex justify-end gap-2">
-                        <button type="button" id="btnCancelStaffEdit" onclick="cancelStaffEditState()" class="px-3 py-1 bg-slate-200 text-slate-700 font-bold rounded-lg hidden">Hủy</button>
-                        <button type="submit" id="btnSubmitStaffText" class="px-5 py-2 bg-slate-900 text-white font-black rounded-lg uppercase">Lưu Hồ Sơ Nhân Sự</button>
+                        <button type="button" id="btnCancelStaffEdit" onclick="cancelStaffEditState()" class="px-4 py-2 bg-slate-300 text-slate-700 font-bold rounded-lg hidden">Hủy bỏ</button>
+                        <button type="submit" id="btnSubmitStaffText" class="px-6 py-2.5 bg-slate-900 text-white font-black rounded-lg uppercase shadow-md">Lưu Hồ Sơ Nhân Sự</button>
                     </div>
                 </form>
 
-                <div class="overflow-x-auto border rounded-xl">
-                    <table class="w-full text-left border-collapse text-xs">
+                <div class="overflow-x-auto border rounded-xl bg-white">
+                    <table class="w-full text-left border-collapse text-xs text-slate-800">
                         <thead>
-                            <tr class="border-b bg-slate-100 text-slate-500 font-bold uppercase">
-                                <th class="p-3 pl-4">Hình ảnh</th>
+                            <tr class="border-b bg-slate-100 text-slate-600 font-bold uppercase">
+                                <th class="p-3 pl-4">Hình ảnh rõ nét</th>
                                 <th class="p-3">Mã Nhân Sự</th>
                                 <th class="p-3">Họ Và Tên</th>
-                                <th class="p-3">Chức Vụ & Đơn Vị</th>
-                                <th class="p-3">Tài liệu đào tạo công tác</th>
+                                <th class="p-3">Chức Vụ & Phòng Ban</th>
+                                <th class="p-3">Hồ Sơ Đào Tạo Công Tác</th>
                                 <th class="p-3 text-right pr-4">Hành Động</th>
                             </tr>
                         </thead>
-                        <tbody id="staffTableBody" class="divide-y divide-slate-100 bg-white text-slate-800"></tbody>
+                        <tbody id="staffTableBody" class="divide-y divide-slate-100 bg-white"></tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <section class="neo-card rounded-2xl overflow-hidden">
-            <div class="bg-slate-700 text-white font-bold p-3.5 flex items-center justify-between text-xs md:text-sm">
-                <span><i class="fa-solid fa-file-shield text-emerald-400 mr-2"></i> 4. Quản lý hồ sơ sửa chữa, mua mới & Đính kèm có xem trước (Không giới hạn dung lượng)</span>
-                <span class="bg-black/20 px-2 py-0.5 rounded font-mono" id="count-doc">0 hồ sơ</span>
+        <section class="neo-card rounded-2xl overflow-hidden shadow-xl">
+            <div class="bg-slate-700 text-white font-bold p-3.5 flex items-center justify-between text-xs md:text-sm border-b border-slate-600">
+                <span><i class="fa-solid fa-file-shield text-emerald-400 mr-2"></i> 4. Quản lý hồ sơ sửa chữa, mua mới & Đính kèm có xem trước trực tiếp (Nút đính kèm không giới hạn dung lượng)</span>
+                <span class="bg-black/20 px-2 py-0.5 rounded font-mono text-xs" id="count-doc">0 văn bản</span>
             </div>
             
-            <form id="formDocAction" onsubmit="handleDocSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs bg-slate-50/50 border-b text-slate-800">
+            <form id="formDocAction" onsubmit="handleDocSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-xs bg-slate-50 border-b text-slate-800">
                 <div class="sm:col-span-4">
-                    <label class="block font-bold text-slate-600 mb-1">Tên văn bản / Quyết định mua mới sửa chữa</label>
-                    <input type="text" id="docTitle" required placeholder="Quyết định mua mới thiết bị văn phòng, máy móc..." class="w-full border rounded-xl p-2.5 bg-white font-bold">
+                    <label class="block font-bold text-slate-600 mb-1">Tên văn bản / Quyết định mua mới sửa chữa thiết bị</label>
+                    <input type="text" id="docTitle" required placeholder="Tờ trình sửa chữa, mua mới vật tư kỹ thuật..." class="w-full border rounded-xl p-2.5 bg-white font-bold text-slate-900">
                 </div>
                 <div class="sm:col-span-5">
-                    <label class="block font-bold text-slate-600 mb-1">Đường dẫn tệp tài liệu / Ảnh đính kèm đám mây (Dung lượng không giới hạn)</label>
-                    <input type="text" id="docUrl" required placeholder="Dán link ảnh JPG/PNG, file PDF, Google Drive..." class="w-full border rounded-xl p-2.5 bg-white font-mono text-xs">
+                    <label class="block font-bold text-slate-600 mb-1">Liên kết tệp chứng từ đính kèm (Lưu trữ đám mây không giới hạn dung lượng file)</label>
+                    <input type="text" id="docUrl" required placeholder="Dán link ảnh đính kèm, liên kết file PDF, OneDrive, Google Drive..." class="w-full border rounded-xl p-2.5 bg-white font-mono text-xs text-slate-900">
                 </div>
                 <div class="sm:col-span-3 flex items-end">
-                    <button type="submit" class="w-full bg-slate-900 text-white font-black rounded-xl uppercase text-xs h-[42px] hover:bg-slate-800">
-                        <i class="fa-solid fa-cloud-arrow-up mr-1"></i> Lưu Vào Hệ Thống
+                    <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-black rounded-xl uppercase text-xs h-[44px] shadow-md transition-colors">
+                        <i class="fa-solid fa-cloud-arrow-up mr-1"></i> Ghi Vào Nhật Ký Hệ Thống
                     </button>
                 </div>
             </form>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse text-xs">
+            <div class="overflow-x-auto bg-white">
+                <table class="w-full text-left border-collapse text-xs text-slate-800">
                     <thead>
-                        <tr class="border-b bg-slate-100 text-slate-500 font-bold uppercase">
+                        <tr class="border-b bg-slate-100 text-slate-600 font-bold uppercase">
                             <th class="p-4 pl-4">Hồ sơ chứng từ văn bản</th>
-                            <th class="p-4">Liên Kết Gốc</th>
-                            <th class="p-4 text-center">Trực Quan Xem Trước (Không Lỗi)</th>
+                            <th class="p-4">Đường Dẫn Lưu Trữ Thô</th>
+                            <th class="p-4 text-center w-[240px]">Khung Xem Trước Trực Tiếp (Không Lỗi)</th>
                             <th class="p-4 text-right pr-4">Hành Động</th>
                         </tr>
                     </thead>
-                    <tbody id="docTableBody" class="divide-y divide-slate-100 bg-white text-slate-800"></tbody>
+                    <tbody id="docTableBody" class="divide-y divide-slate-100 bg-white"></tbody>
                 </table>
             </div>
         </section>
@@ -237,7 +247,7 @@
     </div>
 
     <script>
-        // CẤU HÌNH DATABASE
+        // CẤU HÌNH DATABASE REALTIME 2026
         var firebaseConfig = {
             apiKey: "AIzaSyBre5KbRWv64Qum4EDZkOAYTJe1YyIojuA",
             authDomain: "qltbvinapaco.firebaseapp.com",
@@ -247,17 +257,17 @@
         firebase.initializeApp(firebaseConfig);
         var db = firebase.database();
 
-        // KHỞI TẠO CẤU TRÚC PHÂN QUYỀN VÀ PHƯƠNG THỨC ĐĂNG NHẬP song song
+        // KHỞI TẠO CẤU TRÚC PHÂN CẤP TÀI KHOẢN CÂY VÀ BIẾN MÔI TRƯỜNG
         var systemUsers = {
             "admin": { pass: "vinapaco2026", pin: "123456", parent: null, role: "admin" }
         };
         var currentSessionUser = null;
-        var currentLoginMethod = "pass"; // pass hoặc pin
+        var currentLoginMethod = "pass"; 
         var staffs = [];
         var documents = [];
 
-        // ĐỒNG BỘ DỮ LIỆU ĐÁM MÂY CLOUD REALTIME
-        function startCloudListening() {
+        // HÀM KHỞI ĐỘNG VÀ ĐỒNG BỘ REALTIME TỪ CLOUD MÁY CHỦ
+        function initSystemCloudSync() {
             db.ref('systemUsers').on('value', function(snap) {
                 if(snap.val()) systemUsers = snap.val();
                 renderUserTreeTable();
@@ -270,8 +280,6 @@
                 documents = snap.val() ? Object.values(snap.val()).filter(Boolean) : [];
                 renderAllTables();
             });
-            
-            // Tự động sinh mã nhân sự đầu tiên lúc khởi động form
             generateStaffIdAuto();
         }
 
@@ -279,7 +287,7 @@
         function pushStaffs() { db.ref('staffs').set(staffs); }
         function pushDocs() { db.ref('documents').set(documents); }
 
-        // CHUYỂN ĐỔI LINH HOẠT PHƯƠNG THỨC ĐĂNG NHẬP BẢN CŨ
+        // CHUYỂN ĐỔI LINH HOẠT MƯỢT MÀ GIỮA MẬT KHẨU VÀ MÃ PIN
         window.switchLoginMethod = function(method) {
             currentLoginMethod = method;
             var tabPass = document.getElementById('tabPass');
@@ -290,19 +298,19 @@
                 tabPass.className = "w-1/2 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-emerald-950 transition-all";
                 tabPin.className = "w-1/2 py-2 text-xs font-bold rounded-lg text-slate-500 transition-all";
                 container.innerHTML = `<label class="block text-[11px] font-black text-slate-500 uppercase mb-1">Mật khẩu hệ thống</label>
-                    <input type="password" id="loginSecret" placeholder="Mặc định: vinapaco2026" class="w-full border border-slate-300 rounded-xl p-3 text-sm font-bold bg-slate-50 focus:outline-none" onkeypress="if(event.key === 'Enter') executeSystemLogin()">`;
+                    <input type="password" id="loginSecret" placeholder="Mặc định tài khoản admin: vinapaco2026" class="w-full border border-slate-300 rounded-xl p-3 text-sm font-bold bg-slate-50 focus:outline-none" onkeypress="if(event.key === 'Enter') executeSystemLogin()">`;
             } else {
                 tabPin.className = "w-1/2 py-2 text-xs font-bold rounded-lg bg-white shadow-sm text-emerald-950 transition-all";
                 tabPass.className = "w-1/2 py-2 text-xs font-bold rounded-lg text-slate-500 transition-all";
-                container.innerHTML = `<label class="block text-[11px] font-black text-slate-500 uppercase mb-1">Mã PIN cá nhân (6 chữ số)</label>
+                container.innerHTML = `<label class="block text-[11px] font-black text-slate-500 uppercase mb-1">Mã PIN cá nhân (Gồm 6 số)</label>
                     <input type="password" id="loginSecret" maxlength="6" placeholder="Mặc định: 123456" class="w-full border border-slate-300 rounded-xl p-3 text-sm font-bold tracking-widest text-center bg-slate-50 focus:outline-none" onkeypress="if(event.key === 'Enter') executeSystemLogin()">`;
             }
         }
 
-        // TÍNH NĂNG ĐĂNG NHẬP KHI CHẤM CHUỘT NGOÀI Ô ĐĂNG NHẬP
-        window.triggerBackgroundClickLogin = function() {
+        // TÍNH NĂNG CHẤM CHUỘT BẤT KỲ RA NGOÀI MÀN HÌNH ĐỂ ĐĂNG NHẬP NHANH
+        window.handleBackgroundClick = function(event) {
             var overlay = document.getElementById('loginOverlaySystem');
-            if (overlay && overlay.style.display !== 'none') {
+            if(overlay && overlay.style.display !== 'none') {
                 executeSystemLogin();
             }
         }
@@ -310,44 +318,43 @@
         // THỰC THI ĐĂNG NHẬP (HỖ TRỢ ENTER HOẶC CHẤM CHUỘT)
         window.executeSystemLogin = function() {
             var u = document.getElementById('loginUsername').value.trim();
-            var secret = document.getElementById('loginSecret').value;
-            var errMsg = document.getElementById('loginErrorMsg');
+            var secretElement = document.getElementById('loginSecret');
+            if(!secretElement || !u) return;
+            var secret = secretElement.value;
 
-            if(!u || !secret) return;
-
-            var isValid = false;
+            var success = false;
             if(systemUsers[u]) {
-                if(currentLoginMethod === 'pass' && systemUsers[u].pass === secret) isValid = true;
-                if(currentLoginMethod === 'pin' && systemUsers[u].pin === secret) isValid = true;
+                if(currentLoginMethod === 'pass' && systemUsers[u].pass === secret) success = true;
+                if(currentLoginMethod === 'pin' && systemUsers[u].pin === secret) success = true;
             }
 
-            if(isValid) {
+            if(success) {
                 currentSessionUser = u;
-                errMsg.classList.add('hidden');
+                document.getElementById('loginErrorMsg').classList.add('hidden');
                 document.getElementById('loginOverlaySystem').style.display = 'none';
                 document.getElementById('mainSystemContentDashboard').classList.remove('hidden');
-                document.getElementById('currentRoleBadge').innerText = "👤 Cán bộ: " + u.toUpperCase() + ` (${systemUsers[u].role})`;
+                document.getElementById('currentRoleBadge').innerText = "👤 Quản lý: " + u.toUpperCase() + ` (${systemUsers[u].role})`;
                 
                 renderUserTreeTable();
                 renderAllTables();
             } else {
-                errMsg.classList.remove('hidden');
+                document.getElementById('loginErrorMsg').classList.remove('hidden');
             }
         }
 
-        // TÍNH NĂNG QUÊN MẬT KHẨU TẠI MÀN HÌNH ĐĂNG NHẬP
+        // TÍNH NĂNG QUÊN MẬT KHẨU - THÔNG BÁO THÔNG MINH ĐƯỜNG ĐI CẤP LẠI
         window.triggerForgotPassword = function() {
-            var username = prompt("Nhập tên tài khoản bạn muốn yêu cầu cấp lại thông tin:");
-            if (!username) return;
+            var username = prompt("Nhập tên tài khoản bạn cần hỗ trợ cấp lại thông tin:");
+            if(!username) return;
             username = username.trim();
             
-            if (!systemUsers[username]) {
-                alert("Tài khoản không tồn tại trên hệ thống dữ liệu!");
+            if(!systemUsers[username]) {
+                alert("Tài khoản này không tồn tại trên cơ sở dữ liệu!");
                 return;
             }
 
-            var parentUser = systemUsers[username].parent || "admin";
-            alert(`Yêu cầu của bạn đã được gửi. Hãy liên hệ cấp trên trực tiếp quản lý của bạn là [${parentUser}] hoặc Quản trị viên tối cao (admin) để nhận lại mật khẩu/mã PIN mới.`);
+            var capTren = systemUsers[username].parent || "admin (Quản trị viên tối cao)";
+            alert(`Yêu cầu đã được chuyển đi! Tài khoản của bạn do [${capTren}] quản lý và khởi tạo. Vui lòng liên hệ cấp trên trực tiếp này để được cấp lại mật khẩu hoặc mã PIN mới ngay lập tức.`);
         }
 
         window.logoutSystem = function() {
@@ -358,50 +365,52 @@
             if(document.getElementById('loginSecret')) document.getElementById('loginSecret').value = "";
         }
 
-        // HỆ THỐNG ĐỔI THEME CHỦ ĐỀ HIỆN ĐẠI
+        // HÀM CHUYỂN ĐỔI GIAO DIỆN THEME ENGINE ĐA DẠNG HƠN
         window.changeSystemTheme = function(themeName) {
             document.body.className = themeName + " min-h-screen p-3 md:p-6 space-y-6";
         }
 
-        // CƠ CHẾ ĐẶC QUYỀN CÂY TÀI KHOẢN ĐA CẤP ĐỘ
+        // THIẾT LẬP TÀI KHOẢN CON ĐA CẤP (CÂY PHÂN QUYỀN TRỰC THUỘC)
         window.createUserChild = function() {
             var name = document.getElementById('newUserName').value.trim();
             var pass = document.getElementById('newUserPass').value.trim();
             var pin = document.getElementById('newUserPin').value.trim() || "123456";
-            if(!name || !pass) { alert("Vui lòng điền tài khoản & mật khẩu!"); return; }
-            if(systemUsers[name]) { alert("Tên tài khoản này đã có người sử dụng!"); return; }
+            
+            if(!name || !pass) { alert("Vui lòng điền tên đăng nhập & mật khẩu!"); return; }
+            if(systemUsers[name]) { alert("Tài khoản này đã được sử dụng!"); return; }
 
             systemUsers[name] = {
                 pass: pass,
                 pin: pin,
                 parent: currentSessionUser,
-                role: "Cấp dưới trực thuộc " + currentSessionUser
+                role: "User cấp dưới của " + currentSessionUser
             };
+            
             document.getElementById('newUserName').value = "";
             document.getElementById('newUserPass').value = "";
             document.getElementById('newUserPin').value = "";
             pushUsers();
-            alert("Đã khởi tạo và phân quyền tài khoản con thành công!");
+            alert("Đã tạo tài khoản con thành công và lưu lên đám mây!");
         }
 
         window.resetPassByParent = function(userTarget, type) {
-            var msg = type === 'pass' ? "mật khẩu mới" : "mã PIN mới (6 chữ số)";
-            var newVal = prompt(`Nhập ${msg} thiết lập cho tài khoản [${userTarget}]:`);
-            if (newVal === null) return;
-            if (!newVal.trim()) { alert("Không được để trống thông tin!"); return; }
+            var label = type === 'pass' ? "mật khẩu hệ thống mới" : "mã PIN đăng nhập nhanh mới";
+            var newVal = prompt(`Nhập ${label} thiết lập lại cho tài khoản con [${userTarget}]:`);
+            if(newVal === null) return;
+            if(!newVal.trim()) { alert("Không được bỏ trống nội dung!"); return; }
 
-            if (type === 'pass') systemUsers[userTarget].pass = newVal.trim();
-            if (type === 'pin') systemUsers[userTarget].pin = newVal.trim();
+            if(type === 'pass') systemUsers[userTarget].pass = newVal.trim();
+            if(type === 'pin') systemUsers[userTarget].pin = newVal.trim();
             
             pushUsers();
-            alert("Thay đổi thông tin cấp dưới thành công!");
+            alert("Cấp lại thông tin mật khẩu thành công!");
         }
 
-        function isChildOf(child, parent) {
-            if(parent === "admin") return true; 
+        function checkIsChild(child, parent) {
+            if(parent === "admin") return true; // Cấp tối cao quản trị xem được hết và có Master Reset
             var current = systemUsers[child];
-            while (current && current.parent) {
-                if (current.parent === parent) return true;
+            while(current && current.parent) {
+                if(current.parent === parent) return true;
                 current = systemUsers[current.parent];
             }
             return false;
@@ -413,20 +422,20 @@
             
             Object.keys(systemUsers).forEach(function(u) {
                 if(u === currentSessionUser) return;
-                var hasPermission = (currentSessionUser === "admin") || isChildOf(u, currentSessionUser);
+                var allowManage = (currentSessionUser === "admin") || checkIsChild(u, currentSessionUser);
                 
-                if(hasPermission) {
-                    body.innerHTML += `<tr>
-                        <td class="p-2 font-black">${u}</td>
-                        <td class="p-2 text-slate-400 font-mono">${systemUsers[u].parent || 'Hệ thống gốc'}</td>
-                        <td class="p-2 text-center">
-                            <button onclick="resetPassByParent('${u}', 'pass')" class="px-2 py-0.5 bg-amber-400 text-slate-900 font-bold rounded">Reset Pass</button>
+                if(allowManage) {
+                    body.innerHTML += `<tr class="hover:bg-slate-50 transition-colors">
+                        <td class="p-2.5 font-black text-slate-900">${u}</td>
+                        <td class="p-2.5 font-mono text-slate-500">${systemUsers[u].parent || 'Gốc toàn quyền'}</td>
+                        <td class="p-2.5 text-center">
+                            <button onclick="resetPassByParent('${u}', 'pass')" class="px-2.5 py-1 bg-amber-400 text-slate-900 font-bold rounded hover:bg-amber-500 transition-colors">Đổi Mật Khẩu</button>
                         </td>
-                        <td class="p-2 text-center">
-                            <button onclick="resetPassByParent('${u}', 'pin')" class="px-2 py-0.5 bg-cyan-500 text-white font-bold rounded">Reset PIN</button>
+                        <td class="p-2.5 text-center">
+                            <button onclick="resetPassByParent('${u}', 'pin')" class="px-2.5 py-1 bg-cyan-500 text-white font-bold rounded hover:bg-cyan-600 transition-colors">Đổi Mã PIN</button>
                         </td>
-                        <td class="p-2 text-right">
-                            ${u !== 'admin' ? `<button onclick="deleteUser('${u}')" class="text-red-600 font-bold"><i class="fa-solid fa-trash"></i></button>` : ''}
+                        <td class="p-2.5 text-right">
+                            ${u !== 'admin' ? `<button onclick="deleteUser('${u}')" class="text-red-500 font-black hover:text-red-700"><i class="fa-solid fa-trash-can"></i></button>` : ''}
                         </td>
                     </tr>`;
                 }
@@ -434,16 +443,17 @@
         }
 
         window.deleteUser = function(u) {
-            if(confirm("Xóa tài khoản này ra khỏi hệ thống phân cấp?")) { delete systemUsers[u]; pushUsers(); }
+            if(confirm(`Xác nhận xóa quyền truy cập của tài khoản [${u}]?`)) { delete systemUsers[u]; pushUsers(); }
         }
 
-        // TỰ ĐỘNG SINH MÃ NHÂN SỰ ĐỘC BẢN (AUTO GENERATE SHORT ID)
+        // TỰ ĐỘNG SINH MÃ NHÂN SỰ ĐỘC BẢN KHÔNG TRÙNG LẶP
         function generateStaffIdAuto() {
-            var randomId = "VNP-" + Math.floor(100000 + Math.random() * 900000);
-            document.getElementById('staffId').value = randomId;
+            var code = "VNP-" + Math.floor(100000 + Math.random() * 900000);
+            var staffIdInput = document.getElementById('staffId');
+            if(staffIdInput) staffIdInput.value = code;
         }
 
-        // XỬ LÝ LƯU HỒ SƠ NHÂN SỰ & TỰ ĐỘNG FOCUS THÔNG MINH
+        // XỬ LÝ HỒ SƠ CÁN BỘ NHÂN SỰ & TỰ ĐỘNG NHẢY VỀ Ô HỌ TÊN
         window.handleStaffSubmit = function(e) {
             e.preventDefault();
             var editId = document.getElementById('staffEditId').value;
@@ -463,11 +473,42 @@
             } else {
                 staffs.push({ id: sId, name: sName, role: sRole, dept: sDept, avatar: sAvatar, docs: sDocs });
             }
+            
             cancelStaffEditState();
             pushStaffs();
             
-            // TỰ ĐỘNG NHẢY VỀ Ô HỌ VÀ TÊN SAU KHI HOÀN THÀNH
+            // SMART UX: TỰ ĐỘNG NHẢY VÀ FOCUS CON TRỎ VỀ Ô HỌ VÀ TÊN SAU KHI LƯU
             document.getElementById('staffName').focus();
+        }
+
+        window.processImportStaffFile = function() {
+            var fileInput = document.getElementById('inputFileStaffList');
+            if(!fileInput.files.length) { alert("Vui lòng chọn tệp danh sách thô!"); return; }
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var lines = e.target.result.split("\n");
+                lines.forEach(function(line) {
+                    if(!line.trim()) return;
+                    var parts = line.split(",");
+                    if(parts.length >= 2) {
+                        var generatedId = "VNP-" + Math.floor(100000 + Math.random() * 900000);
+                        staffs.push({
+                            id: generatedId,
+                            name: parts[0].trim(),
+                            role: parts[1].trim(),
+                            dept: parts[2] ? parts[2].trim() : "Phòng Kỹ Thuật",
+                            avatar: "",
+                            docs: ""
+                        });
+                    }
+                });
+                pushStaffs();
+                alert("Đã phân tách dữ liệu và nạp danh sách phẳng thành công!");
+                
+                // SMART UX: TỰ ĐỘNG NHẢY VỀ Ô HỌ VÀ TÊN SAU KHI ĐỒNG BỘ FILE XONG
+                document.getElementById('staffName').focus();
+            };
+            reader.readAsText(fileInput.files[0]);
         }
 
         window.loadStaffToFormEdit = function(id) {
@@ -482,9 +523,9 @@
                 document.getElementById('staffTrainingDocs').value = target.docs || '';
                 
                 document.getElementById('btnCancelStaffEdit').classList.remove('hidden');
-                document.getElementById('btnSubmitStaffText').innerText = "Cập Nhật Thông Tin";
+                document.getElementById('btnSubmitStaffText').innerText = "Cập Nhật Cán Bộ";
                 
-                // TỰ ĐỘNG CUỘN VỀ KHU VỰC QUẢN LÝ NHÂN SỰ ĐỂ SỬA KHÔNG CẦN KÉO CHUỘT
+                // SMART UX: TỰ ĐỘNG CUỘN VỀ KHU VỰC FORM HỒ SƠ NHÂN SỰ ĐỂ TIẾN HÀNH SỬA
                 document.getElementById('sectionPersonnel').scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
@@ -500,7 +541,7 @@
             document.getElementById('staffTrainingDocs').value = "";
         }
 
-        // QUẢN LÝ HỒ SƠ SỬA CHỮA MUA MỚI
+        // PHẦN HỆ QUẢN LÝ HỒ SƠ SỬA CHỮA, MUA MỚI & ĐÍNH KÈM
         window.handleDocSubmit = function(e) {
             e.preventDefault();
             documents.push({
@@ -514,51 +555,54 @@
         }
 
         window.deleteItem = function(type, id) {
-            if(confirm("Bạn có chắc chắn muốn gỡ bỏ dữ liệu này?")) {
-                if(type==='staff') { staffs = staffs.filter(function(x){return x.id!==id;}); pushStaffs(); }
-                if(type==='doc') { documents = documents.filter(function(x){return x.id!==id;}); pushDocs(); }
+            if(confirm("Hành động này sẽ xóa dữ liệu vĩnh viễn, xác nhận?")) {
+                if(type === 'staff') { staffs = staffs.filter(function(x){return x.id !== id;}); pushStaffs(); }
+                if(type === 'doc') { documents = documents.filter(function(x){return x.id !== id;}); pushDocs(); }
             }
         }
 
-        // HÀM KIỂM TRA ĐỊNH DẠNG ĐỂ XEM TRƯỚC FILE KHÔNG GẶP LỖI
-        function renderFilePreview(url) {
-            if(!url) return `<span class="text-slate-400 italic">Không có file đính kèm</span>`;
+        // CHUYÊN SÂU XỬ LÝ XEM TRƯỚC FILE (PREVIEW) KHÔNG BỊ LỖI TRẮNG TRANG
+        function generateFilePreviewHTML(url) {
+            if(!url) return `<span class="text-slate-400 italic">Chưa dính kèm tập tin</span>`;
             
-            var lowerUrl = url.toLowerCase();
-            // Nếu là tệp ảnh hình ảnh rõ nét
-            if (lowerUrl.match(/\.(jpeg|jpg|gif|png|webp|svg)/) || lowerUrl.startsWith('data:image')) {
-                return `<img src="${url}" class="w-32 h-20 object-cover rounded-lg border border-slate-300 shadow-sm mx-auto hover:scale-105 transition-transform" onerror="this.onerror=null; this.src='https://placehold.co/150x100?text=File+Dữ+Liệu';">`;
+            var cleanUrl = url.toLowerCase().trim();
+            
+            // Trường hợp 1: File định dạng Hình ảnh (JPG, PNG, WEBP, GIF, BASE64)
+            if(cleanUrl.match(/\.(jpeg|jpg|png|gif|webp|svg)/) || cleanUrl.startsWith('data:image')) {
+                return `<div class="p-1 border rounded-lg bg-slate-50"><img src="${url}" class="w-full h-24 object-cover rounded shadow-sm hover:scale-105 transition-transform" alt="Preview"></div>`;
             }
-            // Nếu là tệp tài liệu PDF trực tiếp
-            if (lowerUrl.endsWith('.pdf')) {
-                return `<iframe src="${url}" class="w-full h-24 rounded border border-slate-200"></iframe>`;
+            
+            // Trường hợp 2: File văn bản trực tuyến PDF công tác
+            if(cleanUrl.endsWith('.pdf')) {
+                return `<iframe src="${url}" class="w-full h-24 rounded border shadow-inner bg-slate-100"></iframe>`;
             }
-            // Mặc định hiển thị Box liên kết an toàn
-            return `<div class="p-2 bg-slate-100 rounded-lg border text-center">
-                <a href="${url}" target="_blank" class="text-blue-600 font-bold hover:underline block truncate max-w-[180px] mx-auto"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>Mở Tài Liệu Gốc</a>
+            
+            // Trường hợp 3: Đường dẫn Driver hoặc liên kết đám mây dung lượng lớn
+            return `<div class="p-2 bg-emerald-50 rounded-lg border border-emerald-200 text-center">
+                <a href="${url}" target="_blank" class="text-emerald-800 font-bold hover:underline block truncate max-w-[190px] mx-auto text-[11px]"><i class="fa-solid fa-square-arrow-up-right mr-1"></i>Mở File Đám Mây</a>
             </div>`;
         }
 
-        // BIÊN DỊCH VÀ ĐỔ DỮ LIỆU LÊN BẢNG
+        // ĐỔ DỮ LIỆU ĐỘNG RA BẢNG BIỂU HỆ THỐNG
         function renderAllTables() {
             var staffBody = document.getElementById('staffTableBody');
             if(staffBody) {
                 staffBody.innerHTML = '';
                 staffs.forEach(function(s) {
-                    var avtUrl = s.avatar ? s.avatar : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150';
-                    staffBody.innerHTML += `<tr>
+                    var finalAvatar = s.avatar ? s.avatar : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150';
+                    staffBody.innerHTML += `<tr class="hover:bg-slate-50 transition-colors">
                         <td class="p-3 pl-4">
-                            <img src="${avtUrl}" class="w-12 h-12 object-cover rounded-xl border-2 border-emerald-600 shadow-md" alt="Avatar">
+                            <img src="${finalAvatar}" class="w-12 h-12 object-cover rounded-xl border-2 border-emerald-800 shadow-md" alt="Chân dung">
                         </td>
-                        <td class="p-3 font-mono font-bold text-emerald-800">${s.id}</td>
-                        <td class="p-3 font-black">${s.name}</td>
-                        <td class="p-3"><span class="font-bold block">${s.role}</span><span class="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded font-sans">${s.dept || ''}</span></td>
+                        <td class="p-3 font-mono font-bold text-emerald-900">${s.id}</td>
+                        <td class="p-3 font-black text-slate-900">${s.name}</td>
+                        <td class="p-3"><span class="font-bold block text-slate-800">${s.role}</span><span class="text-[10px] text-emerald-800 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">${s.dept || ''}</span></td>
                         <td class="p-3">
-                            ${s.docs ? `<a href="${s.docs}" target="_blank" class="text-blue-600 underline font-semibold break-all text-[11px]"><i class="fa-solid fa-graduation-cap mr-1"></i>Xem hồ sơ năng lực đào tạo</a>` : '<span class="text-slate-400 italic">Chưa có tài liệu</span>'}
+                            ${s.docs ? `<a href="${s.docs}" target="_blank" class="text-blue-600 underline font-bold break-all text-[11px]"><i class="fa-solid fa-graduation-cap mr-1"></i>Xem văn bản đào tạo công tác</a>` : '<span class="text-slate-400 italic">Chưa nạp tài liệu</span>'}
                         </td>
                         <td class="p-3 text-right pr-4 space-x-1">
-                            <button type="button" onclick="loadStaffToFormEdit('${s.id}')" class="px-2 py-1 bg-amber-400 text-slate-900 font-bold text-[11px] rounded shadow">Sửa</button>
-                            <button type="button" onclick="deleteItem('staff','${s.id}')" class="px-2 py-1 bg-red-100 text-red-600 text-[11px] rounded">Xóa</button>
+                            <button type="button" onclick="loadStaffToFormEdit('${s.id}')" class="px-2.5 py-1 bg-amber-400 text-slate-900 font-bold text-[11px] rounded shadow hover:bg-amber-500 transition-colors">Sửa</button>
+                            <button type="button" onclick="deleteItem('staff','${s.id}')" class="px-2.5 py-1 bg-red-100 text-red-600 text-[11px] rounded hover:bg-red-200 transition-colors">Xóa</button>
                         </td>
                     </tr>`;
                 });
@@ -569,19 +613,20 @@
             if(docBody) {
                 docBody.innerHTML = '';
                 documents.forEach(function(doc) {
-                    docBody.innerHTML += `<tr>
-                        <td class="p-4 font-black pl-4">${doc.title}</td>
-                        <td class="p-4 text-xs font-mono text-slate-400 max-w-[150px] truncate">${doc.url}</td>
-                        <td class="p-2 text-center">${renderFilePreview(doc.url)}</td>
-                        <td class="p-4 text-right pr-4"><button type="button" onclick="deleteItem('doc','${doc.id}')" class="text-red-500 hover:text-red-700 text-sm"><i class="fa-solid fa-trash-can"></i></button></td>
+                    docBody.innerHTML += `<tr class="hover:bg-slate-50 transition-colors">
+                        <td class="p-4 font-black text-slate-800 pl-4">${doc.title}</td>
+                        <td class="p-4 text-xs font-mono text-slate-400 max-w-[160px] truncate">${doc.url}</td>
+                        <td class="p-2 text-center">${generateFilePreviewHTML(doc.url)}</td>
+                        <td class="p-4 text-right pr-4"><button type="button" onclick="deleteItem('doc','${doc.id}')" class="text-red-500 hover:text-red-700 transition-colors"><i class="fa-solid fa-trash-can text-base"></i></button></td>
                     </tr>`;
                 });
                 document.getElementById('count-doc').innerText = documents.length + " Hồ sơ lưu trữ";
             }
         }
 
+        // KHỞI ĐỘNG HỆ THỐNG KHI TẢI TRANG HOÀN TẤT
         window.addEventListener('DOMContentLoaded', function() {
-            startCloudListening();
+            initSystemCloudSync();
         });
     </script>
 </body>
