@@ -66,43 +66,55 @@
 </head>
 <body id="systemBody" class="text-slate-800 font-sans min-h-screen p-4 md:p-6 space-y-6 text-sm md:text-base transition-all duration-300">
 
-    <div id="loginOverlaySystem" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-emerald-800/30">
-            <div class="bg-emerald-800 text-white p-6 text-center">
-                <div class="w-16 h-16 bg-white/10 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-3 border border-white/20">
-                    <i class="fa-solid fa-shield-halved text-amber-400"></i>
+    <div id="loginOverlaySystem" class="fixed inset-0 bg-slate-950/80 backdrop-blur-lg flex items-center justify-center z-50 p-4 transition-all duration-500">
+        <div class="bg-white/95 rounded-2xl shadow-2xl w-full max-w-sm border border-slate-200 overflow-hidden backdrop-blur-sm">
+            
+            <div class="p-6 pb-4 text-center border-b border-slate-100">
+                <div class="w-12 h-12 bg-emerald-50 text-emerald-700 rounded-full mx-auto flex items-center justify-center text-xl mb-3 border border-emerald-200">
+                    <i class="fa-solid fa-lock-open animate-pulse"></i>
                 </div>
-                <h2 class="text-[11px] font-bold tracking-widest text-emerald-200 uppercase">Hệ Thống Cấp Khóa Vận Hành</h2>
-                <h1 class="text-xl font-black mt-1">VINAPACO - LOGIN</h1>
+                <h1 class="text-lg font-black text-slate-900 tracking-tight">VẬN HÀNH VINAPACO</h1>
+                <p class="text-xs text-slate-400 mt-0.5">Hệ thống tổng lực quản trị kỹ thuật</p>
             </div>
             
-            <div class="flex border-b border-slate-200 bg-slate-50">
-                <button type="button" id="tabLoginPassword" onclick="switchLoginMethod('password')" class="w-1/2 py-2.5 text-xs font-bold uppercase text-emerald-700 border-b-2 border-emerald-700 focus:outline-none transition-all">Mật khẩu ca</button>
-                <button type="button" id="tabLoginPin" onclick="switchLoginMethod('pin')" class="w-1/2 py-2.5 text-xs font-bold uppercase text-slate-400 border-b-2 border-transparent hover:text-slate-700 focus:outline-none transition-all">Mã PIN cá nhân</button>
+            <div class="p-1 mx-6 mt-4 bg-slate-100 rounded-lg flex relative">
+                <button type="button" id="tabLoginPassword" onclick="switchLoginMethod('password')" class="w-1/2 py-2 text-xs font-bold rounded-md transition-all duration-300 z-10 text-emerald-800 bg-white shadow-sm">
+                    <i class="fa-solid fa-key mr-1"></i> Mật khẩu ca
+                </button>
+                <button type="button" id="tabLoginPin" onclick="switchLoginMethod('pin')" class="w-1/2 py-2 text-xs font-bold rounded-md transition-all duration-300 z-10 text-slate-500 hover:text-slate-800">
+                    <i class="fa-solid fa-id-card-clip mr-1"></i> Mã PIN cá nhân
+                </button>
             </div>
 
             <div class="p-6 space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Chọn Tài Khoản Ca Trực</label>
-                    <select id="loginRole" class="w-full border border-slate-300 rounded-lg p-2.5 font-bold text-slate-800 bg-slate-50 focus:outline-none">
+                    <label class="block text-[11px] font-black tracking-wider text-slate-400 uppercase mb-1">Tài khoản phân quyền</label>
+                    <select id="loginRole" class="w-full border border-slate-200 rounded-lg p-2.5 font-bold text-slate-800 bg-slate-50 focus:outline-none focus:border-emerald-600 focus:bg-white text-sm transition-colors">
                         <option value="admin">🔑 Quản Trị Viên (Admin - Toàn Quyền)</option>
                         <option value="sub_user_1">🧑 Vận hành Ca 1</option>
                         <option value="sub_user_2">🧑 Vận hành Ca 2</option>
                     </select>
                 </div>
 
-                <div id="containerLoginPassword">
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Mật khẩu xác thực ca</label>
-                    <input type="password" id="loginPassword" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Mặc định: vinapaco2026" class="w-full border border-slate-300 rounded-lg p-2.5 font-bold text-center bg-slate-50 focus:outline-none">
+                <div class="relative min-h-[64px]">
+                    <div id="containerLoginPassword" class="transition-all duration-300 opacity-100 scale-100 transform pointer-events-auto">
+                        <label class="block text-[11px] font-black tracking-wider text-slate-400 uppercase mb-1">Mật khẩu xác thực ca</label>
+                        <input type="password" id="loginPassword" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Mặc định: vinapaco2026" class="w-full border border-slate-200 rounded-lg p-2.5 font-bold text-center bg-slate-50 focus:outline-none focus:border-emerald-600 focus:bg-white text-sm transition-all">
+                    </div>
+
+                    <div id="containerLoginPin" class="absolute top-0 left-0 w-full transition-all duration-300 opacity-0 scale-95 transform pointer-events-none">
+                        <label class="block text-[11px] font-black tracking-wider text-slate-400 uppercase mb-1">Mã PIN cá nhân định danh</label>
+                        <input type="password" id="loginPin" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Nhập mã PIN..." class="w-full border border-slate-200 rounded-lg p-2.5 font-bold text-center bg-slate-50 focus:outline-none focus:border-emerald-600 focus:bg-white text-sm tracking-widest transition-all">
+                    </div>
                 </div>
 
-                <div id="containerLoginPin" class="hidden">
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Mã PIN cá nhân định danh</label>
-                    <input type="password" id="loginPin" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Nhập mã PIN..." class="w-full border border-slate-300 rounded-lg p-2.5 font-bold text-center bg-slate-50 focus:outline-none tracking-widest">
+                <div id="loginErrorMsg" class="text-red-500 font-bold text-xs text-center hidden animate-bounce">
+                    <i class="fa-solid fa-circle-exclamation mr-1"></i> Thông tin xác thực không chính xác!
                 </div>
 
-                <div id="loginErrorMsg" class="text-red-500 font-bold text-xs text-center hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> Thông tin xác thực không chính xác!</div>
-                <button onclick="executeSystemLogin()" class="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-black rounded-lg uppercase text-sm tracking-wider cursor-pointer transition-colors">Xác Thực Vào Hệ Thống</button>
+                <button onclick="executeSystemLogin()" class="w-full py-2.5 bg-slate-900 hover:bg-emerald-800 text-white font-bold rounded-lg uppercase text-xs tracking-wider cursor-pointer transition-all active:scale-[0.99] shadow-md shadow-slate-900/10">
+                    Xác Thực Vào Hệ Thống
+                </button>
             </div>
         </div>
     </div>
@@ -317,7 +329,7 @@
                     <input type="text" id="repairDesc" required placeholder="Mô tả chi tiết hạng mục xử lý..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none h-[38px]">
                 </div>
                 <div class="md:col-span-3">
-                    <label class="block font-bold text-blue-700 mb-1"><i class="fa-solid fa-file-shield"></i> Tài liệu đính kèm</label>
+                    <label class="block font-bold text-blue-700 mb-1"><i class="fa-solid fa-paperclip"></i> Tài liệu đính kèm</label>
                     <div class="flex gap-2">
                         <input type="file" id="uploadRepairFile" class="hidden" onchange="handleRepairFileBinaryUpload(event)">
                         <button type="button" onclick="document.getElementById('uploadRepairFile').click()" id="btnUploadRepairIndicator" class="w-full px-3 py-2 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded-lg text-xs whitespace-nowrap cursor-pointer h-[38px]"><i class="fa-solid fa-paperclip"></i> Chọn File</button>
@@ -382,7 +394,7 @@
                     <input type="text" id="recordName" required placeholder="Ví dụ: Thay thế bạc đạn máy nghiền..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-medium">
                 </div>
                 <div class="md:col-span-3">
-                    <label class="block font-bold text-purple-700 mb-1"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Tài Liệu (Không giới hạn dung lượng)</label>
+                    <label class="block font-bold text-purple-700 mb-1"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Tài Liệu</label>
                     <div class="flex gap-2">
                         <input type="file" id="uploadRecordDocFile" class="hidden" onchange="handleRecordFileBinaryUpload(event)">
                         <button type="button" onclick="document.getElementById('uploadRecordDocFile').click()" id="btnUploadDocIndicator" class="px-3 py-2 bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-lg text-xs whitespace-nowrap cursor-pointer"><i class="fa-solid fa-file-export"></i> Chọn File Đính Kèm</button>
@@ -441,7 +453,7 @@
 
         let currentEnv = localStorage.getItem('vinapaco_current_env') || 'live'; 
         let currentRole = 'admin';
-        let loginMethod = 'password'; // 'password' hoặc 'pin'
+        let loginMethod = 'password'; 
         
         let credentialsConfig = {
             admin: { password: "vinapaco2026", pin: "123456" },
@@ -451,7 +463,7 @@
 
         let depts = [], users = [], devices = [], repairs = [], docRecords = [];
 
-        // --- CHUYỂN ĐỔI QUA LẠI GIỮA CHẾ ĐỘ MẬT KHẨU / MÃ PIN TẠI MÀN HÌNH ĐĂNG NHẬP ---
+        // --- HÀM CHUYỂN TAB MƯỢT MÀ CHUYÊN NGHIỆP ---
         window.switchLoginMethod = function(method) {
             loginMethod = method;
             const tabPass = document.getElementById('tabLoginPassword');
@@ -460,15 +472,27 @@
             const containerPin = document.getElementById('containerLoginPin');
 
             if (method === 'password') {
-                tabPass.className = "w-1/2 py-2.5 text-xs font-bold uppercase text-emerald-700 border-b-2 border-emerald-700 focus:outline-none transition-all";
-                tabPin.className = "w-1/2 py-2.5 text-xs font-bold uppercase text-slate-400 border-b-2 border-transparent hover:text-slate-700 focus:outline-none transition-all";
-                containerPass.classList.remove('hidden');
-                containerPin.classList.add('hidden');
+                // UI Tab
+                tabPass.className = "w-1/2 py-2 text-xs font-bold rounded-md transition-all duration-300 z-10 text-emerald-800 bg-white shadow-sm";
+                tabPin.className = "w-1/2 py-2 text-xs font-bold rounded-md transition-all duration-300 z-10 text-slate-500 hover:text-slate-800";
+                
+                // Form Animation Smooth
+                containerPass.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+                containerPass.classList.add('opacity-100', 'scale-100', 'pointer-events-auto');
+                
+                containerPin.classList.remove('opacity-100', 'scale-100', 'pointer-events-auto');
+                containerPin.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
             } else {
-                tabPin.className = "w-1/2 py-2.5 text-xs font-bold uppercase text-emerald-700 border-b-2 border-emerald-700 focus:outline-none transition-all";
-                tabPass.className = "w-1/2 py-2.5 text-xs font-bold uppercase text-slate-400 border-b-2 border-transparent hover:text-slate-700 focus:outline-none transition-all";
-                containerPin.classList.remove('hidden');
-                containerPass.classList.add('hidden');
+                // UI Tab
+                tabPin.className = "w-1/2 py-2 text-xs font-bold rounded-md transition-all duration-300 z-10 text-emerald-800 bg-white shadow-sm";
+                tabPass.className = "w-1/2 py-2 text-xs font-bold rounded-md transition-all duration-300 z-10 text-slate-500 hover:text-slate-800";
+                
+                // Form Animation Smooth
+                containerPin.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+                containerPin.classList.add('opacity-100', 'scale-100', 'pointer-events-auto');
+                
+                containerPass.classList.remove('opacity-100', 'scale-100', 'pointer-events-auto');
+                containerPass.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
             }
         }
 
@@ -490,7 +514,6 @@
             }
         }
 
-        // --- XỬ LÝ ĐĂNG NHẬP THÔNG MINH DỰA TRÊN TAB ĐANG CHỌN ---
         window.executeSystemLogin = function() {
             const role = document.getElementById('loginRole').value;
             const errorLabel = document.getElementById('loginErrorMsg');
@@ -511,7 +534,8 @@
                 if(isValid) { 
                     currentRole = role;
                     errorLabel.classList.add('hidden');
-                    document.getElementById('loginOverlaySystem').classList.add('hidden');
+                    document.getElementById('loginOverlaySystem').classList.add('opacity-0', 'pointer-events-none');
+                    setTimeout(() => document.getElementById('loginOverlaySystem').classList.add('hidden'), 300);
                     document.getElementById('mainSystemContentDashboard').classList.remove('hidden');
                     document.getElementById('currentRoleBadge').innerText = role === 'admin' ? '🔑 Quản Trị Viên (Admin)' : `🧑 Vận Hành [${role === 'sub_user_1' ? 'Ca 1' : 'Ca 2'}]`;
                     fetchCloudData();
@@ -525,7 +549,7 @@
             document.getElementById('loginPassword').value = '';
             document.getElementById('loginPin').value = '';
             document.getElementById('mainSystemContentDashboard').classList.add('hidden');
-            document.getElementById('loginOverlaySystem').classList.remove('hidden');
+            document.getElementById('loginOverlaySystem').classList.remove('hidden', 'opacity-0', 'pointer-events-none');
         }
 
         function fetchCloudData() {
@@ -554,7 +578,7 @@
                             let legacyProposals = parse(oldData.proposals || oldData.requests);
                             docRecords = legacyProposals.map((p, i) => ({
                                 id: p.id || ("HS-" + (20000 + i)),
-                                name: p.name || p.desc || "Hồ sơ chuyển đổi dữ liệu kỹ thuật cũ",
+                                name: p.name || p.desc || "Hồ sơ cũ phục hồi cấu trúc hệ thống",
                                 createdAt: p.date || new Date().toLocaleDateString('vi-VN'),
                                 cost: parseFloat(p.cost) || 0,
                                 fileData: "", fileMime: "", fileName: ""
@@ -573,7 +597,6 @@
             set(ref(db, basePath), { depts, users, devices, repairs, docRecords, secure_credentials: credentialsConfig }).then(() => fetchCloudData());
         }
 
-        // --- XỬ LÝ UPLOAD BINARY FILE TRÊN TRÌNH DUYỆT (CHO SỬA CHỮA & CHỨNG TỪ) ---
         window.handleRepairFileBinaryUpload = function(e) {
             const file = e.target.files[0]; if (!file) return;
             const indicator = document.getElementById('btnUploadRepairIndicator');
@@ -604,7 +627,6 @@
             reader.readAsDataURL(file);
         }
 
-        // --- TRÌNH XEM FILE ĐA NĂNG DÙNG CHUNG (CHO CẢ CHỨNG TỪ VÀ BẢO TRÌ) ---
         window.openPreviewFromBase64 = function(base64Data, mimeType, fileName) {
             if (!base64Data) { alert("Không tìm thấy tệp đính kèm dữ liệu!"); return; }
             const mime = mimeType || "application/pdf";
@@ -632,7 +654,7 @@
                 } else if (mime.includes('image')) {
                     container.innerHTML = `<div class="w-full h-full flex items-center justify-center overflow-auto"><img src="${blobUrl}" class="max-w-full max-h-full object-contain"></div>`;
                 } else {
-                    container.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center gap-2"><i class="fa-solid fa-file-shield text-5xl text-blue-500"></i><p class="font-bold">${name}</p><p class="text-xs text-slate-400">Định dạng file đặc thù, bấm nút bên dưới để tải về máy.</p></div>`;
+                    container.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center gap-2"><i class="fa-solid fa-file-shield text-5xl text-blue-500"></i><p class="font-bold">${name}</p></div>`;
                 }
                 document.getElementById('filePreviewModal').style.display = 'flex';
             } catch (e) {
@@ -792,7 +814,6 @@
                 fileName: document.getElementById('repairFileName').value
             });
             
-            // Khôi phục form sửa chữa về trạng thái ban đầu
             document.getElementById('repairDesc').value = ""; 
             document.getElementById('repairFileBinaryData').value = "";
             document.getElementById('btnUploadRepairIndicator').innerHTML = `<i class="fa-solid fa-paperclip"></i> Chọn File`;
@@ -800,7 +821,7 @@
         }
 
         window.deleteItem = function(type, id) {
-            if(confirm("Xác nhận hành động xóa dữ liệu này mục quản trị?")) {
+            if(confirm("Xác nhận hành động xóa dữ liệu?")) {
                 if(type==='dept') depts = depts.filter(i=>i.id!==id);
                 if(type==='user') users = users.filter(i=>i.id!==id);
                 if(type==='device') devices = devices.filter(i=>i.id!==id);
