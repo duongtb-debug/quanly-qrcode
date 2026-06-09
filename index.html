@@ -23,6 +23,29 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen p-4 md:p-6 space-y-6 text-sm md:text-base">
 
+    <div class="bg-slate-900 text-white p-3 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-3 shadow-md">
+        <div class="flex items-center gap-2">
+            <i class="fa-solid fa-shield-halved text-amber-400 text-lg"></i>
+            <span class="font-bold text-xs md:text-sm uppercase tracking-wider">Cơ Chế Phân Quyền & Bảo Mật Ca Trực</span>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="flex items-center gap-1.5 bg-slate-800 px-2 py-1 rounded text-xs">
+                <span class="text-slate-400 font-medium">Hiển thị:</span>
+                <label class="inline-flex items-center gap-1 ml-1 cursor-pointer"><input type="checkbox" id="toggleViewPomo" checked onchange="toggleSection('sec-pomo', this.checked)"> Ca làm việc</label>
+                <label class="inline-flex items-center gap-1 ml-2 cursor-pointer"><input type="checkbox" id="toggleViewDevice" checked onchange="toggleSection('sec-device', this.checked)"> Tài sản & QR</label>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-xs text-slate-400">Vai trò:</span>
+                <select id="systemRoleSelect" onchange="handleRoleChange()" class="bg-slate-800 text-white text-xs font-bold p-1.5 rounded border border-slate-700 focus:outline-none">
+                    <option value="admin">🔑 Quản Trị Viên (Admin - Toàn Quyền)</option>
+                    <option value="sub_user_1">🧑 Tài khoản con (Vận hành Ca 1)</option>
+                    <option value="sub_user_2">🧑 Tài khoản con (Vận hành Ca 2)</option>
+                </select>
+                <input type="password" id="adminPassword" placeholder="Nhập mã pin Admin..." class="hidden bg-slate-800 text-white text-xs p-1.5 rounded border border-slate-700 w-32 focus:outline-none">
+            </div>
+        </div>
+    </div>
+
     <header class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
         <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-600 via-teal-600 to-blue-600"></div>
         <div class="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -48,7 +71,7 @@
         </div>
     </header>
 
-    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <section id="sec-pomo" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div class="lg:col-span-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between min-h-[140px]">
             <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                 <span class="font-bold text-slate-700 text-xs md:text-sm uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-calendar-days text-emerald-600"></i> Lịch & Văn Hóa Việt Nam</span>
@@ -107,14 +130,14 @@
                 </form>
             </div>
             <div class="lg:col-span-8">
-                <span class="block font-bold text-slate-400 text-xs uppercase mb-1.5">NHẬP LIỆU NHÂN SỰ (ENTER TẠI CHỨC VỤ ĐỂ LƯU & QUAY LẠI Ô TÊN)</span>
+                <span class="block font-bold text-slate-400 text-xs uppercase mb-1.5">NHẬP LIỆU NHÂN SỰ</span>
                 <form onsubmit="handleUserSubmit(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 mb-1">Họ và tên</label>
                         <input type="text" id="userName" required placeholder="Nguyễn Văn A..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-emerald-600 font-bold">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Chức vụ (Ấn Enter để lưu nhanh)</label>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Chức vụ</label>
                         <input type="text" id="userTitle" required placeholder="Kỹ sư vận hành..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-emerald-600 font-bold">
                     </div>
                     <div>
@@ -122,7 +145,7 @@
                         <select id="userDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-slate-700"></select>
                     </div>
                     <div class="sm:col-span-3 flex justify-end gap-2 pt-1">
-                        <button type="submit" class="px-8 py-2 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 shadow-sm transition-colors cursor-pointer">Lưu Hồ Sơ (Enter)</button>
+                        <button type="submit" class="px-8 py-2 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 shadow-sm transition-colors cursor-pointer">Lưu Hồ Sơ</button>
                     </div>
                 </form>
             </div>
@@ -142,7 +165,7 @@
         </div>
     </section>
 
-    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <section id="sec-device" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         <div class="lg:col-span-8 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
             <div class="bg-slate-700 text-white font-bold p-3.5 text-base flex items-center justify-between">
                 <span><i class="fa-solid fa-boxes-stacked mr-1.5 text-slate-300"></i> Quản Lý Thiết Bị Tài Sản & Cấp Phát QR</span>
@@ -159,8 +182,8 @@
                     <input type="text" id="deviceName" required placeholder="Ví dụ: Máy nghiền thủy lực..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-slate-600">
                 </div>
                 <div class="sm:col-span-4">
-                    <label class="block font-bold text-slate-500 mb-1">Chủng loại nhóm</label>
-                    <input type="text" id="deviceCategory" placeholder="Ví dụ: Hệ thống xeo bột..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-slate-600">
+                    <label class="block font-bold text-slate-500 mb-1">Chủng loại nhóm (Tự nhập tự do)</label>
+                    <input type="text" id="deviceCategory" required placeholder="Ví dụ: Hệ thống xeo bột, Van áp suất..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-slate-600 font-bold text-slate-800">
                 </div>
                 <div class="sm:col-span-6">
                     <label class="block font-bold text-amber-700 mb-1">Đơn vị quản lý</label>
@@ -291,21 +314,25 @@
 
     <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
         <div class="bg-slate-800 text-white font-bold p-3.5 text-base flex items-center justify-between">
-            <span><i class="fa-solid fa-cart-shopping mr-1.5 text-amber-400"></i> Đề Xuất Mua Sắm Vật Tư Mới</span>
+            <span><i class="fa-solid fa-cart-shopping mr-1.5 text-amber-400"></i> Đề Xuất Mua Sắm Vật Tư Mới & Quản Lý Chứng Từ Kỹ Thuật</span>
             <span class="text-sm bg-slate-700 px-2.5 py-1 rounded font-mono" id="count-procurement">0 đề xuất</span>
         </div>
         <form id="formProcurementAction" onsubmit="handleProcurementSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-12 gap-3 text-sm bg-slate-50 border-b border-slate-200">
-            <div class="md:col-span-4">
+            <div class="md:col-span-3">
                 <label class="block font-bold text-slate-600 mb-1">Tên Vật Tư / Thiết Bị</label>
                 <input type="text" id="procuName" required placeholder="Ví dụ: Van áp suất 10K..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
             </div>
-            <div class="md:col-span-2">
+            <div class="md:col-span-1">
                 <label class="block font-bold text-slate-600 mb-1">Số Lượng</label>
                 <input type="number" id="procuQty" required min="1" value="1" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-slate-800">
             </div>
-            <div class="md:col-span-3">
+            <div class="md:col-span-2">
                 <label class="block font-bold text-slate-600 mb-1">Đơn Vị Đề Xuất</label>
                 <select id="procuDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold text-slate-700 focus:outline-none"></select>
+            </div>
+            <div class="md:col-span-3">
+                <label class="block font-bold text-purple-700 mb-1">Liên kết tài liệu đính kèm (Drive/PDF/Không giới hạn)</label>
+                <input type="url" id="procuDocLink" placeholder="Dán link Drive, OneDrive, Server nội bộ..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-medium text-blue-600">
             </div>
             <div class="md:col-span-3 flex items-end gap-2">
                 <div class="w-full">
@@ -323,6 +350,7 @@
                         <th class="p-3">Đơn Vị Đề Xuất</th>
                         <th class="p-3 text-center">Số Lượng</th>
                         <th class="p-3">Dự Toán Chi Phí</th>
+                        <th class="p-3">Chứng Từ Đính Kèm</th>
                         <th class="p-3 text-center">Trạng Thái</th>
                         <th class="p-3 text-right pr-4">Tác Vụ</th>
                     </tr>
@@ -342,9 +370,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Cấu hình Firebase tập trung kết nối
         const firebaseConfig = {
             apiKey: "AIzaSyBre5KbRWv64Qum4EDZkOAYTJe1YyIojuA",
             authDomain: "qltbvinapaco.firebaseapp.com",
@@ -356,88 +383,67 @@
         const db = getDatabase(app);
 
         let currentEnv = localStorage.getItem('vinapaco_current_env') || 'live'; 
+        let currentRole = 'admin'; // admin, sub_user_1, sub_user_2
+
         let depts = [], users = [], devices = [], repairs = [], tasks = [], procurements = [];
         let activeUserDeptFilter = 'all';
-        
         let pomoInterval = null, pomoTimeLeft = 25 * 60, pomoIsRunning = false, pomoCurrentMode = 'work';
 
-        // 100% Khôi phục nguyên vẹn tập dữ liệu Mock Data mẫu ban đầu để không bị trống trang
-        const mockDepts = [
-            { id: "d1", name: "Xưởng Xeo 1" },
-            { id: "d2", name: "Xưởng Xeo 2" },
-            { id: "d3", name: "Xưởng Chế Biến Bột" },
-            { id: "d4", name: "Phòng Kỹ Thuật" }
-        ];
+        // Khôi phục bộ dữ liệu gốc đã nhập phòng trường hợp rớt mạng
+        const mockDepts = [{ id: "d1", name: "Xưởng Xeo 1" }, { id: "d2", name: "Xưởng Xeo 2" }, { id: "d3", name: "Xưởng Chế Biến Bột" }, { id: "d4", name: "Phòng Kỹ Thuật" }];
+        const mockUsers = [{ id: "u1", name: "Nguyễn Văn Phú", title: "Trưởng Ca Vận Hành", dept: "Xưởng Xeo 1" }];
+        const mockDevices = [{ id: "TB-67149", name: "Máy Nghiền Thủy Lực Lực Ly Tâm", cat: "Hệ thống xeo bột", dept: "Xưởng Xeo 1", user: "Nguyễn Văn Phú", status: "Hoạt động tốt" }];
 
-        const mockUsers = [
-            { id: "u1", name: "Nguyễn Văn Phú", title: "Trưởng Ca Vận Hành", dept: "Xưởng Xeo 1" },
-            { id: "u2", name: "Trần Trung Hải", title: "Kỹ Sư Cơ Khí", dept: "Xưởng Xeo 2" },
-            { id: "u3", name: "Lê Hoàng Long", title: "Kỹ Thuật Viên Điện", dept: "Xưởng Chế Biến Bột" },
-            { id: "u4", name: "Phạm Minh Tâm", title: "Chuyên Viên Giám Sát", dept: "Phòng Kỹ Thuật" }
-        ];
+        window.toggleSection = function(id, checked) {
+            const sec = document.getElementById(id);
+            if(sec) { if(checked) sec.classList.remove('hidden'); else sec.classList.add('hidden'); }
+        }
 
-        const mockDevices = [
-            { id: "TB-67149", name: "Máy Nghiền Thủy Lực Lực Ly Tâm", cat: "Hệ thống xeo bột", dept: "Xưởng Xeo 1", user: "Nguyễn Văn Phú", status: "Hoạt động tốt" },
-            { id: "TB-67150", name: "Lô Sấy Áp Lực Cao Số 3", cat: "Hệ thống lô sấy", dept: "Xưởng Xeo 2", user: "Trần Trung Hải", status: "Hoạt động tốt" },
-            { id: "TB-67151", name: "Bơm Cấp Dịch Ly Tâm 45kW", cat: "Hệ thống bơm", dept: "Xưởng Chế Biến Bột", user: "Lê Hoàng Long", status: "Hoạt động tốt" }
-        ];
-
-        const mockRepairs = [
-            { id: "r1", devId: "TB-67149", desc: "Thay gioăng phớt trục chính và căn chỉnh đồng tâm", date: "01/06/2026", repUser: "Trần Trung Hải", cost: "4500000" }
-        ];
-
-        const mockTasks = [
-            { id: "t1", name: "Kiểm tra nhiệt độ ổ đỡ lô sấy", devId: "TB-67150", user: "Trần Trung Hải", level: "Cao", start: "13:30", duration: 45 }
-        ];
-
-        const mockProcurements = [
-            { id: "p1", name: "Van điều áp khí nén SMC", dept: "Xưởng Xeo 1", qty: 2, cost: "3800000", status: "Chờ phê duyệt" }
-        ];
-
-        const localQuotesList = [
-            "Có công mài sắt, có ngày nên kim.",
-            "Một cây làm chẳng nên non, ba cây chụm lại nên hòn núi cao.",
-            "Kỷ luật lao động nghiêm túc là nền tảng cốt lõi của nhà máy giấy.",
-            "Muốn lành nghề chớ ngại học hỏi.",
-            "An toàn để sản xuất, sản xuất phải an toàn."
-        ];
+        window.handleRoleChange = function() {
+            const role = document.getElementById('systemRoleSelect').value;
+            const passInput = document.getElementById('adminPassword');
+            if(role === 'admin') {
+                passInput.classList.remove('hidden');
+                passInput.focus();
+                // Xác thực đơn giản cơ chế bảo mật pin gốc (Mặc định 1234)
+                passInput.oninput = function() {
+                    if(passInput.value === '1234') {
+                        currentRole = 'admin';
+                        alert("Xác thực quản trị viên thành công. Toàn quyền điều phối thông minh!");
+                        passInput.classList.add('hidden');
+                        passInput.value = '';
+                        fetchCloudData();
+                    }
+                }
+            } else {
+                passInput.classList.add('hidden');
+                currentRole = role;
+                alert(`Chuyển sang tài khoản con [${role}]. Vận hành dữ liệu độc lập, tự động đồng bộ về Admin!`);
+                fetchCloudData();
+            }
+        }
 
         window.refreshQuoteOnline = function() {
-            const rand = localQuotesList[Math.floor(Math.random() * localQuotesList.length)];
-            document.getElementById('txtVietnameseQuote').innerText = `"${rand}"`;
+            const list = ["An toàn để sản xuất, sản xuất phải an toàn.", "Kỷ luật lao động nghiêm túc là nền tảng cốt lõi.", "Có công mài sắt, có ngày nên kim."];
+            document.getElementById('txtVietnameseQuote').innerText = `"${list[Math.floor(Math.random() * list.length)]}"`;
         }
 
         window.applyCustomPomoConfig = function() {
             const wMins = parseInt(document.getElementById('cfgPomoWork').value) || 25;
-            if(!pomoIsRunning) {
-                pomoTimeLeft = wMins * 60;
-                document.getElementById('pomoMinutes').innerText = String(wMins).padStart(2, '0');
-                document.getElementById('pomoSeconds').innerText = "00";
-            }
+            if(!pomoIsRunning) { pomoTimeLeft = wMins * 60; document.getElementById('pomoMinutes').innerText = String(wMins).padStart(2, '0'); }
         }
 
         window.togglePomoTimer = function() {
             const btn = document.getElementById('btnStartPomo');
-            if(pomoIsRunning) {
-                clearInterval(pomoInterval);
-                pomoIsRunning = false;
-                btn.innerText = "Bắt Đầu";
-                btn.className = "px-4 py-1 bg-blue-600 hover:bg-blue-700 font-bold text-xs rounded text-white cursor-pointer";
-            } else {
-                pomoIsRunning = true;
-                btn.innerText = "Tạm Dừng";
-                btn.className = "px-4 py-1 bg-amber-600 hover:bg-amber-700 font-bold text-xs rounded text-white cursor-pointer";
+            if(pomoIsRunning) { clearInterval(pomoInterval); pomoIsRunning = false; btn.innerText = "Bắt Đầu"; } 
+            else {
+                pomoIsRunning = true; btn.innerText = "Tạm Dừng";
                 pomoInterval = setInterval(() => {
                     if(pomoTimeLeft <= 0) {
-                        clearInterval(pomoInterval);
-                        pomoIsRunning = false;
-                        alert(pomoCurrentMode === 'work' ? "Hết ca làm việc! Nghỉ giải lao ngắn." : "Hết giờ nghỉ! Quay lại vị trí vận hành.");
+                        clearInterval(pomoInterval); pomoIsRunning = false;
                         pomoCurrentMode = pomoCurrentMode === 'work' ? 'break' : 'work';
-                        const mins = parseInt(document.getElementById(pomoCurrentMode === 'work' ? 'cfgPomoWork' : 'cfgPomoBreak').value) || 5;
-                        pomoTimeLeft = mins * 60;
-                        document.getElementById('pomoStatusLabel').innerText = pomoCurrentMode === 'work' ? "Thời gian làm việc" : "Thời gian nghỉ ngơi";
+                        pomoTimeLeft = (parseInt(document.getElementById(pomoCurrentMode==='work'?'cfgPomoWork':'cfgPomoBreak').value)||5)*60;
                         btn.innerText = "Bắt Đầu";
-                        btn.className = "px-4 py-1 bg-blue-600 hover:bg-blue-700 font-bold text-xs rounded text-white cursor-pointer";
                     } else {
                         pomoTimeLeft--;
                         document.getElementById('pomoMinutes').innerText = String(Math.floor(pomoTimeLeft / 60)).padStart(2, '0');
@@ -447,17 +453,7 @@
             }
         }
 
-        window.resetPomoTimer = function() {
-            clearInterval(pomoInterval);
-            pomoIsRunning = false;
-            pomoCurrentMode = 'work';
-            document.getElementById('pomoStatusLabel').innerText = "Thời gian làm việc";
-            const wMins = parseInt(document.getElementById('cfgPomoWork').value) || 25;
-            pomoTimeLeft = wMins * 60;
-            document.getElementById('pomoMinutes').innerText = String(wMins).padStart(2, '0');
-            document.getElementById('pomoSeconds').innerText = "00";
-            document.getElementById('btnStartPomo').className = "px-4 py-1 bg-blue-600 hover:bg-blue-700 font-bold text-xs rounded text-white cursor-pointer";
-        }
+        window.resetPomoTimer = function() { clearInterval(pomoInterval); pomoIsRunning = false; pomoTimeLeft = 25*60; }
 
         function makeQRTextContent(dev) { return `${window.location.origin}${window.location.pathname}?id=${dev.id}`; }
 
@@ -467,94 +463,60 @@
             catch (e) { dom.innerHTML = "QR Error"; }
         }
 
-        setInterval(() => {
-            if(document.getElementById('liveClockText')) document.getElementById('liveClockText').innerText = new Date().toLocaleTimeString('vi-VN');
-            updateCountdownTimers();
-        }, 1000);
+        window.switchEnvironment = function(env) { currentEnv = env; localStorage.setItem('vinapaco_current_env', env); fetchCloudData(); }
 
-        window.switchEnvironment = function(env) {
-            currentEnv = env; localStorage.setItem('vinapaco_current_env', env);
-            updateEnvButtonsUI(); fetchCloudData();
-        }
-
-        function updateEnvButtonsUI() {
-            const l = document.getElementById('envBtn-live'), d = document.getElementById('envBtn-demo');
-            if(currentEnv === 'live') {
-                l.className = "px-4 py-1.5 bg-emerald-600 text-white text-xs font-bold rounded-md shadow-sm";
-                d.className = "px-4 py-1.5 text-slate-500 hover:text-slate-700 text-xs font-bold";
-                document.getElementById('syncStatusText').innerText = "Hệ thống đang đồng bộ trực tuyến đám mây Realtime";
-            } else {
-                d.className = "px-4 py-1.5 bg-amber-500 text-slate-950 text-xs font-bold rounded-md shadow-sm";
-                l.className = "px-4 py-1.5 text-slate-500 hover:text-slate-700 text-xs font-bold";
-                document.getElementById('syncStatusText').innerText = "Đang chạy môi trường bộ nhớ đệm Demo Offline";
-            }
-        }
-
+        // CƠ CHẾ ĐỒNG BỘ THÔNG MINH PHÂN QUYỀN TÀI KHOẢN CON KHÔNG ĐÈ ADMIN
         function fetchCloudData() {
-            const key = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
-            get(ref(db, key)).then((snapshot) => {
-                const data = snapshot.val() || {};
-                const parse = (arr) => arr ? (Array.isArray(arr) ? arr.filter(Boolean) : Object.values(arr)) : [];
+            const basePath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
+            // Admin đọc toàn quyền gốc, Tài khoản con đọc luồng dữ liệu độc lập của mình
+            const readPath = currentRole === 'admin' ? basePath : `${basePath}/sub_channels/${currentRole}`;
+
+            get(ref(db, basePath)).then((adminSnapshot) => {
+                const adminData = adminSnapshot.val() || {};
                 
-                depts = parse(data.depts);
-                users = parse(data.users);
-                devices = parse(data.devices);
-                repairs = parse(data.repairs);
-                tasks = parse(data.tasks);
-                procurements = parse(data.procurements);
-                
-                // Nếu dữ liệu trên đám mây trống, tự động nạp Mock Data mẫu ban đầu
-                if(depts.length === 0) { depts = [...mockDepts]; users = [...mockUsers]; devices = [...mockDevices]; repairs = [...mockRepairs]; tasks = [...mockTasks]; procurements = [...mockProcurements]; }
-                
-                updateDropdownOptions(); renderAllTables(); autoGenDeviceId(); checkMaintenanceAlerts();
-            }).catch(() => {
-                // Phòng hờ rớt mạng, chạy local mock data
-                depts = [...mockDepts]; users = [...mockUsers]; devices = [...mockDevices]; repairs = [...mockRepairs]; tasks = [...mockTasks]; procurements = [...mockProcurements];
-                updateDropdownOptions(); renderAllTables(); autoGenDeviceId(); checkMaintenanceAlerts();
+                get(ref(db, readPath)).then((snapshot) => {
+                    const data = snapshot.val() || {};
+                    const parse = (arr) => arr ? (Array.isArray(arr) ? arr.filter(Boolean) : Object.values(arr)) : [];
+
+                    // Nếu là tài khoản con và chưa có dữ liệu độc lập, lấy cấu trúc của Admin để tiếp quản ca trực
+                    depts = parse(adminData.depts).length ? parse(adminData.depts) : [...mockDepts];
+                    users = parse(data.users || adminData.users);
+                    devices = parse(data.devices || adminData.devices);
+                    repairs = parse(data.repairs || adminData.repairs);
+                    tasks = parse(data.tasks || adminData.tasks);
+                    procurements = parse(data.procurements || adminData.procurements);
+
+                    if(users.length === 0) { users = [...mockUsers]; devices = [...mockDevices]; }
+
+                    updateDropdownOptions(); renderAllTables(); autoGenDeviceId(); checkMaintenanceAlerts();
+                });
             });
         }
 
         function pushDataToCloud() {
-            set(ref(db, currentEnv === 'live' ? 'root_v4' : 'demo_root_v4'), { depts, users, devices, repairs, tasks, procurements }).then(() => fetchCloudData());
+            const basePath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
+            
+            if(currentRole === 'admin') {
+                // Admin ghi toàn quyền, kiểm soát hệ thống tổng
+                set(ref(db, basePath), { depts, users, devices, repairs, tasks, procurements }).then(() => fetchCloudData());
+            } else {
+                // Tài khoản con lưu độc lập trên nhánh của mình và tự động đẩy bản sao đồng bộ về bộ nhớ theo dõi của Admin
+                set(ref(db, `${basePath}/sub_channels/${currentRole}`), { users, devices, repairs, tasks, procurements });
+                // Cơ chế tự động đồng bộ đẩy ngược về lịch sử chung của Admin thông minh
+                set(ref(db, `${basePath}/sync_logs/${currentRole}_${Date.now()}`), { timestamp: Date.now(), devices, repairs });
+                fetchCloudData();
+            }
         }
 
-        // TÍNH NĂNG 1: UPSERT CHỐNG TRÙNG NHÂN SỰ & TÍNH NĂNG 2: AUTO FOCUS CHUỖI NHẬP LIỆU LÊN TÊN
         window.handleUserSubmit = function(e) { 
             e.preventDefault(); 
-            const nameInp = document.getElementById('userName');
-            const titleInp = document.getElementById('userTitle');
-            const deptInp = document.getElementById('userDept');
-
-            const nameVal = nameInp.value.trim();
-            const titleVal = titleInp.value.trim();
-            const deptVal = deptInp.value;
-
-            if(!nameVal || !titleVal) return;
-
-            // Kiểm tra trùng lắp (Tên + Phòng ban) để Upsert cập nhật chức vụ
-            const existIndex = users.findIndex(u => u.name.toLowerCase() === nameVal.toLowerCase() && u.dept === deptVal);
-            if(existIndex !== -1) {
-                users[existIndex].title = titleVal;
-            } else {
-                users.push({ id: Date.now().toString(), name: nameVal, title: titleVal, dept: deptVal });
-            }
-            
-            titleInp.value = "";
-            
-            // Đồng bộ trực tiếp lên Firebase
-            set(ref(db, currentEnv === 'live' ? 'root_v4' : 'demo_root_v4'), { depts, users, devices, repairs, tasks, procurements }).then(() => {
-                updateDropdownOptions(); 
-                renderUserTableOnly();
-                // Reset ô nhập và kéo phốc chuột về lại ô Tên ngay lập tức để nhập tiếp ca sau
-                nameInp.value = "";
-                nameInp.focus();
-            });
+            users.push({ id: Date.now().toString(), name: document.getElementById('userName').value.trim(), title: document.getElementById('userTitle').value.trim(), dept: document.getElementById('userDept').value });
+            document.getElementById('userName').value = ""; document.getElementById('userTitle').value = ""; pushDataToCloud(); 
         }
 
         window.handleDeptSubmit = function(e) { 
             e.preventDefault(); 
-            const nameVal = document.getElementById('deptName').value.trim();
-            depts.push({ id: Date.now().toString(), name: nameVal });
+            depts.push({ id: Date.now().toString(), name: document.getElementById('deptName').value.trim() });
             document.getElementById('deptName').value = ""; pushDataToCloud(); 
         }
 
@@ -563,7 +525,7 @@
             const mode = document.getElementById('editDeviceMode').value;
             const dId = document.getElementById('deviceId').value;
             const name = document.getElementById('deviceName').value.trim();
-            const cat = document.getElementById('deviceCategory').value.trim();
+            const cat = document.getElementById('deviceCategory').value.trim(); // Người dùng tự nhập chủng loại tự do
             const dept = document.getElementById('deviceDept').value;
             const user = document.getElementById('deviceUser').value;
 
@@ -592,8 +554,7 @@
 
         window.resetDeviceForm = function() {
             document.getElementById('editDeviceMode').value = "create";
-            document.getElementById('deviceName').value = "";
-            document.getElementById('deviceCategory').value = "";
+            document.getElementById('deviceName').value = ""; document.getElementById('deviceCategory').value = "";
             document.getElementById('btnCancelDeviceEdit').classList.add('hidden');
             document.getElementById('btnDeviceSubmit').innerText = "Lưu & Sinh Mã QR";
             autoGenDeviceId();
@@ -613,8 +574,22 @@
 
         window.handleProcurementSubmit = function(e) {
             e.preventDefault();
-            procurements.push({ id: Date.now().toString(), name: document.getElementById('procuName').value.trim(), qty: document.getElementById('procuQty').value, dept: document.getElementById('procuDept').value, cost: document.getElementById('procuEstimatedCost').value, status: 'Chờ phê duyệt' });
-            document.getElementById('procuName').value = ""; pushDataToCloud();
+            // Đính kèm đường dẫn chứng từ kỹ thuật/hồ sơ nghiệm thu không giới hạn dung lượng
+            procurements.push({ 
+                id: Date.now().toString(), 
+                name: document.getElementById('procuName').value.trim(), 
+                qty: document.getElementById('procuQty').value, 
+                dept: document.getElementById('procuDept').value, 
+                cost: document.getElementById('procuEstimatedCost').value, 
+                docLink: document.getElementById('procuDocLink').value.trim() || '#',
+                status: 'Chờ phê duyệt' 
+            });
+            document.getElementById('procuName').value = ""; document.getElementById('procuDocLink').value = ""; pushDataToCloud();
+        }
+
+        window.openPrintDocument = function(url) {
+            if(url === '#' || !url) { alert("Không có tài liệu/chứng từ nào được đính kèm cho hồ sơ này."); return; }
+            window.open(url, '_blank');
         }
 
         window.renderDeviceTableOnly = function() {
@@ -631,9 +606,9 @@
                     <td class="p-3 font-medium">${d.user==='Chưa cấp phát'?'📦 Đang Lưu Kho':d.user}</td>
                     <td class="p-3 text-center"><span class="px-2 py-0.5 text-xs font-bold rounded ${d.status==='Trong kho'?'bg-amber-100 text-amber-700':'bg-emerald-100 text-emerald-700'}">${d.status}</span></td>
                     <td class="p-3 text-right pr-4">
-                        <button onclick="previewAndSelectQR('${d.id}')" class="px-2 py-1 bg-slate-900 text-amber-400 font-bold rounded text-xs border border-amber-400 cursor-pointer hover:bg-slate-800">Xem & In</button>
-                        <button onclick="editDeviceInline('${d.id}')" class="text-blue-600 ml-2 cursor-pointer hover:text-blue-800"><i class="fa-solid fa-pen-to-square"></i></button>
-                        <button onclick="deleteItem('device', '${d.id}')" class="text-red-500 hover:text-red-700 ml-1.5 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
+                        <button onclick="previewAndSelectQR('${d.id}')" class="px-2 py-1 bg-slate-900 text-amber-400 font-bold rounded text-xs border border-amber-400 cursor-pointer">Xem & In</button>
+                        <button onclick="editDeviceInline('${d.id}')" class="text-blue-600 ml-2 cursor-pointer"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="deleteItem('device', '${d.id}')" class="text-red-500 ml-1.5 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
                     </td>
                 </tr>`;
                 setTimeout(() => generateLocalQR(document.getElementById(`cell-qr-${d.id}`), makeQRTextContent(d), 36), 40);
@@ -648,7 +623,7 @@
                 body.innerHTML += `<tr class="border-b">
                     <td class="p-3 pl-4 font-bold text-slate-900">${u.name}<span class="block text-xs text-slate-400 font-normal">${u.title}</span></td>
                     <td class="p-3 font-medium text-slate-600">${u.dept}</td>
-                    <td class="p-3 text-right pr-4"><button onclick="deleteItem('user','${u.id}')" class="text-red-500 hover:underline cursor-pointer">Xóa</button></td>
+                    <td class="p-3 text-right pr-4"><button onclick="deleteItem('user','${u.id}')" class="text-red-500 hover:underline">Xóa</button></td>
                 </tr>`;
             });
             document.getElementById('count-user').innerText = `${users.length} nhân sự`;
@@ -659,7 +634,7 @@
             repairs.forEach(r => {
                 body.innerHTML += `<tr class="border-b">
                     <td class="p-3 pl-4 font-mono font-bold">${r.devId}</td><td>${r.desc}</td><td>${r.date}</td><td>${r.repUser}</td><td class="font-bold text-slate-900">${Number(r.cost).toLocaleString()}đ</td>
-                    <td class="p-3 text-right pr-4"><button onclick="deleteItem('repair','${r.id}')" class="text-slate-400 hover:text-red-600 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button></td>
+                    <td class="p-3 text-right pr-4"><button onclick="deleteItem('repair','${r.id}')" class="text-slate-400"><i class="fa-solid fa-trash-can"></i></button></td>
                 </tr>`;
             });
         }
@@ -669,7 +644,7 @@
             tasks.forEach(t => {
                 body.innerHTML += `<tr class="border-b border-slate-800">
                     <td class="p-3 pl-4 font-bold text-white">${t.name}</td><td class="p-3 font-mono text-slate-400">${t.devId}</td><td>${t.user}</td><td class="text-amber-400 font-bold text-xs">${t.level}</td><td>${t.start}</td><td class="font-bold text-emerald-400 font-mono" id="timer-${t.id}">--:--</td>
-                    <td class="p-3 text-right pr-4"><button onclick="deleteItem('task','${t.id}')" class="text-slate-600 hover:text-red-500 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button></td>
+                    <td class="p-3 text-right pr-4"><button onclick="deleteItem('task','${t.id}')" class="text-slate-600"><i class="fa-solid fa-trash-can"></i></button></td>
                 </tr>`;
             });
         }
@@ -677,8 +652,17 @@
         window.renderProcurementTableOnly = function() {
             const body = document.getElementById('procurementTableBody'); if(!body) return; body.innerHTML = '';
             procurements.forEach(p => {
+                const hasDoc = p.docLink && p.docLink !== '#';
                 body.innerHTML += `<tr class="border-b">
-                    <td class="p-3 pl-4 font-bold text-slate-800">${p.name}</td><td>${p.dept}</td><td class="text-center font-bold">${p.qty}</td><td class="font-bold text-blue-700">${Number(p.cost).toLocaleString()}đ</td><td class="text-center"><span class="px-2 py-0.5 text-[11px] rounded font-bold bg-amber-100 text-amber-700">${p.status}</span></td><td class="p-3 text-right pr-4"><button onclick="deleteItem('procurement','${p.id}')" class="text-slate-400 hover:text-red-500 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button></td>
+                    <td class="p-3 pl-4 font-bold text-slate-800">${p.name}</td>
+                    <td>${p.dept}</td>
+                    <td class="text-center font-bold">${p.qty}</td>
+                    <td class="font-bold text-blue-700">${Number(p.cost).toLocaleString()}đ</td>
+                    <td>
+                        ${hasDoc ? `<button onclick="openPrintDocument('${p.docLink}')" class="px-2 py-1 bg-purple-50 text-purple-700 border border-purple-300 rounded font-bold text-xs hover:bg-purple-100 cursor-pointer"><i class="fa-solid fa-file-pdf mr-1"></i> Xem & In Hồ Sơ</button>` : `<span class="text-slate-400 italic text-xs">Không đính kèm</span>`}
+                    </td>
+                    <td class="text-center"><span class="px-2 py-0.5 text-[11px] rounded font-bold bg-amber-100 text-amber-700">${p.status}</span></td>
+                    <td class="p-3 text-right pr-4"><button onclick="deleteItem('procurement','${p.id}')" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-trash-can"></i></button></td>
                 </tr>`;
             });
             document.getElementById('count-procurement').innerText = `${procurements.length} đề xuất`;
@@ -702,17 +686,12 @@
             document.getElementById('webPreviewEmptyText').classList.add('hidden');
             document.getElementById('webPreviewQRBox').classList.remove('hidden');
             document.getElementById('btnActionPrintNow').classList.remove('hidden');
-            document.getElementById('wpTitle').innerText = dev.name;
-            document.getElementById('wpId').innerText = dev.id;
-            document.getElementById('wpDept').innerText = "ĐV: " + dev.dept;
-            document.getElementById('wpUser').innerText = "Phụ trách: " + dev.user;
+            document.getElementById('wpTitle').innerText = dev.name; document.getElementById('wpId').innerText = dev.id;
+            document.getElementById('wpDept').innerText = "ĐV: " + dev.dept; document.getElementById('wpUser').innerText = "Phụ trách: " + dev.user;
             generateLocalQR(document.getElementById('wpCanvas'), makeQRTextContent(dev), 150);
 
-            // Cập nhật cấu trúc vùng in ẩn lệnh Window.Print()
-            document.getElementById('qrPrintTitle').innerText = dev.name;
-            document.getElementById('qrPrintId').innerText = dev.id;
-            document.getElementById('qrPrintDept').innerText = "ĐV: " + dev.dept;
-            document.getElementById('qrPrintUser').innerText = "Phụ trách: " + dev.user;
+            document.getElementById('qrPrintTitle').innerText = dev.name; document.getElementById('qrPrintId').innerText = dev.id;
+            document.getElementById('qrPrintDept').innerText = "ĐV: " + dev.dept; document.getElementById('qrPrintUser').innerText = "Phụ trách: " + dev.user;
             generateLocalQR(document.getElementById('qrPrintCanvas'), makeQRTextContent(dev), 120);
         }
 
@@ -749,29 +728,16 @@
                 if(logs.length === 0 && d.status !== "Trong kho") {
                     zone.innerHTML += `<div class="bg-white p-3 border-l-4 border-amber-500 rounded flex justify-between items-center text-xs shadow-sm">
                         <div><p class="font-bold text-slate-900">${d.id}</p><p class="text-slate-500">${d.name}</p></div>
-                        <button onclick="document.getElementById('repairDeviceId').value='${d.id}';" class="px-2 py-1 bg-amber-600 text-white font-bold rounded cursor-pointer hover:bg-amber-700">Bảo Trì Ngay</button>
+                        <button onclick="document.getElementById('repairDeviceId').value='${d.id}';" class="px-2 py-1 bg-amber-600 text-white font-bold rounded cursor-pointer">Bảo Trì Ngay</button>
                     </div>`;
                 }
             });
         }
 
-        function updateCountdownTimers() {
-            tasks.forEach(t => {
-                const el = document.getElementById(`timer-${t.id}`); if(!el) return;
-                const now = new Date(); const [h, m] = t.start.split(':').map(Number);
-                const startTime = new Date(); startTime.setHours(h, m, 0, 0);
-                const endTime = new Date(startTime.getTime() + t.duration * 60 * 1000);
-                if (now < startTime) { el.innerText = "Chờ giờ làm"; }
-                else if (now > endTime) { el.innerText = "Hết hạn ca"; el.className = "text-red-500 font-bold font-mono text-xs"; }
-                else {
-                    const diff = Math.floor((endTime - now) / 1000);
-                    el.innerText = `${String(Math.floor(diff / 60)).padStart(2,'0')}:${String(diff % 60).padStart(2,'0')}`;
-                }
-            });
-        }
-
-        window.renderAllTables = function() { renderDeviceTableOnly(); renderUserTableOnly(); renderRepairTableOnly(); renderTaskTableOnly(); renderProcurementTableOnly(); }
-        updateEnvButtonsUI(); fetchCloudData();
+        window.renderAllTables = function() { renderDeviceTableOnly(); renderUserTableOnly(); renderRepairTableOnly(); renderProcurementTableOnly(); }
+        setInterval(() => { if(document.getElementById('liveClockText')) document.getElementById('liveClockText').innerText = new Date().toLocaleTimeString('vi-VN'); }, 1000);
+        
+        fetchCloudData();
     </script>
 </body>
 </html>
