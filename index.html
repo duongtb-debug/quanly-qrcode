@@ -72,9 +72,15 @@
                 <div class="w-16 h-16 bg-white/10 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-3 border border-white/20">
                     <i class="fa-solid fa-shield-halved text-amber-400"></i>
                 </div>
-                <h2 class="text-[11px] md:text-xs font-bold tracking-widest text-emerald-200 uppercase">Hệ Thống Cấp Khóa Vận Hành</h2>
+                <h2 class="text-[11px] font-bold tracking-widest text-emerald-200 uppercase">Hệ Thống Cấp Khóa Vận Hành</h2>
                 <h1 class="text-xl font-black mt-1">VINAPACO - LOGIN</h1>
             </div>
+            
+            <div class="flex border-b border-slate-200 bg-slate-50">
+                <button type="button" id="tabLoginPassword" onclick="switchLoginMethod('password')" class="w-1/2 py-2.5 text-xs font-bold uppercase text-emerald-700 border-b-2 border-emerald-700 focus:outline-none transition-all">Mật khẩu ca</button>
+                <button type="button" id="tabLoginPin" onclick="switchLoginMethod('pin')" class="w-1/2 py-2.5 text-xs font-bold uppercase text-slate-400 border-b-2 border-transparent hover:text-slate-700 focus:outline-none transition-all">Mã PIN cá nhân</button>
+            </div>
+
             <div class="p-6 space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Chọn Tài Khoản Ca Trực</label>
@@ -84,17 +90,18 @@
                         <option value="sub_user_2">🧑 Vận hành Ca 2</option>
                     </select>
                 </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Mật khẩu ca</label>
-                        <input type="password" id="loginPassword" placeholder="vinapaco2026" class="w-full border border-slate-300 rounded-lg p-2 font-bold text-center bg-slate-50 focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Mã PIN cá nhân</label>
-                        <input type="password" id="loginPin" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="123456 / ..." class="w-full border border-slate-300 rounded-lg p-2 font-bold text-center bg-slate-50 focus:outline-none tracking-widest">
-                    </div>
+
+                <div id="containerLoginPassword">
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Mật khẩu xác thực ca</label>
+                    <input type="password" id="loginPassword" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Mặc định: vinapaco2026" class="w-full border border-slate-300 rounded-lg p-2.5 font-bold text-center bg-slate-50 focus:outline-none">
                 </div>
-                <div id="loginErrorMsg" class="text-red-500 font-bold text-xs text-center hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> Thông tin Mật khẩu hoặc PIN không hợp lệ!</div>
+
+                <div id="containerLoginPin" class="hidden">
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Mã PIN cá nhân định danh</label>
+                    <input type="password" id="loginPin" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Nhập mã PIN..." class="w-full border border-slate-300 rounded-lg p-2.5 font-bold text-center bg-slate-50 focus:outline-none tracking-widest">
+                </div>
+
+                <div id="loginErrorMsg" class="text-red-500 font-bold text-xs text-center hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> Thông tin xác thực không chính xác!</div>
                 <button onclick="executeSystemLogin()" class="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-black rounded-lg uppercase text-sm tracking-wider cursor-pointer transition-colors">Xác Thực Vào Hệ Thống</button>
             </div>
         </div>
@@ -302,14 +309,29 @@
             <div class="bg-gradient-to-r from-purple-800 to-indigo-800 text-white font-bold p-3.5 text-base"><i class="fa-solid fa-screwdriver-wrench mr-2"></i>Nhật Ký Hành Động Sửa Chữa Kỹ Thuật Kịp Thời</div>
             <form id="formRepairAction" onsubmit="handleRepairSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-12 gap-3 text-sm bg-slate-50/50 border-b border-slate-100 form-bg-panel">
                 <div class="md:col-span-3">
-                    <select id="repairDeviceId" required class="w-full border border-slate-300 rounded-lg p-2 bg-white font-mono font-bold focus:outline-none"></select>
+                    <label class="block font-bold text-slate-600 mb-1">Thiết Bị Sự Cố</label>
+                    <select id="repairDeviceId" required class="w-full border border-slate-300 rounded-lg p-2 bg-white font-mono font-bold focus:outline-none h-[38px]"></select>
                 </div>
-                <div class="md:col-span-6">
-                    <input type="text" id="repairDesc" required placeholder="Mô tả chi tiết hạng mục sửa chữa, xử lý sự cố thiết bị tại xưởng..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
+                <div class="md:col-span-4">
+                    <label class="block font-bold text-slate-600 mb-1">Mô tả kỹ thuật sửa chữa</label>
+                    <input type="text" id="repairDesc" required placeholder="Mô tả chi tiết hạng mục xử lý..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none h-[38px]">
                 </div>
-                <div class="md:col-span-3 flex items-end gap-2">
-                    <select id="repairUser" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none"></select>
-                    <button type="submit" class="px-6 bg-purple-700 text-white font-bold rounded-lg hover:bg-purple-800 shadow-sm h-[38px] cursor-pointer">Lưu Nhật Ký</button>
+                <div class="md:col-span-3">
+                    <label class="block font-bold text-blue-700 mb-1"><i class="fa-solid fa-file-shield"></i> Tài liệu đính kèm</label>
+                    <div class="flex gap-2">
+                        <input type="file" id="uploadRepairFile" class="hidden" onchange="handleRepairFileBinaryUpload(event)">
+                        <button type="button" onclick="document.getElementById('uploadRepairFile').click()" id="btnUploadRepairIndicator" class="w-full px-3 py-2 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded-lg text-xs whitespace-nowrap cursor-pointer h-[38px]"><i class="fa-solid fa-paperclip"></i> Chọn File</button>
+                        <input type="hidden" id="repairFileBinaryData" value="">
+                        <input type="hidden" id="repairFileMimeType" value="">
+                        <input type="hidden" id="repairFileName" value="">
+                    </div>
+                </div>
+                <div class="md:col-span-2 flex items-end gap-2">
+                    <div class="w-full">
+                        <label class="block font-bold text-slate-600 mb-1">Người xử lý</label>
+                        <select id="repairUser" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none h-[38px] font-bold text-xs"></select>
+                    </div>
+                    <button type="submit" class="px-4 bg-purple-700 text-white font-bold rounded-lg hover:bg-purple-800 shadow-sm h-[38px] cursor-pointer text-xs uppercase tracking-wider">Lưu</button>
                 </div>
             </form>
             <div class="overflow-x-auto text-sm bg-white table-container-panel">
@@ -320,6 +342,7 @@
                             <th class="p-3">Chi Tiết Kỹ Thuật Sửa Chữa</th>
                             <th class="p-3">Ngày Thực Hiện</th>
                             <th class="p-3">Kỹ Thuật Viên</th>
+                            <th class="p-3 text-center">Tài Liệu Xử Lý</th>
                             <th class="p-3 text-right pr-4">Hành động</th>
                         </tr>
                     </thead>
@@ -418,6 +441,8 @@
 
         let currentEnv = localStorage.getItem('vinapaco_current_env') || 'live'; 
         let currentRole = 'admin';
+        let loginMethod = 'password'; // 'password' hoặc 'pin'
+        
         let credentialsConfig = {
             admin: { password: "vinapaco2026", pin: "123456" },
             sub_user_1: { password: "vinapaco2026", pin: "1111" },
@@ -425,6 +450,27 @@
         };
 
         let depts = [], users = [], devices = [], repairs = [], docRecords = [];
+
+        // --- CHUYỂN ĐỔI QUA LẠI GIỮA CHẾ ĐỘ MẬT KHẨU / MÃ PIN TẠI MÀN HÌNH ĐĂNG NHẬP ---
+        window.switchLoginMethod = function(method) {
+            loginMethod = method;
+            const tabPass = document.getElementById('tabLoginPassword');
+            const tabPin = document.getElementById('tabLoginPin');
+            const containerPass = document.getElementById('containerLoginPassword');
+            const containerPin = document.getElementById('containerLoginPin');
+
+            if (method === 'password') {
+                tabPass.className = "w-1/2 py-2.5 text-xs font-bold uppercase text-emerald-700 border-b-2 border-emerald-700 focus:outline-none transition-all";
+                tabPin.className = "w-1/2 py-2.5 text-xs font-bold uppercase text-slate-400 border-b-2 border-transparent hover:text-slate-700 focus:outline-none transition-all";
+                containerPass.classList.remove('hidden');
+                containerPin.classList.add('hidden');
+            } else {
+                tabPin.className = "w-1/2 py-2.5 text-xs font-bold uppercase text-emerald-700 border-b-2 border-emerald-700 focus:outline-none transition-all";
+                tabPass.className = "w-1/2 py-2.5 text-xs font-bold uppercase text-slate-400 border-b-2 border-transparent hover:text-slate-700 focus:outline-none transition-all";
+                containerPin.classList.remove('hidden');
+                containerPass.classList.add('hidden');
+            }
+        }
 
         window.changeSystemTheme = function(themeType) {
             const body = document.getElementById('systemBody');
@@ -444,19 +490,25 @@
             }
         }
 
-        // --- CƠ CHẾ ĐĂNG NHẬP KHỚP SONG SONG CẢ HAI GIÁ TRỊ NHƯ CŨ ---
+        // --- XỬ LÝ ĐĂNG NHẬP THÔNG MINH DỰA TRÊN TAB ĐANG CHỌN ---
         window.executeSystemLogin = function() {
             const role = document.getElementById('loginRole').value;
-            const inputPassword = document.getElementById('loginPassword').value.trim();
-            const inputPin = document.getElementById('loginPin').value.trim();
             const errorLabel = document.getElementById('loginErrorMsg');
             const basePath = currentEnv === 'live' ? 'root_v5' : 'demo_root_v5';
             
             get(ref(db, `${basePath}/secure_credentials`)).then((snapshot) => {
                 if(snapshot.exists()) credentialsConfig = snapshot.val();
                 
-                // Xác thực: Password và PIN phải khớp đúng với cấu hình quyền đã chọn
-                if(inputPassword === credentialsConfig[role].password && inputPin === credentialsConfig[role].pin) { 
+                let isValid = false;
+                if(loginMethod === 'password') {
+                    const inputPassword = document.getElementById('loginPassword').value.trim();
+                    if(inputPassword === credentialsConfig[role].password) isValid = true;
+                } else {
+                    const inputPin = document.getElementById('loginPin').value.trim();
+                    if(inputPin === credentialsConfig[role].pin) isValid = true;
+                }
+
+                if(isValid) { 
                     currentRole = role;
                     errorLabel.classList.add('hidden');
                     document.getElementById('loginOverlaySystem').classList.add('hidden');
@@ -490,7 +542,6 @@
                 repairs = parse(data.repairs);
                 docRecords = parse(data.docRecords);
 
-                // Nếu nhánh v5 mới chưa có gì, đọc dữ liệu nhánh v4 sang để không mất thông tin cũ
                 if (depts.length === 0 && devices.length === 0) {
                     get(ref(db, oldPath)).then((oldSnapshot) => {
                         if (oldSnapshot.exists()) {
@@ -522,10 +573,26 @@
             set(ref(db, basePath), { depts, users, devices, repairs, docRecords, secure_credentials: credentialsConfig }).then(() => fetchCloudData());
         }
 
+        // --- XỬ LÝ UPLOAD BINARY FILE TRÊN TRÌNH DUYỆT (CHO SỬA CHỮA & CHỨNG TỪ) ---
+        window.handleRepairFileBinaryUpload = function(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const indicator = document.getElementById('btnUploadRepairIndicator');
+            indicator.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Loading...`;
+            
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                document.getElementById('repairFileBinaryData').value = evt.target.result;
+                document.getElementById('repairFileMimeType').value = file.type;
+                document.getElementById('repairFileName').value = file.name;
+                indicator.innerHTML = `<i class="fa-solid fa-circle-check text-green-400"></i> ${file.name.substring(0,10)}...`;
+            };
+            reader.readAsDataURL(file);
+        }
+
         window.handleRecordFileBinaryUpload = function(e) {
             const file = e.target.files[0]; if (!file) return;
             const indicator = document.getElementById('btnUploadDocIndicator');
-            indicator.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Đang nạp dữ liệu...`;
+            indicator.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Loading...`;
             
             const reader = new FileReader();
             reader.onload = function(evt) {
@@ -537,15 +604,14 @@
             reader.readAsDataURL(file);
         }
 
-        window.openRecordAttachedDocument = function(index) {
-            const record = docRecords[index];
-            if (!record || !record.fileData) { alert("Hồ sơ này chưa có tệp tin đính kèm!"); return; }
-
-            const mime = record.fileMime || "application/pdf";
-            const name = record.fileName || "ChungTu.pdf";
+        // --- TRÌNH XEM FILE ĐA NĂNG DÙNG CHUNG (CHO CẢ CHỨNG TỪ VÀ BẢO TRÌ) ---
+        window.openPreviewFromBase64 = function(base64Data, mimeType, fileName) {
+            if (!base64Data) { alert("Không tìm thấy tệp đính kèm dữ liệu!"); return; }
+            const mime = mimeType || "application/pdf";
+            const name = fileName || "TaiLieu.pdf";
 
             try {
-                const byteCharacters = atob(record.fileData.split(',')[1] || record.fileData);
+                const byteCharacters = atob(base64Data.split(',')[1] || base64Data);
                 const byteArrays = [];
                 for (let offset = 0; offset < byteCharacters.length; offset += 512) {
                     const slice = byteCharacters.slice(offset, offset + 512);
@@ -566,12 +632,22 @@
                 } else if (mime.includes('image')) {
                     container.innerHTML = `<div class="w-full h-full flex items-center justify-center overflow-auto"><img src="${blobUrl}" class="max-w-full max-h-full object-contain"></div>`;
                 } else {
-                    container.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center gap-2"><i class="fa-solid fa-file-invoice text-5xl text-blue-500"></i><p class="font-bold">${name}</p><p class="text-xs text-slate-400">Định dạng file đặc thù, bấm nút bên dưới để tải về máy.</p></div>`;
+                    container.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center gap-2"><i class="fa-solid fa-file-shield text-5xl text-blue-500"></i><p class="font-bold">${name}</p><p class="text-xs text-slate-400">Định dạng file đặc thù, bấm nút bên dưới để tải về máy.</p></div>`;
                 }
                 document.getElementById('filePreviewModal').style.display = 'flex';
             } catch (e) {
-                alert("Lỗi cấu trúc tệp dữ liệu, không thể kết xuất trình duyệt!");
+                alert("Lỗi kết xuất dữ liệu tệp tin đính kèm!");
             }
+        }
+
+        window.openRecordAttachedDocument = function(index) {
+            const record = docRecords[index];
+            if(record) openPreviewFromBase64(record.fileData, record.fileMime, record.fileName);
+        }
+
+        window.openRepairAttachedDocument = function(index) {
+            const repairObj = repairs[index];
+            if(repairObj) openPreviewFromBase64(repairObj.fileData, repairObj.fileMime, repairObj.fileName);
         }
 
         window.closeFilePreviewModal = function() {
@@ -654,19 +730,21 @@
             });
             document.getElementById('count-user').innerText = `${users.length} nhân sự`;
 
-            // Render Nhật Ký Sửa Chữa (Đã loại bỏ cột chi phí)
+            // Render Nhật Ký Sửa Chữa (Có nút Xem file tài liệu đính kèm)
             const repBody = document.getElementById('repairTableBody'); repBody.innerHTML = '';
-            repairs.forEach(r => {
+            repairs.forEach((r, idx) => {
+                const fileBtn = r.fileData ? `<button onclick="openRepairAttachedDocument(${idx})" class="px-2 py-0.5 bg-indigo-600 text-white font-bold rounded text-xs cursor-pointer"><i class="fa-solid fa-eye"></i> Xem File</button>` : `<span class="text-slate-400 italic text-xs">Không có</span>`;
                 repBody.innerHTML += `<tr>
                     <td class="p-3 font-mono font-bold pl-4">${r.devId}</td>
                     <td class="p-3">${r.desc}</td>
                     <td class="p-3">${r.date}</td>
                     <td class="p-3 font-medium">${r.repUser}</td>
+                    <td class="p-3 text-center">${fileBtn}</td>
                     <td class="p-3 text-right pr-4"><button onclick="deleteItem('repair','${r.id}')" class="text-red-400"><i class="fa-solid fa-trash"></i></button></td>
                 </tr>`;
             });
 
-            // Render Hồ Sơ Chứng Từ
+            // Render Hồ Sơ Chứng Từ Sửa Chữa
             const docBody = document.getElementById('docRecordsTableBody'); docBody.innerHTML = '';
             docRecords.forEach((p, idx) => {
                 const docBtn = p.fileData ? `<button onclick="openRecordAttachedDocument(${idx})" class="px-2.5 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded font-bold text-xs cursor-pointer"><i class="fa-solid fa-folder-open"></i> Xem File</button>` : `<span class="text-slate-400 italic text-xs">Trống</span>`;
@@ -703,8 +781,22 @@
 
         window.handleRepairSubmit = function(e) {
             e.preventDefault();
-            repairs.push({ id: Date.now().toString(), devId: document.getElementById('repairDeviceId').value, desc: document.getElementById('repairDesc').value.trim(), date: new Date().toLocaleDateString('vi-VN'), repUser: document.getElementById('repairUser').value });
-            document.getElementById('repairDesc').value = ""; pushDataToCloud();
+            repairs.push({ 
+                id: Date.now().toString(), 
+                devId: document.getElementById('repairDeviceId').value, 
+                desc: document.getElementById('repairDesc').value.trim(), 
+                date: new Date().toLocaleDateString('vi-VN'), 
+                repUser: document.getElementById('repairUser').value,
+                fileData: document.getElementById('repairFileBinaryData').value,
+                fileMime: document.getElementById('repairFileMimeType').value,
+                fileName: document.getElementById('repairFileName').value
+            });
+            
+            // Khôi phục form sửa chữa về trạng thái ban đầu
+            document.getElementById('repairDesc').value = ""; 
+            document.getElementById('repairFileBinaryData').value = "";
+            document.getElementById('btnUploadRepairIndicator').innerHTML = `<i class="fa-solid fa-paperclip"></i> Chọn File`;
+            pushDataToCloud();
         }
 
         window.deleteItem = function(type, id) {
