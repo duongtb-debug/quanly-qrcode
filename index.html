@@ -66,42 +66,6 @@
 </head>
 <body id="systemBody" class="text-slate-800 font-sans min-h-screen p-4 md:p-6 space-y-6 text-sm md:text-base transition-all duration-300">
 
-    <div id="forgotPasswordModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center z-50 p-4 animate-fade-in">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200">
-            <div class="bg-slate-900 text-white p-4 font-bold flex items-center justify-between">
-                <span class="flex items-center gap-2 text-amber-400"><i class="fa-solid fa-circle-question"></i> Yêu Cầu Cấp Lại Quyền Truy Cập</span>
-                <button onclick="closeForgotPasswordModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <div class="p-6 space-y-4">
-                <p class="text-slate-600 leading-relaxed">Vì mục tiêu bảo mật dữ liệu vận hành kỹ thuật nghiêm ngặt của nhà máy <b>VINAPACO</b>, tính năng tự động thay đổi mật khẩu trực tuyến qua Email không được kích hoạt công khai.</p>
-                <div class="p-3 bg-amber-50 border-l-4 border-amber-500 rounded-r-lg text-amber-900 text-xs font-semibold">
-                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> Vui lòng liên hệ trực tiếp với Quản Trị Viên Hệ Thống hoặc Phòng Kỹ Thuật Điện - TĐH để xác minh danh tính và thiết lập lại Mã PIN / Mật khẩu ca làm việc.
-                </div>
-                <div class="border-t border-slate-100 pt-3 space-y-2 text-xs font-bold text-slate-700">
-                    <div class="flex items-center gap-2"><i class="fa-solid fa-phone text-emerald-700"></i> <span>Hotline Nội Bộ: Ext. 808 - Phòng Kỹ Thuật</span></div>
-                    <div class="flex items-center gap-2"><i class="fa-solid fa-user-shield text-emerald-700"></i> <span>Quản trị viên: Đ/c Nguyễn Văn A (Phòng IT)</span></div>
-                </div>
-            </div>
-            <div class="bg-slate-50 p-3 flex justify-end border-t border-slate-100">
-                <button onclick="closeForgotPasswordModal()" class="px-4 py-2 bg-slate-800 text-white font-bold rounded-lg text-xs hover:bg-slate-950 cursor-pointer">Tôi Đã Hiểu</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="qrQueryResultModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-emerald-600">
-            <div class="bg-emerald-800 text-white px-5 py-3.5 font-bold flex justify-between items-center">
-                <span class="flex items-center gap-2"><i class="fa-solid fa-qrcode text-amber-400"></i> Kết Quả Nhận Diện Thiết Bị VINAPACO</span>
-                <button onclick="closeQrQueryResultModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div id="qrQueryTargetContent" class="p-5 space-y-4">
-                </div>
-            <div class="bg-slate-50 px-5 py-3 flex justify-end gap-2 border-t border-slate-200">
-                <button onclick="closeQrQueryResultModal()" class="px-4 py-2 bg-slate-600 hover:bg-slate-700 font-bold text-white rounded-lg text-xs cursor-pointer">Đóng</button>
-            </div>
-        </div>
-    </div>
-
     <div id="loginOverlaySystem" class="fixed inset-0 bg-slate-950/80 backdrop-blur-lg flex items-center justify-center z-50 p-4 transition-all duration-500">
         <div class="bg-white/95 rounded-2xl shadow-2xl w-full max-w-sm border border-slate-200 overflow-hidden backdrop-blur-sm">
             <div class="p-6 pb-4 text-center border-b border-slate-100">
@@ -141,10 +105,6 @@
                         <label class="block text-[11px] font-black tracking-wider text-slate-400 uppercase mb-1">Mã PIN cá nhân định danh</label>
                         <input type="password" id="loginPin" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Nhập mã PIN..." class="w-full border border-slate-200 rounded-lg p-2.5 font-bold text-center bg-slate-50 focus:outline-none focus:border-emerald-600 focus:bg-white text-sm tracking-widest transition-all">
                     </div>
-                </div>
-
-                <div class="flex justify-end">
-                    <button type="button" onclick="openForgotPasswordModal()" class="text-xs font-bold text-emerald-700 hover:text-emerald-900 transition-colors cursor-pointer"><i class="fa-solid fa-circle-question"></i> Quên mật khẩu / mã PIN?</button>
                 </div>
 
                 <div id="loginErrorMsg" class="text-red-500 font-bold text-xs text-center hidden animate-bounce">
@@ -530,81 +490,6 @@
 
         let depts = [], users = [], devices = [], repairs = [], docRecords = [];
 
-        // Kiểm tra xem người dùng có quét QR từ môi trường bên ngoài vào không
-        window.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const scannedId = urlParams.get('id');
-            if(scannedId) {
-                // Đợi lấy dữ liệu đám mây về rồi hiển thị thông tin thiết bị quét được
-                setTimeout(() => {
-                    executeFetchAndShowQrQuery(scannedId);
-                }, 1200);
-            }
-        });
-
-        function executeFetchAndShowQrQuery(id) {
-            const basePath = currentEnv === 'live' ? 'root_v5' : 'demo_root_v5';
-            get(ref(db, basePath)).then((snapshot) => {
-                let data = snapshot.val() || {};
-                const parse = (arr) => arr ? (Array.isArray(arr) ? arr.filter(Boolean) : Object.values(arr)) : [];
-                const localDevices = parse(data.devices);
-                const localRepairs = parse(data.repairs);
-
-                const foundDev = localDevices.find(d => d.id === id);
-                const targetContent = document.getElementById('qrQueryTargetContent');
-                
-                if (foundDev) {
-                    const devRepairs = localRepairs.filter(r => r.devId === id);
-                    let repairLogsHtml = "";
-                    if(devRepairs.length > 0) {
-                        devRepairs.forEach(r => {
-                            repairLogsHtml += `<div class="p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs mt-1">
-                                <b>⏱️ Ngày ${r.date}:</b> ${r.desc} <span class="text-purple-800 font-semibold">(${r.repUser})</span>
-                            </div>`;
-                        });
-                    } else {
-                        repairLogsHtml = `<p class="text-xs italic text-slate-400">Chưa có nhật ký sửa chữa kỹ thuật nào được ghi nhận.</p>`;
-                    }
-
-                    targetContent.innerHTML = `
-                        <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
-                            <h3 class="font-black text-emerald-900 text-base uppercase"><i class="fa-solid fa-cube text-emerald-700"></i> ${foundDev.name}</h3>
-                            <p class="text-xs font-mono font-bold text-slate-500 mt-1">Mã Định Danh: <span class="text-slate-900">${foundDev.id}</span></p>
-                            <p class="text-xs font-bold text-slate-700 mt-0.5">Nhóm chủng loại: ${foundDev.cat || 'Thiết bị sản xuất'}</p>
-                            <p class="text-xs font-bold text-slate-700 mt-0.5">Đơn vị quản lý: ${foundDev.dept}</p>
-                            <p class="text-xs font-bold text-blue-700 mt-0.5 italic">Cán bộ phụ trách: ${foundDev.user}</p>
-                        </div>
-                        <div class="mt-3">
-                            <h4 class="text-xs font-black uppercase text-slate-500 tracking-wider mb-2"><i class="fa-solid fa-clock-rotate-left"></i> Lịch Sử Hành Động Sửa Chữa</h4>
-                            <div class="max-h-[180px] overflow-y-auto custom-scrollbar space-y-1">${repairLogsHtml}</div>
-                        </div>
-                    `;
-                } else {
-                    targetContent.innerHTML = `
-                        <div class="p-6 text-center text-red-500 font-bold space-y-2">
-                            <i class="fa-solid fa-triangle-exclamation text-4xl text-amber-500 animate-bounce"></i>
-                            <p class="text-sm">Không tìm thấy thiết bị sở hữu mã số [${id}] trên cơ sở dữ liệu đám mây VINAPACO.</p>
-                        </div>
-                    `;
-                }
-                document.getElementById('qrQueryResultModal').style.display = 'flex';
-            });
-        }
-
-        window.closeQrQueryResultModal = function() {
-            document.getElementById('qrQueryResultModal').style.display = 'none';
-            // Xóa query parameter trên url để tránh lặp lại hành động khi reload
-            window.history.pushState({}, document.title, window.location.pathname);
-        }
-
-        window.openForgotPasswordModal = function() {
-            document.getElementById('forgotPasswordModal').style.display = 'flex';
-        }
-
-        window.closeForgotPasswordModal = function() {
-            document.getElementById('forgotPasswordModal').style.display = 'none';
-        }
-
         window.switchLoginMethod = function(method) {
             loginMethod = method;
             const tabPass = document.getElementById('tabLoginPassword');
@@ -868,12 +753,7 @@
                 </tr>`;
                 setTimeout(() => {
                     const dom = document.getElementById(`cell-qr-${d.id}`);
-                    if(dom) { 
-                        dom.innerHTML = ""; 
-                        // Sửa link tạo QR linh hoạt dựa trên location hiện tại của hệ thống
-                        const currentTargetLink = window.location.protocol + "//" + window.location.host + window.location.pathname + `?id=${d.id}`;
-                        new QRCode(dom, { text: currentTargetLink, width: 32, height: 32 }); 
-                    }
+                    if(dom) { dom.innerHTML = ""; new QRCode(dom, { text: `${window.location.origin}?id=${d.id}`, width: 32, height: 32 }); }
                 }, 50);
             });
             document.getElementById('count-device').innerText = `${devices.length} tài sản`;
@@ -939,6 +819,7 @@
             document.getElementById('deviceName').value = ""; document.getElementById('deviceCategory').value = ""; pushDataToCloud();
         }
 
+        /* --- LOGIC ĐIỀU HÈNH SỬA / THÊM NHẬT KÝ SỬA CHỮA BẢO TRÌ --- */
         window.startEditRepair = function(id) {
             const target = repairs.find(r => r.id === id);
             if (!target) return;
@@ -948,6 +829,7 @@
             document.getElementById('repairDesc').value = target.desc;
             document.getElementById('repairUser').value = target.repUser;
 
+            // Đổ lại dữ liệu file cũ nếu có
             document.getElementById('repairFileBinaryData').value = target.fileData || "";
             document.getElementById('repairFileMimeType').value = target.fileMime || "";
             document.getElementById('repairFileName').value = target.fileName || "";
@@ -959,8 +841,11 @@
                 indicator.innerHTML = `<i class="fa-solid fa-paperclip"></i> Chọn File`;
             }
 
+            // Đổi chữ nút submit sang Cập nhật
             document.getElementById('btnRepairSubmit').innerText = "Cập Nhật";
             document.getElementById('btnRepairSubmit').className = "px-4 bg-amber-600 text-white font-bold rounded-lg hover:bg-amber-700 shadow-sm h-[38px] cursor-pointer text-xs uppercase tracking-wider";
+            
+            // Cuộn mượt lên form nhập liệu để người dùng sửa đổi
             document.getElementById('formRepairAction').scrollIntoView({ behavior: 'smooth' });
         }
 
@@ -969,6 +854,7 @@
             const editId = document.getElementById('editRepairId').value;
 
             if (editId) {
+                // Chế độ Cập nhật sửa đổi dữ liệu cũ
                 repairs = repairs.map(r => {
                     if (r.id === editId) {
                         return {
@@ -985,6 +871,7 @@
                 });
                 document.getElementById('editRepairId').value = "";
             } else {
+                // Chế độ Thêm mới hoàn toàn
                 repairs.push({ 
                     id: Date.now().toString(), 
                     devId: document.getElementById('repairDeviceId').value, 
@@ -997,6 +884,7 @@
                 });
             }
             
+            // Khôi phục lại trạng thái form ban đầu
             document.getElementById('repairDesc').value = ""; 
             document.getElementById('repairFileBinaryData').value = "";
             document.getElementById('repairFileMimeType').value = "";
@@ -1016,6 +904,7 @@
                 if(type==='device') devices = devices.filter(i=>i.id!==id);
                 if(type==='repair') {
                     repairs = repairs.filter(i=>i.id!==id);
+                    // Nếu đang sửa dòng này mà bị bấm xóa, reset form luôn
                     if(document.getElementById('editRepairId').value === id) {
                         document.getElementById('editRepairId').value = "";
                         document.getElementById('repairDesc').value = "";
@@ -1036,15 +925,13 @@
             document.getElementById('wpTitle').innerText = dev.name; document.getElementById('wpId').innerText = dev.id;
             document.getElementById('wpDept').innerText = "ĐV: " + dev.dept; document.getElementById('wpUser').innerText = "Phụ trách: " + dev.user;
             
-            const targetFullLink = window.location.protocol + "//" + window.location.host + window.location.pathname + `?id=${dev.id}`;
-
             const wpCanvas = document.getElementById('wpCanvas'); wpCanvas.innerHTML = "";
-            new QRCode(wpCanvas, { text: targetFullLink, width: 140, height: 140 });
+            new QRCode(wpCanvas, { text: `${window.location.origin}?id=${dev.id}`, width: 140, height: 140 });
 
             document.getElementById('qrPrintTitle').innerText = dev.name; document.getElementById('qrPrintId').innerText = dev.id;
             document.getElementById('qrPrintDept').innerText = "ĐV: " + dev.dept; document.getElementById('qrPrintUser').innerText = "Phụ trách: " + dev.user;
             const prCanvas = document.getElementById('qrPrintCanvas'); prCanvas.innerHTML = "";
-            new QRCode(prCanvas, { text: targetFullLink, width: 120, height: 120 });
+            new QRCode(prCanvas, { text: `${window.location.origin}?id=${dev.id}`, width: 120, height: 120 });
         }
 
         function autoGenDeviceId() {
