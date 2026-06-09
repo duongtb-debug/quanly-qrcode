@@ -20,7 +20,6 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #047857; border-radius: 3px; }
 
-        /* --- NỀN XANH THƯƠNG HIỆU VINAPACO TIÊU CHUẨN --- */
         body {
             background-color: #044333;
             background-image: 
@@ -35,7 +34,6 @@
             position: relative;
         }
 
-        /* --- HIỆU ỨNG TRỰC QUAN DASHBOARD KHÔNG GIAN 3D ISOMETRIC --- */
         .stage-3d-container { perspective: 1000px; }
         .card-3d-isometric {
             transform: rotateX(15deg) rotateY(-10deg);
@@ -264,7 +262,7 @@
 
         <section class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden flex flex-col">
             <div class="bg-gradient-to-r from-purple-800 to-indigo-800 text-white font-bold p-3.5 text-base flex items-center justify-between">
-                <span><i class="fa-solid fa-screwdriver-wrench mr-2"></i> Nhật Ký Hành ĐỘng Sửa Chữa Kỹ Thuật Kịp Thời</span>
+                <span><i class="fa-solid fa-screwdriver-wrench mr-2"></i> Nhật Ký Hành Động Sửa Chữa Kỹ Thuật Kịp Thời</span>
                 <span class="text-sm bg-black/20 px-2.5 py-1 rounded font-mono" id="count-repair">0 lượt</span>
             </div>
             
@@ -326,7 +324,6 @@
         let devices = []; 
         let repairs = [];
 
-        // HÀM SWITCH TAB ĐÃ ĐƯỢC TỐI ƯU HÓA HOÀN TOÀN TÍNH NĂNG ẨN/HIỆN ĐỒNG BỘ
         window.switchLoginMethod = function(method) {
             const tabPass = document.getElementById('tabLoginPassword');
             const tabPin = document.getElementById('tabLoginPin');
@@ -334,19 +331,11 @@
             const boxPin = document.getElementById('containerLoginPin');
 
             if (method === 'password') {
-                // Đổi trạng thái hiển thị layout dạng khối độc lập
-                boxPass.className = "block";
-                boxPin.className = "hidden";
-                
-                // Cập nhật CSS cho nút điều hướng Tab hoạt động
+                boxPass.className = "block"; boxPin.className = "hidden";
                 tabPass.className = "w-1/2 py-2 text-xs font-black rounded-lg text-emerald-900 bg-white shadow-sm transition-all duration-200";
                 tabPin.className = "w-1/2 py-2 text-xs font-black rounded-lg text-slate-500 hover:text-slate-800 transition-all duration-200";
             } else {
-                // Đổi trạng thái hiển thị layout dạng khối độc lập
-                boxPass.className = "hidden";
-                boxPin.className = "block";
-                
-                // Cập nhật CSS cho nút điều hướng Tab hoạt động
+                boxPass.className = "hidden"; boxPin.className = "block";
                 tabPass.className = "w-1/2 py-2 text-xs font-black rounded-lg text-slate-500 hover:text-slate-800 transition-all duration-200";
                 tabPin.className = "w-1/2 py-2 text-xs font-black rounded-lg text-emerald-900 bg-white shadow-sm transition-all duration-200";
             }
@@ -366,16 +355,32 @@
             document.getElementById('loginOverlaySystem').classList.remove('hidden');
         }
 
+        // CHỨC NĂNG THÔNG MINH: Tự động quét và kéo dữ liệu cũ về cấu trúc mới
         function fetchCloudData() {
-            const basePath = 'root_v6_status';
-            get(ref(db, basePath)).then((snapshot) => {
-                let data = snapshot.val() || {};
-                const parse = (arr) => arr ? (Array.isArray(arr) ? arr.filter(Boolean) : Object.values(arr)) : [];
-                
-                devices = parse(data.devices);
-                repairs = parse(data.repairs);
+            const newPath = 'root_v6_status';
+            const oldPath = 'root_v5_integrated'; // Đường dẫn cũ chứa dữ liệu gốc của bạn
 
-                updateDropdownOptions(); renderAllTables(); autoGenDeviceId(); update3DMetricsDashboard();
+            get(ref(db, newPath)).then((snapshot) => {
+                let data = snapshot.val();
+                
+                const parse = (arr) => arr ? (Array.isArray(arr) ? arr.filter(Boolean) : Object.values(arr)) : [];
+
+                if (data && (data.devices || data.repairs)) {
+                    // Nếu đã có sẵn dữ liệu ở nhánh mới thì chạy bình thường
+                    devices = parse(data.devices);
+                    repairs = parse(data.repairs);
+                    updateDropdownOptions(); renderAllTables(); autoGenDeviceId(); update3DMetricsDashboard();
+                } else {
+                    // Nếu chưa có, truy cập ngay vào kho dữ liệu cũ để phục hồi toàn bộ cho bạn
+                    get(ref(db, oldPath)).then((oldSnapshot) => {
+                        let oldData = oldSnapshot.val() || {};
+                        devices = parse(oldData.devices);
+                        repairs = parse(oldData.repairs);
+                        
+                        // Đồng bộ hóa ngược lại dữ liệu cũ vào môi trường mới để lưu giữ lâu dài
+                        pushDataToCloud();
+                    });
+                }
             });
         }
 
