@@ -43,12 +43,12 @@
                 </div>
                 <div>
                     <div class="flex justify-between items-center mb-1">
-                        <label class="block text-xs font-bold text-slate-500 uppercase">Mã Pin Xác Thực Access</label>
+                        <label class="block text-xs font-bold text-slate-500 uppercase">Mã PIN hoặc Mật Khẩu</label>
                         <button onclick="triggerForgotPassword()" class="text-xs text-blue-600 hover:underline font-bold cursor-pointer">Quên mật khẩu?</button>
                     </div>
-                    <input type="password" id="loginPin" placeholder="Mặc định: vinapaco2026" class="w-full border border-slate-300 rounded-lg p-2.5 font-bold tracking-widest text-center focus:outline-none focus:border-emerald-600 bg-slate-50">
+                    <input type="password" id="loginPin" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Mặc định: vinapaco2026" class="w-full border border-slate-300 rounded-lg p-2.5 font-bold tracking-wider text-center focus:outline-none focus:border-emerald-600 bg-slate-50">
                 </div>
-                <div id="loginErrorMsg" class="text-red-500 font-bold text-xs text-center hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> Mã pin xác thực không chính xác!</div>
+                <div id="loginErrorMsg" class="text-red-500 font-bold text-xs text-center hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> Thông tin xác thực không chính xác!</div>
                 <button onclick="executeSystemLogin()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-lg transition-colors shadow-md cursor-pointer uppercase text-sm tracking-wider">Xác Thực Vào Hệ Thống</button>
             </div>
             <div class="bg-slate-50 px-6 py-3 text-center border-t border-slate-100 text-[11px] font-medium text-slate-400">
@@ -72,7 +72,7 @@
                 </div>
                 <div class="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded border border-slate-700 text-xs font-bold text-emerald-400">
                     <span id="currentRoleBadge">🔑 Quản Trị Viên (Admin)</span>
-                    <button onclick="openChangePasswordModal()" class="text-amber-400 hover:text-amber-300 ml-2 cursor-pointer text-[11px] uppercase tracking-tighter"><i class="fa-solid fa-key mr-0.5"></i> [Đổi PIN]</button>
+                    <button onclick="openChangePasswordModal()" class="text-amber-400 hover:text-amber-300 ml-2 cursor-pointer text-[11px] uppercase tracking-tighter"><i class="fa-solid fa-key mr-0.5"></i> [Đổi PIN/Mật khẩu]</button>
                     <button onclick="logoutSystem()" class="text-slate-400 hover:text-red-400 ml-2 cursor-pointer text-[11px] uppercase tracking-tighter">[Đăng xuất]</button>
                 </div>
             </div>
@@ -81,26 +81,27 @@
         <div id="changePasswordModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
             <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden border border-slate-200">
                 <div class="bg-slate-800 text-white p-4 font-bold flex justify-between items-center">
-                    <span><i class="fa-solid fa-key text-amber-400 mr-1.5"></i> Thay Đổi Mã PIN Hệ Thống</span>
+                    <span><i class="fa-solid fa-key text-amber-400 mr-1.5"></i> Cập Nhật Xác Thực Hệ Thống</span>
                     <button onclick="closeChangePasswordModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <div class="p-4 space-y-3">
+                    <p class="text-slate-500 text-[11px] italic font-medium leading-relaxed">* Bạn có thể nhập chuỗi ký tự chữ hoặc mã số PIN tùy chọn. Hệ thống chấp nhận cả hai định dạng.</p>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Mã PIN cũ hiện tại</label>
-                        <input type="password" id="oldPinInput" class="w-full border border-slate-300 rounded p-2 focus:outline-none focus:border-slate-600 font-bold tracking-widest text-center">
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Mã PIN/Mật khẩu cũ hiện tại</label>
+                        <input type="password" id="oldPinInput" class="w-full border border-slate-300 rounded p-2 focus:outline-none focus:border-slate-600 font-bold tracking-wide text-center">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Mã PIN mới mong muốn</label>
-                        <input type="password" id="newPinInput" class="w-full border border-slate-300 rounded p-2 focus:outline-none focus:border-slate-600 font-bold tracking-widest text-center">
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Mã PIN/Mật khẩu mới mong muốn</label>
+                        <input type="password" id="newPinInput" class="w-full border border-slate-300 rounded p-2 focus:outline-none focus:border-slate-600 font-bold tracking-wide text-center">
                     </div>
-                    <button onclick="submitChangePassword()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded cursor-pointer transition-colors text-sm">Cập Nhật Mã PIN Mới</button>
+                    <button onclick="submitChangePassword()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded cursor-pointer transition-colors text-sm">Cập Nhật Thông Tin</button>
                 </div>
             </div>
         </div>
 
         <header class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
             <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-600 via-teal-600 to-blue-600"></div>
-            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex flex-col md flex-row items-center justify-between gap-4">
                 <div class="flex items-center gap-3.5">
                     <div class="w-12 h-12 md:w-14 md:h-14 bg-emerald-50 rounded-xl flex items-center justify-center border border-emerald-100 text-emerald-600 text-xl md:text-2xl font-black">
                         <i class="fa-solid fa-industry"></i>
@@ -461,7 +462,7 @@
         let currentEnv = localStorage.getItem('vinapaco_current_env') || 'live'; 
         let currentRole = 'admin';
 
-        // Khởi tạo các mã pin bảo mật mặc định
+        // Hệ thống lưu trữ PIN mặc định là vinapaco2026
         let systemPins = {
             admin: "vinapaco2026",
             sub_user_1: "vinapaco2026",
@@ -476,23 +477,22 @@
         const mockUsers = [{ id: "u1", name: "Nguyễn Văn Phú", title: "Trưởng Ca Vận Hành", dept: "Xưởng Xeo 1" }];
         const mockDevices = [{ id: "TB-67149", name: "Máy Nghiền Thủy Lực Lực Ly Tâm", cat: "Hệ thống xeo bột", dept: "Xưởng Xeo 1", user: "Nguyễn Văn Phú", status: "Hoạt động tốt" }];
 
-        // ĐĂNG NHẬP XÁC THỰC VỚI MẬT KHẨU ĐỒNG BỘ CLOUD
+        // ĐĂNG NHẬP XÁC THỰC
         window.executeSystemLogin = function() {
             const role = document.getElementById('loginRole').value;
-            const pin = document.getElementById('loginPin').value;
+            const inputAuth = document.getElementById('loginPin').value.trim();
             const errorLabel = document.getElementById('loginErrorMsg');
-
             const basePath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
             
-            // Lấy dữ liệu PIN từ Cloud trước để kiểm tra tránh dùng mã cũ
             get(ref(db, `${basePath}/security_pins`)).then((snapshot) => {
                 if(snapshot.exists()) {
                     systemPins = snapshot.val();
                 }
                 
-                const correctPin = systemPins[role] || "vinapaco2026";
+                const correctCredential = systemPins[role] || "vinapaco2026";
 
-                if(pin === correctPin) { 
+                // CHẤP NHẬN ĐĂNG NHẬP (Chữ hay số đều hợp lệ nếu trùng khớp)
+                if(inputAuth === correctCredential) { 
                     currentRole = role;
                     errorLabel.classList.add('hidden');
                     document.getElementById('loginOverlaySystem').classList.add('hidden');
@@ -508,7 +508,7 @@
             });
         }
 
-        // TÍNH NĂNG ĐỔI MẬT KHẨU TRONG DASHBOARD
+        // ĐỔI MẬT KHẨU / PIN TRONG DASHBOARD
         window.openChangePasswordModal = function() {
             document.getElementById('oldPinInput').value = '';
             document.getElementById('newPinInput').value = '';
@@ -520,62 +520,60 @@
         }
 
         window.submitChangePassword = function() {
-            const oldPin = document.getElementById('oldPinInput').value;
-            const newPin = document.getElementById('newPinInput').value.trim();
+            const oldAuth = document.getElementById('oldPinInput').value.trim();
+            const newAuth = document.getElementById('newPinInput').value.trim();
             const basePath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
 
-            if(!newPin) {
-                alert("Vui lòng nhập mã PIN mới!");
+            if(!newAuth) {
+                alert("Vui lòng nhập chuỗi xác thực mới!");
                 return;
             }
 
-            if(oldPin !== systemPins[currentRole]) {
-                alert("Mã PIN cũ nhập không chính xác! Hãy kiểm tra lại.");
+            if(oldAuth !== systemPins[currentRole]) {
+                alert("Mật khẩu / Mã PIN cũ không chính xác!");
                 return;
             }
 
-            systemPins[currentRole] = newPin;
+            systemPins[currentRole] = newAuth;
             set(ref(db, `${basePath}/security_pins`), systemPins).then(() => {
-                alert(`Đã đổi mã PIN tài khoản [${currentRole}] thành công trên Cloud!`);
+                alert(`Cập nhật thông tin tài khoản [${currentRole}] thành công!`);
                 closeChangePasswordModal();
             });
         }
 
-        // TÍNH NĂNG QUÊN MẬT KHẨU (Xác thực chéo qua quyền Admin)
+        // QUÊN MẬT KHẨU
         window.triggerForgotPassword = function() {
             const role = document.getElementById('loginRole').value;
             const basePath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
 
             if(role === 'admin') {
-                // Luồng phục hồi khẩn cấp cho tài khoản Admin cấp cao nhất
-                const masterKey = prompt("HỆ THỐNG BẢO MẬT VINAPACO:\nĐể khôi phục mật khẩu Admin, vui lòng nhập mã số khôi phục Master Key của nhà máy:");
+                const masterKey = prompt("HỆ THỐNG BẢO MẬT VINAPACO:\nNhập mã khôi phục Master Key của nhà máy:");
                 if(masterKey === "VINAPACO2026_MASTER") {
-                    const newAdminPin = prompt("Xác thực đúng! Vui lòng nhập mã PIN mới cho Admin:");
-                    if(newAdminPin && newAdminPin.trim() !== "") {
-                        systemPins.admin = newAdminPin.trim();
+                    const newAdminAuth = prompt("Xác thực đúng! Nhập mã PIN hoặc Mật khẩu mới cho Admin:");
+                    if(newAdminAuth && newAdminAuth.trim() !== "") {
+                        systemPins.admin = newAdminAuth.trim();
                         set(ref(db, `${basePath}/security_pins`), systemPins).then(() => {
-                            alert("Đã reset mật khẩu Admin thành công! Bạn có thể đăng nhập bằng mã mới.");
+                            alert("Đã reset thông tin Admin thành công!");
                         });
                     }
                 } else if (masterKey !== null) {
-                    alert("Sai mã Master Key khôi phục! Vui lòng liên hệ bộ phận IT phòng điều hành trung tâm.");
+                    alert("Sai mã Master Key!");
                 }
             } else {
-                // Luồng khôi phục cho tài khoản con (Yêu cầu nhập PIN Admin để phê duyệt cấp lại)
-                const adminVerifyPin = prompt(`Bạn đang yêu cầu cấp lại mật khẩu cho [${role}].\nĐể phê duyệt, vui lòng yêu cầu Quản Trị Viên (Admin) nhập mã PIN của Admin vào đây:`);
+                const adminVerifyPin = prompt(`Bạn đang yêu cầu cấp lại mật khẩu cho [${role}].\nYêu cầu Quản Trị Viên (Admin) nhập thông tin xác thực của Admin vào đây:`);
                 if(adminVerifyPin) {
                     get(ref(db, `${basePath}/security_pins`)).then((snapshot) => {
                         const currentPins = snapshot.val() || systemPins;
                         if(adminVerifyPin === currentPins.admin) {
-                            const newSubPin = prompt(`Xác thực Admin thành công!\nNhập mã PIN mới cho tài khoản [${role}]:`);
-                            if(newSubPin && newSubPin.trim() !== "") {
-                                systemPins[role] = newSubPin.trim();
+                            const newSubAuth = prompt(`Xác thực Admin thành công!\nNhập PIN hoặc Mật khẩu mới cho [${role}]:`);
+                            if(newSubAuth && newSubAuth.trim() !== "") {
+                                systemPins[role] = newSubAuth.trim();
                                 set(ref(db, `${basePath}/security_pins`), systemPins).then(() => {
                                     alert(`Đổi mật khẩu cho ca trực [${role}] thành công!`);
                                 });
                             }
                         } else {
-                            alert("Mã PIN của Admin không chính xác! Không thể phê duyệt đổi mật khẩu.");
+                            alert("Xác thực Admin thất bại!");
                         }
                     });
                 }
@@ -585,7 +583,7 @@
         window.logoutSystem = function() {
             document.getElementById('loginPin').value = '';
             document.getElementById('mainSystemContentDashboard').classList.add('hidden');
-            document.getElementById('loginOverlaySystem').remove classList.remove('hidden');
+            document.getElementById('loginOverlaySystem').classList.remove('hidden');
         }
 
         // ĐỌC / GHI DỮ LIỆU ĐỒNG BỘ HÓA TÀI SẢN
@@ -596,11 +594,9 @@
             get(ref(db, basePath)).then((adminSnapshot) => {
                 const adminData = adminSnapshot.val() || {};
                 
-                // Đồng bộ cấu trúc PIN từ dữ liệu tổng về biến cục bộ
                 if(adminData.security_pins) {
                     systemPins = adminData.security_pins;
                 } else {
-                    // Nếu chưa có nhánh PIN trên Firebase, tự khởi tạo lưu cấu trúc mặc định vinapaco2026
                     set(ref(db, `${basePath}/security_pins`), systemPins);
                 }
 
@@ -636,12 +632,8 @@
         window.processDeviceFileImport = function(e) {
             const file = e.target.files[0];
             if (!file) return;
-
             const targetDept = document.getElementById('deviceDept').value;
-            if(!targetDept) {
-                alert("Vui lòng chọn một Đơn vị quản lý ở Form phía trên để làm quy chuẩn đồng bộ dòng file!");
-                return;
-            }
+            if(!targetDept) { alert("Vui lòng chọn một Đơn vị quản lý ở Form!"); return; }
 
             const reader = new FileReader();
             reader.onload = function(evt) {
@@ -669,7 +661,7 @@
                         }
                     }
                 });
-                alert(`Xử lý file hoàn tất!\n- Thêm mới: ${countNew} tài sản\n- Cập nhật/Tránh trùng: ${countUpdate} tài sản`);
+                alert(`Xử lý file hoàn tất!\n- Thêm mới: ${countNew}\n- Cập nhật: ${countUpdate}`);
                 pushDataToCloud();
             };
             reader.readAsText(file);
@@ -679,10 +671,8 @@
         window.handleProcurementFileUpload = function(e) {
             const file = e.target.files[0];
             if(!file) return;
-
             const indicator = document.getElementById('btnUploadFileIndicator');
             indicator.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Đang tải...`;
-
             const reader = new FileReader();
             reader.onload = function(evt) {
                 document.getElementById('procuDocLink').value = evt.target.result;
@@ -694,12 +684,9 @@
 
         window.downloadBase64File = function(base64Data, filename) {
             const link = document.createElement('a');
-            link.href = base64Data;
-            link.download = filename || "Chung_Tu_Vat_Tu";
-            link.click();
+            link.href = base64Data; link.download = filename || "Chung_Tu_Vat_Tu"; link.click();
         }
 
-        // CÁC HÀM PHỤ TRỢ KHÁC
         window.toggleSection = function(id, checked) {
             const sec = document.getElementById(id);
             if(sec) { if(checked) sec.classList.remove('hidden'); else sec.classList.add('hidden'); }
@@ -873,15 +860,12 @@
                 const hasDoc = p.docLink && p.docLink !== '#';
                 const isBase64 = hasDoc && p.docLink.startsWith('data:');
                 body.innerHTML += `<tr class="border-b">
-                    <td class="p-3 pl-4 font-bold text-slate-800">${p.name}</td>
-                    <td>${p.dept}</td>
-                    <td class="text-center font-bold">${p.qty}</td>
-                    <td class="font-bold text-blue-700">${Number(p.cost).toLocaleString()}đ</td>
+                    <td class="p-3 pl-4 font-bold text-slate-800">${p.name}</td><td>${p.dept}</td><td class="text-center font-bold">${p.qty}</td><td class="font-bold text-blue-700">${Number(p.cost).toLocaleString()}đ</td>
                     <td>
                         ${hasDoc ? `
                             <div class="flex items-center gap-1.5">
-                                <button onclick="window.open('${p.docLink}', '_blank')" class="px-2 py-1 bg-purple-50 text-purple-700 border border-purple-300 rounded font-bold text-xs hover:bg-purple-100 cursor-pointer"><i class="fa-solid fa-print"></i> Xem / In</button>
-                                ${isBase64 ? `<button onclick="downloadBase64File('${p.docLink}', 'Ho_So_Mua_Sam_${p.id}')" class="px-2 py-1 bg-slate-900 text-amber-400 rounded font-bold text-xs cursor-pointer"><i class="fa-solid fa-cloud-arrow-up"></i> Tải Về Máy</button>` : ''}
+                                <button onclick="window.open('${p.docLink}', '_blank')" class="px-2 py-1 bg-purple-50 text-purple-700 border border-purple-300 rounded font-bold text-xs hover:bg-purple-100 cursor-pointer"><i class="fa-solid fa-print"></i> Xem</button>
+                                ${isBase64 ? `<button onclick="downloadBase64File('${p.docLink}', 'Ho_So_Mua_Sam_${p.id}')" class="px-2 py-1 bg-slate-900 text-amber-400 rounded font-bold text-xs cursor-pointer">Tải</button>` : ''}
                             </div>
                         ` : `<span class="text-slate-400 italic text-xs">Không đính kèm</span>`}
                     </td>
