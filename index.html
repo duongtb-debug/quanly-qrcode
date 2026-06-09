@@ -21,7 +21,7 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans min-h-screen p-4 md:p-6 space-y-6 text-sm md:text-base hidden" id="mainSystemBody">
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen p-4 md:p-6 space-y-6 text-sm md:text-base relative">
 
     <div id="loginOverlaySystem" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-50 p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200">
@@ -54,360 +54,363 @@
         </div>
     </div>
 
-    <div class="bg-slate-900 text-white p-3 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-3 shadow-md">
-        <div class="flex items-center gap-2">
-            <i class="fa-solid fa-shield-halved text-amber-400 text-lg"></i>
-            <span class="font-bold text-xs md:text-sm uppercase tracking-wider">Cơ Chế Phân Quyền & Bảo Mật Ca Trực Active</span>
-        </div>
-        <div class="flex items-center gap-3">
-            <div class="flex items-center gap-1.5 bg-slate-800 px-2 py-1 rounded text-xs">
-                <span class="text-slate-400 font-medium">Hiển thị:</span>
-                <label class="inline-flex items-center gap-1 ml-1 cursor-pointer"><input type="checkbox" id="toggleViewPomo" checked onchange="toggleSection('sec-pomo', this.checked)"> Ca làm việc</label>
-                <label class="inline-flex items-center gap-1 ml-2 cursor-pointer"><input type="checkbox" id="toggleViewDevice" checked onchange="toggleSection('sec-device', this.checked)"> Tài sản & QR</label>
+    <div id="mainSystemContentDashboard" class="space-y-6 hidden">
+        
+        <div class="bg-slate-900 text-white p-3 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-3 shadow-md">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-shield-halved text-amber-400 text-lg"></i>
+                <span class="font-bold text-xs md:text-sm uppercase tracking-wider">Cơ Chế Phân Quyền & Bảo Mật Ca Trực Active</span>
             </div>
-            <div class="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded border border-slate-700 text-xs font-bold text-emerald-400">
-                <span id="currentRoleBadge">🔑 Quản Trị Viên (Admin)</span>
-                <button onclick="logoutSystem()" class="text-slate-400 hover:text-red-400 ml-2 cursor-pointer text-[11px] uppercase tracking-tighter">[Đăng xuất]</button>
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-1.5 bg-slate-800 px-2 py-1 rounded text-xs">
+                    <span class="text-slate-400 font-medium">Hiển thị:</span>
+                    <label class="inline-flex items-center gap-1 ml-1 cursor-pointer"><input type="checkbox" id="toggleViewPomo" checked onchange="toggleSection('sec-pomo', this.checked)"> Ca làm việc</label>
+                    <label class="inline-flex items-center gap-1 ml-2 cursor-pointer"><input type="checkbox" id="toggleViewDevice" checked onchange="toggleSection('sec-device', this.checked)"> Tài sản & QR</label>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded border border-slate-700 text-xs font-bold text-emerald-400">
+                    <span id="currentRoleBadge">🔑 Quản Trị Viên (Admin)</span>
+                    <button onclick="logoutSystem()" class="text-slate-400 hover:text-red-400 ml-2 cursor-pointer text-[11px] uppercase tracking-tighter">[Đăng xuất]</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <header class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
-        <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-600 via-teal-600 to-blue-600"></div>
-        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-3.5">
-                <div class="w-12 h-12 md:w-14 md:h-14 bg-emerald-50 rounded-xl flex items-center justify-center border border-emerald-100 text-emerald-600 text-xl md:text-2xl font-black">
-                    <i class="fa-solid fa-industry"></i>
-                </div>
-                <div>
-                    <h2 class="text-[10px] md:text-xs font-bold tracking-widest text-slate-400 uppercase">Hệ Thống Tổng Lực Quản Trị Nhà Máy</h2>
-                    <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight mt-0.5">TỔNG CÔNG TY GIẤY VIỆT NAM</h1>
-                </div>
-            </div>
-            <div class="flex items-center gap-2 self-stretch md:self-auto justify-end bg-slate-50 p-1.5 rounded-lg border border-slate-200">
-                <button onclick="switchEnvironment('live')" id="envBtn-live" class="px-4 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer">🟢 Live (Realtime)</button>
-                <button onclick="switchEnvironment('demo')" id="envBtn-demo" class="px-4 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer">Chạy Thử (Demo)</button>
-            </div>
-        </div>
-        <div class="mt-4 pt-4 border-t border-slate-100 flex flex-col sm:flex-row gap-3 items-center justify-between text-xs md:text-sm text-slate-500 font-medium">
-            <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span><span id="syncStatusText">Hệ thống đang hoạt động trực tuyến bảo mật</span></div>
-            <div class="flex items-center gap-4">
-                <span id="liveClockText" class="font-mono bg-slate-950 text-emerald-400 px-2.5 py-1 rounded-md font-bold text-sm">00:00:00</span>
-            </div>
-        </div>
-    </header>
-
-    <section id="sec-pomo" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div class="lg:col-span-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between min-h-[140px]">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-                <span class="font-bold text-slate-700 text-xs md:text-sm uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-calendar-days text-emerald-600"></i> Lịch & Văn Hóa Việt Nam</span>
-            </div>
-            <div class="py-3">
-                <p id="txtVietnameseQuote" class="text-slate-700 font-medium italic text-center text-sm">"Có công mài sắt, có ngày nên kim."</p>
-                <p class="text-right text-xs font-bold text-slate-400 mt-1">— Tục ngữ Việt Nam</p>
-            </div>
-            <button onclick="refreshQuoteOnline()" class="text-xs text-emerald-600 hover:text-emerald-700 font-bold text-left flex items-center gap-1 cursor-pointer"><i class="fa-solid fa-rotate"></i> Đổi câu ca dao tục ngữ khác</button>
-        </div>
-        <div class="lg:col-span-8 bg-slate-900 text-white p-4 rounded-xl border border-slate-800 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="space-y-1">
-                <h3 class="font-bold text-base flex items-center gap-2 text-amber-400"><i class="fa-solid fa-stopwatch"></i> Cấu Hình Nhắc Nhở & Chu Kỳ Làm Việc</h3>
-                <p class="text-xs text-slate-400">Người vận hành tự điều chỉnh thời gian nhắc nhở phù hợp với ca làm việc.</p>
-            </div>
-            <div class="flex items-center gap-4 bg-slate-800 p-3 rounded-lg border border-slate-700 w-full md:w-auto justify-center">
-                <div class="flex flex-col gap-1 items-center bg-slate-900 p-2 rounded border border-slate-700">
-                    <span class="text-[10px] text-slate-400 font-bold uppercase">Làm việc (Phút)</span>
-                    <input type="number" id="cfgPomoWork" value="25" min="1" class="w-16 bg-slate-800 text-white border border-slate-600 rounded text-center font-bold focus:outline-none" onchange="applyCustomPomoConfig()">
-                </div>
-                <div class="flex flex-col gap-1 items-center bg-slate-900 p-2 rounded border border-slate-700">
-                    <span class="text-[10px] text-slate-400 font-bold uppercase">Nghỉ ngơi (Phút)</span>
-                    <input type="number" id="cfgPomoBreak" value="5" min="1" class="w-16 bg-slate-800 text-white border border-slate-600 rounded text-center font-bold focus:outline-none" onchange="applyCustomPomoConfig()">
-                </div>
-                <div class="text-center px-2">
-                    <span id="pomoMinutes" class="text-3xl font-black font-mono text-white">25</span><span class="text-slate-500 font-bold mx-0.5">:</span><span id="pomoSeconds" class="text-3xl font-black font-mono text-white">00</span>
-                    <p id="pomoStatusLabel" class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mt-0.5">Thời gian làm việc</p>
-                </div>
-                <div class="flex flex-col gap-1.5">
-                    <button onclick="togglePomoTimer()" id="btnStartPomo" class="px-4 py-1 bg-blue-600 hover:bg-blue-700 font-bold text-xs rounded text-white cursor-pointer">Bắt Đầu</button>
-                    <button onclick="resetPomoTimer()" class="px-4 py-1 bg-slate-700 hover:bg-slate-600 font-bold text-xs rounded text-slate-300 cursor-pointer">Đặt Lại</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-3 shadow-sm">
-        <div class="flex items-center gap-2 text-amber-800 font-bold text-sm md:text-base">
-            <i class="fa-solid fa-triangle-exclamation text-xl text-amber-600"></i> 
-            <span>Hệ Thống Tự Động Cảnh Báo Đến Thời Hạn Bảo Dưỡng Thiết Bị (Chu Kỳ Định Kỳ)</span>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs md:text-sm" id="maintenanceAlertZone"></div>
-    </section>
-
-    <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-        <div class="bg-emerald-700 text-white font-bold p-3.5 text-base flex items-center justify-between">
-            <span><i class="fa-solid fa-users-gear mr-1.5 text-slate-300"></i> Quản Lý Hồ Sơ Nhân Sự & Danh Sách Phòng Ban</span>
-            <span class="text-sm bg-emerald-600 px-2.5 py-1 rounded font-mono" id="count-user">0 nhân sự</span>
-        </div>
-        <div class="p-4 grid grid-cols-1 lg:grid-cols-12 gap-5 border-b border-slate-100 bg-slate-50/50 text-sm">
-            <div class="lg:col-span-4 border-r border-slate-200 pr-4">
-                <span class="block font-bold text-slate-400 text-xs uppercase mb-1.5">THÊM PHÒNG BAN / ĐƠN VỊ</span>
-                <form onsubmit="handleDeptSubmit(event)" class="space-y-2">
-                    <input type="text" id="deptName" required placeholder="Tên xưởng, phòng ban..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-emerald-600">
-                    <button type="submit" class="w-full py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 transition-colors cursor-pointer">Thêm Đơn Vị</button>
-                </form>
-            </div>
-            <div class="lg:col-span-8">
-                <span class="block font-bold text-slate-400 text-xs uppercase mb-1.5">NHẬP LIỆU NHÂN SỰ</span>
-                <form onsubmit="handleUserSubmit(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Họ và tên</label>
-                        <input type="text" id="userName" required placeholder="Nguyễn Văn A..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-emerald-600 font-bold">
+        <header class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 relative overflow-hidden">
+            <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-600 via-teal-600 to-blue-600"></div>
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-12 h-12 md:w-14 md:h-14 bg-emerald-50 rounded-xl flex items-center justify-center border border-emerald-100 text-emerald-600 text-xl md:text-2xl font-black">
+                        <i class="fa-solid fa-industry"></i>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Chức vụ</label>
-                        <input type="text" id="userTitle" required placeholder="Kỹ sư vận hành..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-emerald-600 font-bold">
+                        <h2 class="text-[10px] md:text-xs font-bold tracking-widest text-slate-400 uppercase">Hệ Thống Tổng Lực Quản Trị Nhà Máy</h2>
+                        <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight mt-0.5">TỔNG CÔNG TY GIẤY VIỆT NAM</h1>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">Đơn vị tiếp quản</label>
-                        <select id="userDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-slate-700"></select>
-                    </div>
-                    <div class="sm:col-span-3 flex justify-end gap-2 pt-1">
-                        <button type="submit" class="px-8 py-2 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 shadow-sm transition-colors cursor-pointer">Lưu Hồ Sơ</button>
-                    </div>
-                </form>
+                </div>
+                <div class="flex items-center gap-2 self-stretch md:self-auto justify-end bg-slate-50 p-1.5 rounded-lg border border-slate-200">
+                    <button onclick="switchEnvironment('live')" id="envBtn-live" class="px-4 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer">🟢 Live (Realtime)</button>
+                    <button onclick="switchEnvironment('demo')" id="envBtn-demo" class="px-4 py-1.5 text-xs font-bold rounded-md transition-all cursor-pointer">Chạy Thử (Demo)</button>
+                </div>
             </div>
-        </div>
-        <div class="px-4 bg-slate-50 border-b border-slate-100 flex flex-wrap gap-2 text-sm py-2 items-center" id="deptTabsContainer"></div>
-        <div class="overflow-x-auto text-sm bg-white">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="border-b border-slate-100 bg-slate-50/70 text-slate-500 font-bold">
-                        <th class="p-3 pl-4">Họ Tên / Chức Danh</th>
-                        <th class="p-3">Đơn Vị Quản Lý</th>
-                        <th class="p-3 text-right pr-4">Tác Vụ</th>
-                    </tr>
-                </thead>
-                <tbody id="userTableBody" class="divide-y divide-slate-100"></tbody>
-            </table>
-        </div>
-    </section>
+            <div class="mt-4 pt-4 border-t border-slate-100 flex flex-col sm:flex-row gap-3 items-center justify-between text-xs md:text-sm text-slate-500 font-medium">
+                <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span><span id="syncStatusText">Hệ thống đang hoạt động trực tuyến bảo mật</span></div>
+                <div class="flex items-center gap-4">
+                    <span id="liveClockText" class="font-mono bg-slate-950 text-emerald-400 px-2.5 py-1 rounded-md font-bold text-sm">00:00:00</span>
+                </div>
+            </div>
+        </header>
 
-    <section id="sec-device" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        <div class="lg:col-span-8 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-            <div class="bg-slate-700 text-white font-bold p-3.5 text-base flex items-center justify-between">
-                <span><i class="fa-solid fa-boxes-stacked mr-1.5 text-slate-300"></i> Quản Lý Thiết Bị Tài Sản & Cấp Phát QR</span>
-                <span class="text-sm bg-slate-600 px-2.5 py-1 rounded font-mono" id="count-device">0 tài sản</span>
+        <section id="sec-pomo" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div class="lg:col-span-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between min-h-[140px]">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                    <span class="font-bold text-slate-700 text-xs md:text-sm uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-calendar-days text-emerald-600"></i> Lịch & Văn Hóa Việt Nam</span>
+                </div>
+                <div class="py-3">
+                    <p id="txtVietnameseQuote" class="text-slate-700 font-medium italic text-center text-sm">"Có công mài sắt, có ngày nên kim."</p>
+                    <p class="text-right text-xs font-bold text-slate-400 mt-1">— Tục ngữ Việt Nam</p>
+                </div>
+                <button onclick="refreshQuoteOnline()" class="text-xs text-emerald-600 hover:text-emerald-700 font-bold text-left flex items-center gap-1 cursor-pointer"><i class="fa-solid fa-rotate"></i> Đổi câu ca dao tục ngữ khác</button>
             </div>
-            
-            <form id="formDeviceAction" onsubmit="handleDeviceSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-sm bg-slate-50/50">
-                <input type="hidden" id="editDeviceMode" value="create">
-                <div class="sm:col-span-3">
-                    <label class="block font-bold text-slate-500 mb-1">Mã Định Danh</label>
-                    <input type="text" id="deviceId" readonly class="w-full border border-slate-200 bg-slate-100 font-mono font-bold p-2 rounded-lg text-slate-600 focus:outline-none">
+            <div class="lg:col-span-8 bg-slate-900 text-white p-4 rounded-xl border border-slate-800 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="space-y-1">
+                    <h3 class="font-bold text-base flex items-center gap-2 text-amber-400"><i class="fa-solid fa-stopwatch"></i> Cấu Hình Nhắc Nhở & Chu Kỳ Làm Việc</h3>
+                    <p class="text-xs text-slate-400">Người vận hành tự điều chỉnh thời gian nhắc nhở phù hợp với ca làm việc.</p>
                 </div>
-                <div class="sm:col-span-5">
-                    <label class="block font-bold text-slate-500 mb-1">Tên thiết bị tài sản</label>
-                    <input type="text" id="deviceName" required placeholder="Ví dụ: Máy nghiền thủy lực..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-slate-600">
-                </div>
-                <div class="sm:col-span-4">
-                    <label class="block font-bold text-slate-500 mb-1">Chủng loại nhóm (Tự nhập)</label>
-                    <input type="text" id="deviceCategory" required placeholder="Ví dụ: Hệ thống xeo bột..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-slate-600 font-bold text-slate-800">
-                </div>
-                <div class="sm:col-span-6">
-                    <label class="block font-bold text-amber-700 mb-1">Đơn vị quản lý</label>
-                    <select id="deviceDept" required onchange="updateUserDropdownByDept()" class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold text-slate-700 focus:outline-none"></select>
-                </div>
-                <div class="sm:col-span-6">
-                    <label class="block font-bold text-blue-700 mb-1">Người phụ trách trực tiếp</label>
-                    <select id="deviceUser" class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold text-slate-700 focus:outline-none">
-                        <option value="Chưa cấp phát">-- Giữ lưu kho --</option>
-                    </select>
-                </div>
-                <div class="sm:col-span-12 flex justify-end gap-2 pt-1">
-                    <button type="button" id="btnCancelDeviceEdit" onclick="resetDeviceForm()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-lg hidden transition-colors cursor-pointer">Hủy sửa</button>
-                    <button type="submit" id="btnDeviceSubmit" class="px-6 py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 shadow-sm transition-colors cursor-pointer">Lưu & Sinh Mã QR</button>
-                </div>
-            </form>
-
-            <div class="p-4 bg-slate-900 text-white border-t border-slate-700 text-xs space-y-3">
-                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                    <div>
-                        <span class="block font-bold text-amber-400 uppercase tracking-wide"><i class="fa-solid fa-file-import mr-1"></i> Nhập Danh Sách Hàng Loạt Bằng File (CSV/TXT)</span>
-                        <p class="text-slate-400 text-[11px] mt-0.5">Hệ thống tự động lọc trùng dữ liệu nhập tay & đồng bộ chuẩn hóa theo đơn vị đang chọn.</p>
+                <div class="flex items-center gap-4 bg-slate-800 p-3 rounded-lg border border-slate-700 w-full md:w-auto justify-center">
+                    <div class="flex flex-col gap-1 items-center bg-slate-900 p-2 rounded border border-slate-700">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase">Làm việc (Phút)</span>
+                        <input type="number" id="cfgPomoWork" value="25" min="1" class="w-16 bg-slate-800 text-white border border-slate-600 rounded text-center font-bold focus:outline-none" onchange="applyCustomPomoConfig()">
                     </div>
-                    <div class="flex items-center gap-2">
-                        <input type="file" id="importDeviceFile" accept=".csv, .txt" class="hidden" onchange="processDeviceFileImport(event)">
-                        <button onclick="document.getElementById('importDeviceFile').click()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 font-bold rounded text-white cursor-pointer transition-colors"><i class="fa-solid fa-upload mr-1"></i> Chọn File Danh Sách</button>
+                    <div class="flex flex-col gap-1 items-center bg-slate-900 p-2 rounded border border-slate-700">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase">Nghỉ ngơi (Phút)</span>
+                        <input type="number" id="cfgPomoBreak" value="5" min="1" class="w-16 bg-slate-800 text-white border border-slate-600 rounded text-center font-bold focus:outline-none" onchange="applyCustomPomoConfig()">
+                    </div>
+                    <div class="text-center px-2">
+                        <span id="pomoMinutes" class="text-3xl font-black font-mono text-white">25</span><span class="text-slate-500 font-bold mx-0.5">:</span><span id="pomoSeconds" class="text-3xl font-black font-mono text-white">00</span>
+                        <p id="pomoStatusLabel" class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest mt-0.5">Thời gian làm việc</p>
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <button onclick="togglePomoTimer()" id="btnStartPomo" class="px-4 py-1 bg-blue-600 hover:bg-blue-700 font-bold text-xs rounded text-white cursor-pointer">Bắt Đầu</button>
+                        <button onclick="resetPomoTimer()" class="px-4 py-1 bg-slate-700 hover:bg-slate-600 font-bold text-xs rounded text-slate-300 cursor-pointer">Đặt Lại</button>
                     </div>
                 </div>
-                <div class="bg-slate-950 p-2 rounded text-[11px] font-mono text-slate-400">
-                    * Định dạng dòng file chuẩn: <span class="text-emerald-400">Mã Số, Tên Thiết Bị, Chủng Loại</span> (Ví dụ: <span class="text-amber-300">TB-67149, Máy Xeo Giấy, Hệ thống xeo</span>)
+            </div>
+        </section>
+
+        <section class="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-3 shadow-sm">
+            <div class="flex items-center gap-2 text-amber-800 font-bold text-sm md:text-base">
+                <i class="fa-solid fa-triangle-exclamation text-xl text-amber-600"></i> 
+                <span>Hệ Thống Tự Động Cảnh Báo Đến Thời Hạn Bảo Dưỡng Thiết Bị (Chu Kỳ Định Kỳ)</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs md:text-sm" id="maintenanceAlertZone"></div>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+            <div class="bg-emerald-700 text-white font-bold p-3.5 text-base flex items-center justify-between">
+                <span><i class="fa-solid fa-users-gear mr-1.5 text-slate-300"></i> Quản Lý Hồ Sơ Nhân Sự & Danh Sách Phòng Ban</span>
+                <span class="text-sm bg-emerald-600 px-2.5 py-1 rounded font-mono" id="count-user">0 nhân sự</span>
+            </div>
+            <div class="p-4 grid grid-cols-1 lg:grid-cols-12 gap-5 border-b border-slate-100 bg-slate-50/50 text-sm">
+                <div class="lg:col-span-4 border-r border-slate-200 pr-4">
+                    <span class="block font-bold text-slate-400 text-xs uppercase mb-1.5">THÊM PHÒNG BAN / ĐƠN VỊ</span>
+                    <form onsubmit="handleDeptSubmit(event)" class="space-y-2">
+                        <input type="text" id="deptName" required placeholder="Tên xưởng, phòng ban..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-emerald-600">
+                        <button type="submit" class="w-full py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 transition-colors cursor-pointer">Thêm Đơn Vị</button>
+                    </form>
+                </div>
+                <div class="lg:col-span-8">
+                    <span class="block font-bold text-slate-400 text-xs uppercase mb-1.5">NHẬP LIỆU NHÂN SỰ</span>
+                    <form onsubmit="handleUserSubmit(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Họ và tên</label>
+                            <input type="text" id="userName" required placeholder="Nguyễn Văn A..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-emerald-600 font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Chức vụ</label>
+                            <input type="text" id="userTitle" required placeholder="Kỹ sư vận hành..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-emerald-600 font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Đơn vị tiếp quản</label>
+                            <select id="userDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-slate-700"></select>
+                        </div>
+                        <div class="sm:col-span-3 flex justify-end gap-2 pt-1">
+                            <button type="submit" class="px-8 py-2 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 shadow-sm transition-colors cursor-pointer">Lưu Hồ Sơ</button>
+                        </div>
+                    </form>
                 </div>
             </div>
-
-            <div class="p-3 bg-slate-50 border-b border-slate-200 text-sm">
-                <input type="text" id="searchDeviceInput" oninput="renderDeviceTableOnly()" placeholder="Nhập tên thiết bị hoặc mã định danh để tìm kiếm nhanh..." class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-white focus:outline-none font-bold text-slate-700">
-            </div>
-            <div class="overflow-x-auto custom-scrollbar max-h-[400px] bg-white text-sm">
+            <div class="px-4 bg-slate-50 border-b border-slate-100 flex flex-wrap gap-2 text-sm py-2 items-center" id="deptTabsContainer"></div>
+            <div class="overflow-x-auto text-sm bg-white">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 font-bold sticky top-0 z-10 text-xs md:text-sm uppercase tracking-wider">
-                            <th class="p-3 pl-4">Mã Số</th>
-                            <th class="p-3">Tên Thiết Bị / Tài Sản</th>
-                            <th class="p-3">Đơn Vị</th>
-                            <th class="p-3 text-center w-[100px]">Mã QR</th>
-                            <th class="p-3">Người Phụ Trách</th>
+                        <tr class="border-b border-slate-100 bg-slate-50/70 text-slate-500 font-bold">
+                            <th class="p-3 pl-4">Họ Tên / Chức Danh</th>
+                            <th class="p-3">Đơn Vị Quản Lý</th>
+                            <th class="p-3 text-right pr-4">Tác Vụ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="sec-device" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <div class="lg:col-span-8 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                <div class="bg-slate-700 text-white font-bold p-3.5 text-base flex items-center justify-between">
+                    <span><i class="fa-solid fa-boxes-stacked mr-1.5 text-slate-300"></i> Quản Lý Thiết Bị Tài Sản & Cấp Phát QR</span>
+                    <span class="text-sm bg-slate-600 px-2.5 py-1 rounded font-mono" id="count-device">0 tài sản</span>
+                </div>
+                
+                <form id="formDeviceAction" onsubmit="handleDeviceSubmit(event)" class="p-4 grid grid-cols-1 sm:grid-cols-12 gap-3 text-sm bg-slate-50/50">
+                    <input type="hidden" id="editDeviceMode" value="create">
+                    <div class="sm:col-span-3">
+                        <label class="block font-bold text-slate-500 mb-1">Mã Định Danh</label>
+                        <input type="text" id="deviceId" readonly class="w-full border border-slate-200 bg-slate-100 font-mono font-bold p-2 rounded-lg text-slate-600 focus:outline-none">
+                    </div>
+                    <div class="sm:col-span-5">
+                        <label class="block font-bold text-slate-500 mb-1">Tên thiết bị tài sản</label>
+                        <input type="text" id="deviceName" required placeholder="Ví dụ: Máy nghiền thủy lực..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-slate-600">
+                    </div>
+                    <div class="sm:col-span-4">
+                        <label class="block font-bold text-slate-500 mb-1">Chủng loại nhóm (Tự nhập)</label>
+                        <input type="text" id="deviceCategory" required placeholder="Ví dụ: Hệ thống xeo bột..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-slate-600 font-bold text-slate-800">
+                    </div>
+                    <div class="sm:col-span-6">
+                        <label class="block font-bold text-amber-700 mb-1">Đơn vị quản lý</label>
+                        <select id="deviceDept" required onchange="updateUserDropdownByDept()" class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold text-slate-700 focus:outline-none"></select>
+                    </div>
+                    <div class="sm:col-span-6">
+                        <label class="block font-bold text-blue-700 mb-1">Người phụ trách trực tiếp</label>
+                        <select id="deviceUser" class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold text-slate-700 focus:outline-none">
+                            <option value="Chưa cấp phát">-- Giữ lưu kho --</option>
+                        </select>
+                    </div>
+                    <div class="sm:col-span-12 flex justify-end gap-2 pt-1">
+                        <button type="button" id="btnCancelDeviceEdit" onclick="resetDeviceForm()" class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-lg hidden transition-colors cursor-pointer">Hủy sửa</button>
+                        <button type="submit" id="btnDeviceSubmit" class="px-6 py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 shadow-sm transition-colors cursor-pointer">Lưu & Sinh Mã QR</button>
+                    </div>
+                </form>
+
+                <div class="p-4 bg-slate-900 text-white border-t border-slate-700 text-xs space-y-3">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                        <div>
+                            <span class="block font-bold text-amber-400 uppercase tracking-wide"><i class="fa-solid fa-file-import mr-1"></i> Nhập Danh Sách Hàng Loạt Bằng File (CSV/TXT)</span>
+                            <p class="text-slate-400 text-[11px] mt-0.5">Hệ thống tự động lọc trùng dữ liệu nhập tay & đồng bộ chuẩn hóa theo đơn vị đang chọn.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="file" id="importDeviceFile" accept=".csv, .txt" class="hidden" onchange="processDeviceFileImport(event)">
+                            <button onclick="document.getElementById('importDeviceFile').click()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 font-bold rounded text-white cursor-pointer transition-colors"><i class="fa-solid fa-upload mr-1"></i> Chọn File Danh Sách</button>
+                        </div>
+                    </div>
+                    <div class="bg-slate-950 p-2 rounded text-[11px] font-mono text-slate-400">
+                        * Định dạng dòng file chuẩn: <span class="text-emerald-400">Mã Số, Tên Thiết Bị, Chủng Loại</span> (Ví dụ: <span class="text-amber-300">TB-67149, Máy Xeo Giấy, Hệ thống xeo</span>)
+                    </div>
+                </div>
+
+                <div class="p-3 bg-slate-50 border-b border-slate-200 text-sm">
+                    <input type="text" id="searchDeviceInput" oninput="renderDeviceTableOnly()" placeholder="Nhập tên thiết bị hoặc mã định danh để tìm kiếm nhanh..." class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-white focus:outline-none font-bold text-slate-700">
+                </div>
+                <div class="overflow-x-auto custom-scrollbar max-h-[400px] bg-white text-sm">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 font-bold sticky top-0 z-10 text-xs md:text-sm uppercase tracking-wider">
+                                <th class="p-3 pl-4">Mã Số</th>
+                                <th class="p-3">Tên Thiết Bị / Tài Sản</th>
+                                <th class="p-3">Đơn Vị</th>
+                                <th class="p-3 text-center w-[100px]">Mã QR</th>
+                                <th class="p-3">Người Phụ Trách</th>
+                                <th class="p-3 text-center">Trạng Thái</th>
+                                <th class="p-3 text-right pr-4">Tác Vụ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deviceTableBody" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="lg:col-span-4">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden sticky top-6">
+                    <div class="bg-slate-800 text-white font-bold p-3.5 text-sm flex items-center justify-between">
+                        <span><i class="fa-solid fa-eye text-amber-400 mr-1.5"></i> Xem Trước Nhãn Tem In</span>
+                        <button onclick="window.print()" id="btnActionPrintNow" class="hidden px-3 py-1 bg-amber-500 text-slate-950 font-extrabold text-xs rounded hover:bg-amber-400 transition-colors cursor-pointer">🖨️ Đặt Lệnh In</button>
+                    </div>
+                    <div class="p-6 flex flex-col items-center justify-center bg-slate-50 min-h-[310px]">
+                        <div id="webPreviewQRBox" class="p-4 bg-white border border-slate-400 rounded-xl shadow-sm text-center flex flex-col items-center justify-center hidden w-[220px]">
+                            <h4 id="wpTitle" class="text-xs font-black uppercase text-slate-900 max-w-[200px] truncate mb-2">MÁY TÍNH</h4>
+                            <div id="wpCanvas" class="bg-white p-1 flex items-center justify-center w-[150px] h-[150px]"></div>
+                            <div class="w-full border-t border-dashed border-slate-300 my-2"></div>
+                            <p id="wpId" class="text-xs font-mono font-black text-slate-800 tracking-wider">TB-67149</p>
+                            <p id="wpDept" class="text-[10px] font-bold text-slate-500 mt-0.5">ĐV: Phòng Kỹ Thuật</p>
+                            <p id="wpUser" class="text-[11px] font-bold text-emerald-600 mt-0.5 italic">Phụ trách: Nguyễn Văn A</p>
+                        </div>
+                        <p id="webPreviewEmptyText" class="text-slate-400 italic text-center text-sm p-4">Nhấn nút <strong>"Xem & In"</strong> tại danh mục bên để hiển thị cấu trúc nhãn.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+            <div class="bg-purple-700 text-white font-bold p-3.5 text-base"><i class="fa-solid fa-screwdriver-wrench mr-2"></i>Nhật Ký Bảo Trì, Sửa Chữa Kỹ Thuật</div>
+            <form id="formRepairAction" onsubmit="handleRepairSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 text-sm bg-slate-50/50 border-b border-slate-100">
+                <div class="md:col-span-3">
+                    <select id="repairDeviceId" required class="w-full border border-slate-300 rounded-lg p-2 bg-white font-mono font-bold text-slate-700 focus:outline-none"></select>
+                </div>
+                <div class="md:col-span-4">
+                    <input type="text" id="repairDesc" required placeholder="Nội dung chi tiết bảo dưỡng, sự cố khắc phục..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-purple-600">
+                </div>
+                <div class="md:col-span-3">
+                    <select id="repairUser" class="w-full border border-slate-300 rounded-lg p-2 bg-white text-slate-700 focus:outline-none"></select>
+                </div>
+                <div class="md:col-span-2 flex items-end gap-2">
+                    <input type="number" id="repairCost" required value="0" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-slate-800">
+                    <button type="submit" class="px-5 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 shadow-sm transition-colors h-[38px] cursor-pointer">Lưu</button>
+                </div>
+            </form>
+            <div class="overflow-x-auto custom-scrollbar max-h-[240px] bg-white text-sm">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-100 bg-slate-50 text-slate-500 font-bold">
+                            <th class="p-3 pl-4">Thiết Bị</th>
+                            <th class="p-3">Chi Tiết Kỹ Thuật Sửa Chữa</th>
+                            <th class="p-3">Ngày Thực Hiện</th>
+                            <th class="p-3">Kỹ Thuật Viên</th>
+                            <th class="p-3">Chi Phí Vật Tư</th>
+                            <th class="p-3 text-right pr-4">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="repairTableBody" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="bg-slate-900 text-white rounded-xl shadow-sm overflow-hidden flex flex-col border border-slate-800">
+            <div class="p-3.5 font-bold text-base bg-slate-800 flex items-center gap-1.5 border-b border-slate-800">
+                <i class="fa-solid fa-list-check text-emerald-400"></i> Phân Công Công Việc Vận Hành & Đếm Ngược Thời Gian Thực
+            </div>
+            <form id="formTaskAction" onsubmit="handleTaskSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm bg-slate-900/40">
+                <input type="text" id="taskName" required placeholder="Tên đầu việc cần làm ngay..." class="w-full border border-slate-700 rounded-lg p-2 bg-slate-800 text-white focus:outline-none focus:border-slate-500">
+                <select id="taskDeviceId" class="w-full border border-slate-700 rounded-lg p-2 bg-slate-800 text-white font-mono focus:outline-none"></select>
+                <select id="taskUser" class="w-full border border-slate-700 rounded-lg p-2 bg-slate-800 text-white focus:outline-none"></select>
+                <select id="taskLevel" class="w-full border border-slate-700 rounded-lg p-2 bg-slate-800 text-amber-400 font-bold focus:outline-none">
+                    <option value="Trung bình">🟡 Mức độ: Trung bình</option>
+                    <option value="Cao">🟠 Mức độ: Cao</option>
+                    <option value="Khẩn cấp">🔴 Mức độ: Khẩn cấp</option>
+                </select>
+                <input type="time" id="taskTimeStart" required class="w-full border border-slate-700 rounded-lg p-2 bg-slate-800 text-white focus:outline-none">
+                <div class="flex items-end gap-2">
+                    <input type="number" id="taskDuration" value="30" placeholder="Số phút..." class="w-full border border-slate-700 rounded-lg p-2 bg-slate-800 text-white font-bold focus:outline-none">
+                    <button type="submit" class="px-5 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors h-[38px] cursor-pointer whitespace-nowrap">Phân Việc</button>
+                </div>
+            </form>
+            <div class="overflow-x-auto text-sm bg-slate-900">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-800 bg-slate-800/80 text-slate-400 font-bold">
+                            <th class="p-3 pl-4">Hạng Mục</th>
+                            <th class="p-3">Thiết Bị</th>
+                            <th class="p-3">Phụ Trách</th>
+                            <th class="p-3">Mức Độ</th>
+                            <th class="p-3">⏰ Bắt Đầu</th>
+                            <th class="p-3">⏳ Đếm Ngược</th>
+                            <th class="p-3 text-right pr-4">Tác vụ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="taskTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+            <div class="bg-slate-800 text-white font-bold p-3.5 text-base flex items-center justify-between">
+                <span><i class="fa-solid fa-cart-shopping mr-1.5 text-amber-400"></i> Đề Xuất Mua Sắm Vật Tư Mới & Số Hóa Chứng Từ Kỹ Thuật</span>
+                <span class="text-sm bg-slate-700 px-2.5 py-1 rounded font-mono" id="count-procurement">0 đề xuất</span>
+            </div>
+            <form id="formProcurementAction" onsubmit="handleProcurementSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-12 gap-3 text-sm bg-slate-50 border-b border-slate-200">
+                <div class="md:col-span-3">
+                    <label class="block font-bold text-slate-600 mb-1">Tên Vật Tư / Thiết Bị Đề Xuất</label>
+                    <input type="text" id="procuName" required placeholder="Ví dụ: Van áp suất 10K..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
+                </div>
+                <div class="md:col-span-1">
+                    <label class="block font-bold text-slate-600 mb-1">Số Lượng</label>
+                    <input type="number" id="procuQty" required min="1" value="1" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-slate-800">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block font-bold text-slate-600 mb-1">Đơn Vị Đề Xuất</label>
+                    <select id="procuDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold text-slate-700 focus:outline-none"></select>
+                </div>
+                <div class="md:col-span-3">
+                    <label class="block font-bold text-purple-700 mb-1">Tải hồ sơ / Dán Link đính kèm</label>
+                    <div class="flex gap-2">
+                        <input type="hidden" id="procuDocLink">
+                        <input type="file" id="uploadProcurementFile" class="hidden" onchange="handleProcurementFileUpload(event)">
+                        <button type="button" onclick="document.getElementById('uploadProcurementFile').click()" id="btnUploadFileIndicator" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-colors cursor-pointer text-xs whitespace-nowrap"><i class="fa-solid fa-cloud-arrow-up"></i> Tải Tài Liệu Lên</button>
+                        <input type="text" id="procuDocUrlManual" oninput="document.getElementById('procuDocLink').value=this.value" placeholder="Hoặc dán URL Drive..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none text-xs text-blue-600">
+                    </div>
+                </div>
+                <div class="md:col-span-3 flex items-end gap-2">
+                    <div class="w-full">
+                        <label class="block font-bold text-slate-600 mb-1">Dự Kiến Chi Phí</label>
+                        <input type="number" id="procuEstimatedCost" required value="0" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-slate-800">
+                    </div>
+                    <button type="submit" class="px-6 py-2 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 shadow-sm h-[38px] cursor-pointer whitespace-nowrap">Đề Xuất</button>
+                </div>
+            </form>
+            <div class="overflow-x-auto text-sm bg-white">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 font-bold">
+                            <th class="p-3 pl-4">Hạng Mục Vật Tư</th>
+                            <th class="p-3">Đơn Vị Đề Xuất</th>
+                            <th class="p-3 text-center">Số Lượng</th>
+                            <th class="p-3">Dự Toán Chi Phí</th>
+                            <th class="p-3">Chứng Từ Đính Kèm Đám Mây</th>
                             <th class="p-3 text-center">Trạng Thái</th>
                             <th class="p-3 text-right pr-4">Tác Vụ</th>
                         </tr>
                     </thead>
-                    <tbody id="deviceTableBody" class="divide-y divide-slate-100"></tbody>
+                    <tbody id="procurementTableBody" class="divide-y divide-slate-100"></tbody>
                 </table>
             </div>
-        </div>
-        <div class="lg:col-span-4">
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden sticky top-6">
-                <div class="bg-slate-800 text-white font-bold p-3.5 text-sm flex items-center justify-between">
-                    <span><i class="fa-solid fa-eye text-amber-400 mr-1.5"></i> Xem Trước Nhãn Tem In</span>
-                    <button onclick="window.print()" id="btnActionPrintNow" class="hidden px-3 py-1 bg-amber-500 text-slate-950 font-extrabold text-xs rounded hover:bg-amber-400 transition-colors cursor-pointer">🖨️ Đặt Lệnh In</button>
-                </div>
-                <div class="p-6 flex flex-col items-center justify-center bg-slate-50 min-h-[310px]">
-                    <div id="webPreviewQRBox" class="p-4 bg-white border border-slate-400 rounded-xl shadow-sm text-center flex flex-col items-center justify-center hidden w-[220px]">
-                        <h4 id="wpTitle" class="text-xs font-black uppercase text-slate-900 max-w-[200px] truncate mb-2">MÁY TÍNH</h4>
-                        <div id="wpCanvas" class="bg-white p-1 flex items-center justify-center w-[150px] h-[150px]"></div>
-                        <div class="w-full border-t border-dashed border-slate-300 my-2"></div>
-                        <p id="wpId" class="text-xs font-mono font-black text-slate-800 tracking-wider">TB-67149</p>
-                        <p id="wpDept" class="text-[10px] font-bold text-slate-500 mt-0.5">ĐV: Phòng Kỹ Thuật</p>
-                        <p id="wpUser" class="text-[11px] font-bold text-emerald-600 mt-0.5 italic">Phụ trách: Nguyễn Văn A</p>
-                    </div>
-                    <p id="webPreviewEmptyText" class="text-slate-400 italic text-center text-sm p-4">Nhấn nút <strong>"Xem & In"</strong> tại danh mục bên để hiển thị cấu trúc nhãn.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-        <div class="bg-purple-700 text-white font-bold p-3.5 text-base"><i class="fa-solid fa-screwdriver-wrench mr-2"></i>Nhật Ký Bảo Trì, Sửa Chữa Kỹ Thuật</div>
-        <form id="formRepairAction" onsubmit="handleRepairSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 text-sm bg-slate-50/50 border-b border-slate-100">
-            <div class="md:col-span-3">
-                <select id="repairDeviceId" required class="w-full border border-slate-300 rounded-lg p-2 bg-white font-mono font-bold text-slate-700 focus:outline-none"></select>
-            </div>
-            <div class="md:col-span-4">
-                <input type="text" id="repairDesc" required placeholder="Nội dung chi tiết bảo dưỡng, sự cố khắc phục..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-purple-600">
-            </div>
-            <div class="md:col-span-3">
-                <select id="repairUser" class="w-full border border-slate-300 rounded-lg p-2 bg-white text-slate-700 focus:outline-none"></select>
-            </div>
-            <div class="md:col-span-2 flex items-end gap-2">
-                <input type="number" id="repairCost" required value="0" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-slate-800">
-                <button type="submit" class="px-5 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 shadow-sm transition-colors h-[38px] cursor-pointer">Lưu</button>
-            </div>
-        </form>
-        <div class="overflow-x-auto custom-scrollbar max-h-[240px] bg-white text-sm">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="border-b border-slate-100 bg-slate-50 text-slate-500 font-bold">
-                        <th class="p-3 pl-4">Thiết Bị</th>
-                        <th class="p-3">Chi Tiết Kỹ Thuật Sửa Chữa</th>
-                        <th class="p-3">Ngày Thực Hiện</th>
-                        <th class="p-3">Kỹ Thuật Viên</th>
-                        <th class="p-3">Chi Phí Vật Tư</th>
-                        <th class="p-3 text-right pr-4">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody id="repairTableBody" class="divide-y divide-slate-100"></tbody>
-            </table>
-        </div>
-    </section>
-
-    <section class="bg-slate-900 text-white rounded-xl shadow-sm overflow-hidden flex flex-col border border-slate-800">
-        <div class="p-3.5 font-bold text-base bg-slate-800 flex items-center gap-1.5 border-b border-slate-800">
-            <i class="fa-solid fa-list-check text-emerald-400"></i> Phân Công Công Việc Vận Hành & Đếm Ngược Thời Gian Thực
-        </div>
-        <form id="formTaskAction" onsubmit="handleTaskSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm bg-slate-900/40">
-            <input type="text" id="taskName" required placeholder="Tên đầu việc cần làm ngay..." class="w-full border border-slate-700 rounded-lg p-2 bg-slate-800 text-white focus:outline-none focus:border-slate-500">
-            <select id="taskDeviceId" class="w-full border border-slate-700 rounded-lg p-2 bg-slate-800 text-white font-mono focus:outline-none"></select>
-            <select id="taskUser" class="w-full border border-slate-700 rounded-lg p-2 bg-slate-800 text-white focus:outline-none"></select>
-            <select id="taskLevel" class="w-full border border-slate-700 rounded-lg p-2 bg-slate-800 text-amber-400 font-bold focus:outline-none">
-                <option value="Trung bình">🟡 Mức độ: Trung bình</option>
-                <option value="Cao">🟠 Mức độ: Cao</option>
-                <option value="Khẩn cấp">🔴 Mức độ: Khẩn cấp</option>
-            </select>
-            <input type="time" id="taskTimeStart" required class="w-full border border-slate-700 rounded-lg p-2 bg-slate-800 text-white focus:outline-none">
-            <div class="flex items-end gap-2">
-                <input type="number" id="taskDuration" value="30" placeholder="Số phút..." class="w-full border border-slate-700 rounded-lg p-2 bg-slate-800 text-white font-bold focus:outline-none">
-                <button type="submit" class="px-5 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors h-[38px] cursor-pointer whitespace-nowrap">Phân Việc</button>
-            </div>
-        </form>
-        <div class="overflow-x-auto text-sm bg-slate-900">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="border-b border-slate-800 bg-slate-800/80 text-slate-400 font-bold">
-                        <th class="p-3 pl-4">Hạng Mục</th>
-                        <th class="p-3">Thiết Bị</th>
-                        <th class="p-3">Phụ Trách</th>
-                        <th class="p-3">Mức Độ</th>
-                        <th class="p-3">⏰ Bắt Đầu</th>
-                        <th class="p-3">⏳ Đếm Ngược</th>
-                        <th class="p-3 text-right pr-4">Tác vụ</th>
-                    </tr>
-                </thead>
-                <tbody id="taskTableBody" class="divide-y divide-slate-800 text-slate-300"></tbody>
-            </table>
-        </div>
-    </section>
-
-    <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-        <div class="bg-slate-800 text-white font-bold p-3.5 text-base flex items-center justify-between">
-            <span><i class="fa-solid fa-cart-shopping mr-1.5 text-amber-400"></i> Đề Xuất Mua Sắm Vật Tư Mới & Số Hóa Chứng Từ Kỹ Thuật</span>
-            <span class="text-sm bg-slate-700 px-2.5 py-1 rounded font-mono" id="count-procurement">0 đề xuất</span>
-        </div>
-        <form id="formProcurementAction" onsubmit="handleProcurementSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-12 gap-3 text-sm bg-slate-50 border-b border-slate-200">
-            <div class="md:col-span-3">
-                <label class="block font-bold text-slate-600 mb-1">Tên Vật Tư / Thiết Bị Đề Xuất</label>
-                <input type="text" id="procuName" required placeholder="Ví dụ: Van áp suất 10K..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
-            </div>
-            <div class="md:col-span-1">
-                <label class="block font-bold text-slate-600 mb-1">Số Lượng</label>
-                <input type="number" id="procuQty" required min="1" value="1" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-slate-800">
-            </div>
-            <div class="md:col-span-2">
-                <label class="block font-bold text-slate-600 mb-1">Đơn Vị Đề Xuất</label>
-                <select id="procuDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold text-slate-700 focus:outline-none"></select>
-            </div>
-            <div class="md:col-span-3">
-                <label class="block font-bold text-purple-700 mb-1">Tải hồ sơ / Dán Link đính kèm</label>
-                <div class="flex gap-2">
-                    <input type="hidden" id="procuDocLink">
-                    <input type="file" id="uploadProcurementFile" class="hidden" onchange="handleProcurementFileUpload(event)">
-                    <button type="button" onclick="document.getElementById('uploadProcurementFile').click()" id="btnUploadFileIndicator" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-colors cursor-pointer text-xs whitespace-nowrap"><i class="fa-solid fa-cloud-arrow-up"></i> Tải Tài Liệu Lên</button>
-                    <input type="text" id="procuDocUrlManual" oninput="document.getElementById('procuDocLink').value=this.value" placeholder="Hoặc dán URL Drive..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none text-xs text-blue-600">
-                </div>
-            </div>
-            <div class="md:col-span-3 flex items-end gap-2">
-                <div class="w-full">
-                    <label class="block font-bold text-slate-600 mb-1">Dự Kiến Chi Phí</label>
-                    <input type="number" id="procuEstimatedCost" required value="0" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-slate-800">
-                </div>
-                <button type="submit" class="px-6 py-2 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 shadow-sm h-[38px] cursor-pointer whitespace-nowrap">Đề Xuất</button>
-            </div>
-        </form>
-        <div class="overflow-x-auto text-sm bg-white">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 font-bold">
-                        <th class="p-3 pl-4">Hạng Mục Vật Tư</th>
-                        <th class="p-3">Đơn Vị Đề Xuất</th>
-                        <th class="p-3 text-center">Số Lượng</th>
-                        <th class="p-3">Dự Toán Chi Phí</th>
-                        <th class="p-3">Chứng Từ Đính Kèm Đám Mây</th>
-                        <th class="p-3 text-center">Trạng Thái</th>
-                        <th class="p-3 text-right pr-4">Tác Vụ</th>
-                    </tr>
-                </thead>
-                <tbody id="procurementTableBody" class="divide-y divide-slate-100"></tbody>
-            </table>
-        </div>
-    </section>
+        </section>
+    </div>
 
     <div id="qrPrintZone" class="hidden flex-col items-center justify-center p-4 bg-white text-black border border-black text-center w-[55mm] h-[55mm]">
         <h2 id="qrPrintTitle" class="text-[10px] font-black uppercase tracking-tight mb-1" style="font-family: Arial, sans-serif;"></h2>
@@ -442,19 +445,18 @@
         const mockUsers = [{ id: "u1", name: "Nguyễn Văn Phú", title: "Trưởng Ca Vận Hành", dept: "Xưởng Xeo 1" }];
         const mockDevices = [{ id: "TB-67149", name: "Máy Nghiền Thủy Lực Lực Ly Tâm", cat: "Hệ thống xeo bột", dept: "Xưởng Xeo 1", user: "Nguyễn Văn Phú", status: "Hoạt động tốt" }];
 
-        // 1. CƠ CHẾ ĐĂNG NHẬP KHÓA MÀN HÌNH CHÍNH XÁC
+        // ĐĂNG NHẬP XÁC THỰC
         window.executeSystemLogin = function() {
             const role = document.getElementById('loginRole').value;
             const pin = document.getElementById('loginPin').value;
             const errorLabel = document.getElementById('loginErrorMsg');
 
-            if(pin === '1234') { // Mã pin cấu hình mặc định an toàn cho nội bộ nhà máy
+            if(pin === '1234') { 
                 currentRole = role;
                 errorLabel.classList.add('hidden');
                 document.getElementById('loginOverlaySystem').classList.add('hidden');
-                document.getElementById('mainSystemBody').classList.remove('hidden');
+                document.getElementById('mainSystemContentDashboard').classList.remove('hidden');
                 
-                // Cập nhật nhãn quyền hiển thị
                 const textBadge = role === 'admin' ? '🔑 Quản Trị Viên (Admin)' : `🧑 Tài Khoản Con [${role === 'sub_user_1' ? 'Ca 1' : 'Ca 2'}]`;
                 document.getElementById('currentRoleBadge').innerText = textBadge;
 
@@ -466,11 +468,47 @@
 
         window.logoutSystem = function() {
             document.getElementById('loginPin').value = '';
-            document.getElementById('mainSystemBody').classList.add('hidden');
+            document.getElementById('mainSystemContentDashboard').classList.add('hidden');
             document.getElementById('loginOverlaySystem').classList.remove('hidden');
         }
 
-        // 2. TÍNH NĂNG NHẬP DANH SÁCH FILE VÀ LỌC TRÙNG THEO ĐƠN VỊ ĐANG CHỌN
+        // ĐỌC / GHI DỮ LIỆU
+        function fetchCloudData() {
+            const basePath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
+            const readPath = currentRole === 'admin' ? basePath : `${basePath}/sub_channels/${currentRole}`;
+
+            get(ref(db, basePath)).then((adminSnapshot) => {
+                const adminData = adminSnapshot.val() || {};
+                
+                get(ref(db, readPath)).then((snapshot) => {
+                    const data = snapshot.val() || {};
+                    const parse = (arr) => arr ? (Array.isArray(arr) ? arr.filter(Boolean) : Object.values(arr)) : [];
+
+                    depts = parse(adminData.depts).length ? parse(adminData.depts) : [...mockDepts];
+                    users = parse(data.users || adminData.users);
+                    devices = parse(data.devices || adminData.devices);
+                    repairs = parse(data.repairs || adminData.repairs);
+                    tasks = parse(data.tasks || adminData.tasks);
+                    procurements = parse(data.procurements || adminData.procurements);
+
+                    if(users.length === 0) { users = [...mockUsers]; devices = [...mockDevices]; }
+
+                    updateDropdownOptions(); renderAllTables(); autoGenDeviceId(); checkMaintenanceAlerts();
+                });
+            });
+        }
+
+        function pushDataToCloud() {
+            const basePath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
+            if(currentRole === 'admin') {
+                set(ref(db, basePath), { depts, users, devices, repairs, tasks, procurements }).then(() => fetchCloudData());
+            } else {
+                set(ref(db, `${basePath}/sub_channels/${currentRole}`), { users, devices, repairs, tasks, procurements });
+                fetchCloudData();
+            }
+        }
+
+        // XỬ LÝ NHẬP FILE DANH SÁCH & LỌC TRÙNG
         window.processDeviceFileImport = function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -495,50 +533,37 @@
                         const fileName = parts[1].trim();
                         const fileCat = parts[2] ? parts[2].trim() : "Thiết bị xưởng";
 
-                        // Lọc trùng: Kiểm tra mã số định danh đã tồn tại chưa
                         const existingIdx = devices.findIndex(d => d.id.toLowerCase() === fileId.toLowerCase());
-                        
                         if(existingIdx !== -1) {
-                            // Nếu đã nhập tay hoặc có sẵn trước đó: Cập nhật đúng thông tin và đồng bộ đơn vị
                             devices[existingIdx].name = fileName;
                             devices[existingIdx].cat = fileCat;
                             devices[existingIdx].dept = targetDept;
                             countUpdate++;
                         } else {
-                            // Chưa có: Thêm mới hoàn toàn vào mảng
-                            devices.push({
-                                id: fileId,
-                                name: fileName,
-                                cat: fileCat,
-                                dept: targetDept,
-                                user: "Chưa cấp phát",
-                                status: "Trong kho"
-                            });
+                            devices.push({ id: fileId, name: fileName, cat: fileCat, dept: targetDept, user: "Chưa cấp phát", status: "Trong kho" });
                             countNew++;
                         }
                     }
                 });
-
-                alert(`Xử lý file hoàn tất thành công!\n- Thêm mới: ${countNew} tài sản\n- Cập nhật thông tin/Tránh trùng: ${countUpdate} tài sản\nĐã đồng bộ về đơn vị: ${targetDept}`);
+                alert(`Xử lý file hoàn tất!\n- Thêm mới: ${countNew} tài sản\n- Cập nhật/Tránh trùng: ${countUpdate} tài sản`);
                 pushDataToCloud();
             };
             reader.readAsText(file);
         }
 
-        // 3. XỬ LÝ SỐ HÓA FILE ĐÍNH KÈM KHÔNG GIỚI HẠN LƯU TRỰC TUYẾN
+        // XỬ LÝ SỐ HÓA FILE ĐÍNH KÈM
         window.handleProcurementFileUpload = function(e) {
             const file = e.target.files[0];
             if(!file) return;
 
             const indicator = document.getElementById('btnUploadFileIndicator');
-            indicator.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Đang mã hóa đám mây...`;
+            indicator.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Đang tải...`;
 
             const reader = new FileReader();
             reader.onload = function(evt) {
-                // Chuyển toàn bộ file thành chuỗi Base64 lưu trữ trực tiếp trên database Realtime
                 document.getElementById('procuDocLink').value = evt.target.result;
-                indicator.innerHTML = `<i class="fa-solid fa-circle-check text-green-300"></i> File đã sẵn sàng`;
-                alert(`Đã số hóa file "${file.name}" thành công! Hệ thống đã sẵn sàng lưu trữ trực tuyến không giới hạn.`);
+                indicator.innerHTML = `<i class="fa-solid fa-circle-check text-green-300"></i> Sẵn sàng`;
+                alert(`Đã số hóa file "${file.name}" thành công!`);
             }
             reader.readAsDataURL(file);
         }
@@ -550,6 +575,7 @@
             link.click();
         }
 
+        // CÁC HÀM PHỤ TRỢ KHÁC
         window.toggleSection = function(id, checked) {
             const sec = document.getElementById(id);
             if(sec) { if(checked) sec.classList.remove('hidden'); else sec.classList.add('hidden'); }
@@ -596,43 +622,6 @@
         }
 
         window.switchEnvironment = function(env) { currentEnv = env; localStorage.setItem('vinapaco_current_env', env); fetchCloudData(); }
-
-        function fetchCloudData() {
-            const basePath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
-            const readPath = currentRole === 'admin' ? basePath : `${basePath}/sub_channels/${currentRole}`;
-
-            get(ref(db, basePath)).then((adminSnapshot) => {
-                const adminData = adminSnapshot.val() || {};
-                
-                get(ref(db, readPath)).then((snapshot) => {
-                    const data = snapshot.val() || {};
-                    const parse = (arr) => arr ? (Array.isArray(arr) ? arr.filter(Boolean) : Object.values(arr)) : [];
-
-                    depts = parse(adminData.depts).length ? parse(adminData.depts) : [...mockDepts];
-                    users = parse(data.users || adminData.users);
-                    devices = parse(data.devices || adminData.devices);
-                    repairs = parse(data.repairs || adminData.repairs);
-                    tasks = parse(data.tasks || adminData.tasks);
-                    procurements = parse(data.procurements || adminData.procurements);
-
-                    if(users.length === 0) { users = [...mockUsers]; devices = [...mockDevices]; }
-
-                    updateDropdownOptions(); renderAllTables(); autoGenDeviceId(); checkMaintenanceAlerts();
-                });
-            });
-        }
-
-        function pushDataToCloud() {
-            const basePath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
-            
-            if(currentRole === 'admin') {
-                set(ref(db, basePath), { depts, users, devices, repairs, tasks, procurements }).then(() => fetchCloudData());
-            } else {
-                set(ref(db, `${basePath}/sub_channels/${currentRole}`), { users, devices, repairs, tasks, procurements });
-                set(ref(db, `${basePath}/sync_logs/${currentRole}_${Date.now()}`), { timestamp: Date.now(), devices, repairs });
-                fetchCloudData();
-            }
-        }
 
         window.handleUserSubmit = function(e) { 
             e.preventDefault(); 
@@ -701,18 +690,8 @@
         window.handleProcurementSubmit = function(e) {
             e.preventDefault();
             const linkData = document.getElementById('procuDocLink').value;
-            procurements.push({ 
-                id: Date.now().toString(), 
-                name: document.getElementById('procuName').value.trim(), 
-                qty: document.getElementById('procuQty').value, 
-                dept: document.getElementById('procuDept').value, 
-                cost: document.getElementById('procuEstimatedCost').value, 
-                docLink: linkData || '#',
-                status: 'Chờ phê duyệt' 
-            });
-            document.getElementById('procuName').value = ""; 
-            document.getElementById('procuDocLink').value = "";
-            document.getElementById('procuDocUrlManual').value = "";
+            procurements.push({ id: Date.now().toString(), name: document.getElementById('procuName').value.trim(), qty: document.getElementById('procuQty').value, dept: document.getElementById('procuDept').value, cost: document.getElementById('procuEstimatedCost').value, docLink: linkData || '#', status: 'Chờ phê duyệt' });
+            document.getElementById('procuName').value = ""; document.getElementById('procuDocLink').value = ""; document.getElementById('procuDocUrlManual').value = "";
             document.getElementById('btnUploadFileIndicator').innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Tải Tài Liệu Lên`;
             pushDataToCloud();
         }
@@ -769,7 +748,6 @@
             procurements.forEach(p => {
                 const hasDoc = p.docLink && p.docLink !== '#';
                 const isBase64 = hasDoc && p.docLink.startsWith('data:');
-
                 body.innerHTML += `<tr class="border-b">
                     <td class="p-3 pl-4 font-bold text-slate-800">${p.name}</td>
                     <td>${p.dept}</td>
@@ -779,7 +757,7 @@
                         ${hasDoc ? `
                             <div class="flex items-center gap-1.5">
                                 <button onclick="window.open('${p.docLink}', '_blank')" class="px-2 py-1 bg-purple-50 text-purple-700 border border-purple-300 rounded font-bold text-xs hover:bg-purple-100 cursor-pointer"><i class="fa-solid fa-print"></i> Xem / In</button>
-                                ${isBase64 ? `<button onclick="downloadBase64File('${p.docLink}', 'Ho_So_Mua_Sam_${p.id}')" class="px-2 py-1 bg-slate-900 text-amber-400 rounded font-bold text-xs cursor-pointer"><i class="fa-solid fa-cloud-arrow-down"></i> Tải Về Máy</button>` : ''}
+                                ${isBase64 ? `<button onclick="downloadBase64File('${p.docLink}', 'Ho_So_Mua_Sam_${p.id}')" class="px-2 py-1 bg-slate-900 text-amber-400 rounded font-bold text-xs cursor-pointer"><i class="fa-solid fa-cloud-arrow-up"></i> Tải Về Máy</button>` : ''}
                             </div>
                         ` : `<span class="text-slate-400 italic text-xs">Không đính kèm</span>`}
                     </td>
@@ -791,7 +769,7 @@
         }
 
         window.deleteItem = function(type, id) { 
-            if(confirm("Xác nhận xóa bản ghi kỹ thuật này khỏi hệ thống?")) { 
+            if(confirm("Xác nhận xóa bản ghi kỹ thuật này?")) { 
                 if(type==='user') users=users.filter(i=>i.id!==id); 
                 if(type==='device') devices=devices.filter(i=>i.id!==id); 
                 if(type==='repair') repairs=repairs.filter(i=>i.id!==id); 
