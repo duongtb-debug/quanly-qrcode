@@ -197,15 +197,38 @@
                     <input type="text" id="deviceName" required placeholder="Ví dụ: Máy nghiền bột..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
                 </div>
                 <div class="sm:col-span-4">
-                    <label class="block font-bold text-slate-500 mb-1">Chủng loại nhóm tài sản</label>
+                    <label class="block font-bold text-slate-500 mb-1">Phân loại nhóm tài sản (VINAPACO Standard)</label>
                     <select id="deviceCategory" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-blue-800">
-                        <option value="Dây chuyền chuẩn bị bột giấy">Dây chuyền chuẩn bị bột giấy</option>
-                        <option value="Máy xeo giấy công nghiệp">Máy xeo giấy công nghiệp</option>
-                        <option value="Hệ thống lò hơi & Tuabin nhiệt điện">Hệ thống lò hơi & Tuabin nhiệt điện</option>
-                        <option value="Trạm xử lý nước thải tập trung">Trạm xử lý nước thải tập trung</option>
-                        <option value="Hệ thống điện lực & Máy biến áp trung thế">Hệ thống điện lực & Máy biến áp trung thế</option>
-                        <option value="Thiết bị CNTT, Viễn thông & Văn phòng">Thiết bị CNTT, Viễn thông & Văn phòng</option>
-                        <option value="Xe nâng & Thiết bị vận chuyển cơ giới">Xe nâng & Thiết bị vận chuyển cơ giới</option>
+                        <optgroup label="A. Nhóm Thiết Bị Dây Chuyền Công Nghệ Chính">
+                            <option value="Dây chuyền chuẩn bị bột giấy & Tẩy trắng">Dây chuyền chuẩn bị bột giấy & Tẩy trắng</option>
+                            <option value="Hệ thống Xeo xe giấy (Giấy in, Giấy viết, Giấy bao bì)">Hệ thống Xeo xe giấy (Giấy in, Giấy viết, Giấy bao bì)</option>
+                            <option value="Hệ thống Giao keo & Gác sấy sơ cấp, thứ cấp">Hệ thống Giao keo & Gác sấy sơ cấp, thứ cấp</option>
+                            <option value="Hệ thống Cuộn & Cắt ram giấy tự động">Hệ thống Cuộn & Cắt ram giấy tự động</option>
+                        </optgroup>
+                        <optgroup label="B. Nhóm Động Lực, Năng Lượng & Phụ Trợ">
+                            <option value="Hệ thống Lò hơi tầng sôi công nghiệp (Boiler)">Hệ thống Lò hơi tầng sôi công nghiệp (Boiler)</option>
+                            <option value="Hệ thống Tuabin hơi phát điện & Đồng phát nhiệt">Hệ thống Tuabin hơi phát điện & Đồng phát nhiệt</option>
+                            <option value="Trạm biến áp trung thế & Mạng lưới phân phối điện nội bộ">Trạm biến áp trung thế & Mạng lưới phân phối điện nội bộ</option>
+                            <option value="Hệ thống Máy nén khí trung tâm & Sấy khí">Hệ thống Máy nén khí trung tâm & Sấy khí</option>
+                        </optgroup>
+                        <optgroup label="C. Nhóm Hóa Chất & Xử Lý Môi Trường">
+                            <option value="Dây chuyền thu hồi hóa chất & Cô đặc dịch đen">Dây chuyền thu hồi hóa chất & Cô đặc dịch đen</option>
+                            <option value="Trạm xử lý nước cấp sản xuất (Demin/Chất lượng cao)">Trạm xử lý nước cấp sản xuất (Demin/Chất lượng cao)</option>
+                            <option value="Hệ thống xử lý nước thải tập trung đạt chuẩn môi trường">Hệ thống xử lý nước thải tập trung đạt chuẩn môi trường</option>
+                        </optgroup>
+                        <optgroup label="D. Nhóm Thiết Bị Đo Lường, Điều Khiển (Tự Động Hóa)">
+                            <option value="Hệ thống điều khiển phân tán DCS / Tủ PLC điều khiển độc lập">Hệ thống điều khiển phân tán DCS / Tủ PLC điều khiển độc lập</option>
+                            <option value="Thiết bị đo quét biên độ chất lượng giấy (QCS)">Thiết bị đo quét biên độ chất lượng giấy (QCS)</option>
+                            <option value="Cảm biến thông minh, Van điều khiển tuyến tính khí nén">Cảm biến thông minh, Van điều khiển tuyến tính khí nén</option>
+                        </optgroup>
+                        <optgroup label="E. Nhóm Cơ Giới Vận Chuyển & Kho Bãi">
+                            <option value="Xe nâng xúc lật kẹp cuộn, kẹp kiện chuyên dụng">Xe nâng xúc lật kẹp cuộn, kẹp kiện chuyên dụng</option>
+                            <option value="Cầu trục, Cổng trục nhà xưởng, Băng tải nguyên liệu thô">Cầu trục, Cổng trục nhà xưởng, Băng tải nguyên liệu thô</option>
+                        </optgroup>
+                        <optgroup label="F. Nhóm Văn Phòng & Hạ Tầng Công Nghệ Thông Tin">
+                            <option value="Hệ thống Máy chủ Server, Mạng nội bộ & Camera giám sát nhà máy">Hệ thống Máy chủ Server, Mạng nội bộ & Camera giám sát nhà máy</option>
+                            <option value="Máy tính làm việc kỹ thuật, Máy in tem nhãn QR chuyên nghiệp">Máy tính làm việc kỹ thuật, Máy in tem nhãn QR chuyên nghiệp</option>
+                        </optgroup>
                     </select>
                 </div>
                 <div class="sm:col-span-4">
@@ -417,6 +440,10 @@
         let depts = [], users = [], devices = [], repairs = [], tasks = [], systemAccounts = [], procurements = [];
         let activeUserDeptFilter = 'all', loggedInUser = null, currentAuthTab = 'login';
         let pomoInterval = null, pomoTimeLeft = 25 * 60, pomoIsRunning = false, pomoCurrentMode = 'work';
+        
+        // CẤU HÌNH AUTO-LOGOUT AN TOÀN CAO (TIMEOUT)
+        let lastInactivityTime = Date.now();
+        const INACTIVITY_TIMEOUT_LIMIT = 15 * 60 * 1000; // 15 phút không thao tác sẽ đăng xuất tự động
 
         const localQuotesList = [
             "Ăn quả nhớ kẻ trồng cây, ăn khoai nhớ kẻ đâm cỏ ngày xưa.",
@@ -453,6 +480,7 @@
         }
         systemAccounts = JSON.parse(localStorage.getItem('vinapaco_accounts_v3'));
 
+        // YÊU CẦU ĐĂNG NHẬP MỖI LẦN MỞ: Đã cấu hình chỉ đọc từ SessionStorage tạm thời (Không ghi nhận lưu trữ vĩnh viễn phiên)
         const savedUser = sessionStorage.getItem('vinapaco_logged_in_user');
         if(savedUser) { loggedInUser = JSON.parse(savedUser); }
 
@@ -466,10 +494,24 @@
             }
         });
 
+        // HỆ THỐNG GHI NHẬN HÀNH VI TƯƠNG TÁC ĐỂ RESET TIMEOUT
+        function resetInactivityTimer() {
+            lastInactivityTime = Date.now();
+        }
+        ['click', 'mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt => {
+            document.addEventListener(evt, resetInactivityTimer, true);
+        });
+
         setInterval(() => {
             const d = new Date();
             if(document.getElementById('liveClockText')) document.getElementById('liveClockText').innerText = d.toLocaleTimeString('vi-VN');
             updateCountdownTimers();
+
+            // Kiểm tra trạng thái rảnh rỗi (Inactivity Timeout)
+            if (loggedInUser && (Date.now() - lastInactivityTime > INACTIVITY_TIMEOUT_LIMIT)) {
+                alert("🔒 Phiên làm việc đã hết hạn do bạn không tương tác trong thời gian dài. Vui lòng đăng nhập lại!");
+                window.handleLogoutSystem();
+            }
         }, 1000);
 
         window.refreshQuoteOnline = function() {
@@ -534,7 +576,12 @@
             if(!user || !pass) { alert("Vui lòng điền đủ!"); return; }
             if(currentAuthTab === 'login') {
                 const found = systemAccounts.find(a => a.username === user && a.pass === pass);
-                if(found) { loggedInUser = found; sessionStorage.setItem('vinapaco_logged_in_user', JSON.stringify(found)); executeLoginSuccess(); }
+                if(found) { 
+                    loggedInUser = found; 
+                    sessionStorage.setItem('vinapaco_logged_in_user', JSON.stringify(found)); 
+                    lastInactivityTime = Date.now(); // Reset time khi đăng nhập thành công
+                    executeLoginSuccess(); 
+                }
                 else { document.getElementById('authErrorMsg').classList.remove('hidden'); }
             } else {
                 if(systemAccounts.some(a => a.username === user)) { alert("Tài khoản đã tồn tại!"); return; }
@@ -549,11 +596,17 @@
             document.getElementById('userLoggedInDashboard').classList.remove('hidden');
             document.getElementById('txtHelloUser').innerText = `Kỹ sư: ${loggedInUser.username}`;
             document.getElementById('txtUserRoleBadge').innerText = `Quyền: ${loggedInUser.role}`;
+            
+            // Làm sạch ô input sau đăng nhập bảo mật
+            document.getElementById('authUsername').value = "";
+            document.getElementById('authPassword').value = "";
+            
             applyPermissionRulesUI(); renderAllTables();
         }
 
         window.handleLogoutSystem = function() {
-            loggedInUser = null; sessionStorage.removeItem('vinapaco_logged_in_user');
+            loggedInUser = null; 
+            sessionStorage.removeItem('vinapaco_logged_in_user');
             document.getElementById('userLoggedInDashboard').classList.add('hidden');
             document.getElementById('guestAuthForm').classList.remove('hidden');
             applyPermissionRulesUI(); renderAllTables();
@@ -660,7 +713,7 @@
             if([...dUser.options].some(o => o.value === currentSelected)) dUser.value = currentSelected;
         }
 
-        /* 🛠️ LOGIC TÁC VỤ SỬA (EDIT) PHÒNG BAN */
+        /* LOGIC TÁC VỤ SỬA (EDIT) PHÒNG BAN */
         window.editDeptInline = function(id) {
             const target = depts.find(d => d.id === id); if(!target) return;
             document.getElementById('editDeptId').value = target.id;
@@ -690,7 +743,7 @@
             pushDataToCloud(); 
         }
 
-        /* 🛠️ LOGIC TÁC VỤ SỬA (EDIT) NHÂN SỰ */
+        /* LOGIC TÁC VỤ SỬA (EDIT) NHÂN SỰ */
         window.editUserInline = function(id) {
             const target = users.find(u => u.id === id); if(!target) return;
             document.getElementById('editUserId').value = target.id;
@@ -725,7 +778,7 @@
             pushDataToCloud(); 
         }
 
-        /* 🛠️ LOGIC TÁC VỤ SỬA (EDIT) THIẾT BỊ TÀI SẢN */
+        /* LOGIC TÁC VỤ SỬA (EDIT) THIẾT BỊ TÀI SẢN */
         window.editDeviceInline = function(id) {
             const target = devices.find(d => d.id === id); if(!target) return;
             document.getElementById('editDeviceMode').value = "edit";
@@ -769,7 +822,7 @@
             pushDataToCloud(); 
         }
 
-        /* 🛠️ LOGIC TÁC VỤ SỬA (EDIT) NHẬT KÝ BẢO TRÌ */
+        /* LOGIC TÁC VỤ SỬA (EDIT) NHẬT KÝ BẢO TRÌ */
         window.editRepairInline = function(id) {
             const target = repairs.find(r => r.id === id); if(!target) return;
             document.getElementById('editRepairId').value = target.id;
@@ -805,7 +858,7 @@
             pushDataToCloud(); 
         }
 
-        /* 🛠️ LOGIC TÁC VỤ SỬA (EDIT) KẾ HOẠCH CÔNG VIỆC */
+        /* LOGIC TÁC VỤ SỬA (EDIT) KẾ HOẠCH CÔNG VIỆC */
         window.editTaskInline = function(id) {
             const target = tasks.find(t => t.id === id); if(!target) return;
             document.getElementById('editTaskId').value = target.id;
@@ -846,7 +899,7 @@
             pushDataToCloud();
         }
 
-        /* 🛠️ LOGIC TÁC VỤ SỬA (EDIT) MUA SẮM VẬT TƯ */
+        /* LOGIC TÁC VỤ SỬA (EDIT) MUA SẮM VẬT TƯ */
         window.editProcurementInline = function(id) {
             const target = procurements.find(p => p.id === id); if(!target) return;
             document.getElementById('editProcurementId').value = target.id;
