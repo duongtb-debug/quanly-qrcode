@@ -144,8 +144,8 @@
                     <span class="font-bold text-slate-700 text-xs md:text-sm uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-calendar-days text-emerald-600"></i> Lịch & Văn Hóa Việt Nam</span>
                 </div>
                 <div class="py-3">
-                    <p id="txtVietnameseQuote" class="text-slate-700 font-medium italic text-center text-sm">"Có công mài sắt, có ngày nên kim."</p>
-                    <p class="text-right text-xs font-bold text-slate-400 mt-1">— Tục ngữ Việt Nam</p>
+                    <p id="txtVietnameseQuote" class="text-slate-700 font-medium italic text-center text-sm">"An toàn để sản xuất, sản xuất phải an toàn."</p>
+                    <p class="text-right text-xs font-bold text-slate-400 mt-1">— Phương châm nhà máy</p>
                 </div>
                 <button onclick="refreshQuoteOnline()" class="text-xs text-emerald-600 hover:text-emerald-700 font-bold text-left flex items-center gap-1 cursor-pointer"><i class="fa-solid fa-rotate"></i> Đổi câu ca dao tục ngữ khác</button>
             </div>
@@ -190,7 +190,7 @@
             </div>
             <div class="p-4 grid grid-cols-1 lg:grid-cols-12 gap-5 border-b border-slate-100 bg-slate-50/50 text-sm">
                 <div class="lg:col-span-4 border-r border-slate-200 pr-4">
-                    <span class="block font-bold text-slate-400 text-xs uppercase mb-1.5">THÊM PHÒNG BAN / ĐƠN VỊ</span>
+                    <span class="block font-bold text-slate-400 text-xs uppercase mb-1.5">THÊM PHÒNG BAN / ĐƠN VỊ MỚI</span>
                     <form onsubmit="handleDeptSubmit(event)" class="space-y-2">
                         <input type="text" id="deptName" required placeholder="Tên xưởng, phòng ban..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-emerald-600">
                         <button type="submit" class="w-full py-2 bg-slate-700 text-white font-bold rounded-lg hover:bg-slate-800 transition-colors cursor-pointer">Thêm Đơn Vị</button>
@@ -209,7 +209,9 @@
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-500 mb-1">Đơn vị tiếp quản</label>
-                            <select id="userDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-slate-700"></select>
+                            <select id="userDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-slate-700">
+                                <option value="">-- Cần thêm đơn vị trước --</option>
+                            </select>
                         </div>
                         <div class="sm:col-span-3 flex justify-end gap-2 pt-1">
                             <button type="submit" class="px-8 py-2 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 shadow-sm transition-colors cursor-pointer">Lưu Hồ Sơ</button>
@@ -257,43 +259,18 @@
                             <option value="Hệ thống chuẩn bị bột (Stock Preparation)">
                             <option value="Máy nghiền thủy lực (Hydrapulper)">
                             <option value="Máy nghiền đĩa (Disc Refiner)">
-                            <option value="Hệ thống sàng chọn & Sàng rác (Screening System)">
-                            <option value="Hệ thống lọc cát & Phân ly (Cleaner System)">
-                            <option value="Hệ thống xeo bột - Thùng đầu (Headbox)">
-                            <option value="Bộ phận lưới dài (Wire Section)">
-                            <option value="Bộ phận ép (Press Section)">
                             <option value="Hệ thống sấy khô (Dryer Section)">
-                            <option value="Lô ép sấy & Gia keo bề mặt (Size Press)">
-                            <option value="Dàn lô cán láng (Calender Stock)">
-                            <option value="Máy cuộn giấy (Popping Reel)">
-                            <option value="Máy cắt cuộn / Máy chia cuộn (Slitter Rewinder)">
-                            <option value="Máy cắt ram / Cắt tờ (Sheet Cutter)">
-                            <option value="Hệ thống đóng gói & Đai kiện tự động">
-                            <option value="Hệ thống cân điện tử & Kiểm ca">
                             <option value="Hệ thống lò hơi & Cấp hơi (Boiler System)">
-                            <option value="Trạm phát điện & Turbine hơi">
-                            <option value="Hệ thống máy nén khí (Compressed Air)">
-                            <option value="Hệ thống bơm hút chân không (Vacuum Pump)">
-                            <option value="Hệ thống điều hòa & Thông gió nhà xưởng (HVAC)">
-                            <option value="Hệ thống trạm nguồn thủy lực (Hydraulic Unit)">
-                            <option value="Hệ thống van điều khiển tuyến tính (Control Valve)">
-                            <option value="Hệ thống bơm hóa chất & Bơm dịch bột">
-                            <option value="Hệ thống tủ điện động lực & Tủ MCC">
-                            <option value="Biến tần & Động cơ công suất lớn (Inverter & Motor)">
-                            <option value="Hệ thống điều khiển phân tán DCS / Hệ thống PLC">
-                            <option value="Thiết bị đo lưu lượng, áp suất, nhiệt độ (Sensors)">
-                            <option value="Hệ thống kiểm tra chất lượng giấy online (QMS)">
-                            <option value="Hệ thống thu hồi xơ sợi & Đĩa lọc cô đặc">
-                            <option value="Trạm xử lý nước thải (WWT Plant)">
-                            <option value="Trạm xử lý nước cấp sản xuất (Water Treatment)">
-                            <option value="Thiết bị nâng hạ / Cầu trục nhà xưởng">
-                            <option value="Thiết bị văn phòng & Thiết bị CNTT">
+                            <option value="Biến tần & Động cơ công suất lớn">
+                            <option value="Hệ thống xử lý nước thải (WWT Plant)">
                         </datalist>
                     </div>
 
                     <div class="sm:col-span-6">
                         <label class="block font-bold text-amber-700 mb-1">Đơn vị quản lý</label>
-                        <select id="deviceDept" required onchange="updateUserDropdownByDept()" class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold text-slate-700 focus:outline-none"></select>
+                        <select id="deviceDept" required onchange="updateUserDropdownByDept()" class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold text-slate-700 focus:outline-none">
+                            <option value="">-- Cần thêm đơn vị trước --</option>
+                        </select>
                     </div>
                     <div class="sm:col-span-6">
                         <label class="block font-bold text-blue-700 mb-1">Người phụ trách trực tiếp</label>
@@ -317,9 +294,6 @@
                             <input type="file" id="importDeviceFile" accept=".csv, .txt" class="hidden" onchange="processDeviceFileImport(event)">
                             <button onclick="document.getElementById('importDeviceFile').click()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 font-bold rounded text-white cursor-pointer transition-colors"><i class="fa-solid fa-upload mr-1"></i> Chọn File Danh Sách</button>
                         </div>
-                    </div>
-                    <div class="bg-slate-950 p-2 rounded text-[11px] font-mono text-slate-400">
-                        * Định dạng dòng file chuẩn: <span class="text-emerald-400">Mã Số, Tên Thiết Bị, Chủng Loại</span> (Ví dụ: <span class="text-amber-300">TB-67149, Máy Xeo Giấy, Hệ thống xeo</span>)
                     </div>
                 </div>
 
@@ -351,12 +325,12 @@
                     </div>
                     <div class="p-6 flex flex-col items-center justify-center bg-slate-50 min-h-[310px]">
                         <div id="webPreviewQRBox" class="p-4 bg-white border border-slate-400 rounded-xl shadow-sm text-center flex flex-col items-center justify-center hidden w-[220px]">
-                            <h4 id="wpTitle" class="text-xs font-black uppercase text-slate-900 max-w-[200px] truncate mb-2">MÁY TÍNH</h4>
+                            <h4 id="wpTitle" class="text-xs font-black uppercase text-slate-900 max-w-[200px] truncate mb-2">THIẾT BỊ</h4>
                             <div id="wpCanvas" class="bg-white p-1 flex items-center justify-center w-[150px] h-[150px]"></div>
                             <div class="w-full border-t border-dashed border-slate-300 my-2"></div>
                             <p id="wpId" class="text-xs font-mono font-black text-slate-800 tracking-wider">TB-67149</p>
-                            <p id="wpDept" class="text-[10px] font-bold text-slate-500 mt-0.5">ĐV: Phòng Kỹ Thuật</p>
-                            <p id="wpUser" class="text-[11px] font-bold text-emerald-600 mt-0.5 italic">Phụ trách: Nguyễn Văn A</p>
+                            <p id="wpDept" class="text-[10px] font-bold text-slate-500 mt-0.5">ĐV: Chưa xác định</p>
+                            <p id="wpUser" class="text-[11px] font-bold text-emerald-600 mt-0.5 italic">Phụ trách: Chưa cấp phát</p>
                         </div>
                         <p id="webPreviewEmptyText" class="text-slate-400 italic text-center text-sm p-4">Nhấn nút <strong>"Xem & In"</strong> tại danh mục bên để hiển thị cấu trúc nhãn.</p>
                     </div>
@@ -368,13 +342,17 @@
             <div class="bg-purple-700 text-white font-bold p-3.5 text-base"><i class="fa-solid fa-screwdriver-wrench mr-2"></i>Nhật Ký Bảo Trì, Sửa Chữa Kỹ Thuật</div>
             <form id="formRepairAction" onsubmit="handleRepairSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-12 gap-4 text-sm bg-slate-50/50 border-b border-slate-100">
                 <div class="md:col-span-3">
-                    <select id="repairDeviceId" required class="w-full border border-slate-300 rounded-lg p-2 bg-white font-mono font-bold text-slate-700 focus:outline-none"></select>
+                    <select id="repairDeviceId" required class="w-full border border-slate-300 rounded-lg p-2 bg-white font-mono font-bold text-slate-700 focus:outline-none">
+                        <option value="">-- Cần có thiết bị --</option>
+                    </select>
                 </div>
                 <div class="md:col-span-4">
                     <input type="text" id="repairDesc" required placeholder="Nội dung chi tiết bảo dưỡng, sự cố khắc phục..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none focus:border-purple-600">
                 </div>
                 <div class="md:col-span-3">
-                    <select id="repairUser" class="w-full border border-slate-300 rounded-lg p-2 bg-white text-slate-700 focus:outline-none"></select>
+                    <select id="repairUser" class="w-full border border-slate-300 rounded-lg p-2 bg-white text-slate-700 focus:outline-none">
+                        <option value="Hệ thống">Hệ thống</option>
+                    </select>
                 </div>
                 <div class="md:col-span-2 flex items-end gap-2">
                     <input type="number" id="repairCost" required value="0" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-slate-800">
@@ -442,7 +420,7 @@
             </div>
             <form id="formProcurementAction" onsubmit="handleProcurementSubmit(event)" class="p-4 grid grid-cols-1 md:grid-cols-12 gap-3 text-sm bg-slate-50 border-b border-slate-200">
                 <div class="md:col-span-3">
-                    <label class="block font-bold text-slate-600 mb-1">Tên Vật Tư / Thiết Bị Đề Xuất</label>
+                    <label class="block font-bold text-slate-600 mb-1">Tên Vật Tư Đề Xuất</label>
                     <input type="text" id="procuName" required placeholder="Ví dụ: Van áp suất 10K..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none">
                 </div>
                 <div class="md:col-span-1">
@@ -458,7 +436,7 @@
                     <div class="flex gap-2">
                         <input type="hidden" id="procuDocLink">
                         <input type="file" id="uploadProcurementFile" class="hidden" onchange="handleProcurementFileUpload(event)">
-                        <button type="button" onclick="document.getElementById('uploadProcurementFile').click()" id="btnUploadFileIndicator" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-colors cursor-pointer text-xs whitespace-nowrap"><i class="fa-solid fa-cloud-arrow-up"></i> Tải Tài Liệu Lên</button>
+                        <button type="button" onclick="document.getElementById('uploadProcurementFile').click()" id="btnUploadFileIndicator" class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-colors cursor-pointer text-xs whitespace-nowrap"><i class="fa-solid fa-cloud-arrow-up"></i> Tải Tài Liệu</button>
                         <input type="text" id="procuDocUrlManual" oninput="document.getElementById('procuDocLink').value=this.value" placeholder="Hoặc dán URL Drive..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none text-xs text-blue-600">
                     </div>
                 </div>
@@ -478,7 +456,7 @@
                             <th class="p-3">Đơn Vị Đề Xuất</th>
                             <th class="p-3 text-center">Số Lượng</th>
                             <th class="p-3">Dự Toán Chi Phí</th>
-                            <th class="p-3">Chứng Từ Đính Kèm Đám Mây</th>
+                            <th class="p-3">Chứng Từ Đính Kèm</th>
                             <th class="p-3 text-center">Trạng Thái</th>
                             <th class="p-3 text-right pr-4">Tác Vụ</th>
                         </tr>
@@ -513,24 +491,19 @@
 
         let currentEnv = localStorage.getItem('vinapaco_current_env') || 'live'; 
         let currentRole = 'admin';
-        let activeAuthMethod = 'password'; // 'password' hoặc 'pin'
+        let activeAuthMethod = 'password';
 
-        // CẤU TRÚC LƯU TRỮ SONG SONG MẬT KHẨU VÀ MÃ PIN MẶC ĐỊNH
         let credentialsConfig = {
             admin: { password: "vinapaco2026", pin: "123456", isPassChanged: false, isPinChanged: false },
             sub_user_1: { password: "vinapaco2026", pin: "1111", isPassChanged: false, isPinChanged: false },
             sub_user_2: { password: "vinapaco2026", pin: "2222", isPassChanged: false, isPinChanged: false }
         };
 
+        // ĐÃ XÓA SẠCH DỮ LIỆU MẪU MẶC ĐỊNH ĐỂ BẠN TỰ NHẬP MỚI TỪ ĐẦU
         let depts = [], users = [], devices = [], repairs = [], tasks = [], procurements = [];
         let activeUserDeptFilter = 'all';
         let pomoInterval = null, pomoTimeLeft = 25 * 60, pomoIsRunning = false, pomoCurrentMode = 'work';
 
-        const mockDepts = [{ id: "d1", name: "Xưởng Xeo 1" }, { id: "d2", name: "Xưởng Xeo 2" }, { id: "d3", name: "Xưởng Chế Biến Bột" }, { id: "d4", name: "Phòng Kỹ Thuật" }];
-        const mockUsers = [{ id: "u1", name: "Nguyễn Văn Phú", title: "Trưởng Ca Vận Hành", dept: "Xưởng Xeo 1" }];
-        const mockDevices = [{ id: "TB-67149", name: "Máy Nghiền Thủy Lực Lực Ly Tâm", cat: "Hệ thống xeo bột", dept: "Xưởng Xeo 1", user: "Nguyễn Văn Phú", status: "Hoạt động tốt" }];
-
-        // ĐIỀU HƯỚNG GIAO DIỆN PHƯƠNG THỨC ĐĂNG NHẬP
         window.switchAuthMethod = function(method) {
             activeAuthMethod = method;
             const btnPass = document.getElementById('btnAuthTypePassword');
@@ -549,7 +522,6 @@
             updateLoginPlaceholder();
         }
 
-        // CƠ CHẾ CHỈ HIỂN THỊ MẶC ĐỊNH KHI CHƯA ĐỔI
         window.updateLoginPlaceholder = function() {
             const role = document.getElementById('loginRole').value;
             const inputField = document.getElementById('loginPin');
@@ -572,7 +544,6 @@
             }
         }
 
-        // THỰC THI ĐĂNG NHẬP HỆ THỐNG
         window.executeSystemLogin = function() {
             const role = document.getElementById('loginRole').value;
             const inputAuth = document.getElementById('loginPin').value.trim();
@@ -609,7 +580,6 @@
             });
         }
 
-        // ĐỔI THÔNG TIN BẢO MẬT TRONG DASHBOARD
         window.openChangePasswordModal = function() {
             document.getElementById('oldPinInput').value = '';
             document.getElementById('newPasswordInput').value = '';
@@ -626,36 +596,26 @@
             const newPass = document.getElementById('newPasswordInput').value.trim();
             const newPin = document.getElementById('newPinInput').value.trim();
             const basePath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
-
             const targetAcc = credentialsConfig[currentRole];
 
             if(oldAuth !== targetAcc.password && oldAuth !== targetAcc.pin) {
                 alert("Mật khẩu hoặc Mã PIN cũ hiện tại không chính xác!");
                 return;
             }
-
             if(!newPass && !newPin) {
                 alert("Vui lòng nhập ít nhất một trường thông tin mới muốn thay đổi!");
                 return;
             }
-
-            if(newPass) {
-                targetAcc.password = newPass;
-                targetAcc.isPassChanged = true;
-            }
-            if(newPin) {
-                targetAcc.pin = newPin;
-                targetAcc.isPinChanged = true;
-            }
+            if(newPass) { targetAcc.password = newPass; targetAcc.isPassChanged = true; }
+            if(newPin) { targetAcc.pin = newPin; targetAcc.isPinChanged = true; }
 
             set(ref(db, `${basePath}/secure_credentials`), credentialsConfig).then(() => {
-                alert(`Cập nhật thông tin tài khoản [${currentRole}] thành công! Trạng thái mặc định đã được gỡ bỏ.`);
+                alert(`Cập nhật thành công!`);
                 updateLoginPlaceholder();
                 closeChangePasswordModal();
             });
         }
 
-        // QUÊN MẬT KHẨU / PIN
         window.triggerForgotPassword = function() {
             const role = document.getElementById('loginRole').value;
             const basePath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
@@ -663,7 +623,7 @@
             if(role === 'admin') {
                 const masterKey = prompt("HỆ THỐNG BẢO MẬT VINAPACO:\nNhập mã khôi phục Master Key của nhà máy:");
                 if(masterKey === "VINAPACO2026_MASTER") {
-                    const chooseOpt = prompt("Xác thực đúng! Nhập '1' để khôi phục Mật khẩu chữ, Nhập '2' để khôi phục Mã PIN:");
+                    const chooseOpt = prompt("Xác thực đúng! Nhập '1' để đổi Mật khẩu, '2' để đổi Mã PIN:");
                     if(chooseOpt === '1') {
                         const val = prompt("Nhập Mật khẩu chữ mới cho Admin:");
                         if(val) { credentialsConfig.admin.password = val.trim(); credentialsConfig.admin.isPassChanged = true; }
@@ -676,12 +636,12 @@
                     alert("Sai mã Master Key!");
                 }
             } else {
-                const adminVerifyPin = prompt(`Yêu cầu Quản Trị Viên (Admin) nhập Mật khẩu hoặc PIN của Admin để xác thực cấp lại cho [${role}]:`);
+                const adminVerifyPin = prompt(`Yêu cầu Quản Trị Viên (Admin) nhập thông tin xác thực để cấp lại cho [${role}]:`);
                 if(adminVerifyPin) {
                     get(ref(db, `${basePath}/secure_credentials`)).then((snapshot) => {
                         const currentCreds = snapshot.val() || credentialsConfig;
                         if(adminVerifyPin === currentCreds.admin.password || adminVerifyPin === currentCreds.admin.pin) {
-                            const val = prompt(`Xác thực Admin thành công!\nNhập chuỗi xác thực mới cho [${role}] (Hệ thống tự động nhận diện Chữ/Số):`);
+                            const val = prompt(`Xác thực thành công! Nhập mật khẩu/PIN mới cho [${role}]:`);
                             if(val && val.trim() !== "") {
                                 const pureNum = val.trim().replace(/[^0-9]/g, '');
                                 if(pureNum === val.trim()) {
@@ -691,10 +651,7 @@
                                     credentialsConfig[role].password = val.trim();
                                     credentialsConfig[role].isPassChanged = true;
                                 }
-                                set(ref(db, `${basePath}/secure_credentials`), credentialsConfig).then(() => {
-                                    alert(`Đổi thành công!`);
-                                    updateLoginPlaceholder();
-                                });
+                                set(ref(db, `${basePath}/secure_credentials`), credentialsConfig).then(() => { alert(`Đổi thành công!`); updateLoginPlaceholder(); });
                             }
                         } else {
                             alert("Xác thực Admin thất bại!");
@@ -711,7 +668,6 @@
             updateLoginPlaceholder();
         }
 
-        // ĐỌC / GHI DỮ LIỆU ĐỒNG BỘ HÓA TÀI SẢN
         function fetchCloudData() {
             const basePath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
             const readPath = currentRole === 'admin' ? basePath : `${basePath}/sub_channels/${currentRole}`;
@@ -730,14 +686,12 @@
                     const data = snapshot.val() || {};
                     const parse = (arr) => arr ? (Array.isArray(arr) ? arr.filter(Boolean) : Object.values(arr)) : [];
 
-                    depts = parse(adminData.depts).length ? parse(adminData.depts) : [...mockDepts];
+                    depts = parse(adminData.depts);
                     users = parse(data.users || adminData.users);
                     devices = parse(data.devices || adminData.devices);
                     repairs = parse(data.repairs || adminData.repairs);
                     tasks = parse(data.tasks || adminData.tasks);
                     procurements = parse(data.procurements || adminData.procurements);
-
-                    if(users.length === 0) { users = [...mockUsers]; devices = [...mockDevices]; }
 
                     updateDropdownOptions(); renderAllTables(); autoGenDeviceId(); checkMaintenanceAlerts();
                 });
@@ -754,7 +708,6 @@
             }
         }
 
-        // XỬ LÝ NHẬP FILE DANH SÁCH & LỌC TRÙNG
         window.processDeviceFileImport = function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -793,24 +746,23 @@
             reader.readAsText(file);
         }
 
-        // XỬ LÝ SỐ HÓA FILE ĐÍNH KÈM
         window.handleProcurementFileUpload = function(e) {
             const file = e.target.files[0];
             if(!file) return;
             const indicator = document.getElementById('btnUploadFileIndicator');
-            indicator.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Đang tải...`;
+            indicator.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Tải...`;
             const reader = new FileReader();
             reader.onload = function(evt) {
                 document.getElementById('procuDocLink').value = evt.target.result;
                 indicator.innerHTML = `<i class="fa-solid fa-circle-check text-green-300"></i> Sẵn sàng`;
-                alert(`Đã số hóa file "${file.name}" thành công!`);
+                alert(`Đã đính kèm file "${file.name}"!`);
             }
             reader.readAsDataURL(file);
         }
 
         window.downloadBase64File = function(base64Data, filename) {
             const link = document.createElement('a');
-            link.href = base64Data; link.download = filename || "Chung_Tu_Vat_Tu"; link.click();
+            link.href = base64Data; link.download = filename || "Chung_Tu"; link.click();
         }
 
         window.toggleSection = function(id, checked) {
@@ -819,7 +771,7 @@
         }
 
         window.refreshQuoteOnline = function() {
-            const list = ["An toàn để sản xuất, sản xuất phải an toàn.", "Kỷ luật lao động nghiêm túc là nền tảng cốt lõi.", "Có công mài sắt, có ngày nên kim."];
+            const list = ["An toàn để sản xuất, sản xuất phải an toàn.", "Kỷ luật lao động nghiêm túc là nền tảng cốt lõi."];
             document.getElementById('txtVietnameseQuote').innerText = `"${list[Math.floor(Math.random() * list.length)]}"`;
         }
 
@@ -929,7 +881,7 @@
             const linkData = document.getElementById('procuDocLink').value;
             procurements.push({ id: Date.now().toString(), name: document.getElementById('procuName').value.trim(), qty: document.getElementById('procuQty').value, dept: document.getElementById('procuDept').value, cost: document.getElementById('procuEstimatedCost').value, docLink: linkData || '#', status: 'Chờ phê duyệt' });
             document.getElementById('procuName').value = ""; document.getElementById('procuDocLink').value = ""; document.getElementById('procuDocUrlManual').value = "";
-            document.getElementById('btnUploadFileIndicator').innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Tải Tài Liệu Lên`;
+            document.getElementById('btnUploadFileIndicator').innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Tải Tài Liệu`;
             pushDataToCloud();
         }
 
@@ -991,9 +943,9 @@
                         ${hasDoc ? `
                             <div class="flex items-center gap-1.5">
                                 <button onclick="window.open('${p.docLink}', '_blank')" class="px-2 py-1 bg-purple-50 text-purple-700 border border-purple-300 rounded font-bold text-xs hover:bg-purple-100 cursor-pointer"><i class="fa-solid fa-print"></i> Xem</button>
-                                ${isBase64 ? `<button onclick="downloadBase64File('${p.docLink}', 'Ho_So_Mua_Sam_${p.id}')" class="px-2 py-1 bg-slate-900 text-amber-400 rounded font-bold text-xs cursor-pointer">Tải</button>` : ''}
+                                ${isBase64 ? `<button onclick="downloadBase64File('${p.docLink}', 'Ho_So_${p.id}')" class="px-2 py-1 bg-slate-900 text-amber-400 rounded font-bold text-xs cursor-pointer">Tải</button>` : ''}
                             </div>
-                        ` : `<span class="text-slate-400 italic text-xs">Không đính kèm</span>`}
+                        ` : `<span class="text-slate-400 italic text-xs">Không có</span>`}
                     </td>
                     <td class="text-center"><span class="px-2 py-0.5 text-[11px] rounded font-bold bg-amber-100 text-amber-700">${p.status}</span></td>
                     <td class="p-3 text-right pr-4"><button onclick="deleteItem('procurement','${p.id}')" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-trash-can"></i></button></td>
@@ -1003,11 +955,11 @@
         }
 
         window.deleteItem = function(type, id) { 
-            if(confirm("Xác nhận xóa bản ghi kỹ thuật này?")) { 
-                if(type==='user') users=users.filter(i=>i.id!==id); 
-                if(type==='device') devices=devices.filter(i=>i.id!==id); 
-                if(type==='repair') repairs=repairs.filter(i=>i.id!==id); 
-                if(type==='procurement') procurements=procurements.filter(i=>i.id!==id); 
+            if(confirm("Xác nhận xóa?")) { 
+                if(type=='user') users=users.filter(i=>i.id!==id); 
+                if(type=='device') devices=devices.filter(i=>i.id!==id); 
+                if(type=='repair') repairs=repairs.filter(i=>i.id!==id); 
+                if(type=='procurement') procurements=procurements.filter(i=>i.id!==id); 
                 pushDataToCloud(); 
             } 
         }
@@ -1041,11 +993,20 @@
 
         function updateDropdownOptions() {
             const ud = document.getElementById('userDept'), dd = document.getElementById('deviceDept'), rd = document.getElementById('repairDeviceId'), ru = document.getElementById('repairUser'), pd = document.getElementById('procuDept');
-            if(ud) ud.innerHTML = ''; if(dd) dd.innerHTML = '<option value="">-- Chọn đơn vị --</option>'; if(rd) rd.innerHTML = ''; if(ru) ru.innerHTML = ''; if(pd) pd.innerHTML = '';
+            
+            if(ud) ud.innerHTML = depts.length ? '' : '<option value="">-- Cần thêm đơn vị trước --</option>'; 
+            if(dd) dd.innerHTML = depts.length ? '<option value="">-- Chọn đơn vị --</option>' : '<option value="">-- Cần thêm đơn vị trước --</option>'; 
+            if(rd) rd.innerHTML = devices.length ? '' : '<option value="">-- Cần có thiết bị --</option>'; 
+            if(ru) ru.innerHTML = '<option value="Hệ thống">Hệ thống</option>'; 
+            if(pd) pd.innerHTML = depts.length ? '' : '<option value="">-- Cần thêm đơn vị trước --</option>';
             
             depts.forEach(d => { if(ud) ud.innerHTML += `<option value="${d.name}">${d.name}</option>`; if(dd) dd.innerHTML += `<option value="${d.name}">${d.name}</option>`; if(pd) pd.innerHTML += `<option value="${d.name}">${d.name}</option>`; });
             devices.forEach(d => { if(rd) rd.innerHTML += `<option value="${d.id}">${d.id} - ${d.name}</option>`; });
             users.forEach(u => { if(ru) ru.innerHTML += `<option value="${u.name}">${u.name}</option>`; });
+
+            const td = document.getElementById('taskDeviceId'), tu = document.getElementById('taskUser');
+            if(td) { td.innerHTML = ''; devices.forEach(d => td.innerHTML += `<option value="${d.id}">${d.id}</option>`); }
+            if(tu) { tu.innerHTML = ''; users.forEach(u => tu.innerHTML += `<option value="${u.name}">${u.name}</option>`); }
 
             const container = document.getElementById('deptTabsContainer');
             if(container) {
@@ -1069,7 +1030,6 @@
 
         window.renderAllTables = function() { renderDeviceTableOnly(); renderUserTableOnly(); renderRepairTableOnly(); renderProcurementTableOnly(); }
         
-        // Khởi động đọc cấu hình đăng nhập đầu tiên
         get(ref(db, `${currentEnv === 'live' ? 'root_v4' : 'demo_root_v4'}/secure_credentials`)).then((snapshot) => {
             if(snapshot.exists()) credentialsConfig = snapshot.val();
             updateLoginPlaceholder();
