@@ -72,7 +72,7 @@
                 <div class="w-16 h-16 bg-white/10 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-3 border border-white/20">
                     <i class="fa-solid fa-shield-halved text-amber-400"></i>
                 </div>
-                <h2 class="text-xs font-bold tracking-widest text-emerald-200 uppercase">Hệ Thống Cấp Khóa Vận Hành</h2>
+                <h2 class="text-[11px] md:text-xs font-bold tracking-widest text-emerald-200 uppercase">Hệ Thống Cấp Khóa Vận Hành</h2>
                 <h1 class="text-xl font-black mt-1">VINAPACO - LOGIN</h1>
             </div>
             <div class="p-6 space-y-4">
@@ -84,11 +84,17 @@
                         <option value="sub_user_2">🧑 Vận hành Ca 2</option>
                     </select>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Mật Khẩu / PIN xác thực</label>
-                    <input type="password" id="loginPin" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="Mặc định: vinapaco2026" class="w-full border border-slate-300 rounded-lg p-2.5 font-bold text-center bg-slate-50 focus:outline-none tracking-widest">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Mật khẩu ca</label>
+                        <input type="password" id="loginPassword" placeholder="vinapaco2026" class="w-full border border-slate-300 rounded-lg p-2 font-bold text-center bg-slate-50 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Mã PIN cá nhân</label>
+                        <input type="password" id="loginPin" onkeydown="if(event.key === 'Enter') executeSystemLogin()" placeholder="123456 / ..." class="w-full border border-slate-300 rounded-lg p-2 font-bold text-center bg-slate-50 focus:outline-none tracking-widest">
+                    </div>
                 </div>
-                <div id="loginErrorMsg" class="text-red-500 font-bold text-xs text-center hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> Sai thông tin xác thực dữ liệu!</div>
+                <div id="loginErrorMsg" class="text-red-500 font-bold text-xs text-center hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i> Thông tin Mật khẩu hoặc PIN không hợp lệ!</div>
                 <button onclick="executeSystemLogin()" class="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-black rounded-lg uppercase text-sm tracking-wider cursor-pointer transition-colors">Xác Thực Vào Hệ Thống</button>
             </div>
         </div>
@@ -438,15 +444,19 @@
             }
         }
 
+        // --- CƠ CHẾ ĐĂNG NHẬP KHỚP SONG SONG CẢ HAI GIÁ TRỊ NHƯ CŨ ---
         window.executeSystemLogin = function() {
             const role = document.getElementById('loginRole').value;
-            const inputAuth = document.getElementById('loginPin').value.trim();
+            const inputPassword = document.getElementById('loginPassword').value.trim();
+            const inputPin = document.getElementById('loginPin').value.trim();
             const errorLabel = document.getElementById('loginErrorMsg');
             const basePath = currentEnv === 'live' ? 'root_v5' : 'demo_root_v5';
             
             get(ref(db, `${basePath}/secure_credentials`)).then((snapshot) => {
                 if(snapshot.exists()) credentialsConfig = snapshot.val();
-                if(inputAuth === credentialsConfig[role].password || inputAuth === credentialsConfig[role].pin) { 
+                
+                // Xác thực: Password và PIN phải khớp đúng với cấu hình quyền đã chọn
+                if(inputPassword === credentialsConfig[role].password && inputPin === credentialsConfig[role].pin) { 
                     currentRole = role;
                     errorLabel.classList.add('hidden');
                     document.getElementById('loginOverlaySystem').classList.add('hidden');
@@ -460,12 +470,12 @@
         }
 
         window.logoutSystem = function() {
+            document.getElementById('loginPassword').value = '';
             document.getElementById('loginPin').value = '';
             document.getElementById('mainSystemContentDashboard').classList.add('hidden');
             document.getElementById('loginOverlaySystem').classList.remove('hidden');
         }
 
-        // --- HÀM ĐỌC VÀ CHUYỂN ĐỔI THÔNG MINH (BAO GỒM HOÀN TÁC NẾU NHÁNH V5 CHƯA CÓ DỮ LIỆU) ---
         function fetchCloudData() {
             const basePath = currentEnv === 'live' ? 'root_v5' : 'demo_root_v5';
             const oldPath = currentEnv === 'live' ? 'root_v4' : 'demo_root_v4';
@@ -480,7 +490,7 @@
                 repairs = parse(data.repairs);
                 docRecords = parse(data.docRecords);
 
-                // Cơ chế khôi phục khẩn cấp: Nếu nhánh v5 chưa có gì, lập tức đọc từ v4 để đồng bộ ngược lên
+                // Nếu nhánh v5 mới chưa có gì, đọc dữ liệu nhánh v4 sang để không mất thông tin cũ
                 if (depts.length === 0 && devices.length === 0) {
                     get(ref(db, oldPath)).then((oldSnapshot) => {
                         if (oldSnapshot.exists()) {
@@ -490,7 +500,6 @@
                             devices = parse(oldData.devices);
                             repairs = parse(oldData.repairs);
                             
-                            // Map mục Mua sắm cũ sang dạng Chứng từ mới nếu có
                             let legacyProposals = parse(oldData.proposals || oldData.requests);
                             docRecords = legacyProposals.map((p, i) => ({
                                 id: p.id || ("HS-" + (20000 + i)),
@@ -499,7 +508,7 @@
                                 cost: parseFloat(p.cost) || 0,
                                 fileData: "", fileMime: "", fileName: ""
                             }));
-                            pushDataToCloud(); // Đẩy lưu trữ ngay để cố định v5
+                            pushDataToCloud(); 
                         }
                     });
                 }
@@ -645,7 +654,7 @@
             });
             document.getElementById('count-user').innerText = `${users.length} nhân sự`;
 
-            // Render Nhật Ký Sửa Chữa (Loại bỏ chi phí)
+            // Render Nhật Ký Sửa Chữa (Đã loại bỏ cột chi phí)
             const repBody = document.getElementById('repairTableBody'); repBody.innerHTML = '';
             repairs.forEach(r => {
                 repBody.innerHTML += `<tr>
@@ -657,7 +666,7 @@
                 </tr>`;
             });
 
-            // Render Hồ Sơ Chứng Từ Sửa Chữa
+            // Render Hồ Sơ Chứng Từ
             const docBody = document.getElementById('docRecordsTableBody'); docBody.innerHTML = '';
             docRecords.forEach((p, idx) => {
                 const docBtn = p.fileData ? `<button onclick="openRecordAttachedDocument(${idx})" class="px-2.5 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded font-bold text-xs cursor-pointer"><i class="fa-solid fa-folder-open"></i> Xem File</button>` : `<span class="text-slate-400 italic text-xs">Trống</span>`;
