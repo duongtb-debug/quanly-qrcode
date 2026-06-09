@@ -176,6 +176,23 @@
             </div>
         </div>
 
+        <div id="filePreviewModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[85vh] flex flex-col overflow-hidden border border-slate-300">
+                <div class="bg-slate-900 text-white px-5 py-3.5 font-bold flex justify-between items-center">
+                    <span class="flex items-center gap-2"><i class="fa-solid fa-file-lines text-amber-400"></i> Trình Xem Tài Liệu Hồ Sơ Trực Tuyến</span>
+                    <button onclick="closeFilePreviewModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center cursor-pointer transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="flex-1 bg-slate-100 p-2 relative" id="filePreviewContainer">
+                    </div>
+                <div class="bg-slate-50 px-5 py-3 flex justify-end gap-3 border-t border-slate-200">
+                    <button onclick="closeFilePreviewModal()" class="px-4 py-2 bg-slate-300 hover:bg-slate-400 font-bold text-slate-700 rounded-lg text-sm cursor-pointer">Đóng lại</button>
+                    <a id="btnDownloadFromModal" href="#" download="" class="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg text-sm flex items-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-download"></i> Tải File Về Máy
+                    </a>
+                </div>
+            </div>
+        </div>
+
         <header class="glass-panel bg-white/95 rounded-xl shadow-md border border-emerald-800/10 p-5 relative overflow-hidden backdrop-blur-sm">
             <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-700 via-teal-600 to-emerald-500"></div>
             <div class="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -305,8 +322,10 @@
                         <div class="sm:col-span-1.5 bg-white p-2 rounded-lg border border-slate-200 flex flex-col justify-center">
                             <label class="block text-[11px] font-black text-purple-700 uppercase mb-1"><i class="fa-solid fa-file-pdf"></i> Tài liệu / Bằng cấp đính kèm</label>
                             <div class="flex items-center gap-2">
-                                <input type="file" id="userDocFile" accept=".pdf,.doc,.docx,.jpg,.png" onchange="handleUserDocUpload(event)" class="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded file:border-0 file:text-xs file:font-bold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer">
+                                <input type="file" id="userDocFile" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onchange="handleUserDocUpload(event)" class="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded file:border-0 file:text-xs file:font-bold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer">
                                 <input type="hidden" id="userDocData" value="">
+                                <input type="hidden" id="userDocType" value="">
+                                <input type="hidden" id="userDocName" value="">
                                 <div id="userDocStatusIndicator" class="text-slate-400 text-xs font-bold whitespace-nowrap"><i class="fa-solid fa-cloud"></i> Trống</div>
                             </div>
                         </div>
@@ -533,7 +552,7 @@
                     <select id="procuDept" required class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold text-slate-700 focus:outline-none"></select>
                 </div>
                 <div class="md:col-span-3">
-                    <label class="block font-bold text-purple-700 mb-1">Tải hồ sơ / Dán Link đính kèm</label>
+                    <label class="block font-bold text-purple-700 mb-1">Tải hồ sơ / Dán Link dính kèm</label>
                     <div class="flex gap-2">
                         <input type="hidden" id="procuDocLink">
                         <input type="file" id="uploadProcurementFile" class="hidden" onchange="handleProcurementFileUpload(event)">
@@ -798,17 +817,89 @@
             reader.readAsDataURL(file);
         }
 
+        // --- CƠ CHẾ SỬA LỖI TẢI & ĐỌC FILE NÂNG CAO ---
         window.handleUserDocUpload = function(e) {
             const file = e.target.files[0]; if (!file) return;
             const indicator = document.getElementById('userDocStatusIndicator');
-            indicator.innerHTML = `<i class="fa-solid fa-spinner animate-spin text-purple-600"></i> Nén...`;
+            indicator.innerHTML = `<i class="fa-solid fa-spinner animate-spin text-purple-600"></i> Đang đọc...`;
             
             const reader = new FileReader();
             reader.onload = function(evt) {
+                // Lưu Base64 của file và các siêu dữ liệu cấu trúc vào trường ẩn
                 document.getElementById('userDocData').value = evt.target.result;
-                indicator.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> Đã có file`;
+                document.getElementById('userDocType').value = file.type;
+                document.getElementById('userDocName').value = file.name;
+                indicator.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> ${file.name.substring(0, 10)}...`;
             };
             reader.readAsDataURL(file);
+        }
+
+        // Hàm helper chuyển đổi chuỗi Base64 thành đối tượng URL Blob an toàn cho trình duyệt
+        function base64ToBlobUrl(base64Data, contentType = '') {
+            try {
+                const sliceSize = 512;
+                const byteCharacters = atob(base64Data.split(',')[1] || base64Data);
+                const byteArrays = [];
+                
+                for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+                    const slice = byteCharacters.slice(offset, offset + sliceSize);
+                    const byteNumbers = new Array(slice.length);
+                    for (let i = 0; i < slice.length; i++) {
+                        byteNumbers[i] = slice.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    byteArrays.push(byteArray);
+                }
+                const blob = new Blob(byteArrays, { type: contentType });
+                return URL.createObjectURL(blob);
+            } catch (err) {
+                console.error("Lỗi chuyển đổi Blob:", err);
+                return null;
+            }
+        }
+
+        // Mở Modal Xem và tải file hồ sơ 
+        window.viewAndDownloadUserDocument = function(userId) {
+            const u = users.find(item => item.id === userId);
+            if (!u || !u.userDoc) { alert("Không tìm thấy tệp hồ sơ đính kèm!"); return; }
+
+            const fileType = u.userDocType || "application/pdf";
+            const fileName = u.userDocName || `HoSo_${u.name.replace(/\s+/g, '_')}.pdf`;
+            const blobUrl = base64ToBlobUrl(u.userDoc, fileType);
+
+            if (!blobUrl) { alert("Tệp tin bị lỗi định dạng cấu trúc, không thể đọc!"); return; }
+
+            const container = document.getElementById('filePreviewContainer');
+            const downloadBtn = document.getElementById('btnDownloadFromModal');
+            
+            // Cấu hình nút tải xuống tại Modal
+            downloadBtn.href = blobUrl;
+            downloadBtn.download = fileName;
+
+            // Kiểm tra định dạng để hiển thị Preview phù hợp
+            if (fileType.includes('pdf')) {
+                container.innerHTML = `<iframe src="${blobUrl}" class="w-full h-full rounded-xl border-0"></iframe>`;
+            } else if (fileType.includes('image')) {
+                container.innerHTML = `
+                    <div class="w-full h-full flex items-center justify-center overflow-auto">
+                        <img src="${blobUrl}" class="max-w-full max-h-full object-contain rounded-lg shadow-md">
+                    </div>`;
+            } else {
+                // Đối với file Word/Excel (.doc, .docx) không thể render trực tiếp trên iframe nguyên bản HTML5
+                container.innerHTML = `
+                    <div class="w-full h-full flex flex-col items-center justify-center gap-3">
+                        <i class="fa-solid fa-file-word text-6xl text-blue-500 animate-bounce"></i>
+                        <p class="font-bold text-slate-700 text-center">Tài liệu định dạng văn phòng xưởng (${fileName})</p>
+                        <p class="text-xs text-slate-400 text-center max-w-sm">Trình duyệt không hỗ trợ xem trực tiếp loại tệp này. Vui lòng bấm nút dưới để tải về máy xử lý.</p>
+                    </div>`;
+            }
+
+            document.getElementById('filePreviewModal').style.display = 'flex';
+        }
+
+        window.closeFilePreviewModal = function() {
+            document.getElementById('filePreviewModal').style.display = 'none';
+            document.getElementById('filePreviewContainer').innerHTML = '';
         }
 
         window.processUserFileImport = function(e) {
@@ -829,10 +920,9 @@
                             depts.push(deptExist);
                         }
                         
-                        // Chống trùng lặp khi import file
                         const isDuplicate = users.some(u => u.name.toLowerCase() === fName.toLowerCase() && u.dept.toLowerCase() === deptExist.name.toLowerCase());
                         if (!isDuplicate) {
-                            users.push({ id: Date.now().toString() + Math.random().toString(36).substring(2,5), name: fName, title: fTitle, dept: deptExist.name, avatar: "", userDoc: "" });
+                            users.push({ id: Date.now().toString() + Math.random().toString(36).substring(2,5), name: fName, title: fTitle, dept: deptExist.name, avatar: "", userDoc: "", userDocType: "", userDocName: "" });
                             count++;
                         }
                     }
@@ -900,7 +990,6 @@
 
         window.switchEnvironment = function(env) { currentEnv = env; localStorage.setItem('vinapaco_current_env', env); fetchCloudData(); }
 
-        // --- CƠ CHẾ CHỐNG TRÙNG NHÂN SỰ ---
         window.handleUserSubmit = function(e) { 
             e.preventDefault(); 
             const uId = document.getElementById('editUserId').value;
@@ -909,8 +998,9 @@
             const dept = document.getElementById('userDept').value;
             const avatar = document.getElementById('userAvatarData').value;
             const userDoc = document.getElementById('userDocData').value;
+            const userDocType = document.getElementById('userDocType').value;
+            const userDocName = document.getElementById('userDocName').value;
 
-            // Kiểm tra trùng lặp (trùng cả tên và phòng ban thực tế)
             const checkDuplicate = users.some(u => 
                 u.id !== uId && 
                 u.name.toLowerCase().replace(/\s+/g, '') === name.toLowerCase().replace(/\s+/g, '') && 
@@ -928,11 +1018,11 @@
                     if(u.id === uId) { 
                         u.name = name; u.title = title; u.dept = dept; 
                         if(avatar) u.avatar = avatar;
-                        if(userDoc) u.userDoc = userDoc;
+                        if(userDoc) { u.userDoc = userDoc; u.userDocType = userDocType; u.userDocName = userDocName; }
                     } 
                 });
             } else {
-                users.push({ id: Date.now().toString(), name, title, dept, avatar, userDoc });
+                users.push({ id: Date.now().toString(), name, title, dept, avatar, userDoc, userDocType, userDocName });
             }
             resetUserForm(); pushDataToCloud(); 
         }
@@ -952,7 +1042,9 @@
             }
             if(u.userDoc) {
                 document.getElementById('userDocData').value = u.userDoc;
-                document.getElementById('userDocStatusIndicator').innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> Đã có file`;
+                document.getElementById('userDocType').value = u.userDocType || '';
+                document.getElementById('userDocName').value = u.userDocName || '';
+                document.getElementById('userDocStatusIndicator').innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> Có tệp cũ`;
             } else {
                 document.getElementById('userDocStatusIndicator').innerHTML = `<i class="fa-solid fa-cloud"></i> Trống`;
             }
@@ -967,6 +1059,7 @@
             document.getElementById('editUserId').value = ""; document.getElementById('userName').value = ""; document.getElementById('userTitle').value = "";
             document.getElementById('userAvatarData').value = ""; document.getElementById('userAvatarFile').value = "";
             document.getElementById('userDocData').value = ""; document.getElementById('userDocFile').value = "";
+            document.getElementById('userDocType').value = ""; document.getElementById('userDocName').value = "";
             document.getElementById('imgAvatarPreview').classList.add('hidden');
             document.getElementById('imgAvatarPlaceholder').classList.remove('hidden');
             document.getElementById('userDocStatusIndicator').innerHTML = `<i class="fa-solid fa-cloud"></i> Trống`;
@@ -974,7 +1067,6 @@
             document.getElementById('btnUserSubmit').innerText = "Lưu Hồ Sơ";
         }
 
-        // --- CƠ CHẾ CHỐNG TRÙNG PHÒNG BAN ---
         window.handleDeptSubmit = function(e) { 
             e.preventDefault(); 
             const dId = document.getElementById('editDeptId').value;
@@ -1011,7 +1103,6 @@
             document.getElementById('btnDeptSubmit').innerText = "Sửa";
         }
 
-        // --- CƠ CHẾ CHỐNG TRÙNG THIẾT BỊ TÀI SẢN ---
         window.handleDeviceSubmit = function(e) { 
             e.preventDefault(); 
             const mode = document.getElementById('editDeviceMode').value;
@@ -1112,7 +1203,9 @@
                 hasData = true;
                 
                 const avaImg = u.avatar ? `<img src="${u.avatar}" class="w-12 h-12 rounded-xl object-cover border border-slate-300 mx-auto shadow-sm">` : `<div class="w-12 h-12 rounded-xl bg-slate-200 text-slate-500 flex items-center justify-center text-lg font-bold mx-auto"><i class="fa-solid fa-user-tie"></i></div>`;
-                const docActionBtn = u.userDoc ? `<button onclick="downloadUserDocument('${u.id}')" class="px-2.5 py-1 bg-purple-100 text-purple-700 hover:bg-purple-200 font-bold rounded text-xs cursor-pointer transition-all"><i class="fa-solid fa-file-arrow-down"></i> Tải Hồ Sơ</button>` : `<span class="text-slate-400 text-xs italic">Không có tệp</span>`;
+                
+                // Thay thế nút tải trực tiếp bằng cơ chế gọi hàm giải mã an toàn và mở Popup xem trực tuyến
+                const docActionBtn = u.userDoc ? `<button onclick="viewAndDownloadUserDocument('${u.id}')" class="px-3 py-1 bg-purple-600 hover:bg-purple-700 font-bold text-white rounded text-xs cursor-pointer transition-all shadow-sm flex items-center gap-1 mx-auto"><i class="fa-solid fa-folder-open"></i> Xem & Tải</button>` : `<span class="text-slate-400 text-xs italic">Không có tệp</span>`;
 
                 body.innerHTML += `<tr class="hover:bg-white/5">
                     <td class="p-3 text-center">${avaImg}</td>
@@ -1130,14 +1223,6 @@
             });
             if(!hasData) body.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400 italic">Trống dữ liệu nhân sự.</td></tr>`;
             document.getElementById('count-user').innerText = `${users.length} nhân sự`;
-        }
-
-        window.downloadUserDocument = function(id) {
-            const u = users.find(item => item.id === id); if(!u || !u.userDoc) return;
-            const link = document.createElement('a');
-            link.href = u.userDoc;
-            link.download = `HoSo_NhanSu_${u.name.replace(/\s+/g, '_')}`;
-            document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
 
         window.renderRepairTableOnly = function() {
