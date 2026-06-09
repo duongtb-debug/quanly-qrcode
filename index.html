@@ -153,7 +153,7 @@
 
     <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col" id="ui-user-card">
         <div class="bg-emerald-700 text-white font-bold p-3.5 text-base flex items-center justify-between header-panel-bg">
-            <span><i class="fa-solid fa-users-gear mr-1.5 text-slate-300"></i> Quản Lý Hồ Sơ Nhân Sự & Sơ Đồ Phòng Ban</span>
+            <span><i class="fa-solid fa-users-gear mr-1.5 text-slate-300"></i> Quản Lý Hồ Sơ Nhân Sự & Sơ ĐỒ Phòng Ban</span>
             <span class="text-sm bg-emerald-600 px-2.5 py-1 rounded font-mono" id="count-user">0 nhân sự</span>
         </div>
         <div id="formUserAction" class="p-4 grid grid-cols-1 lg:grid-cols-12 gap-5 border-b border-slate-100 bg-slate-50/50 text-sm hidden">
@@ -213,41 +213,32 @@
                     <label class="block font-bold text-slate-500 mb-1">Tên thiết bị tài sản</label>
                     <input type="text" id="deviceName" required placeholder="Ví dụ: Máy nghiền bột..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none text-slate-800">
                 </div>
+                
                 <div class="sm:col-span-4">
-                    <label class="block font-bold text-slate-500 mb-1">Phân loại nhóm tài sản (VINAPACO Standard)</label>
-                    <select id="deviceCategory" class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-blue-800">
-                        <optgroup label="A. Nhóm Thiết Bị Dây Chuyền Công Nghệ Chính">
-                            <option value="Dây chuyền chuẩn bị bột giấy & Tẩy trắng">Dây chuyền chuẩn bị bột giấy & Tẩy trắng</option>
-                            <option value="Hệ thống Xeo xe giấy (Giấy in, Giấy viết, Giấy bao bì)">Hệ thống Xeo xe giấy (Giấy in, Giấy viết, Giấy bao bì)</option>
-                            <option value="Hệ thống Giao keo & Gác sấy sơ cấp, thứ cấp">Hệ thống Giao keo & Gác sấy sơ cấp, thứ cấp</option>
-                            <option value="Hệ thống Cuộn & Cắt ram giấy tự động">Hệ thống Cuộn & Cắt ram giấy tự động</option>
-                        </optgroup>
-                        <optgroup label="B. Nhóm Động Lực, Năng Lượng & Phụ Trợ">
-                            <option value="Hệ thống Lò hơi tầng sôi công nghiệp (Boiler)">Hệ thống Lò hơi tầng sôi công nghiệp (Boiler)</option>
-                            <option value="Hệ thống Tuabin hơi phát điện & Đồng phát nhiệt">Hệ thống Tuabin hơi phát điện & Đồng phát nhiệt</option>
-                            <option value="Trạm biến áp trung thế & Mạng lưới phân phối điện nội bộ">Trạm biến áp trung thế & Mạng lưới phân phối điện nội bộ</option>
-                            <option value="Hệ thống Máy nén khí trung tâm & Sấy khí">Hệ thống Máy nén khí trung tâm & Sấy khí</option>
-                        </optgroup>
-                        <optgroup label="C. Nhóm Hóa Chemical & Xử Lý Môi Trường">
-                            <option value="Dây chuyền thu hồi hóa chất & Cô đặc dịch đen">Dây chuyền thu hồi hóa chất & Cô đặc dịch đen</option>
-                            <option value="Trạm xử lý nước cấp sản xuất (Demin/Chất lượng cao)">Trạm xử lý nước cấp sản xuất (Demin/Chất lượng cao)</option>
-                            <option value="Hệ thống xử lý nước thải tập trung đạt chuẩn môi trường">Hệ thống xử lý nước thải tập trung đạt chuẩn môi trường</option>
-                        </optgroup>
-                        <optgroup label="D. Nhóm Thiết Bị Đo Lường, Điều Khiển (Tự Động Hóa)">
-                            <option value="Hệ thống điều khiển phân tán DCS / Tủ PLC điều khiển độc lập">Hệ thống điều khiển phân tán DCS / Tủ PLC điều khiển độc lập</option>
-                            <option value="Thiết bị đo quét biên độ chất lượng giấy (QCS)">Thiết bị đo quét biên độ chất lượng giấy (QCS)</option>
-                            <option value="Cảm biến thông minh, Van điều khiển tuyến tính khí nén">Cảm biến thông minh, Van điều khiển tuyến tính khí nén</option>
-                        </optgroup>
-                        <optgroup label="E. Nhóm Cơ Giới Vận Chuyển & Kho Bãi">
-                            <option value="Xe nâng xúc lật kẹp cuộn, kẹp kiện chuyên dụng">Xe nâng xúc lật kẹp cuộn, kẹp kiện chuyên dụng</option>
-                            <option value="Cầu trục, Cổng trục nhà xưởng, Băng tải nguyên liệu thô">Cầu trục, Cổng trục nhà xưởng, Băng tải nguyên liệu thô</option>
-                        </optgroup>
-                        <optgroup label="F. Nhóm Văn Phòng & Hạ Tầng Công Nghệ Thông Tin">
-                            <option value="Hệ thống Máy chủ Server, Mạng nội bộ & Camera giám sát nhà máy">Hệ thống Máy chủ Server, Mạng nội bộ & Camera giám sát nhà máy</option>
-                            <option value="Máy tính làm việc kỹ thuật, Máy in tem nhãn QR chuyên nghiệp">Máy tính làm việc kỹ thuật, Máy in tem nhãn QR chuyên nghiệp</option>
-                        </optgroup>
-                    </select>
+                    <label class="block font-bold text-slate-500 mb-1">Chủng loại/Nhóm tài sản (Tự do nhập)</label>
+                    <input type="text" id="deviceCategory" list="assetCategories" required placeholder="Chọn hoặc gõ nhóm mới..." class="w-full border border-slate-300 rounded-lg p-2 bg-white focus:outline-none font-bold text-blue-800">
+                    <datalist id="assetCategories">
+                        <option value="Dây chuyền chuẩn bị bột giấy & Tẩy trắng">
+                        <option value="Hệ thống Xeo xe giấy (Giấy in, Giấy viết, Giấy bao bì)">
+                        <option value="Hệ thống Giao keo & Gác sấy sơ cấp, thứ cấp">
+                        <option value="Hệ thống Cuộn & Cắt ram giấy tự động">
+                        <option value="Hệ thống Lò hơi tầng sôi công nghiệp (Boiler)">
+                        <option value="Hệ thống Tuabin hơi phát điện & Đồng phát nhiệt">
+                        <option value="Trạm biến áp trung thế & Mạng lưới phân phối điện nội bộ">
+                        <option value="Hệ thống Máy nén khí trung tâm & Sấy khí">
+                        <option value="Dây chuyền thu hồi hóa chất & Cô đặc dịch đen">
+                        <option value="Trạm xử lý nước cấp sản xuất (Demin/Chất lượng cao)">
+                        <option value="Hệ thống xử lý nước thải tập trung đạt chuẩn môi trường">
+                        <option value="Hệ thống điều khiển phân tán DCS / Tủ PLC điều khiển độc lập">
+                        <option value="Thiết bị đo quét biên độ chất lượng giấy (QCS)">
+                        <option value="Cảm biến thông minh, Van điều khiển tuyến tính khí nén">
+                        <option value="Xe nâng xúc lật kẹp cuộn, kẹp kiện chuyên dụng">
+                        <option value="Cầu trục, Cổng trục nhà xưởng, Băng tải nguyên liệu thô">
+                        <option value="Hệ thống Máy chủ Server, Mạng nội bộ & Camera giám sát nhà máy">
+                        <option value="Máy tính làm việc kỹ thuật, Máy in tem nhãn QR chuyên nghiệp">
+                    </datalist>
                 </div>
+                
                 <div class="sm:col-span-4">
                     <label class="block font-bold text-amber-700 mb-1">Phòng ban quản lý</label>
                     <select id="deviceDept" required onchange="updateUserDropdownByDept()" class="w-full border border-slate-300 rounded-lg p-2 bg-white font-bold focus:outline-none text-slate-700"></select>
@@ -264,7 +255,7 @@
                 </div>
             </form>
             <div class="p-3 bg-slate-100/60 border-b border-slate-200 text-sm sub-header-bg">
-                <input type="text" id="searchDeviceInput" oninput="renderDeviceTableOnly()" placeholder="Nhập mã định danh, tên thiết bị để lọc..." class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-white focus:outline-none font-bold text-slate-800">
+                <input type="text" id="searchDeviceInput" oninput="renderDeviceTableOnly()" placeholder="Nhập mã định danh, tên thiết bị, chủng loại để lọc..." class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-white focus:outline-none font-bold text-slate-800">
             </div>
             <div class="overflow-x-auto custom-scrollbar max-h-96 bg-white text-sm table-container-bg">
                 <table class="w-full text-left border-collapse">
@@ -475,12 +466,10 @@
             "Đường đi gian khổ không sờn lòng, kỷ luật lao động giữ an toàn cho nhà máy."
         ];
 
-        // KHỞI TẠO VÀ ĐỌC CẤU HÌNH GIAO DIỆN TÙY BIẾN
         window.changeSystemTheme = function(themeName) {
             document.body.className = `${themeName} bg-slate-100 text-slate-800 font-sans min-h-screen p-4 md:p-6 space-y-6 text-sm md:text-base transition-colors duration-300`;
             localStorage.setItem('vinapaco_saved_theme', themeName);
             
-            // Tinh chỉnh màu sắc bổ trợ dựa trên theme được chọn
             const uiHeader = document.getElementById('ui-header-card');
             const titleText = document.getElementById('ui-title-text');
             const selectors = document.querySelectorAll('.header-panel-bg');
@@ -503,7 +492,6 @@
         document.getElementById('ui-theme-selector').value = initialTheme;
         setTimeout(() => window.changeSystemTheme(initialTheme), 300);
 
-        // LẮNG NGHE SỰ KIỆN CHỌN FILE ĐỂ CHUYỂN ĐỔI SANG BASE64 TRƯỚC KHI ĐẨY LÊN FIREBASE
         document.getElementById('procuFileAttached')?.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -520,7 +508,6 @@
             reader.readAsDataURL(file);
         });
 
-        // HÀM MỞ/XEM VÀ IN FILE ĐÍNH KÈM
         window.openAttachedFileWindow = function(base64Data, filename) {
             if(!base64Data) { alert("Không tìm thấy file đính kèm."); return; }
             const win = window.open();
@@ -873,6 +860,7 @@
         window.resetDeviceForm = function() {
             document.getElementById('editDeviceMode').value = "create";
             document.getElementById('deviceName').value = "";
+            document.getElementById('deviceCategory').value = "";
             document.getElementById('lblDeviceId').innerText = "Mã Tài Sản Định Danh";
             document.getElementById('btnDeviceSubmit').innerText = "Lưu & Sinh Mã QR";
             document.getElementById('btnCancelDeviceEdit').classList.add('hidden');
@@ -883,7 +871,7 @@
             const mode = document.getElementById('editDeviceMode').value;
             const dId = document.getElementById('deviceId').value;
             const name = document.getElementById('deviceName').value.trim();
-            const cat = document.getElementById('deviceCategory').value;
+            const cat = document.getElementById('deviceCategory').value.trim();
             const dept = document.getElementById('deviceDept').value;
             const user = document.getElementById('deviceUser').value;
             const status = user === "Chưa cấp phát" ? "Trong kho" : "Hoạt động tốt";
@@ -894,6 +882,7 @@
             } else {
                 devices.push({ id: dId, name, cat, dept, user, status });
                 document.getElementById('deviceName').value = "";
+                document.getElementById('deviceCategory').value = "";
             }
             pushDataToCloud(); 
         }
@@ -973,7 +962,6 @@
             pushDataToCloud();
         }
 
-        /* NÂNG CẤP LƯU TRỮ ĐÍNH KÈM TỆP CHO MUA SẮM */
         window.editProcurementInline = function(id) {
             const target = procurements.find(p => p.id === id); if(!target) return;
             document.getElementById('editProcurementId').value = target.id;
@@ -1076,7 +1064,7 @@
             body.innerHTML = ''; 
             const key = document.getElementById('searchDeviceInput').value.trim().toLowerCase();
             const role = loggedInUser ? loggedInUser.role : 'Viewer';
-            const filteredDevices = devices.filter(d => d.name.toLowerCase().includes(key) || d.id.toLowerCase().includes(key));
+            const filteredDevices = devices.filter(d => d.name.toLowerCase().includes(key) || d.id.toLowerCase().includes(key) || (d.cat && d.cat.toLowerCase().includes(key)));
 
             filteredDevices.forEach(d => {
                 const tr = document.createElement('tr');
@@ -1090,7 +1078,7 @@
                 }
                 tr.innerHTML = `
                     <td class="p-3 pl-4 font-mono font-bold text-slate-900">${d.id}</td>
-                    <td class="p-3 font-bold">${d.name}<span class="block text-[11px] text-slate-400 font-normal italic">Nhóm: ${d.cat}</span></td>
+                    <td class="p-3 font-bold">${d.name}<span class="block text-[11px] text-blue-600 font-bold italic">Chủng loại: ${d.cat || 'Chưa phân nhóm'}</span></td>
                     <td class="p-3">${d.dept}</td>
                     <td class="p-1 text-center bg-white w-28 flex justify-center items-center"><div class="qr-holder-cell py-1 flex justify-center items-center w-[48px] h-[48px] bg-slate-50 border border-slate-200 rounded cursor-pointer"></div></td>
                     <td class="p-3 text-blue-600 font-bold">${d.user==='Chưa cấp phát'?'📦 Kho': d.user}</td>
@@ -1170,7 +1158,6 @@
             });
         }
 
-        /* THAY ĐỔI LOGIC HIỂN THỊ CỦA BẢNG MUA SẮM VẬT TƯ: TÍCH HỢP NÚT XEM/IN FILE ĐÍNH KÈM */
         function renderProcurementTableOnly() {
             const body = document.getElementById('procurementTableBody'); if(!body) return; body.innerHTML = '';
             const role = loggedInUser ? loggedInUser.role : 'Viewer';
@@ -1186,7 +1173,6 @@
                     `;
                 }
                 
-                // Trạng thái tệp đính kèm
                 let fileBadge = `<span class="text-slate-400 text-xs italic">Không đính kèm</span>`;
                 if(p.fileData) {
                     fileBadge = `<button onclick="openAttachedFileWindow(\`${p.fileData}\`, \`${p.fileName}\`)" class="px-2.5 py-1 bg-blue-100 text-blue-700 font-bold rounded hover:bg-blue-200 text-xs cursor-pointer flex items-center gap-1 mx-auto"><i class="fa-solid fa-file-invoice"></i> Xem & In File</button>`;
