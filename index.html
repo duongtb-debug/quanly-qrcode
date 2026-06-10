@@ -290,7 +290,7 @@
                 <div class="bg-blue-50/60 border border-blue-100 p-4 rounded-2xl grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                     <div class="md:col-span-8">
                         <h4 class="font-bold text-blue-900 text-xs uppercase tracking-wider">⚡ Nhập nhanh hàng loạt nhân sự chống trùng lặp dữ liệu</h4>
-                        <p class="text-xs text-blue-600 font-medium mt-0.5">Nạp tệp danh sách (.txt/.csv) phân tách dấu phẩy [Mã Nhân sự, Họ tên, Đơn vị].</p>
+                        <p class="text-xs text-blue-600 font-medium mt-0.5">Nạp tệp danh sách (.txt/.csv) phân tách dấu phẩy [Đơn vị, Mã Nhân sự, Họ tên].</p>
                     </div>
                     <div class="md:col-span-4">
                         <input type="file" id="bulkStaffFile" onchange="triggerBulkStaffImport(event)" class="text-xs bg-white p-2.5 rounded-xl border border-slate-200 w-full font-semibold focus:outline-none">
@@ -301,6 +301,11 @@
                     <form id="formStaffLogic" onsubmit="executeStaffSubmit(event)" class="lg:col-span-4 grid grid-cols-1 gap-4 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 text-xs">
                         <input type="hidden" id="staffEditId" value="">
                         <div>
+                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Đơn vị / Phòng ban</label>
+                            <input type="text" id="staffUnitCustom" required list="dynamicUnitsDatalist" placeholder="Nhập phòng ban hoặc chọn..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
+                            <datalist id="dynamicUnitsDatalist"></datalist>
+                        </div>
+                        <div>
                             <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Mã Nhân sự</label>
                             <div class="flex gap-2">
                                 <input type="text" id="staffCode" required placeholder="Ví dụ: VNP-HR-00001" class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm font-mono">
@@ -310,11 +315,6 @@
                         <div>
                             <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Họ và tên</label>
                             <input type="text" id="staffName" required placeholder="Nhập tên nhân sự..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
-                        </div>
-                        <div>
-                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Đơn vị / Phòng ban</label>
-                            <input type="text" id="staffUnitCustom" required list="dynamicUnitsDatalist" placeholder="Nhập phòng ban hoặc chọn..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
-                            <datalist id="dynamicUnitsDatalist"></datalist>
                         </div>
                         <div>
                             <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Ảnh chân dung</label>
@@ -345,8 +345,9 @@
                                 <thead class="bg-slate-50 font-bold text-slate-500 border-b border-slate-100 sticky top-0 z-10 uppercase tracking-wider">
                                     <tr>
                                         <th class="p-3 w-[70px]">Ảnh</th>
+                                        <th class="p-3 w-[200px]">Đơn Vị / Phòng Ban</th>
                                         <th class="p-3 w-[150px]">Mã Nhân sự</th>
-                                        <th class="p-3">Họ Tên / Đơn Vị</th>
+                                        <th class="p-3">Họ Tên Cán Bộ</th>
                                         <th class="p-3 text-center w-[120px]">Hành Động</th>
                                     </tr>
                                 </thead>
@@ -991,7 +992,7 @@
                 lines.forEach(line => {
                     const parts = line.split(',');
                     if(parts.length >= 3) {
-                        const code = parts[0].trim(); const name = parts[1].trim(); const unit = parts[2].trim();
+                        const unit = parts[0].trim(); const code = parts[1].trim(); const name = parts[2].trim();
                         if(code) db.ref(getEnvNode('staff_v3') + '/' + code).set({ id: code, name: name, unit: unit, photo: "" });
                     }
                 });
@@ -1003,10 +1004,12 @@
             if(!table) return; table.innerHTML = "";
             const target = (filter === 'TẤT CẢ' || !filter) ? localStaff : localStaff.filter(x => x.unit === filter);
             target.forEach(st => {
+                // THAY ĐỔI THỨ TỰ HIỂN THỊ TRONG HÀNG BẢNG: Đơn vị lên đầu tiên
                 table.innerHTML += `<tr class="hover:bg-slate-50/80 transition-colors">
                     <td class="p-3"><img src="${st.photo || 'https://via.placeholder.com/50'}" class="w-10 h-10 object-cover rounded-full border border-slate-200 shadow-sm"></td>
+                    <td class="p-3 text-slate-900 font-bold">${st.unit}</td>
                     <td class="p-3 font-mono font-bold text-blue-900">${st.id}</td>
-                    <td class="p-3"><div>${st.name}</div><span class="text-xs text-slate-400 font-medium">${st.unit}</span></td>
+                    <td class="p-3 font-semibold text-slate-700">${st.name}</td>
                     <td class="p-3 text-center space-x-3">
                         <button onclick="triggerStaffEditMode('${st.id}')" class="text-blue-600 hover:text-blue-800 transition-colors"><i class="fa-solid fa-pen"></i></button>
                         <button onclick="deleteCloudRecord('${getEnvNode('staff_v3')}','${st.id}')" class="text-red-500 hover:text-red-700 transition-colors"><i class="fa-solid fa-trash-can"></i></button>
