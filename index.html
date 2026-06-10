@@ -283,14 +283,14 @@
 
         <section id="staffAnchor" class="bg-white text-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100">
             <div class="bg-blue-900 text-white p-4 px-6 flex justify-between items-center">
-                <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-users"></i> 1. Danh mục Đơn vị, Nhân sự & Hồ sơ công tác đa tầng</h3>
+                <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-users"></i> 1. Danh mục Đơn vị, Chức vụ, Nhân sự & Hồ sơ công tác</h3>
                 <span id="badgeStaffCount" class="bg-white/10 font-mono text-xs px-3 py-1 rounded-xl font-bold">0 nhân sự</span>
             </div>
             <div class="p-6 space-y-6">
                 <div class="bg-blue-50/60 border border-blue-100 p-4 rounded-2xl grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                     <div class="md:col-span-8">
                         <h4 class="font-bold text-blue-900 text-xs uppercase tracking-wider">⚡ Nhập nhanh hàng loạt nhân sự chống trùng lặp dữ liệu</h4>
-                        <p class="text-xs text-blue-600 font-medium mt-0.5">Nạp tệp danh sách (.txt/.csv) phân tách dấu phẩy [Đơn vị, Mã Nhân sự, Họ tên].</p>
+                        <p class="text-xs text-blue-600 font-medium mt-0.5">Nạp tệp danh sách (.txt/.csv) phân tách dấu phẩy theo định dạng: [Đơn vị, Chức vụ, Mã Nhân sự, Họ tên].</p>
                     </div>
                     <div class="md:col-span-4">
                         <input type="file" id="bulkStaffFile" onchange="triggerBulkStaffImport(event)" class="text-xs bg-white p-2.5 rounded-xl border border-slate-200 w-full font-semibold focus:outline-none">
@@ -304,6 +304,10 @@
                             <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Đơn vị / Phòng ban</label>
                             <input type="text" id="staffUnitCustom" required list="dynamicUnitsDatalist" placeholder="Nhập phòng ban hoặc chọn..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                             <datalist id="dynamicUnitsDatalist"></datalist>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Chức vụ</label>
+                            <input type="text" id="staffPosition" required placeholder="Ví dụ: Kỹ sư ca, Trưởng phòng, Nhân viên..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                         </div>
                         <div>
                             <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Mã Nhân sự</label>
@@ -340,15 +344,16 @@
                                 <option value="TẤT CẢ">-- Lọc theo tất cả đơn vị thành viên --</option>
                             </select>
                         </div>
-                        <div class="overflow-x-auto border border-slate-100 rounded-2xl max-h-[380px] overflow-y-auto bg-white shadow-inner">
+                        <div class="overflow-x-auto border border-slate-100 rounded-2xl max-h-[420px] overflow-y-auto bg-white shadow-inner">
                             <table class="w-full text-left text-xs">
                                 <thead class="bg-slate-50 font-bold text-slate-500 border-b border-slate-100 sticky top-0 z-10 uppercase tracking-wider">
                                     <tr>
-                                        <th class="p-3 w-[70px]">Ảnh</th>
-                                        <th class="p-3 w-[200px]">Đơn Vị / Phòng Ban</th>
-                                        <th class="p-3 w-[150px]">Mã Nhân sự</th>
+                                        <th class="p-3 w-[60px]">Ảnh</th>
+                                        <th class="p-3 w-[180px]">Đơn Vị / Phòng Ban</th>
+                                        <th class="p-3 w-[130px]">Chức Vụ</th>
+                                        <th class="p-3 w-[130px]">Mã Nhân sự</th>
                                         <th class="p-3">Họ Tên Cán Bộ</th>
-                                        <th class="p-3 text-center w-[120px]">Hành Động</th>
+                                        <th class="p-3 text-center w-[100px]">Hành Động</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tableStaffBody" class="divide-y divide-slate-100 font-semibold text-slate-700"></tbody>
@@ -684,7 +689,7 @@
             db.ref(getEnvNode('materials_v3')).off();
             db.ref(getEnvNode('incidents_v3')).off();
             db.ref(getEnvNode('shifts_v3')).off();
-            db.ref(getEnvNode('staff_v3')).off();
+            db.ref(getEnvNode('staff_v4')).off(); // Nâng cấp node dữ liệu chứa chức vụ
             db.ref(getEnvNode('allocations_v4')).off();
             db.ref(getEnvNode('repair_logs_v4')).off();
             db.ref(getEnvNode('cloud_files_v4')).off();
@@ -719,7 +724,7 @@
                 document.getElementById('badgeShiftCount').innerText = localShifts.length + " ca kíp";
             });
 
-            db.ref(getEnvNode('staff_v3')).on('value', snap => {
+            db.ref(getEnvNode('staff_v4')).on('value', snap => {
                 localStaff = snap.val() ? Object.values(snap.val()).filter(Boolean) : [];
                 renderStaffTableData();
                 rebuildFilterAndAllocDropdowns();
@@ -746,7 +751,6 @@
             });
         }
 
-        // ĐIỀU CHỈNH CUỘN MÀN HÌNH MƯỢT MÀ ĐẾN MỤC TIÊU CẦN CHỈNH SỬA
         function smoothScrollToElement(elementId) {
             const target = document.getElementById(elementId);
             if(target) {
@@ -754,21 +758,18 @@
             }
         }
 
-        // CƠ CHẾ CHẤP NHẬN DUYỆT ĐẨY DỮ LIỆU TỪ TESTING LÊN PRODUCTION ĐỒNG BỘ ĐỘC LẬP
         window.promoteTestingToProduction = function() {
             if (currentEnv !== "TESTING") {
                 alert("Bạn chỉ có thể thực hiện tính năng này khi đang ở chế độ CHẠY THỬ!");
                 return;
             }
-            if (confirm("Hệ thống sẽ đồng bộ toàn bộ dữ liệu đang Chạy thử hiện tại sang môi trường Chạy thật (Ghi đè trùng lặp). Xác nhận phê duyệt?")) {
-                const nodesToMigrate = ['materials_v3', 'incidents_v3', 'shifts_v3', 'staff_v3', 'allocations_v4', 'repair_logs_v4', 'cloud_files_v4', 'system_users_v4'];
+            if (confirm("Hệ thống sẽ đồng bộ toàn bộ dữ liệu đang Chạy thử hiện tại sang môi trường Chạy thật. Xác nhận phê duyệt?")) {
+                const nodesToMigrate = ['materials_v3', 'incidents_v3', 'shifts_v3', 'staff_v4', 'allocations_v4', 'repair_logs_v4', 'cloud_files_v4', 'system_users_v4'];
                 let completed = 0;
                 nodesToMigrate.forEach(node => {
                     db.ref(node + '_testing').once('value', snap => {
                         const data = snap.val();
-                        if (data) {
-                            db.ref(node).set(data);
-                        }
+                        if (data) db.ref(node).set(data);
                         completed++;
                         if (completed === nodesToMigrate.length) {
                             alert("🚀 Đồng bộ hoàn tất! Dữ liệu thử nghiệm đã được chuẩn hóa lên môi trường CHẠY THẬT.");
@@ -864,7 +865,7 @@
                 db.ref('materials_v3_testing').remove();
                 db.ref('incidents_v3_testing').remove();
                 db.ref('shifts_v3_testing').remove();
-                db.ref('staff_v3_testing').remove();
+                db.ref('staff_v4_testing').remove();
                 db.ref('allocations_v4_testing').remove();
                 db.ref('repair_logs_v4_testing').remove();
                 db.ref('cloud_files_v4_testing').remove();
@@ -935,7 +936,7 @@
             document.getElementById('3dBarPending').style.height = ((countIssue / max) * 80 + 10) + "%";
         }
 
-        // MỤC 1: LOGIC NHÂN SỰ
+        // MỤC 1: LOGIC NHÂN SỰ VÀ TRƯỜNG CHỨC VỤ MỚI
         let currentStaffPhotoBase64 = "";
         window.previewStaffPhoto = function(e) {
             const file = e.target.files[0]; if(!file) return;
@@ -951,10 +952,11 @@
             e.preventDefault();
             const code = document.getElementById('staffCode').value.trim();
             const name = document.getElementById('staffName').value.trim();
+            const position = document.getElementById('staffPosition').value.trim();
             const finalUnitName = document.getElementById('staffUnitCustom').value.trim();
 
-            db.ref(getEnvNode('staff_v3') + '/' + code).set({
-                id: code, name: name, unit: finalUnitName, photo: currentStaffPhotoBase64 || ""
+            db.ref(getEnvNode('staff_v4') + '/' + code).set({
+                id: code, name: name, unit: finalUnitName, position: position, photo: currentStaffPhotoBase64 || ""
             });
             resetStaffFormState();
         }
@@ -964,6 +966,7 @@
             document.getElementById('staffCode').value = st.id;
             document.getElementById('staffCode').readOnly = true;
             document.getElementById('staffName').value = st.name;
+            document.getElementById('staffPosition').value = st.position || "";
             document.getElementById('staffUnitCustom').value = st.unit;
             if(st.photo) {
                 document.getElementById('staffPhotoPreview').src = st.photo;
@@ -991,9 +994,9 @@
                 const text = evt.target.result; const lines = text.split('\n');
                 lines.forEach(line => {
                     const parts = line.split(',');
-                    if(parts.length >= 3) {
-                        const unit = parts[0].trim(); const code = parts[1].trim(); const name = parts[2].trim();
-                        if(code) db.ref(getEnvNode('staff_v3') + '/' + code).set({ id: code, name: name, unit: unit, photo: "" });
+                    if(parts.length >= 4) { // Cấu trúc: Đơn vị, Chức vụ, Mã, Họ tên
+                        const unit = parts[0].trim(); const pos = parts[1].trim(); const code = parts[2].trim(); const name = parts[3].trim();
+                        if(code) db.ref(getEnvNode('staff_v4') + '/' + code).set({ id: code, name: name, unit: unit, position: pos, photo: "" });
                     }
                 });
             };
@@ -1004,15 +1007,15 @@
             if(!table) return; table.innerHTML = "";
             const target = (filter === 'TẤT CẢ' || !filter) ? localStaff : localStaff.filter(x => x.unit === filter);
             target.forEach(st => {
-                // THAY ĐỔI THỨ TỰ HIỂN THỊ TRONG HÀNG BẢNG: Đơn vị lên đầu tiên
                 table.innerHTML += `<tr class="hover:bg-slate-50/80 transition-colors">
                     <td class="p-3"><img src="${st.photo || 'https://via.placeholder.com/50'}" class="w-10 h-10 object-cover rounded-full border border-slate-200 shadow-sm"></td>
                     <td class="p-3 text-slate-900 font-bold">${st.unit}</td>
+                    <td class="p-3 font-semibold text-emerald-800">${st.position || "Chưa rõ"}</td>
                     <td class="p-3 font-mono font-bold text-blue-900">${st.id}</td>
                     <td class="p-3 font-semibold text-slate-700">${st.name}</td>
                     <td class="p-3 text-center space-x-3">
                         <button onclick="triggerStaffEditMode('${st.id}')" class="text-blue-600 hover:text-blue-800 transition-colors"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('staff_v3')}','${st.id}')" class="text-red-500 hover:text-red-700 transition-colors"><i class="fa-solid fa-trash-can"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('staff_v4')}','${st.id}')" class="text-red-500 hover:text-red-700 transition-colors"><i class="fa-solid fa-trash-can"></i></button>
                     </td>
                 </tr>`;
             });
@@ -1314,6 +1317,11 @@
             document.getElementById('lunarDateStr').innerText = `Hôm nay: Ngày ${solarDay}/${solarMonth} (Âm lịch: Ngày ${lunarDay} tháng ${lunarMonth} năm Bính Ngọ)`;
             document.getElementById('solarTermStr').innerText = "Mang Chủng / Hạ Chí";
             document.getElementById('goodHoursStr').innerText = "Tý (23h-1h), Mão (5h-7h), Ngọ (11h-13h)";
+        }
+
+        window.openSystemDefaultAccess = function() {
+            document.getElementById('securityLockOverlay').style.display = 'none';
+            document.getElementById('appMainContainer').classList.remove('hidden');
         }
 
         window.addEventListener('DOMContentLoaded', () => { startRealtimeCoreSync(); setInterval(triggerLiveTimeAndLunarCalendar, 1000); });
