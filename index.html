@@ -1513,3 +1513,123 @@
             const payload = {
                 id: targetId,
                 category: category,
+                name: name,
+                amount: amount,
+                timeStr: timeStamp,
+                viewUrl: mockBlobUrl
+            };
+
+            db.ref(getEnvNode('cloud_files_v4') + '/' + targetId).set(payload);
+            resetBillingFormState();
+        }
+
+        window.triggerBillingEditMode = function(id) {
+            const item = localCloudFiles.find(x => x.id === id); if(!item) return;
+            document.getElementById('billingEditId').value = item.id;
+            document.getElementById('billingFileName').value = item.name;
+            document.getElementById('billingAmount').value = item.amount || 0;
+            document.getElementById('fileStorageCategory').value = item.category;
+            
+            document.getElementById('billingFormMode').innerText = "Chỉnh sửa";
+            document.getElementById('btnCancelBillingEdit').classList.remove('hidden');
+            document.getElementById('btnSubmitBillingText').innerText = "Cập nhật chứng từ";
+            smoothScrollToElement('billingAnchor');
+        }
+
+        window.resetBillingFormState = function() {
+            document.getElementById('formBillingLogic').reset();
+            document.getElementById('billingEditId').value = "";
+            document.getElementById('billingFormMode').innerText = "Thêm mới";
+            document.getElementById('btnCancelBillingEdit').classList.add('hidden');
+            document.getElementById('btnSubmitBillingText').innerText = "Lưu chứng từ";
+        }
+
+        function calculateBillingTotalSummary() {
+            let total = 0;
+            localCloudFiles.forEach(f => { total += (parseFloat(f.amount) || 0); });
+            document.getElementById('badgeBillingTotal').innerText = "Tổng chi: " + total.toLocaleString('vi-VN') + " VNĐ";
+        }
+
+        window.viewDocumentDirectly = function(url, filename) {
+            alert(`📄 Đang mở trình xem ngay tài liệu hệ thống:\nTên hồ sơ: ${filename}\nTrạng thái: Tải tài liệu đám mây thành công.`);
+            window.open(url, '_blank');
+        }
+
+        function renderFileExplorerTree() {
+            const treeContainer = document.getElementById('fileExplorerTreeContainer'); if(!treeContainer) return; treeContainer.innerHTML = "";
+            if(!localCloudFiles.length) { treeContainer.innerHTML = `<p class="text-slate-400 text-sm italic text-center p-4">Chưa có hồ sơ thanh toán lưu trữ.</p>`; return; }
+            
+            const categoriesMap = {}; 
+            localCloudFiles.forEach(f => { 
+                if(!categoriesMap[f.category]) categoriesMap[f.category] = []; 
+                categoriesMap[f.category].push(f); 
+            });
+            
+            Object.keys(categoriesMap).forEach(cat => {
+                const catWrapper = document.createElement('div'); 
+                catWrapper.className = "border border-slate-100 rounded-xl p-3 bg-slate-50 space-y-2 font-semibold text-slate-700 shadow-sm mb-3";
+                catWrapper.innerHTML = `<div class="text-slate-800 uppercase border-b border-slate-200/60 pb-1.5 flex items-center gap-1.5 font-bold text-base"><i class="fa-solid fa-folder-open text-amber-500 text-base"></i> ${cat}</div>`;
+                
+                categoriesMap[cat].forEach(file => {
+                    const priceFormatted = (file.amount || 0).toLocaleString('vi-VN') + " VNĐ";
+                    const timeLabel = file.timeStr ? file.timeStr : "Chưa rõ thời gian";
+                    
+                    catWrapper.innerHTML += `<div class="p-3 bg-white rounded-lg border border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 shadow-sm hover:border-slate-200 transition-colors">
+                        <div class="space-y-0.5 min-w-0 flex-1">
+                            <span class="truncate block font-bold text-slate-800 text-base"><i class="fa-solid fa-file-invoice-dollar text-emerald-600 mr-1 text-xl"></i> ${file.name}</span>
+                            <div class="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-slate-400 font-medium">
+                                <span>💰 Số tiền: <b class="text-emerald-700 font-bold">${priceFormatted}</b></span>
+                                <span>| 🕒 Nhập lúc: <span class="text-slate-600 font-semibold">${timeLabel}</span></span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0 w-full sm:w-auto justify-end">
+                            <button onclick="viewDocumentDirectly('${file.viewUrl}','${file.name}')" class="p-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg transition-all shadow-sm flex items-center gap-1 font-bold text-xs uppercase" title="Xem ngay tệp chứng từ"><i class="fa-solid fa-eye text-xs"></i> Xem</button>
+                            <button onclick="triggerBillingEditMode('${file.id}')" class="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all shadow-sm" title="Sửa thông tin chứng từ"><i class="fa-solid fa-pen text-xs"></i></button>
+                            <button onclick="deleteCloudRecord('${getEnvNode('cloud_files_v4')}','${file.id}')" class="p-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-all shadow-sm" title="Xóa chứng từ vĩnh viễn"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                        </div>
+                    </div>`;
+                });
+                treeContainer.appendChild(catWrapper);
+            });
+        }
+
+        window.deleteCloudRecord = function(fullNodePath, id) { if(confirm("Xác nhận xóa bỏ bản ghi này vĩnh viễn?")) db.ref(fullNodePath + '/' + id).remove(); }
+
+        function rebuildDatalistGoiY() {
+            const dl = document.getElementById('dynamicUnitsDatalist'); if(!dl) return;
+            const currentUnits = [...new Set(localStaff.map(x => x.unit))].filter(Boolean);
+            dl.innerHTML = "";
+            currentUnits.forEach(u => { dl.innerHTML += `<option value="${u}">`; });
+        }
+        function rebuildFilterAndAllocDropdowns() {
+            const filterBox = document.getElementById('filterStaffUnit'); const allocBox = document.getElementById('allocDepartmentBox');
+            const currentSelectedFilter = filterBox.value; const currentSelectedAlloc = allocBox ? allocBox.value : "";
+            const allUnits = [...new Set(localStaff.map(x => x.unit))].filter(Boolean);
+            filterBox.innerHTML = `<option value="TẤT CẢ">-- Lọc theo tất cả đơn vị thành viên --</option>`;
+            allUnits.forEach(un => { filterBox.innerHTML += `<option value="${un}">${un}</option>`; });
+            if(currentSelectedFilter) filterBox.value = currentSelectedFilter;
+            if(allocBox) {
+                allocBox.innerHTML = "";
+                allUnits.forEach(un => { allocBox.innerHTML += `<option value="${un}">${un}</option>`; });
+                if(currentSelectedAlloc) allocBox.value = currentSelectedAlloc;
+            }
+        }
+
+        function triggerLiveTimeAndLunarCalendar() {
+            const now = new Date(); document.getElementById('liveClockStr').innerText = now.toLocaleTimeString('vi-VN');
+            const solarDay = now.getDate(); const solarMonth = now.getMonth() + 1;
+            let lunarDay = solarDay - 23; let lunarMonth = solarMonth; if (lunarDay <= 0) { lunarDay = 30 + lunarDay; lunarMonth = solarMonth - 1; }
+            document.getElementById('lunarDateStr').innerText = `Hôm nay: Ngày ${solarDay}/${solarMonth} (Âm lịch: Ngày ${lunarDay} tháng ${lunarMonth} năm Bính Ngọ)`;
+            document.getElementById('solarTermStr').innerText = "Mang Chủng / Hạ Chí";
+            document.getElementById('goodHoursStr').innerText = "Tý (23h-1h), Mão (5h-7h), Ngọ (11h-13h)";
+        }
+
+        window.addEventListener('DOMContentLoaded', () => { 
+            startRealtimeCoreSync(); 
+            setInterval(triggerLiveTimeAndLunarCalendar, 1000);
+            refreshRandomFolkSaying();
+            setInterval(refreshRandomFolkSaying, 300000); 
+        });
+    </script>
+</body>
+</html>
