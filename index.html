@@ -295,7 +295,7 @@
                     <form id="formStaffLogic" onsubmit="executeStaffSubmit(event)" class="lg:col-span-4 grid grid-cols-1 gap-4 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 text-xs">
                         <input type="hidden" id="staffEditId" value="">
                         <div>
-                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Đơn vị / Phòng ban</label>
+                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Don vị / Phòng ban</label>
                             <input type="text" id="staffUnitCustom" required list="dynamicUnitsDatalist" placeholder="Nhập phòng ban hoặc chọn..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                             <datalist id="dynamicUnitsDatalist"></datalist>
                         </div>
@@ -604,7 +604,7 @@
             </div>
             <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div class="lg:col-span-4 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 space-y-4 text-xs">
-                    <h4 class="font-bold text-[#005c3e] uppercase tracking-wider border-b border-slate-200/60 pb-2">Báo cáo tài chính & Kinh phiếu</h4>
+                    <h4 class="font-bold text-[#005c3e] uppercase tracking-wider border-b border-slate-200/60 pb-2">Báo cáo tài chính & Kinh phí</h4>
                     
                     <div class="grid grid-cols-3 gap-2 text-center font-heading">
                         <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
@@ -877,7 +877,7 @@
             handleUsernameInput(document.getElementById('secUser').value);
         }
 
-        // TỐI ƯU HOÁ MÀU XANH NÕN CHUỐI CHO LỰA CHỌN ĐĂNG NHẬP ĐANG ACTIVE
+        // PHẦN LOGIC ĐỔI MÀU HOÀN HẢO CHO CẢ 2 PHƯƠNG THỨC ĐĂNG NHẬP
         window.switchLoginMethod = function(method) {
             activeLoginMethod = method;
             const container = document.getElementById('dynamicSecretContainer');
@@ -886,12 +886,14 @@
             const currentUsername = document.getElementById('secUser').value;
 
             if(method === 'pass') {
+                // Tab Mật khẩu: Xanh nõn chuối (#adff2f) | Tab Mã PIN: Trở về màu xám mặc định
                 tabPass.className = "w-1/2 py-2.5 text-xs font-bold rounded-xl bg-[#adff2f] shadow-sm text-slate-950 transition-all";
                 tabPin.className = "w-1/2 py-2.5 text-xs font-bold rounded-xl text-slate-500 transition-all bg-transparent";
                 container.innerHTML = `<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Mật khẩu hệ thống</label>
                     <input type="password" id="secPass" required placeholder="••••••••" class="w-full high-contrast-box rounded-xl p-3 bg-slate-50 text-slate-900 text-base">`;
             } else {
-                tabPin.className = "w-1/2 py-2.5 text-xs font-bold rounded-xl bg-[#adff2f] shadow-sm text-slate-950 transition-all";
+                // Tab Mã PIN: Xanh lục ngọc dịu mắt (#20b2aa / Light Sea Green) hài hòa cực đẹp | Tab Mật khẩu: Trở về xám mặc định
+                tabPin.className = "w-1/2 py-2.5 text-xs font-bold rounded-xl bg-[#20b2aa] shadow-sm text-white transition-all";
                 tabPass.className = "w-1/2 py-2.5 text-xs font-bold rounded-xl text-slate-500 transition-all bg-transparent";
                 container.innerHTML = `<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Mã PIN cá nhân (6 số)</label>
                     <input type="password" id="secPass" required placeholder="••••••" class="w-full high-contrast-box rounded-xl p-3 bg-slate-50 text-base tracking-widest">`;
@@ -927,7 +929,6 @@
             document.getElementById('3dBarPending').style.height = ((countIssue / max) * 80 + 10) + "%";
         }
 
-        // MỤC 1: LOGIC NHÂN SỰ ĐÃ ĐƯỢC ĐỒNG BỘ THỨ TỰ TRƯỜNG TOÀN DIỆN
         let currentStaffPhotoBase64 = "";
         window.previewStaffPhoto = function(e) {
             const file = e.target.files[0]; if(!file) return;
@@ -985,7 +986,6 @@
                 const text = evt.target.result; const lines = text.split('\n');
                 lines.forEach(line => {
                     const parts = line.split(',');
-                    // Định dạng nạp mới: [Đơn vị, Mã Nhân sự, Họ tên, Chức vụ]
                     if(parts.length >= 4) { 
                         const unit = parts[0].trim(); const code = parts[1].trim(); const name = parts[2].trim(); const pos = parts[3].trim();
                         if(code) db.ref(getEnvNode('staff_v4') + '/' + code).set({ id: code, name: name, unit: unit, position: pos, photo: "" });
@@ -999,7 +999,6 @@
             if(!table) return; table.innerHTML = "";
             const target = (filter === 'TẤT CẢ' || !filter) ? localStaff : localStaff.filter(x => x.unit === filter);
             target.forEach(st => {
-                // Bố trí lại trật tự hiển thị cột: Ảnh -> Đơn vị -> Mã nhân sự -> Họ tên -> Chức vụ
                 table.innerHTML += `<tr class="hover:bg-slate-50/80 transition-colors">
                     <td class="p-3"><img src="${st.photo || 'https://via.placeholder.com/50'}" class="w-10 h-10 object-cover rounded-full border border-slate-200 shadow-sm"></td>
                     <td class="p-3 text-slate-900 font-bold">${st.unit}</td>
@@ -1015,7 +1014,6 @@
             document.getElementById('badgeStaffCount').innerText = localStaff.length + " nhân sự";
         }
 
-        // MỤC 2: VẬT TƯ TIÊU HAO
         window.executeMaterialSubmit = function(e) {
             e.preventDefault();
             const editId = document.getElementById('matEditId').value;
@@ -1058,7 +1056,6 @@
             });
         }
 
-        // MỤC 3: ĐIỀU HÀNH SỰ CỐ
         window.executeIncidentSubmit = function(e) {
             e.preventDefault();
             const editId = document.getElementById('incEditId').value;
@@ -1101,7 +1098,6 @@
             });
         }
 
-        // MỤC 4: NHẬT KÝ CA KÍP
         window.executeShiftSubmit = function(e) {
             e.preventDefault();
             const editId = document.getElementById('shiftEditId').value;
@@ -1144,7 +1140,6 @@
             });
         }
 
-        // MỤC 5: CẤP PHÁT THIẾT BỊ
         window.handleGroupSelectChange = function(val) {
             const customInput = document.getElementById('allocGroupCustom');
             if(val === 'MỚI') { customInput.classList.remove('hidden'); customInput.required = true; }
@@ -1209,7 +1204,6 @@
             document.getElementById('badgeAllocCount').innerText = localAllocations.length + " thiết bị";
         }
 
-        // LỊCH SỬ SỬA CHỮA
         window.executeRepairLogSubmit = function(e) {
             e.preventDefault(); 
             const assetId = document.getElementById('repairAssetSelect').value;
@@ -1256,7 +1250,6 @@
             localAllocations.forEach(x => { select.innerHTML += `<option value="${x.id}">${x.id} - ${x.name}</option>`; });
         }
 
-        // CHỨNG TỪ VÀ THƯ MỤC
         window.handleAdvancedFileAndFolderUpload = function(files, isFolderStructure) {
             const category = document.getElementById('fileStorageCategory').value; if(!files.length) return;
             Array.from(files).forEach(file => {
