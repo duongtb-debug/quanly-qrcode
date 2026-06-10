@@ -12,82 +12,127 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=500;700;800&display=swap');
+        /* Nhúng font chữ hiện đại dùng cho các hệ thống SaaS cao cấp */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap');
         
-        html { scroll-behavior: smooth; }
+        html { 
+            scroll-behavior: smooth; 
+        }
         body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #012217; 
-            color: #f8fafc;
-            font-size: 16px; 
+            font-family: 'Inter', 'Plus Jakarta Sans', sans-serif; 
+            background-color: #022c22; /* Làm sâu thêm màu nền gỗ thông đặc trưng */
+            color: #f1f5f9;
+            font-size: 15px; 
+            letter-spacing: -0.01em;
         }
 
+        /* Đồng bộ hóa các tiêu đề lớn */
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        /* Làm mịn và tinh chỉnh các ô nhập liệu High-Contrast */
         .high-contrast-box {
-            border: 2px solid #cbd5e1 !important;
+            border: 1.5px solid #cbd5e1 !important;
             color: #0f172a !important;
-            font-weight: 700 !important;
+            font-weight: 600 !important;
+            transition: all 0.2s ease-in-out;
         }
         .high-contrast-box:focus {
-            border-color: #047857 !important;
+            border-color: #059669 !important;
             background-color: #f0fdf4 !important;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
             outline: none;
         }
 
-        .stage-3d { perspective: 1000px; }
+        /* Khắc phục và tối ưu hóa hiển thị cột biểu đồ 3D */
+        .stage-3d { 
+            perspective: 800px; 
+        }
         .pillar-3d {
-            transform: rotateX(20deg) rotateY(-10deg);
+            transform: rotateX(15deg) rotateY(-10deg);
             transform-style: preserve-3d;
-            box-shadow: -6px 12px 18px rgba(0, 0, 0, 0.5), inset 1px 2px 4px rgba(255,255,255,0.4);
-            transition: height 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: -4px 8px 16px rgba(0, 0, 0, 0.3), inset 0px 2px 4px rgba(255,255,255,0.3);
+            transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
+            min-height: 8px; /* Tránh bị mất hút khi dữ liệu bằng 0 */
         }
         
-        /* Đồng bộ hiển thị bảng biểu cân đối */
+        /* Cân đối khoảng cách, font chữ trong bảng biểu */
+        table {
+            border-collapse: separate !important;
+            border-spacing: 0 !important;
+        }
+        table th {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700 !important;
+            letter-spacing: 0.03em;
+        }
         table th, table td {
             vertical-align: middle !important;
-            text-align: left;
+            padding: 12px 16px !important;
+        }
+        table tr:last-child td:first-child { border-bottom-left-radius: 12px; }
+        table tr:last-child td:last-child { border-bottom-right-radius: 12px; }
+
+        /* Custom thanh cuộn nội bộ mượt mà */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
     </style>
 </head>
-<body class="min-h-screen p-3 md:p-6 space-y-6">
+<body class="min-h-screen p-4 md:p-8 space-y-6">
 
-    <div id="securityLockOverlay" class="fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-4">
-        <form onsubmit="validateSystemAccessForm(event)" class="bg-white rounded-[28px] shadow-2xl w-full max-w-md p-8 space-y-5 text-slate-900 border-4 border-emerald-800">
+    <div id="securityLockOverlay" class="fixed inset-0 bg-slate-950/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
+        <form onsubmit="validateSystemAccessForm(event)" class="bg-white rounded-[32px] shadow-2xl w-full max-w-md p-8 space-y-6 text-slate-900 border border-slate-100 transition-all transform scale-100">
             <div class="text-center space-y-2">
-                <div class="w-16 h-16 mx-auto flex items-center justify-center bg-[#005c3e] rounded-2xl text-white text-3xl shadow-lg">
-                    <i class="fa-solid fa-lock"></i>
+                <div class="w-16 h-16 mx-auto flex items-center justify-center bg-[#005c3e] rounded-2xl text-white text-3xl shadow-xl shadow-emerald-900/20">
+                    <i class="fa-solid fa-shield-halved"></i>
                 </div>
-                <h2 class="text-2xl font-extrabold text-[#005c3e] tracking-tight">VINAPACO ERP CONTROL</h2>
-                <p class="text-xs font-bold text-slate-500">Vui lòng điền đầy đủ thông tin để truy cập hệ thống</p>
+                <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight mt-4">VINAPACO ERP CONTROL</h2>
+                <p class="text-xs font-semibold text-slate-500">Nhấn ENTER hoặc KÍCH CHUỘT RA NGOÀI để vào hệ thống</p>
             </div>
 
-            <div class="flex bg-slate-100 p-1.5 rounded-2xl border-2 border-slate-200">
-                <button type="button" id="tabMethodPass" onclick="switchLoginMethod('pass')" class="w-1/2 py-2.5 text-sm font-extrabold rounded-xl bg-white shadow-md text-[#005c3e] transition-all">Mật Khẩu</button>
-                <button type="button" id="tabMethodPin" onclick="switchLoginMethod('pin')" class="w-1/2 py-2.5 text-sm font-extrabold rounded-xl text-slate-500 transition-all">Mã PIN</button>
+            <div class="flex bg-slate-100 p-1 rounded-2xl border border-slate-200/60">
+                <button type="button" id="tabMethodPass" onclick="switchLoginMethod('pass')" class="w-1/2 py-2.5 text-xs font-bold rounded-xl bg-white shadow-sm text-slate-900 transition-all">Mật Khẩu</button>
+                <button type="button" id="tabMethodPin" onclick="switchLoginMethod('pin')" class="w-1/2 py-2.5 text-xs font-bold rounded-xl text-slate-500 transition-all">Mã PIN</button>
             </div>
 
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-black text-slate-500 uppercase mb-1">Tài khoản cán bộ</label>
-                    <input type="text" id="secUser" required placeholder="Nhập username..." oninput="handleUsernameInput(this.value)" class="w-full high-contrast-box rounded-xl p-3 bg-slate-50 text-center text-lg">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Tài khoản</label>
+                    <input type="text" id="secUser" required placeholder="admin" oninput="handleUsernameInput(this.value)" class="w-full high-contrast-box rounded-xl p-3 bg-slate-50 text-slate-900 text-base">
                 </div>
                 <div id="dynamicSecretContainer">
-                    <label class="block text-xs font-black text-slate-500 uppercase mb-1">Mật khẩu hệ thống</label>
-                    <input type="password" id="secPass" required placeholder="Mật khẩu..." class="w-full high-contrast-box rounded-xl p-3 bg-slate-50 text-center text-lg">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Mật khẩu hệ thống</label>
+                    <input type="password" id="secPass" required placeholder="••••••••" class="w-full high-contrast-box rounded-xl p-3 bg-slate-50 text-base">
                 </div>
                 
-                <div class="flex items-center justify-between px-1">
-                    <label class="flex items-center gap-2 text-xs font-black text-slate-600 cursor-pointer select-none">
+                <div class="flex items-center justify-between pt-1">
+                    <label class="flex items-center gap-2 text-xs font-bold text-slate-600 cursor-pointer select-none">
                         <input type="checkbox" id="rememberCredentials" onchange="toggleRememberMeState()" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
-                        Ghi nhớ mật khẩu trên thiết bị này
+                        Ghi nhớ đăng nhập
                     </label>
+                    <a href="#" class="text-xs font-bold text-emerald-700 hover:underline">Quên mật khẩu / Mã PIN?</a>
                 </div>
 
-                <div id="secError" class="text-red-600 font-black text-sm text-center hidden bg-red-50 p-2 rounded-xl border border-red-200">
-                    ❌ Tài khoản hoặc mật khẩu/mã PIN không chính xác!
+                <div id="secError" class="text-red-600 font-bold text-xs text-center hidden bg-red-50 p-3 rounded-xl border border-red-200 animate-pulse">
+                    ❌ Tài khoản hoặc bảo mật mật mã không chính xác!
                 </div>
 
-                <button type="submit" class="w-full py-3.5 bg-[#005c3e] text-white font-black rounded-xl text-base hover:bg-emerald-950 uppercase tracking-wider transition-colors shadow-lg">
+                <button type="submit" class="w-full py-4 bg-[#004d34] text-white font-bold rounded-xl text-sm hover:bg-[#003825] uppercase tracking-wider transition-all shadow-lg shadow-emerald-900/20 mt-2">
                     Đăng Nhập Hệ Thống
                 </button>
             </div>
@@ -96,139 +141,139 @@
 
     <div id="appMainContainer" class="hidden max-w-7xl mx-auto space-y-6">
         
-        <header class="bg-white text-slate-900 rounded-2xl p-4 flex flex-col lg:flex-row items-center justify-between shadow-xl gap-4 border-2 border-slate-300">
-            <div class="flex items-center gap-3">
-                <div class="bg-[#005c3e] text-white p-3 rounded-xl text-2xl"><i class="fa-solid fa-industry"></i></div>
+        <header class="bg-white text-slate-900 rounded-3xl p-5 flex flex-col lg:flex-row items-center justify-between shadow-xl gap-4 border border-slate-100">
+            <div class="flex items-center gap-4">
+                <div class="bg-[#005c3e] text-white p-3.5 rounded-2xl text-2xl shadow-md shadow-emerald-900/10"><i class="fa-solid fa-industry"></i></div>
                 <div>
-                    <span class="block text-xs font-bold text-slate-500 uppercase tracking-wider">TỔNG CÔNG TY GIẤY VIỆT NAM</span>
-                    <h1 class="text-xl md:text-2xl font-black text-[#005c3e]">VINAPACO SYSTEM CONTROL 2026</h1>
+                    <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest">TỔNG CÔNG TY GIẤY VIỆT NAM</span>
+                    <h1 class="text-xl md:text-2xl font-black text-[#005c3e] tracking-tight">VINAPACO SYSTEM CONTROL 2026</h1>
                 </div>
             </div>
 
-            <div class="flex flex-col sm:flex-row items-center gap-2 bg-amber-50 border-2 border-amber-300 p-2 rounded-xl">
-                <div class="flex items-center gap-1">
-                    <span class="text-xs font-black text-amber-900 uppercase">Vận hành:</span>
-                    <select id="systemEnvironmentMode" onchange="toggleSystemEnvironment(this.value)" class="bg-white border border-amber-400 text-xs font-black rounded p-1.5 text-slate-900">
+            <div class="flex flex-col sm:flex-row items-center gap-3 bg-amber-50/70 border border-amber-200 p-2.5 rounded-2xl">
+                <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-bold text-amber-900 uppercase tracking-wider pl-1">Vận hành:</span>
+                    <select id="systemEnvironmentMode" onchange="toggleSystemEnvironment(this.value)" class="bg-white border border-amber-300 text-xs font-bold rounded-xl p-2 text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500">
                         <option value="TESTING">⚠️ CHẠY THỬ (Dữ liệu thử nghiệm)</option>
                         <option value="PRODUCTION">✅ CHẠY THẬT (Dữ liệu chính thức)</option>
                     </select>
                 </div>
-                <div id="testingDataActions" class="flex gap-1">
-                    <button onclick="promoteTestingToProduction()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-black text-[11px] px-2.5 py-1.5 rounded uppercase flex items-center gap-1 shadow"><i class="fa-solid fa-cloud-arrow-up"></i> Duyệt Dùng Thật</button>
-                    <button onclick="purgeAllTestingData()" class="bg-red-600 hover:bg-red-700 text-white font-black text-[11px] px-2.5 py-1.5 rounded uppercase flex items-center gap-1 shadow"><i class="fa-solid fa-trash-can"></i> Từ Chối & Xóa Thử</button>
+                <div id="testingDataActions" class="flex gap-1.5">
+                    <button onclick="promoteTestingToProduction()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-[11px] px-3 py-2 rounded-xl uppercase flex items-center gap-1.5 shadow transition-colors"><i class="fa-solid fa-cloud-arrow-up"></i> Duyệt Dùng Thật</button>
+                    <button onclick="purgeAllTestingData()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold text-[11px] px-3 py-2 rounded-xl uppercase flex items-center gap-1.5 shadow transition-colors"><i class="fa-solid fa-trash-can"></i> Từ Chối & Xóa</button>
                 </div>
             </div>
             
-            <div class="flex flex-wrap items-center gap-3 bg-slate-100 p-3 rounded-xl border border-slate-300">
-                <div class="text-sm font-black text-slate-800 space-y-0.5">
-                    <div class="flex items-center gap-1.5 text-emerald-800"><i class="fa-solid fa-calendar-days"></i> <span id="lunarDateStr">Đang tính lịch âm...</span></div>
-                    <div class="text-xs text-slate-500 font-bold">Tiết khí: <span id="solarTermStr" class="text-slate-700 font-black">--</span> | Giờ Hoàng Đạo: <span id="goodHoursStr" class="text-amber-700 font-black">--</span></div>
+            <div class="flex flex-wrap items-center gap-4 bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                <div class="text-xs font-semibold text-slate-600 space-y-1">
+                    <div class="flex items-center gap-2 text-emerald-800 font-bold"><i class="fa-solid fa-calendar-days text-sm"></i> <span id="lunarDateStr">Đang tính toán lịch...</span></div>
+                    <div class="text-[11px] text-slate-400">Tiết khí: <span id="solarTermStr" class="text-slate-700 font-bold">--</span> | Giờ Hoàng Đạo: <span id="goodHoursStr" class="text-amber-800 font-bold">--</span></div>
                 </div>
-                <div id="liveClockStr" class="bg-black text-emerald-400 font-mono text-xl font-bold px-4 py-2 rounded-lg shadow-inner">00:00:00</div>
-                <button onclick="location.reload()" class="bg-red-600 hover:bg-red-700 text-white font-black px-4 py-2 rounded-lg text-sm uppercase">Thoát</button>
+                <div id="liveClockStr" class="bg-slate-900 text-emerald-400 font-mono text-xl font-bold px-4 py-2 rounded-xl shadow-inner tracking-wider">00:00:00</div>
+                <button onclick="location.reload()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-4 py-2 rounded-xl text-xs uppercase tracking-wider shadow-sm transition-colors">Thoát</button>
             </div>
         </header>
 
         <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div class="lg:col-span-8 bg-white text-slate-900 rounded-2xl p-5 border-2 border-slate-300 shadow-xl space-y-4">
-                <div class="flex justify-between items-center border-b pb-2">
-                    <h3 class="text-base font-black uppercase text-[#005c3e]"><i class="fa-solid fa-chart-column mr-1"></i> Trực quan trạng thái cấp phát thiết bị & Thống kê tiến độ công việc</h3>
+            <div class="lg:col-span-8 bg-white text-slate-900 rounded-3xl p-6 border border-slate-100 shadow-xl space-y-4">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                    <h3 class="text-sm font-bold uppercase text-slate-900 tracking-wider flex items-center gap-2"><i class="fa-solid fa-chart-bar text-emerald-600"></i> Trực quan trạng thái cấp phát thiết bị & Tiến độ công việc</h3>
                 </div>
-                <div class="grid grid-cols-4 gap-2 pt-2 text-center text-xs font-black">
-                    <div class="space-y-2">
-                        <span class="text-slate-500 uppercase">Cấp Mới</span>
-                        <div class="stage-3d h-32 bg-slate-50 border rounded-xl flex items-end justify-center p-2 shadow-inner">
-                            <div id="3dBarNew" class="pillar-3d w-10 bg-gradient-to-t from-emerald-700 to-emerald-400 rounded-t-md" style="height: 30%;"></div>
+                <div class="grid grid-cols-4 gap-4 pt-2 text-center text-xs font-bold">
+                    <div class="space-y-3">
+                        <span class="text-slate-400 uppercase tracking-wider text-[11px]">Cấp Mới</span>
+                        <div class="stage-3d h-36 bg-slate-50 border border-slate-100 rounded-2xl flex items-end justify-center p-3 shadow-inner">
+                            <div id="3dBarNew" class="pillar-3d w-10 bg-gradient-to-t from-emerald-600 to-emerald-400 rounded-t-lg" style="height: 10%;"></div>
                         </div>
-                        <div id="3dValNew" class="text-emerald-700 text-sm mt-1">0 TB</div>
+                        <div id="3dValNew" class="text-emerald-700 text-sm font-bold mt-1">0 TB</div>
                     </div>
-                    <div class="space-y-2">
-                        <span class="text-slate-500 uppercase">Đang Sự Cố</span>
-                        <div class="stage-3d h-32 bg-slate-50 border rounded-xl flex items-end justify-center p-2 shadow-inner">
-                            <div id="3dBarIssue" class="pillar-3d w-10 bg-gradient-to-t from-rose-700 to-rose-400 rounded-t-md" style="height: 30%;"></div>
+                    <div class="space-y-3">
+                        <span class="text-slate-400 uppercase tracking-wider text-[11px]">Đang Sự Cố</span>
+                        <div class="stage-3d h-36 bg-slate-50 border border-slate-100 rounded-2xl flex items-end justify-center p-3 shadow-inner">
+                            <div id="3dBarIssue" class="pillar-3d w-10 bg-gradient-to-t from-rose-600 to-rose-400 rounded-t-lg" style="height: 10%;"></div>
                         </div>
-                        <div id="3dValIssue" class="text-rose-700 text-sm mt-1">0 TB</div>
+                        <div id="3dValIssue" class="text-rose-700 text-sm font-bold mt-1">0 TB</div>
                     </div>
-                    <div class="space-y-2">
-                        <span class="text-indigo-600 uppercase"><i class="fa-solid fa-square-check"></i> Công việc xong</span>
-                        <div class="stage-3d h-32 bg-slate-50 border rounded-xl flex items-end justify-center p-2 shadow-inner">
-                            <div id="3dBarDone" class="pillar-3d w-10 bg-gradient-to-t from-indigo-700 to-indigo-400 rounded-t-md" style="height: 60%;"></div>
+                    <div class="space-y-3">
+                        <span class="text-indigo-600 uppercase tracking-wider text-[11px]"><i class="fa-solid fa-square-check"></i> Công việc xong</span>
+                        <div class="stage-3d h-36 bg-slate-50 border border-slate-100 rounded-2xl flex items-end justify-center p-3 shadow-inner">
+                            <div id="3dBarDone" class="pillar-3d w-10 bg-gradient-to-t from-indigo-600 to-indigo-400 rounded-t-lg" style="height: 10%;"></div>
                         </div>
-                        <div id="3dValDone" class="text-indigo-700 text-sm mt-1">0 việc</div>
+                        <div id="3dValDone" class="text-indigo-700 text-sm font-bold mt-1">0 việc</div>
                     </div>
-                    <div class="space-y-2">
-                        <span class="text-amber-600 uppercase"><i class="fa-solid fa-triangle-exclamation"></i> Việc tồn đọng</span>
-                        <div class="stage-3d h-32 bg-slate-50 border rounded-xl flex items-end justify-center p-2 shadow-inner">
-                            <div id="3dBarPending" class="pillar-3d w-10 bg-gradient-to-t from-amber-600 to-amber-400 rounded-t-md" style="height: 40%;"></div>
+                    <div class="space-y-3">
+                        <span class="text-amber-600 uppercase tracking-wider text-[11px]"><i class="fa-solid fa-triangle-exclamation"></i> Việc tồn đọng</span>
+                        <div class="stage-3d h-36 bg-slate-50 border border-slate-100 rounded-2xl flex items-end justify-center p-3 shadow-inner">
+                            <div id="3dBarPending" class="pillar-3d w-10 bg-gradient-to-t from-amber-500 to-amber-400 rounded-t-lg" style="height: 10%;"></div>
                         </div>
-                        <div id="3dValPending" class="text-amber-700 text-sm mt-1">0 việc</div>
+                        <div id="3dValPending" class="text-amber-700 text-sm font-bold mt-1">0 việc</div>
                     </div>
                 </div>
             </div>
 
-            <div class="lg:col-span-4 bg-white text-slate-900 rounded-2xl p-5 border-2 border-slate-300 shadow-xl flex flex-col justify-between">
-                <div class="space-y-2">
-                    <h4 class="text-xs font-black text-slate-500 uppercase tracking-wider"><i class="fa-solid fa-mug-hot text-amber-600"></i> Lịch nhắc việc & Chế độ nghỉ ngơi</h4>
-                    <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 text-xs font-bold space-y-1.5 text-amber-950">
-                        <div class="flex justify-between"><span>📢 Giao ban ca kíp vận hành:</span> <span class="bg-amber-200 px-1.5 py-0.5 rounded">08:00</span></div>
-                        <div class="flex justify-between text-emerald-900 font-black"><span>☕ Thời gian xả hơi giữa ca:</span> <span class="bg-emerald-200 px-1.5 py-0.5 rounded">15m nghỉ / mỗi 2h làm</span></div>
-                        <div class="flex justify-between"><span>🚨 Kiểm tra an toàn hệ thống lò hơi:</span> <span class="bg-rose-200 text-rose-900 px-1.5 py-0.5 rounded">Trước 16:00</span></div>
+            <div class="lg:col-span-4 bg-white text-slate-900 rounded-3xl p-6 border border-slate-100 shadow-xl flex flex-col justify-between">
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-amber-500"></i> Lịch nhắc việc & Chế độ nghỉ ngơi</h4>
+                    <div class="bg-amber-50/50 p-4 rounded-2xl border border-amber-100 text-xs font-semibold space-y-2.5 text-slate-700">
+                        <div class="flex justify-between items-center"><span>📢 Giao ban ca kíp vận hành:</span> <span class="bg-amber-200/60 text-amber-900 font-bold px-2 py-0.5 rounded-lg text-[11px]">08:00</span></div>
+                        <div class="flex justify-between items-center text-emerald-950"><span>☕ Thời gian xả hơi giữa ca:</span> <span class="bg-emerald-200/60 text-emerald-900 font-bold px-2 py-0.5 rounded-lg text-[11px]">15m nghỉ / mỗi 2h</span></div>
+                        <div class="flex justify-between items-center"><span>🚨 Kiểm tra an toàn hệ thống lò hơi:</span> <span class="bg-rose-200/60 text-rose-900 font-bold px-2 py-0.5 rounded-lg text-[11px]">Trước 16:00</span></div>
                     </div>
                 </div>
-                <div class="bg-slate-950 text-amber-300 p-3 rounded-xl border-l-4 border-amber-500 text-xs font-bold italic mt-2">
-                    <i class="fa-solid fa-quote-left mr-1"></i> <span id="folkSayingLabel">An toàn để sản xuất, sản xuất phải an toàn.</span>
+                <div class="bg-slate-900 text-amber-300 p-4 rounded-2xl border-l-4 border-amber-500 text-xs font-medium italic mt-4 shadow-md shadow-slate-950/10">
+                    <i class="fa-solid fa-quote-left mr-1.5 text-amber-400"></i> <span id="folkSayingLabel">An toàn để sản xuất, sản xuất phải an toàn.</span>
                 </div>
             </div>
         </section>
 
-        <section id="secUserAnchor" class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
-            <div class="bg-slate-800 text-white p-4 flex justify-between items-center">
-                <h3 class="text-base font-black uppercase flex items-center gap-2"><i class="fa-solid fa-user-gear text-emerald-400"></i> Cơ chế thiết lập & Quản lý tài khoản cán bộ vận hành</h3>
-                <span id="badgeUserCount" class="bg-black/30 font-mono text-sm px-3 py-1 rounded font-bold">0 tài khoản</span>
+        <section id="secUserAnchor" class="bg-white text-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+            <div class="bg-slate-900 text-white p-4 px-6 flex justify-between items-center">
+                <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-user-gear text-emerald-400"></i> Cơ chế thiết lập & Quản lý tài khoản cán bộ vận hành</h3>
+                <span id="badgeUserCount" class="bg-white/10 font-mono text-xs px-3 py-1 rounded-xl font-bold">0 tài khoản</span>
             </div>
-            <div class="p-5 space-y-6">
+            <div class="p-6 space-y-6">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <form id="formUserLogic" onsubmit="executeUserAccountSubmit(event)" class="lg:col-span-5 grid grid-cols-1 gap-3 bg-slate-50 p-4 rounded-xl border-2 text-sm">
+                    <form id="formUserLogic" onsubmit="executeUserAccountSubmit(event)" class="lg:col-span-4 grid grid-cols-1 gap-4 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 text-xs">
                         <input type="hidden" id="userEditId" value="">
                         <div>
-                            <label class="block font-black text-slate-700 mb-0.5">Tên đăng nhập (Username)</label>
-                            <input type="text" id="sysUsername" required placeholder="Ví dụ: nguyenvanua" class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
+                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Tên đăng nhập (Username)</label>
+                            <input type="text" id="sysUsername" required placeholder="Ví dụ: nguyenvanua" class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                         </div>
-                        <div class="grid grid-cols-2 gap-2">
+                        <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block font-black text-slate-700 mb-0.5">Mật khẩu</label>
-                                <input type="password" id="sysPassword" required placeholder="Mật khẩu..." class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
+                                <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Mật khẩu</label>
+                                <input type="password" id="sysPassword" required placeholder="Mật khẩu..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                             </div>
                             <div>
-                                <label class="block font-black text-slate-700 mb-0.5">Mã PIN (6 số)</label>
-                                <input type="password" id="sysPin" required placeholder="Mã PIN nhanh..." class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
+                                <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Mã PIN (6 số)</label>
+                                <input type="password" id="sysPin" required placeholder="Mã PIN..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                             </div>
                         </div>
                         <div>
-                            <label class="block font-black text-slate-700 mb-0.5">Vai trò hệ thống</label>
-                            <select id="sysRole" class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
+                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Vai trò hệ thống</label>
+                            <select id="sysRole" class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm focus:outline-none">
                                 <option value="Quản trị viên cấp cao">Quản trị viên cấp cao</option>
                                 <option value="Trưởng ca sản xuất">Trưởng ca sản xuất</option>
                                 <option value="Cán bộ Kỹ thuật lò hơi">Cán bộ Kỹ thuật lò hơi</option>
                                 <option value="Nhân viên Kho vật tư">Nhân viên Kho vật tư</option>
                             </select>
                         </div>
-                        <div class="flex gap-2">
-                            <button type="button" id="btnCancelUserEdit" onclick="resetUserFormState()" class="bg-slate-300 px-4 py-2 rounded-xl font-bold uppercase text-xs hidden">Hủy</button>
-                            <button type="submit" id="btnSubmitUserText" class="w-full bg-slate-800 text-white font-black py-3 rounded-xl uppercase text-xs tracking-wider">Khởi tạo / Cập nhật tài khoản</button>
+                        <div class="flex gap-2 pt-1">
+                            <button type="button" id="btnCancelUserEdit" onclick="resetUserFormState()" class="bg-slate-200 text-slate-700 px-4 py-3 rounded-xl font-bold uppercase text-[11px] hidden transition-colors">Hủy</button>
+                            <button type="submit" id="btnSubmitUserText" class="w-full bg-slate-900 text-white font-bold py-3.5 rounded-xl uppercase tracking-wider text-[11px] transition-colors shadow-md">Khởi tạo tài khoản</button>
                         </div>
                     </form>
-                    <div class="lg:col-span-7">
-                        <div class="overflow-x-auto border rounded-xl max-h-[280px] overflow-y-auto bg-white">
-                            <table class="w-full text-left border-collapse text-sm">
-                                <thead class="bg-slate-100 font-black text-slate-700 border-b sticky top-0 z-10">
+                    <div class="lg:col-span-8">
+                        <div class="overflow-x-auto border border-slate-100 rounded-2xl max-h-[290px] overflow-y-auto bg-white shadow-inner">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-slate-50 font-bold text-slate-500 border-b border-slate-100 sticky top-0 z-10 uppercase tracking-wider">
                                     <tr>
                                         <th class="p-3">Tên Đăng Nhập</th>
                                         <th class="p-3">Vai Trò Quyền Hạn</th>
                                         <th class="p-3 text-center w-[120px]">Hành Động</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tableUsersBody" class="divide-y divide-slate-200 font-bold text-slate-900"></tbody>
+                                <tbody id="tableUsersBody" class="divide-y divide-slate-100 font-semibold text-slate-700"></tbody>
                             </table>
                         </div>
                     </div>
@@ -236,76 +281,76 @@
             </div>
         </section>
 
-        <section id="staffAnchor" class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
-            <div class="bg-[#1e3a8a] text-white p-4 flex justify-between items-center">
-                <h3 class="text-base font-black uppercase flex items-center gap-2"><i class="fa-solid fa-users-gear"></i> 1. Quản lý danh mục Đơn vị, Nhân sự & Hồ sơ công tác đa tầng</h3>
-                <span id="badgeStaffCount" class="bg-black/30 font-mono text-sm px-3 py-1 rounded font-bold">0 nhân sự</span>
+        <section id="staffAnchor" class="bg-white text-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+            <div class="bg-blue-900 text-white p-4 px-6 flex justify-between items-center">
+                <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-users"></i> 1. Danh mục Đơn vị, Nhân sự & Hồ sơ công tác đa tầng</h3>
+                <span id="badgeStaffCount" class="bg-white/10 font-mono text-xs px-3 py-1 rounded-xl font-bold">0 nhân sự</span>
             </div>
-            <div class="p-5 space-y-6">
-                <div class="bg-blue-50 border-2 border-blue-200 p-4 rounded-xl grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+            <div class="p-6 space-y-6">
+                <div class="bg-blue-50/60 border border-blue-100 p-4 rounded-2xl grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                     <div class="md:col-span-8">
-                        <h4 class="font-black text-blue-900 text-sm uppercase">⚡ Nhập nhanh hàng loạt nhân sự chống trùng lặp dữ liệu</h4>
-                        <p class="text-xs text-blue-700 font-bold mt-0.5">Nạp tệp danh sách (.txt/.csv) phân tách dấu phẩy [Mã Nhân sự, Họ tên, Đơn vị].</p>
+                        <h4 class="font-bold text-blue-900 text-xs uppercase tracking-wider">⚡ Nhập nhanh hàng loạt nhân sự chống trùng lặp dữ liệu</h4>
+                        <p class="text-xs text-blue-600 font-medium mt-0.5">Nạp tệp danh sách (.txt/.csv) phân tách dấu phẩy [Mã Nhân sự, Họ tên, Đơn vị].</p>
                     </div>
-                    <div class="md:col-span-4 text-right">
-                        <input type="file" id="bulkStaffFile" onchange="triggerBulkStaffImport(event)" class="text-xs bg-white p-2 rounded-lg border w-full font-bold">
+                    <div class="md:col-span-4">
+                        <input type="file" id="bulkStaffFile" onchange="triggerBulkStaffImport(event)" class="text-xs bg-white p-2.5 rounded-xl border border-slate-200 w-full font-semibold focus:outline-none">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <form id="formStaffLogic" onsubmit="executeStaffSubmit(event)" class="lg:col-span-5 grid grid-cols-1 gap-3 bg-slate-50 p-4 rounded-xl border-2 text-sm">
+                    <form id="formStaffLogic" onsubmit="executeStaffSubmit(event)" class="lg:col-span-4 grid grid-cols-1 gap-4 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 text-xs">
                         <input type="hidden" id="staffEditId" value="">
                         <div>
-                            <label class="block font-black text-slate-700 mb-0.5">Mã Nhân sự (Tự động hoặc Nhập tay)</label>
+                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Mã Nhân sự</label>
                             <div class="flex gap-2">
-                                <input type="text" id="staffCode" required placeholder="Ví dụ: VNP-HR-00001" class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base font-mono">
-                                <button type="button" onclick="generateSequentialStaffId()" class="bg-blue-700 text-white font-black px-3 rounded-xl text-xs uppercase whitespace-nowrap"><i class="fa-solid fa-wand-magic-sparkles"></i> Tự sinh</button>
+                                <input type="text" id="staffCode" required placeholder="Ví dụ: VNP-HR-00001" class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm font-mono">
+                                <button type="button" onclick="generateSequentialStaffId()" class="bg-blue-800 text-white font-bold px-3.5 rounded-xl text-[11px] uppercase whitespace-nowrap shadow transition-colors"><i class="fa-solid fa-wand-magic-sparkles"></i> Tự sinh</button>
                             </div>
                         </div>
                         <div>
-                            <label class="block font-black text-slate-700 mb-0.5">Họ và tên</label>
-                            <input type="text" id="staffName" required placeholder="Nhập tên..." class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
+                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Họ và tên</label>
+                            <input type="text" id="staffName" required placeholder="Nhập tên nhân sự..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                         </div>
                         <div>
-                            <label class="block font-black text-slate-700 mb-0.5">Đơn vị / Phòng ban / Phân xưởng</label>
-                            <input type="text" id="staffUnitCustom" required list="dynamicUnitsDatalist" placeholder="Nhập phòng ban hoặc chọn..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Đơn vị / Phòng ban</label>
+                            <input type="text" id="staffUnitCustom" required list="dynamicUnitsDatalist" placeholder="Nhập phòng ban hoặc chọn..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                             <datalist id="dynamicUnitsDatalist"></datalist>
                         </div>
                         <div>
-                            <label class="block font-black text-slate-700 mb-0.5">Ảnh chân dung</label>
-                            <input type="file" id="staffPhotoFile" accept="image/*" onchange="previewStaffPhoto(event)" class="w-full text-xs bg-white p-1 rounded-lg border">
-                            <img id="staffPhotoPreview" src="" class="h-16 w-16 object-cover rounded border mt-1 hidden">
+                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Ảnh chân dung</label>
+                            <input type="file" id="staffPhotoFile" accept="image/*" onchange="previewStaffPhoto(event)" class="w-full text-xs bg-white p-2 rounded-xl border border-slate-200 focus:outline-none">
+                            <img id="staffPhotoPreview" src="" class="h-16 w-16 object-cover rounded-xl border mt-2 hidden shadow-inner">
                         </div>
-                        <div class="bg-white p-3 rounded-xl border space-y-2">
-                            <label class="block font-black text-blue-900 text-xs uppercase"><i class="fa-solid fa-folder-open"></i> Quá trình công tác đính kèm</label>
-                            <div class="grid grid-cols-2 gap-2">
-                                <input type="file" id="staffDocFiles" multiple class="text-xs bg-slate-50 p-1 rounded border">
-                                <input type="file" id="staffDocFolder" webkitdirectory directory multiple class="text-xs bg-slate-50 p-1 rounded border">
+                        <div class="bg-white p-4 rounded-xl border border-slate-100 space-y-2">
+                            <label class="block font-bold text-blue-900 text-[11px] uppercase tracking-wider"><i class="fa-solid fa-folder-open"></i> Quá trình công tác đính kèm</label>
+                            <div class="grid grid-cols-1 gap-2">
+                                <input type="file" id="staffDocFiles" multiple class="text-xs bg-slate-50 p-2 rounded-xl border border-slate-200">
+                                <input type="file" id="staffDocFolder" webkitdirectory directory multiple class="text-xs bg-slate-50 p-2 rounded-xl border border-slate-200">
                             </div>
                         </div>
                         <div class="flex justify-end gap-2 pt-1">
-                            <button type="button" id="btnCancelStaffEdit" onclick="resetStaffFormState()" class="bg-slate-300 px-4 py-2 rounded-xl font-bold uppercase text-xs hidden">Hủy</button>
-                            <button type="submit" id="btnSubmitStaffText" class="w-full bg-[#1e3a8a] text-white font-black py-3 rounded-xl uppercase text-xs tracking-wider">Lưu thông tin nhân sự</button>
+                            <button type="button" id="btnCancelStaffEdit" onclick="resetStaffFormState()" class="bg-slate-200 text-slate-700 px-4 py-3 rounded-xl font-bold uppercase text-[11px] hidden transition-colors">Hủy</button>
+                            <button type="submit" id="btnSubmitStaffText" class="w-full bg-blue-900 text-white font-bold py-3.5 rounded-xl uppercase tracking-wider text-[11px] transition-colors shadow-md">Lưu thông tin nhân sự</button>
                         </div>
                     </form>
 
-                    <div class="lg:col-span-7 space-y-3">
-                        <div class="flex gap-2 bg-slate-100 p-2 rounded-xl border">
-                            <select id="filterStaffUnit" onchange="renderStaffTableData()" class="w-full high-contrast-box rounded-xl p-2 bg-white text-sm">
+                    <div class="lg:col-span-8 space-y-3">
+                        <div class="flex gap-2 bg-slate-50 p-2 rounded-2xl border border-slate-100">
+                            <select id="filterStaffUnit" onchange="renderStaffTableData()" class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-xs focus:outline-none">
                                 <option value="TẤT CẢ">-- Lọc theo tất cả đơn vị thành viên --</option>
                             </select>
                         </div>
-                        <div class="overflow-x-auto border rounded-xl max-h-[350px] overflow-y-auto bg-white">
-                            <table class="w-full text-left border-collapse text-sm">
-                                <thead class="bg-slate-100 font-black text-slate-700 border-b sticky top-0 z-10">
+                        <div class="overflow-x-auto border border-slate-100 rounded-2xl max-h-[380px] overflow-y-auto bg-white shadow-inner">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-slate-50 font-bold text-slate-500 border-b border-slate-100 sticky top-0 z-10 uppercase tracking-wider">
                                     <tr>
-                                        <th class="p-3 w-[60px]">Ảnh</th>
-                                        <th class="p-3 w-[140px]">Mã Nhân sự</th>
+                                        <th class="p-3 w-[70px]">Ảnh</th>
+                                        <th class="p-3 w-[150px]">Mã Nhân sự</th>
                                         <th class="p-3">Họ Tên / Đơn Vị</th>
                                         <th class="p-3 text-center w-[120px]">Hành Động</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tableStaffBody" class="divide-y divide-slate-200 font-bold text-slate-900"></tbody>
+                                <tbody id="tableStaffBody" class="divide-y divide-slate-100 font-semibold text-slate-700"></tbody>
                             </table>
                         </div>
                     </div>
@@ -313,154 +358,154 @@
             </div>
         </section>
 
-        <section id="materialAnchor" class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
-            <div class="bg-[#005c3e] text-white p-4 flex justify-between items-center">
-                <h3 class="text-base font-black uppercase flex items-center gap-2"><i class="fa-solid fa-box"></i> 2. Quản lý vật tư tiêu hao (Hóa chất, Lưới xeo, Bột giấy)</h3>
-                <span id="badgeMaterialCount" class="bg-black/30 font-mono text-sm px-3 py-1 rounded font-bold">0 loại</span>
+        <section id="materialAnchor" class="bg-white text-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+            <div class="bg-[#005c3e] text-white p-4 px-6 flex justify-between items-center">
+                <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-box-open"></i> 2. Quản lý vật tư tiêu hao (Hóa chất, Lưới xeo, Bột giấy)</h3>
+                <span id="badgeMaterialCount" class="bg-white/10 font-mono text-xs px-3 py-1 rounded-xl font-bold">0 loại</span>
             </div>
-            <div class="p-5 space-y-6">
-                <form id="formMaterialLogic" onsubmit="executeMaterialSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border-2 text-sm">
+            <div class="p-6 space-y-6">
+                <form id="formMaterialLogic" onsubmit="executeMaterialSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-4 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 text-xs">
                     <input type="hidden" id="matEditId" value="">
                     <div>
-                        <label class="block font-black text-slate-700 mb-1">Tên vật tư kỹ thuật</label>
-                        <input type="text" id="matName" required placeholder="Ví dụ: Lưới xeo giấy..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Tên vật tư kỹ thuật</label>
+                        <input type="text" id="matName" required placeholder="Ví dụ: Lưới xeo giấy..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                     </div>
                     <div>
-                        <label class="block font-black text-slate-700 mb-1">Số lượng tồn kho</label>
-                        <input type="number" id="matQty" required placeholder="Nhập số..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Số lượng tồn kho</label>
+                        <input type="number" id="matQty" required placeholder="Nhập số lượng..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                     </div>
                     <div>
-                        <label class="block font-black text-slate-700 mb-1">Đơn vị đo lường</label>
-                        <input type="text" id="matUnit" required placeholder="Tấn, Cuộn, Kg..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Đơn vị đo lường</label>
+                        <input type="text" id="matUnit" required placeholder="Tấn, Cuộn, Kg..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                     </div>
                     <div class="flex items-end gap-2">
-                        <button type="button" id="btnCancelMatEdit" onclick="resetMaterialFormState()" class="bg-slate-300 px-4 py-4 rounded-xl font-bold uppercase text-xs hidden">Hủy</button>
-                        <button type="submit" id="btnSubmitMatText" class="w-full bg-[#005c3e] text-white font-black py-4 rounded-xl uppercase tracking-wider text-xs">Cập nhật kho</button>
+                        <button type="button" id="btnCancelMatEdit" onclick="resetMaterialFormState()" class="bg-slate-200 text-slate-700 px-4 py-3.5 rounded-xl font-bold uppercase text-[11px] hidden transition-colors">Hủy</button>
+                        <button type="submit" id="btnSubmitMatText" class="w-full bg-[#005c3e] text-white font-bold py-3.5 rounded-xl uppercase tracking-wider text-[11px] shadow-md transition-colors">Cập nhật kho</button>
                     </div>
                 </form>
-                <div class="overflow-x-auto border rounded-xl">
-                    <table class="w-full text-left border-collapse text-sm">
-                        <thead class="bg-slate-100 font-black text-slate-700 border-b">
+                <div class="overflow-x-auto border border-slate-100 rounded-2xl shadow-inner bg-white">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-50 font-bold text-slate-500 border-b border-slate-100 uppercase tracking-wider">
                             <tr>
                                 <th class="p-3">Tên Vật Tư Tiêu Hao</th>
-                                <th class="p-3 w-[150px]">Số Lượng Thực Tế</th>
-                                <th class="p-3 w-[150px]">Đơn Vị Tính</th>
+                                <th class="p-3 w-[180px]">Số Lượng Thực Tế</th>
+                                <th class="p-3 w-[180px]">Đơn Vị Tính</th>
                                 <th class="p-3 text-center w-[120px]">Hành Động</th>
                             </tr>
                         </thead>
-                        <tbody id="tableMaterialBody" class="divide-y divide-slate-200 font-bold"></tbody>
+                        <tbody id="tableMaterialBody" class="divide-y divide-slate-100 font-semibold text-slate-700"></tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <section id="incidentAnchor" class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
-            <div class="bg-rose-900 text-white p-4 flex justify-between items-center">
-                <h3 class="text-base font-black uppercase flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> 3. Trung tâm điều phối xử lý sự cố khẩn cấp ca kíp nhà máy</h3>
-                <span id="badgeIncidentCount" class="bg-black/30 font-mono text-sm px-3 py-1 rounded font-bold">0 sự cố</span>
+        <section id="incidentAnchor" class="bg-white text-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+            <div class="bg-rose-950 text-white p-4 px-6 flex justify-between items-center">
+                <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> 3. Điều phối xử lý sự cố khẩn cấp ca kíp nhà máy</h3>
+                <span id="badgeIncidentCount" class="bg-white/10 font-mono text-xs px-3 py-1 rounded-xl font-bold">0 sự cố</span>
             </div>
-            <div class="p-5 space-y-6">
-                <form id="formIncidentLogic" onsubmit="executeIncidentSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border-2 text-sm">
+            <div class="p-6 space-y-6">
+                <form id="formIncidentLogic" onsubmit="executeIncidentSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-4 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 text-xs">
                     <input type="hidden" id="incEditId" value="">
                     <div>
-                        <label class="block font-black text-slate-700 mb-1">Khu vực / Phân xưởng xảy ra</label>
-                        <input type="text" id="incLocation" required placeholder="Ví dụ: Lò hơi số 2..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Khu vực / Phân xưởng</label>
+                        <input type="text" id="incLocation" required placeholder="Ví dụ: Lò hơi số 2..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                     </div>
                     <div>
-                        <label class="block font-black text-slate-700 mb-1">Mô tả hiện trạng sự cố</label>
-                        <input type="text" id="incDesc" required placeholder="Ví dụ: Kẹt van áp suất..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Mô tả hiện trạng</label>
+                        <input type="text" id="incDesc" required placeholder="Ví dụ: Kẹt van áp suất..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                     </div>
                     <div>
-                        <label class="block font-black text-slate-700 mb-1">Mức độ nguy hại</label>
-                        <select id="incLevel" class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Mức độ nguy hại</label>
+                        <select id="incLevel" class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm focus:outline-none">
                             <option value="🔴 NGUY HIỂM - DỪNG MÁY">🔴 NGUY HIỂM - DỪNG MÁY</option>
                             <option value="🟡 TRUNG BÌNH - THEO DÕI">🟡 TRUNG BÌNH - THEO DÕI</option>
                         </select>
                     </div>
                     <div class="flex items-end gap-2">
-                        <button type="button" id="btnCancelIncEdit" onclick="resetIncidentFormState()" class="bg-slate-300 px-4 py-4 rounded-xl font-bold uppercase text-xs hidden">Hủy</button>
-                        <button type="submit" id="btnSubmitIncText" class="w-full bg-rose-900 text-white font-black py-4 rounded-xl uppercase tracking-wider text-xs">Phát Lệnh</button>
+                        <button type="button" id="btnCancelIncEdit" onclick="resetIncidentFormState()" class="bg-slate-200 text-slate-700 px-4 py-3.5 rounded-xl font-bold uppercase text-[11px] hidden transition-colors">Hủy</button>
+                        <button type="submit" id="btnSubmitIncText" class="w-full bg-rose-900 text-white font-bold py-3.5 rounded-xl uppercase tracking-wider text-[11px] shadow-md transition-colors">Phát Lệnh</button>
                     </div>
                 </form>
-                <div class="overflow-x-auto border rounded-xl">
-                    <table class="w-full text-left border-collapse text-sm">
-                        <thead class="bg-slate-100 font-black text-slate-700 border-b">
+                <div class="overflow-x-auto border border-slate-100 rounded-2xl shadow-inner bg-white">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-50 font-bold text-slate-500 border-b border-slate-100 uppercase tracking-wider">
                             <tr>
                                 <th class="p-3">Vị Trí Sự Cố</th>
                                 <th class="p-3">Nội Dung Biểu Hiện</th>
-                                <th class="p-3 w-[220px]">Mức Độ</th>
+                                <th class="p-3 w-[240px]">Mức Độ</th>
                                 <th class="p-3 text-center w-[120px]">Hành Động</th>
                             </tr>
                         </thead>
-                        <tbody id="tableIncidentBody" class="divide-y divide-slate-200 font-bold"></tbody>
+                        <tbody id="tableIncidentBody" class="divide-y divide-slate-100 font-semibold text-slate-700"></tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <section id="shiftAnchor" class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
-            <div class="bg-indigo-900 text-white p-4 flex justify-between items-center">
-                <h3 class="text-base font-black uppercase flex items-center gap-2"><i class="fa-solid fa-book-open"></i> 4. Nhật ký điện tử số hóa bàn giao ca kíp sản xuất giấy</h3>
-                <span id="badgeShiftCount" class="bg-black/30 font-mono text-sm px-3 py-1 rounded font-bold">0 ca kíp</span>
+        <section id="shiftAnchor" class="bg-white text-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+            <div class="bg-indigo-950 text-white p-4 px-6 flex justify-between items-center">
+                <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-book-bookmark"></i> 4. Nhật ký điện tử số hóa bàn giao ca kíp sản xuất giấy</h3>
+                <span id="badgeShiftCount" class="bg-white/10 font-mono text-xs px-3 py-1 rounded-xl font-bold">0 ca kíp</span>
             </div>
-            <div class="p-5 space-y-6">
-                <form id="formShiftLogic" onsubmit="executeShiftSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border-2 text-sm">
+            <div class="p-6 space-y-6">
+                <form id="formShiftLogic" onsubmit="executeShiftSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-4 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 text-xs">
                     <input type="hidden" id="shiftEditId" value="">
                     <div>
-                        <label class="block font-black text-slate-700 mb-1">Tên Trưởng ca bàn giao</label>
-                        <input type="text" id="shiftLeader" required placeholder="Nhập tên trưởng ca..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Trưởng ca bàn giao</label>
+                        <input type="text" id="shiftLeader" required placeholder="Nhập tên trưởng ca..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                     </div>
                     <div>
-                        <label class="block font-black text-slate-700 mb-1">Kíp làm việc vận hành</label>
-                        <input type="text" id="shiftName" required placeholder="Ví dụ: Kíp A1..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Kíp làm việc vận hành</label>
+                        <input type="text" id="shiftName" required placeholder="Ví dụ: Kíp A1..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                     </div>
                     <div>
-                        <label class="block font-black text-slate-700 mb-1">Nội dung lưu ý đặc biệt</label>
-                        <input type="text" id="shiftNotes" required placeholder="Ví dụ: Máy nghiền cần châm dầu..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Nội dung lưu ý đặc biệt</label>
+                        <input type="text" id="shiftNotes" required placeholder="Ví dụ: Máy nghiền cần châm dầu..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                     </div>
                     <div class="flex items-end gap-2">
-                        <button type="button" id="btnCancelShiftEdit" onclick="resetShiftFormState()" class="bg-slate-300 px-4 py-4 rounded-xl font-bold uppercase text-xs hidden">Hủy</button>
-                        <button type="submit" id="btnSubmitShiftText" class="w-full bg-indigo-900 text-white font-black py-4 rounded-xl uppercase tracking-wider text-xs">Ký Xác Nhận</button>
+                        <button type="button" id="btnCancelShiftEdit" onclick="resetShiftFormState()" class="bg-slate-200 text-slate-700 px-4 py-3.5 rounded-xl font-bold uppercase text-[11px] hidden transition-colors">Hủy</button>
+                        <button type="submit" id="btnSubmitShiftText" class="w-full bg-indigo-900 text-white font-bold py-3.5 rounded-xl uppercase tracking-wider text-[11px] shadow-md transition-colors">Ký Xác Nhận</button>
                     </div>
                 </form>
-                <div class="overflow-x-auto border rounded-xl">
-                    <table class="w-full text-left border-collapse text-sm">
-                        <thead class="bg-slate-100 font-black text-slate-700 border-b">
+                <div class="overflow-x-auto border border-slate-100 rounded-2xl shadow-inner bg-white">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-50 font-bold text-slate-500 border-b border-slate-100 uppercase tracking-wider">
                             <tr>
-                                <th class="p-3 w-[200px]">Trưởng Ca Đương Nhiệm</th>
-                                <th class="p-3 w-[150px]">Kíp Vận Hành</th>
+                                <th class="p-3 w-[220px]">Trưởng Ca Bàn Giao</th>
+                                <th class="p-3 w-[180px]">Kíp Vận Hành</th>
                                 <th class="p-3">Nội Dung Chỉ Dẫn</th>
                                 <th class="p-3 text-center w-[120px]">Hành Động</th>
                             </tr>
                         </thead>
-                        <tbody id="tableShiftBody" class="divide-y divide-slate-200 font-bold"></tbody>
+                        <tbody id="tableShiftBody" class="divide-y divide-slate-100 font-semibold text-slate-700"></tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <section id="allocAnchor" class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
-            <div class="bg-[#243047] text-white p-4 flex justify-between items-center">
-                <h3 class="text-base font-black uppercase flex items-center gap-2"><i class="fa-solid fa-qrcode text-cyan-400"></i> 5. Quản lý cấp phát thiết bị vật tư & Mã hóa QR Code định danh</h3>
-                <span id="badgeAllocCount" class="bg-black/30 font-mono text-sm px-3 py-1 rounded font-bold">0 thiết bị</span>
+        <section id="allocAnchor" class="bg-white text-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+            <div class="bg-slate-900 text-white p-4 px-6 flex justify-between items-center">
+                <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-qrcode text-emerald-400"></i> 5. Quản lý cấp phát thiết bị vật tư & Mã hóa QR Code định danh</h3>
+                <span id="badgeAllocCount" class="bg-white/10 font-mono text-xs px-3 py-1 rounded-xl font-bold">0 thiết bị</span>
             </div>
             
-            <div class="p-5 space-y-6">
-                <form id="formAllocationLogic" onsubmit="executeAllocationSubmit(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-4 bg-slate-50 p-5 rounded-xl border-2 text-sm">
+            <div class="p-6 space-y-6">
+                <form id="formAllocationLogic" onsubmit="executeAllocationSubmit(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-4 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 text-xs">
                     <input type="hidden" id="allocEditId" value="">
                     
                     <div class="sm:col-span-3">
-                        <label class="block font-black text-slate-700 mb-1">Mã thiết bị tự sinh</label>
-                        <input type="text" id="allocGeneratedId" readonly class="w-full high-contrast-box rounded-xl p-3 bg-slate-200 font-mono text-center text-emerald-900 text-base font-black">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Mã thiết bị tự sinh</label>
+                        <input type="text" id="allocGeneratedId" readonly class="w-full high-contrast-box rounded-xl p-3 bg-slate-200 font-mono text-center text-emerald-950 font-bold text-sm">
                     </div>
                     <div class="sm:col-span-3">
-                        <label class="block font-black text-slate-700 mb-1">Tên thiết bị cấp phát</label>
-                        <input type="text" id="allocDeviceName" required placeholder="Ví dụ: Máy đo áp suất hơi..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Tên thiết bị cấp phát</label>
+                        <input type="text" id="allocDeviceName" required placeholder="Ví dụ: Máy đo áp suất hơi..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                     </div>
                     
                     <div class="sm:col-span-3">
-                        <label class="block font-black text-slate-700 mb-1">Chủng loại nhóm thiết bị</label>
-                        <select id="allocGroupSelect" onchange="handleGroupSelectChange(this.value)" class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Chủng loại nhóm thiết bị</label>
+                        <select id="allocGroupSelect" onchange="handleGroupSelectChange(this.value)" class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm focus:outline-none">
                             <option value="Hệ thống Thiết bị Xeo Giấy (Paper Machine)">Hệ thống Thiết bị Xeo Giấy (Paper Machine)</option>
                             <option value="Hệ thống Lò Hơi & Mạng Nhiệt (Boiler System)">Hệ thống Lò Hơi & Mạng Nhiệt (Boiler System)</option>
                             <option value="Thiết bị Chế Biến Bột Giấy & Nghiền Bột">Thiết bị Chế Biến Bột Giấy & Nghiền Bột</option>
@@ -470,12 +515,12 @@
                             <option value="Thiết bị Xử Lý Nước Thải & Hóa Chemical">Thiết bị Xử Lý Nước Thải & Hóa Chemical</option>
                             <option value="MỚI">-- Khác (Tự nhập bổ sung) --</option>
                         </select>
-                        <input type="text" id="allocGroupCustom" placeholder="Nhập chủng loại thiết bị mới..." class="w-full high-contrast-box rounded-xl p-2.5 bg-yellow-50 mt-2 hidden text-base">
+                        <input type="text" id="allocGroupCustom" placeholder="Nhập chủng loại thiết bị mới..." class="w-full high-contrast-box rounded-xl p-3 bg-yellow-50/60 mt-2 hidden text-sm">
                     </div>
 
                     <div class="sm:col-span-3">
-                        <label class="block font-black text-slate-700 mb-1">Tình trạng bàn giao</label>
-                        <select id="allocStatus" class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Tình trạng bàn giao</label>
+                        <select id="allocStatus" class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm focus:outline-none">
                             <option value="Cấp Mới">Cấp Mới</option>
                             <option value="Đang Sự Cố">Đang Sự Cố</option>
                             <option value="Đã Khắc Phục">Đã Khắc Phục</option>
@@ -483,121 +528,121 @@
                     </div>
 
                     <div class="sm:col-span-6">
-                        <label class="block font-black text-slate-700 mb-1">Đơn vị quản lý (Gợi ý động)</label>
-                        <select id="allocDepartmentBox" class="w-full high-contrast-box rounded-xl p-3 bg-white text-base"></select>
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Đơn vị quản lý</label>
+                        <select id="allocDepartmentBox" class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm focus:outline-none"></select>
                     </div>
                     <div class="sm:col-span-6">
-                        <label class="block font-black text-slate-700 mb-1">Người sử dụng trực tiếp</label>
-                        <input type="text" id="allocUserPerson" required placeholder="Tên cán bộ vận hành..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Người sử dụng trực tiếp</label>
+                        <input type="text" id="allocUserPerson" required placeholder="Tên cán bộ vận hành..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                     </div>
 
                     <div class="sm:col-span-12 flex justify-end gap-2 pt-2">
-                        <button type="button" id="btnCancelAllocEdit" onclick="resetAllocFormState()" class="bg-slate-300 px-5 py-2.5 rounded-xl font-bold uppercase text-xs hidden">Hủy</button>
-                        <button type="submit" id="btnSubmitAllocText" class="bg-slate-900 text-white font-black px-6 py-4 rounded-xl text-xs uppercase tracking-wider">Ghi Nhận Cấp Phát</button>
+                        <button type="button" id="btnCancelAllocEdit" onclick="resetAllocFormState()" class="bg-slate-200 text-slate-700 px-5 py-3 rounded-xl font-bold uppercase text-[11px] hidden transition-colors">Hủy</button>
+                        <button type="submit" id="btnSubmitAllocText" class="bg-slate-900 text-white font-bold px-6 py-3.5 rounded-xl text-[11px] uppercase tracking-wider shadow-md transition-colors">Ghi Nhận Cấp Phát</button>
                     </div>
                 </form>
 
-                <div class="overflow-x-auto border-2 rounded-xl">
-                    <table class="w-full text-left border-collapse text-sm">
-                        <thead class="bg-slate-100 font-black text-slate-700 border-b-2 text-xs uppercase">
+                <div class="overflow-x-auto border border-slate-100 rounded-2xl shadow-inner bg-white">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-50 font-bold text-slate-500 border-b border-slate-100 uppercase tracking-wider">
                             <tr>
-                                <th class="p-3 w-[130px]">Mã Thiết Bị</th>
+                                <th class="p-3 w-[140px]">Mã Thiết Bị</th>
                                 <th class="p-3">Tên Tài Sản / Chủng Loại</th>
                                 <th class="p-3">Đơn Vị Quản Lý & Nhân Sự</th>
-                                <th class="p-3 text-center w-[120px]">Trạng Thái</th>
-                                <th class="p-3 text-center w-[100px]">Mã QR</th>
+                                <th class="p-3 text-center w-[130px]">Trạng Thái</th>
+                                <th class="p-3 text-center w-[110px]">Mã QR</th>
                                 <th class="p-3 text-center w-[120px]">Hành Động</th>
                             </tr>
                         </thead>
-                        <tbody id="tableAllocBody" class="divide-y divide-slate-200 font-bold text-slate-900"></tbody>
+                        <tbody id="tableAllocBody" class="divide-y divide-slate-100 font-semibold text-slate-700"></tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <section id="repairAnchor" class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
-            <div class="bg-[#582f8e] text-white p-4 flex justify-between items-center">
-                <h3 class="text-base font-black uppercase flex items-center gap-2"><i class="fa-solid fa-screwdriver-wrench"></i> Quản lý lịch sử khắc phục & Sửa chữa thiết bị nhà máy</h3>
-                <span id="badgeRepairCount" class="bg-black/30 font-mono text-sm px-3 py-1 rounded font-bold">0 bản ghi</span>
+        <section id="repairAnchor" class="bg-white text-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+            <div class="bg-purple-950 text-white p-4 px-6 flex justify-between items-center">
+                <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-screwdriver-wrench"></i> Quản lý lịch sử khắc phục & Sửa chữa thiết bị nhà máy</h3>
+                <span id="badgeRepairCount" class="bg-white/10 font-mono text-xs px-3 py-1 rounded-xl font-bold">0 bản ghi</span>
             </div>
-            <div class="p-5 space-y-4">
-                <form id="formRepairHistory" onsubmit="executeRepairLogSubmit(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-4 bg-slate-50 p-4 rounded-xl border-2 text-sm items-end">
+            <div class="p-6 space-y-4">
+                <form id="formRepairHistory" onsubmit="executeRepairLogSubmit(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-4 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 text-xs items-end">
                     <input type="hidden" id="repairEditId" value="">
                     <div class="sm:col-span-3">
-                        <label class="block font-black text-slate-700 mb-1">Thiết bị báo hỏng</label>
-                        <select id="repairAssetSelect" class="w-full high-contrast-box rounded-xl p-3 bg-white text-base"></select>
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Thiết bị báo hỏng</label>
+                        <select id="repairAssetSelect" class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm focus:outline-none"></select>
                     </div>
                     <div class="sm:col-span-6">
-                        <label class="block font-black text-slate-700 mb-1">Nội dung kỹ thuật sửa chữa / Vật tư thay thế</label>
-                        <input type="text" id="repairActionDesc" required placeholder="Ví dụ: Thay cuộn dây động cơ, căn chỉnh trục..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Nội dung kỹ thuật sửa chữa / Vật tư thay thế</label>
+                        <input type="text" id="repairActionDesc" required placeholder="Ví dụ: Thay cuộn dây động cơ, căn chỉnh trục..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                     </div>
                     <div class="sm:col-span-3 flex gap-2">
-                        <button type="button" id="btnCancelRepairEdit" onclick="resetRepairFormState()" class="bg-slate-300 px-4 py-4 rounded-xl font-bold uppercase text-xs hidden">Hủy</button>
-                        <button type="submit" id="btnSubmitRepairText" class="w-full py-4 bg-[#582f8e] text-white font-black rounded-xl text-xs uppercase tracking-wider shadow-md">Ghi Nhật Ký</button>
+                        <button type="button" id="btnCancelRepairEdit" onclick="resetRepairFormState()" class="bg-slate-200 text-slate-700 px-4 py-3.5 rounded-xl font-bold uppercase text-[11px] hidden transition-colors">Hủy</button>
+                        <button type="submit" id="btnSubmitRepairText" class="w-full py-3.5 bg-purple-900 text-white font-bold rounded-xl text-[11px] uppercase tracking-wider shadow-md transition-colors">Ghi Nhật Ký</button>
                     </div>
                 </form>
-                <div class="overflow-x-auto border rounded-xl">
-                    <table class="w-full text-left border-collapse text-sm">
-                        <thead class="bg-slate-100 font-black text-slate-700 border-b">
+                <div class="overflow-x-auto border border-slate-100 rounded-2xl shadow-inner bg-white">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-50 font-bold text-slate-500 border-b border-slate-100 uppercase tracking-wider">
                             <tr>
-                                <th class="p-3 w-[130px]">Mã Thiết Bị</th>
+                                <th class="p-3 w-[140px]">Mã Thiết Bị</th>
                                 <th class="p-3">Nội Dung Khắc Phục</th>
-                                <th class="p-3 text-center w-[180px]">Thời Gian</th>
+                                <th class="p-3 text-center w-[200px]">Thời Gian</th>
                                 <th class="p-3 text-center w-[120px]">Hành Động</th>
                             </tr>
                         </thead>
-                        <tbody id="tableRepairLogsBody" class="divide-y divide-slate-200 font-bold"></tbody>
+                        <tbody id="tableRepairLogsBody" class="divide-y divide-slate-100 font-semibold text-slate-700"></tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <section class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
-            <div class="bg-[#005c3e] text-white p-4 flex justify-between items-center">
-                <h3 class="text-base font-black uppercase flex items-center gap-2"><i class="fa-solid fa-folder-tree"></i> 6. Quản lý văn bản chứng từ & Thống kê tài chính đầu tư (Tháng / Quý / Năm)</h3>
-                <span class="text-xs bg-emerald-950 font-mono text-emerald-300 px-3 py-1 rounded">Cơ sở dữ liệu tích hợp</span>
+        <section class="bg-white text-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+            <div class="bg-[#004d34] text-white p-4 px-6 flex justify-between items-center">
+                <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-folder-tree"></i> 6. Quản lý văn bản chứng từ & Thống kê tài chính đầu tư</h3>
+                <span class="text-xs bg-emerald-950 font-mono text-emerald-300 px-3 py-1 rounded-xl font-bold">Cơ sở dữ liệu đám mây</span>
             </div>
-            <div class="p-5 grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div class="lg:col-span-5 bg-slate-50 p-4 rounded-xl border-2 space-y-4 text-sm">
-                    <h4 class="font-black text-[#005c3e] uppercase border-b pb-1">Báo cáo tài chính & Thống kê kinh phí</h4>
+            <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-4 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 space-y-4 text-xs">
+                    <h4 class="font-bold text-[#005c3e] uppercase tracking-wider border-b border-slate-200/60 pb-2">Báo cáo tài chính & Kinh phí</h4>
                     
-                    <div class="grid grid-cols-3 gap-2 text-center">
-                        <div class="bg-white p-2 rounded-lg border shadow-sm">
-                            <div class="text-[10px] text-slate-500 font-black">THÁNG NÀY</div>
-                            <div class="text-base font-black text-emerald-800 mt-0.5">145 Tr</div>
+                    <div class="grid grid-cols-3 gap-2 text-center font-heading">
+                        <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                            <div class="text-[9px] text-slate-400 font-bold uppercase">THÁNG NÀY</div>
+                            <div class="text-sm font-extrabold text-emerald-800 mt-0.5">145 Tr</div>
                         </div>
-                        <div class="bg-white p-2 rounded-lg border shadow-sm">
-                            <div class="text-[10px] text-slate-500 font-black">QUÝ NÀY</div>
-                            <div class="text-base font-black text-blue-800 mt-0.5">480 Tr</div>
+                        <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                            <div class="text-[9px] text-slate-400 font-bold uppercase">QUÝ NÀY</div>
+                            <div class="text-sm font-extrabold text-blue-800 mt-0.5">480 Tr</div>
                         </div>
-                        <div class="bg-white p-2 rounded-lg border shadow-sm">
-                            <div class="text-[10px] text-slate-500 font-black">NĂM 2026</div>
-                            <div class="text-base font-black text-purple-800 mt-0.5">1.9 Tỷ</div>
+                        <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                            <div class="text-[9px] text-slate-400 font-bold uppercase">NĂM 2026</div>
+                            <div class="text-sm font-extrabold text-purple-800 mt-0.5">1.9 Tỷ</div>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block font-black text-slate-700 mb-1">Phân loại danh mục tệp văn bản</label>
-                        <select id="fileStorageCategory" class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Phân loại tệp tài liệu</label>
+                        <select id="fileStorageCategory" class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-xs focus:outline-none">
                             <option value="Hồ sơ tài liệu kỹ thuật máy">Hồ sơ tài liệu kỹ thuật máy</option>
                             <option value="Chứng từ kế toán thanh toán">Chứng từ kế toán thanh toán</option>
                             <option value="Báo cáo tài chính quý năm">Báo cáo tài chính quý năm</option>
                         </select>
                     </div>
-                    <div class="grid grid-cols-2 gap-2 pt-1">
-                        <div class="bg-white p-2 rounded-xl border-2 border-dashed border-slate-400 text-center">
-                            <label class="block font-black text-[11px] text-slate-600 mb-1">TẢI FILE</label>
-                            <input type="file" id="uploadInputFiles" multiple onchange="handleAdvancedFileAndFolderUpload(this.files, false)" class="text-xs w-full">
+                    <div class="grid grid-cols-2 gap-3 pt-1">
+                        <div class="bg-white p-3 rounded-xl border-2 border-dashed border-slate-300 hover:border-slate-400 text-center transition-colors cursor-pointer">
+                            <label class="block font-bold text-[10px] text-slate-500 mb-1.5 uppercase tracking-wider">TẢI FILE</label>
+                            <input type="file" id="uploadInputFiles" multiple onchange="handleAdvancedFileAndFolderUpload(this.files, false)" class="text-[11px] w-full file:hidden text-slate-500">
                         </div>
-                        <div class="bg-white p-2 rounded-xl border-2 border-dashed border-amber-400 text-center">
-                            <label class="block font-black text-[11px] text-amber-800 mb-1">TẢI FOLDER</label>
-                            <input type="file" id="uploadInputFolder" webkitdirectory directory multiple onchange="handleAdvancedFileAndFolderUpload(this.files, true)" class="text-xs w-full">
+                        <div class="bg-white p-3 rounded-xl border-2 border-dashed border-amber-300 hover:border-amber-400 text-center transition-colors cursor-pointer">
+                            <label class="block font-bold text-[10px] text-amber-800 mb-1.5 uppercase tracking-wider">TẢI FOLDER</label>
+                            <input type="file" id="uploadInputFolder" webkitdirectory directory multiple onchange="handleAdvancedFileAndFolderUpload(this.files, true)" class="text-[11px] w-full file:hidden text-slate-500">
                         </div>
                     </div>
                 </div>
-                <div class="lg:col-span-7 bg-slate-50 p-4 rounded-xl border-2 space-y-2">
-                    <h4 class="font-black text-slate-700 uppercase text-xs">Cấu trúc cây thư mục lưu trữ chứng từ độc lập:</h4>
-                    <div id="fileExplorerTreeContainer" class="space-y-3 max-h-[260px] overflow-y-auto p-2 bg-white rounded-xl border"></div>
+                <div class="lg:col-span-8 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 space-y-2">
+                    <h4 class="font-bold text-slate-500 uppercase tracking-wider text-xs mb-2">Cấu trúc cây thư mục lưu trữ chứng từ độc lập:</h4>
+                    <div id="fileExplorerTreeContainer" class="space-y-3 max-h-[270px] overflow-y-auto p-3 bg-white rounded-2xl border border-slate-100 shadow-inner"></div>
                 </div>
             </div>
         </section>
@@ -735,7 +780,6 @@
         // TÀI KHOẢN NGƯỜI DÙNG
         window.executeUserAccountSubmit = function(e) {
             e.preventDefault();
-            const editId = document.getElementById('userEditId').value;
             const u = document.getElementById('sysUsername').value.trim().toLowerCase();
             const p = document.getElementById('sysPassword').value.trim();
             const pin = document.getElementById('sysPin').value.trim();
@@ -763,17 +807,17 @@
             document.getElementById('userEditId').value = "";
             document.getElementById('sysUsername').readOnly = false;
             document.getElementById('btnCancelUserEdit').classList.add('hidden');
-            document.getElementById('btnSubmitUserText').innerText = "Khởi tạo / Cập nhật tài khoản";
+            document.getElementById('btnSubmitUserText').innerText = "Khởi tạo tài khoản";
         }
         function renderUsersTable() {
             const tbody = document.getElementById('tableUsersBody'); if(!tbody) return; tbody.innerHTML = "";
             localUsers.forEach(usr => {
-                tbody.innerHTML += `<tr class="hover:bg-slate-50">
-                    <td class="p-3 font-mono font-black text-slate-800">${usr.username}</td>
-                    <td class="p-3 text-xs text-emerald-800 font-bold"><i class="fa-solid fa-user-shield"></i> ${usr.role}</td>
-                    <td class="p-3 text-center space-x-2">
-                        <button onclick="triggerUserEditMode('${usr.username}')" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('system_users_v4')}','${usr.username}')" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash-can"></i></button>
+                tbody.innerHTML += `<tr class="hover:bg-slate-50/80 transition-colors">
+                    <td class="p-3 font-mono font-bold text-slate-800">${usr.username}</td>
+                    <td class="p-3 text-xs text-emerald-800 font-semibold"><i class="fa-solid fa-user-shield mr-1"></i> ${usr.role}</td>
+                    <td class="p-3 text-center space-x-3">
+                        <button onclick="triggerUserEditMode('${usr.username}')" class="text-blue-600 hover:text-blue-800 transition-colors"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('system_users_v4')}','${usr.username}')" class="text-red-500 hover:text-red-700 transition-colors"><i class="fa-solid fa-trash-can"></i></button>
                     </td>
                 </tr>`;
             });
@@ -849,15 +893,15 @@
             const currentUsername = document.getElementById('secUser').value;
 
             if(method === 'pass') {
-                tabPass.className = "w-1/2 py-2.5 text-sm font-extrabold rounded-xl bg-white shadow-md text-[#005c3e] transition-all";
-                tabPin.className = "w-1/2 py-2.5 text-sm font-extrabold rounded-xl text-slate-500 transition-all";
-                container.innerHTML = `<label class="block text-xs font-black text-slate-500 uppercase mb-1">Mật khẩu hệ thống</label>
-                    <input type="password" id="secPass" required placeholder="Mật khẩu..." class="w-full high-contrast-box rounded-xl p-3 bg-slate-50 text-center text-lg">`;
+                tabPass.className = "w-1/2 py-2.5 text-xs font-bold rounded-xl bg-white shadow-sm text-slate-900 transition-all";
+                tabPin.className = "w-1/2 py-2.5 text-xs font-bold rounded-xl text-slate-500 transition-all";
+                container.innerHTML = `<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Mật khẩu hệ thống</label>
+                    <input type="password" id="secPass" required placeholder="••••••••" class="w-full high-contrast-box rounded-xl p-3 bg-slate-50 text-base">`;
             } else {
-                tabPin.className = "w-1/2 py-2.5 text-sm font-extrabold rounded-xl bg-white shadow-md text-[#005c3e] transition-all";
-                tabPass.className = "w-1/2 py-2.5 text-sm font-extrabold rounded-xl text-slate-500 transition-all";
-                container.innerHTML = `<label class="block text-xs font-black text-slate-500 uppercase mb-1">Mã PIN cá nhân (6 số)</label>
-                    <input type="password" id="secPass" required placeholder="Mã PIN..." class="w-full high-contrast-box rounded-xl p-3 bg-slate-50 text-center text-lg tracking-widest">`;
+                tabPin.className = "w-1/2 py-2.5 text-xs font-bold rounded-xl bg-white shadow-sm text-slate-900 transition-all";
+                tabPass.className = "w-1/2 py-2.5 text-xs font-bold rounded-xl text-slate-500 transition-all";
+                container.innerHTML = `<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Mã PIN cá nhân (6 số)</label>
+                    <input type="password" id="secPass" required placeholder="••••••" class="w-full high-contrast-box rounded-xl p-3 bg-slate-50 text-base tracking-widest">`;
             }
             handleUsernameInput(currentUsername);
         }
@@ -884,10 +928,10 @@
             document.getElementById('3dValDone').innerText = countFixed + " việc";
             document.getElementById('3dValPending').innerText = countIssue + " việc";
             const max = Math.max(countNew, countIssue, countFixed, 1);
-            document.getElementById('3dBarNew').style.height = ((countNew / max) * 75 + 25) + "%";
-            document.getElementById('3dBarIssue').style.height = ((countIssue / max) * 75 + 25) + "%";
-            document.getElementById('3dBarDone').style.height = ((countFixed / max) * 75 + 25) + "%";
-            document.getElementById('3dBarPending').style.height = ((countIssue / max) * 75 + 25) + "%";
+            document.getElementById('3dBarNew').style.height = ((countNew / max) * 80 + 10) + "%";
+            document.getElementById('3dBarIssue').style.height = ((countIssue / max) * 80 + 10) + "%";
+            document.getElementById('3dBarDone').style.height = ((countFixed / max) * 80 + 10) + "%";
+            document.getElementById('3dBarPending').style.height = ((countIssue / max) * 80 + 10) + "%";
         }
 
         // MỤC 1: LOGIC NHÂN SỰ
@@ -959,13 +1003,13 @@
             if(!table) return; table.innerHTML = "";
             const target = (filter === 'TẤT CẢ' || !filter) ? localStaff : localStaff.filter(x => x.unit === filter);
             target.forEach(st => {
-                table.innerHTML += `<tr class="hover:bg-slate-50">
-                    <td class="p-3"><img src="${st.photo || 'https://via.placeholder.com/50'}" class="w-10 h-10 object-cover rounded-full border"></td>
-                    <td class="p-3 font-mono font-black text-blue-900">${st.id}</td>
-                    <td class="p-3"><div>${st.name}</div><span class="text-xs text-slate-500 font-bold">${st.unit}</span></td>
-                    <td class="p-3 text-center space-x-2">
-                        <button onclick="triggerStaffEditMode('${st.id}')" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('staff_v3')}','${st.id}')" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash-can"></i></button>
+                table.innerHTML += `<tr class="hover:bg-slate-50/80 transition-colors">
+                    <td class="p-3"><img src="${st.photo || 'https://via.placeholder.com/50'}" class="w-10 h-10 object-cover rounded-full border border-slate-200 shadow-sm"></td>
+                    <td class="p-3 font-mono font-bold text-blue-900">${st.id}</td>
+                    <td class="p-3"><div>${st.name}</div><span class="text-xs text-slate-400 font-medium">${st.unit}</span></td>
+                    <td class="p-3 text-center space-x-3">
+                        <button onclick="triggerStaffEditMode('${st.id}')" class="text-blue-600 hover:text-blue-800 transition-colors"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('staff_v3')}','${st.id}')" class="text-red-500 hover:text-red-700 transition-colors"><i class="fa-solid fa-trash-can"></i></button>
                     </td>
                 </tr>`;
             });
@@ -1004,13 +1048,13 @@
         function renderMaterialsTable() {
             const tbody = document.getElementById('tableMaterialBody'); if(!tbody) return; tbody.innerHTML = "";
             localMaterials.forEach(x => {
-                tbody.innerHTML += `<tr class="hover:bg-slate-50">
+                tbody.innerHTML += `<tr class="hover:bg-slate-50/80 transition-colors">
                     <td class="p-3 font-bold text-slate-800">${x.name}</td>
-                    <td class="p-3 font-mono text-emerald-800">${x.qty}</td>
-                    <td class="p-3 text-slate-600">${x.unit}</td>
-                    <td class="p-3 text-center space-x-2">
-                        <button onclick="triggerMaterialEditMode('${x.id}')" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('materials_v3')}','${x.id}')" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash-can"></i></button>
+                    <td class="p-3 font-mono font-bold text-emerald-800">${x.qty}</td>
+                    <td class="p-3 text-slate-500 font-medium">${x.unit}</td>
+                    <td class="p-3 text-center space-x-3">
+                        <button onclick="triggerMaterialEditMode('${x.id}')" class="text-blue-600 hover:text-blue-800 transition-colors"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('materials_v3')}','${x.id}')" class="text-red-500 hover:text-red-700 transition-colors"><i class="fa-solid fa-trash-can"></i></button>
                     </td></tr>`;
             });
         }
@@ -1042,18 +1086,18 @@
             document.getElementById('formIncidentLogic').reset();
             document.getElementById('incEditId').value = "";
             document.getElementById('btnCancelIncEdit').classList.add('hidden');
-            document.getElementById('btnSubmitIncText').innerText = "Phát Lệnh Điều Động";
+            document.getElementById('btnSubmitIncText').innerText = "Phát Lệnh";
         }
         function renderIncidentsTable() {
             const tbody = document.getElementById('tableIncidentBody'); if(!tbody) return; tbody.innerHTML = "";
             localIncidents.forEach(x => {
-                tbody.innerHTML += `<tr class="hover:bg-slate-50">
+                tbody.innerHTML += `<tr class="hover:bg-slate-50/80 transition-colors">
                     <td class="p-3 font-bold text-slate-800">${x.location}</td>
-                    <td class="p-3 text-slate-700">${x.desc}</td>
-                    <td class="p-3 text-xs font-black text-rose-700">${x.level}</td>
-                    <td class="p-3 text-center space-x-2">
-                        <button onclick="triggerIncidentEditMode('${x.id}')" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('incidents_v3')}','${x.id}')" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash-can"></i></button>
+                    <td class="p-3 text-slate-600 font-medium">${x.desc}</td>
+                    <td class="p-3 text-xs font-bold text-rose-700">${x.level}</td>
+                    <td class="p-3 text-center space-x-3">
+                        <button onclick="triggerIncidentEditMode('${x.id}')" class="text-blue-600 hover:text-blue-800 transition-colors"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('incidents_v3')}','${x.id}')" class="text-red-500 hover:text-red-700 transition-colors"><i class="fa-solid fa-trash-can"></i></button>
                     </td></tr>`;
             });
         }
@@ -1085,18 +1129,18 @@
             document.getElementById('formShiftLogic').reset();
             document.getElementById('shiftEditId').value = "";
             document.getElementById('btnCancelShiftEdit').classList.add('hidden');
-            document.getElementById('btnSubmitShiftText').innerText = "Ký Xác Nhận Lưu Nhật Ký";
+            document.getElementById('btnSubmitShiftText').innerText = "Ký Xác Nhận";
         }
         function renderShiftsTable() {
             const tbody = document.getElementById('tableShiftBody'); if(!tbody) return; tbody.innerHTML = "";
             localShifts.forEach(x => {
-                tbody.innerHTML += `<tr class="hover:bg-slate-50">
+                tbody.innerHTML += `<tr class="hover:bg-slate-50/80 transition-colors">
                     <td class="p-3 font-bold text-slate-800">${x.leader}</td>
-                    <td class="p-3 text-indigo-900">${x.name}</td>
-                    <td class="p-3 text-slate-600 text-xs">${x.notes}</td>
-                    <td class="p-3 text-center space-x-2">
-                        <button onclick="triggerShiftEditMode('${x.id}')" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('shifts_v3')}','${x.id}')" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash-can"></i></button>
+                    <td class="p-3 text-indigo-900 font-bold">${x.name}</td>
+                    <td class="p-3 text-slate-500 text-xs font-medium">${x.notes}</td>
+                    <td class="p-3 text-center space-x-3">
+                        <button onclick="triggerShiftEditMode('${x.id}')" class="text-blue-600 hover:text-blue-800 transition-colors"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('shifts_v3')}','${x.id}')" class="text-red-500 hover:text-red-700 transition-colors"><i class="fa-solid fa-trash-can"></i></button>
                     </td></tr>`;
             });
         }
@@ -1147,20 +1191,20 @@
             const tbody = document.getElementById('tableAllocBody'); if(!tbody) return; tbody.innerHTML = "";
             localAllocations.forEach(x => {
                 const qrString = JSON.stringify({id: x.id, ten: x.name, dv: x.department});
-                tbody.innerHTML += `<tr class="hover:bg-slate-50">
-                    <td class="p-3 font-mono font-black text-emerald-900">${x.id}</td>
-                    <td class="p-3 font-bold text-slate-900">${x.name}<span class="block text-xs text-slate-400 font-medium">Loại: ${x.groupType}</span></td>
-                    <td class="p-3 text-slate-700 font-medium">${x.department}<span class="block text-xs font-black text-indigo-700">Sử dụng: ${x.userPerson}</span></td>
-                    <td class="p-3 text-center"><span class="px-2.5 py-1 rounded text-xs font-black ${x.status==='Cấp Mới'?'bg-emerald-100 text-emerald-900':x.status==='Đang Sự Cố'?'bg-rose-100 text-rose-900':'bg-blue-100 text-blue-900'}">${x.status}</span></td>
-                    <td class="p-1 flex justify-center"><div class="qr-target-node border bg-white p-0.5 rounded" data-qr="${qrString}"></div></td>
-                    <td class="p-3 text-center space-x-1">
-                        <button onclick="triggerAllocEditMode('${x.id}')" class="text-blue-700 hover:text-blue-900"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('allocations_v4')}','${x.id}')" class="text-red-600 hover:text-red-900"><i class="fa-solid fa-trash-can"></i></button>
+                tbody.innerHTML += `<tr class="hover:bg-slate-50/80 transition-colors">
+                    <td class="p-3 font-mono font-bold text-emerald-900">${x.id}</td>
+                    <td class="p-3 font-bold text-slate-900">${x.name}<span class="block text-[11px] text-slate-400 font-medium mt-0.5">Loại: ${x.groupType}</span></td>
+                    <td class="p-3 text-slate-600 font-medium">${x.department}<span class="block text-[11px] font-bold text-indigo-700 mt-0.5"><i class="fa-solid fa-user-tag text-[9px]"></i> ${x.userPerson}</span></td>
+                    <td class="p-3 text-center"><span class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide ${x.status==='Cấp Mới'?'bg-emerald-100 text-emerald-900':x.status==='Đang Sự Cố'?'bg-rose-100 text-rose-900':'bg-blue-100 text-blue-900'}">${x.status}</span></td>
+                    <td class="p-1 flex justify-center"><div class="qr-target-node border bg-white p-0.5 rounded shadow-sm" data-qr="${qrString}"></div></td>
+                    <td class="p-3 text-center space-x-2">
+                        <button onclick="triggerAllocEditMode('${x.id}')" class="text-blue-600 hover:text-blue-800 transition-colors"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('allocations_v4')}','${x.id}')" class="text-red-500 hover:text-red-700 transition-colors"><i class="fa-solid fa-trash-can"></i></button>
                     </td></tr>`;
             });
             setTimeout(() => {
                 document.querySelectorAll('.qr-target-node').forEach(div => {
-                    if(div.innerHTML === "") new QRCode(div, { text: div.getAttribute('data-qr'), width: 60, height: 60 });
+                    if(div.innerHTML === "") new QRCode(div, { text: div.getAttribute('data-qr'), width: 52, height: 52 });
                 });
             }, 150);
             document.getElementById('badgeAllocCount').innerText = localAllocations.length + " thiết bị";
@@ -1169,9 +1213,9 @@
         // LỊCH SỬ SỬA CHỮA
         window.executeRepairLogSubmit = function(e) {
             e.preventDefault(); 
-            const editId = document.getElementById('repairEditId').value;
             const assetId = document.getElementById('repairAssetSelect').value;
             const actionDesc = document.getElementById('repairActionDesc').value.trim(); if(!assetId) return;
+            const editId = document.getElementById('repairEditId').value;
             const targetId = editId ? editId : "REP-" + Date.now().toString().slice(-6);
             
             db.ref(getEnvNode('repair_logs_v4') + '/' + targetId).set({
@@ -1186,25 +1230,23 @@
             document.getElementById('repairAssetSelect').value = log.assetId;
             document.getElementById('repairActionDesc').value = log.actionDesc;
             document.getElementById('btnCancelRepairEdit').classList.remove('hidden');
-            document.getElementById('btnSubmitRepairText').innerText = "Cập nhật";
             smoothScrollToElement('repairAnchor');
         }
         window.resetRepairFormState = function() {
             document.getElementById('repairEditId').value = "";
             document.getElementById('repairActionDesc').value = "";
             document.getElementById('btnCancelRepairEdit').classList.add('hidden');
-            document.getElementById('btnSubmitRepairText').innerText = "Ghi Nhật Ký";
         }
         function renderRepairLogsTable() {
             const tbody = document.getElementById('tableRepairLogsBody'); if(!tbody) return; tbody.innerHTML = "";
             localRepairLogs.forEach(x => {
-                tbody.innerHTML += `<tr class="hover:bg-slate-50 text-sm">
-                    <td class="p-3 font-mono font-black text-purple-900">${x.assetId}</td>
+                tbody.innerHTML += `<tr class="hover:bg-slate-50/80 transition-colors text-xs">
+                    <td class="p-3 font-mono font-bold text-purple-900">${x.assetId}</td>
                     <td class="p-3 font-bold text-slate-800">${x.actionDesc}</td>
-                    <td class="p-3 text-center font-mono text-xs">${x.timeStr}</td>
-                    <td class="p-3 text-center space-x-2">
-                        <button onclick="triggerRepairEditMode('${x.id}')" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('repair_logs_v4')}','${x.id}')" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash-can"></i></button>
+                    <td class="p-3 text-center font-mono text-slate-400 text-[11px]">${x.timeStr}</td>
+                    <td class="p-3 text-center space-x-3">
+                        <button onclick="triggerRepairEditMode('${x.id}')" class="text-blue-600 hover:text-blue-800 transition-colors"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('repair_logs_v4')}','${x.id}')" class="text-red-500 hover:text-red-700 transition-colors"><i class="fa-solid fa-trash-can"></i></button>
                     </td></tr>`;
             });
             document.getElementById('badgeRepairCount').innerText = localRepairLogs.length + " bản ghi";
@@ -1226,21 +1268,21 @@
         }
         function renderFileExplorerTree() {
             const treeContainer = document.getElementById('fileExplorerTreeContainer'); if(!treeContainer) return; treeContainer.innerHTML = "";
-            if(!localCloudFiles.length) { treeContainer.innerHTML = `<p class="text-slate-400 text-xs italic text-center p-4">Chưa có chứng từ.</p>`; return; }
+            if(!localCloudFiles.length) { treeContainer.innerHTML = `<p class="text-slate-400 text-xs italic text-center p-4">Chưa có chứng từ lưu trữ.</p>`; return; }
             const categoriesMap = {}; localCloudFiles.forEach(f => { if(!categoriesMap[f.category]) categoriesMap[f.category] = []; categoriesMap[f.category].push(f); });
             Object.keys(categoriesMap).forEach(cat => {
-                const catWrapper = document.createElement('div'); catWrapper.className = "border rounded-xl p-3 bg-slate-50 space-y-1.5 text-xs font-bold text-slate-800";
-                catWrapper.innerHTML = `<div class="text-slate-700 uppercase border-b pb-1 flex items-center gap-1.5 font-black"><i class="fa-solid fa-folder-closed text-yellow-600"></i> ${cat}</div>`;
+                const catWrapper = document.createElement('div'); catWrapper.className = "border border-slate-100 rounded-xl p-3 bg-slate-50 space-y-2 text-xs font-semibold text-slate-700 shadow-sm";
+                catWrapper.innerHTML = `<div class="text-slate-800 uppercase border-b border-slate-200/60 pb-1.5 flex items-center gap-1.5 font-bold"><i class="fa-solid fa-folder-open text-amber-500 text-sm"></i> ${cat}</div>`;
                 categoriesMap[cat].forEach(file => {
-                    catWrapper.innerHTML += `<div class="p-2 bg-white rounded border flex justify-between items-center">
-                        <span class="truncate"><i class="${file.isFolderItem ? 'fa-solid fa-folder text-amber-500' : 'fa-solid fa-file text-indigo-500'} mr-1"></i> ${file.fullPath}</span>
-                        <button onclick="deleteCloudRecord('${getEnvNode('cloud_files_v4')}','${file.id}')" class="text-red-500 font-black text-sm hover:text-red-700">×</button></div>`;
+                    catWrapper.innerHTML += `<div class="p-2 bg-white rounded-lg border border-slate-100 flex justify-between items-center shadow-sm">
+                        <span class="truncate text-slate-600 font-medium"><i class="${file.isFolderItem ? 'fa-solid fa-folder text-amber-400' : 'fa-solid fa-file-invoice text-indigo-400'} mr-1"></i> ${file.fullPath}</span>
+                        <button onclick="deleteCloudRecord('${getEnvNode('cloud_files_v4')}','${file.id}')" class="text-red-400 font-bold text-lg hover:text-red-600 px-1">×</button></div>`;
                 });
                 treeContainer.appendChild(catWrapper);
             });
         }
 
-        window.deleteCloudRecord = function(fullNodePath, id) { if(confirm("Xác nhận xóa bỏ vĩnh viễn bản ghi này?")) db.ref(fullNodePath + '/' + id).remove(); }
+        window.deleteCloudRecord = function(fullNodePath, id) { if(confirm("Xác nhận xóa bỏ bản ghi này vĩnh viễn?")) db.ref(fullNodePath + '/' + id).remove(); }
 
         function rebuildDatalistGoiY() {
             const dl = document.getElementById('dynamicUnitsDatalist'); if(!dl) return;
