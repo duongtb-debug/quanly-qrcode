@@ -388,4 +388,72 @@
         function renderFinance() {
             const type = document.getElementById('filter-type').value;
             const value = parseInt(document.getElementById('filter-value').value) || 1;
-            const tbody = document.getElementById('finance-
+            const tbody = document.getElementById('finance-table-body'); tbody.innerHTML = '';
+            
+            let sum = 0;
+            db_finance.filter(f => checkAccess(f.unitId)).forEach(item => {
+                const date = new Date(item.date);
+                const m = date.getMonth() + 1;
+                let match = false;
+
+                if(type === 'M' && m === value) match = true;
+                else if(type === 'Q' && Math.ceil(m/3) === value) match = true;
+                else if(type === 'Y') match = true;
+
+                if(match) {
+                    sum += item.money;
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-50 text-xs">
+                            <td class="p-3 font-semibold">${item.id}</td><td class="p-3 font-medium">${item.title}</td><td class="p-3">${item.unitId}</td><td class="p-3">${item.date}</td><td class="p-3 font-bold">${item.money.toLocaleString()}</td><td class="p-3 text-emerald-700 underline cursor-pointer" onclick="alert('Đọc file chứng từ gốc...')">📎 ${item.file}</td>
+                            <td class="p-3 text-right"><button onclick="deleteFinance('${item.id}')" class="text-red-500">Xóa</button></td>
+                        </tr>`;
+                }
+            });
+            document.getElementById('report-sum-money').innerText = `${sum.toLocaleString()} VNĐ`;
+        }
+
+        function submitFinance() {
+            const title = document.getElementById('fin-title').value.trim();
+            const money = parseInt(document.getElementById('fin-money').value);
+            const date = document.getElementById('fin-date').value;
+            if(!title || !money || !date) return;
+
+            const id = "HD" + (db_finance.length + 1).toString().padStart(3, '0');
+            const unitId = USER_SESSION.unitId === 'ALL' ? 'NM_PHONG_CHAU' : USER_SESSION.unitId;
+            
+            db_finance.push({ id, title, unitId, date, money, file: 'ChungTu_HoaDon_Online.pdf' });
+            saveStorage('vnp_finance', db_finance); closeModal('modal-add-finance'); renderFinance();
+        }
+
+        function deleteFinance(id) {
+            if(confirm("Xóa bộ chứng từ này?")) {
+                db_finance = db_finance.filter(f => f.id !== id); saveStorage('vnp_finance', db_finance); renderFinance();
+            }
+        }
+
+        // --- CẬP NHẬT TRỰC QUAN DASHBOARD VÀ BIỂU ĐỒ CHỮA ---
+        let c1 = null; let c2 = null;
+        function updateDashboard() {
+            const hrCount = db_personnel.filter(p => checkAccess(p.unitId)).length;
+            const goodA = db_assets.filter(a => checkAccess(a.unitId) && a.status === 'GOOD').length;
+            const errA = db_assets.filter(a => checkAccess(a.unitId) && a.status === 'SỰ CỐ').length;
+            const totalM = db_finance.filter(f => checkAccess(f.unitId)).reduce((s, i) => s + i.money, 0);
+
+            document.getElementById('dash-total-hr').innerText = `${hrCount} Cán bộ`;
+            document.getElementById('dash-total-assets').innerText = `${goodA} Tốt / ${errA} Sự cố`;
+            document.getElementById('dash-total-finance').innerText = `${totalM.toLocaleString()} VNĐ`;
+
+            // Render Charts
+            const ctx1 = document.getElementById('chartAssets').getContext('2d');
+            const ctx2 = document.getElementById('chartFinance').getContext('2d');
+            if(c1) c1.destroy(); if(c2) c2.destroy();
+
+            c1 = new Chart(ctx1, { type: 'pie', data: { labels: ['Hoạt động tốt', 'Sự cố'], datasets: [{ data: [goodA, errA], backgroundColor: ['#10b981', '#ef4444'] }] }, options: { responsive: true, maintainAspectRatio: false } });
+            c2 = new Chart(ctx2, { type: 'bar', data: { labels: ['Tổng chi hệ thống'], datasets: [{ label: 'VNĐ', data: [totalM], backgroundColor: '#1e3a8a' }] }, options: { responsive: true, maintainAspectRatio: false } });
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+    </script>
+</body>
+</html>
