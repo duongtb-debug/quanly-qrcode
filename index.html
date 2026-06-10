@@ -169,7 +169,7 @@
         </header>
 
         <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div class="lg:col-span-8 bg-white text-slate-900 rounded-3xl p-6 border border-slate-100 shadow-xl space-y-4">
+            <div class="lg:col-span-7 bg-white text-slate-900 rounded-3xl p-6 border border-slate-100 shadow-xl space-y-4">
                 <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                     <h3 class="text-sm font-bold uppercase text-slate-900 tracking-wider flex items-center gap-2"><i class="fa-solid fa-chart-bar text-emerald-600"></i> Trực quan trạng thái cấp phát thiết bị & Tiến độ công việc</h3>
                 </div>
@@ -205,17 +205,37 @@
                 </div>
             </div>
 
-            <div class="lg:col-span-4 bg-white text-slate-900 rounded-3xl p-6 border border-slate-100 shadow-xl flex flex-col justify-between">
+            <div class="lg:col-span-5 bg-white text-slate-900 rounded-3xl p-6 border border-slate-100 shadow-xl flex flex-col justify-between space-y-4">
                 <div class="space-y-3">
-                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-amber-500"></i> Lịch nhắc việc & Chế độ nghỉ ngơi</h4>
-                    <div class="bg-amber-50/50 p-4 rounded-2xl border border-amber-100 text-xs font-semibold space-y-2.5 text-slate-700">
-                        <div class="flex justify-between items-center"><span>📢 Giao ban ca kíp vận hành:</span> <span class="bg-amber-200/60 text-amber-900 font-bold px-2 py-0.5 rounded-lg text-[11px]">08:00</span></div>
-                        <div class="flex justify-between items-center text-emerald-950"><span>☕ Thời gian xả hơi giữa ca:</span> <span class="bg-emerald-200/60 text-emerald-900 font-bold px-2 py-0.5 rounded-lg text-[11px]">15m nghỉ / mỗi 2h</span></div>
-                        <div class="flex justify-between items-center"><span>🚨 Kiểm tra an toàn hệ thống lò hơi:</span> <span class="bg-rose-200/60 text-rose-900 font-bold px-2 py-0.5 rounded-lg text-[11px]">Trước 16:00</span></div>
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-amber-500"></i> Lịch nhắc việc & Chế độ nghỉ ngơi</h4>
+                        <span class="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-md">Tự động lưu</span>
+                    </div>
+                    
+                    <div class="bg-amber-50/50 p-4 rounded-2xl border border-amber-100 text-xs font-semibold space-y-3 text-slate-700">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                            <span>📢 Giao ban ca kíp vận hành:</span>
+                            <input type="text" id="scheduleGiaoBan" onchange="saveFlexSchedule()" placeholder="08:00 hàng ngày..." class="bg-white border border-amber-200 rounded-lg p-1.5 font-bold text-amber-950 text-right focus:outline-none focus:border-amber-500 w-full sm:w-48 text-[11px]">
+                        </div>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                            <span>☕ Chế độ nghỉ ngơi giữa ca:</span>
+                            <input type="text" id="scheduleNghiNgoi" onchange="saveFlexSchedule()" placeholder="15m nghỉ / mỗi 2h..." class="bg-white border border-amber-200 rounded-lg p-1.5 font-bold text-emerald-950 text-right focus:outline-none focus:border-amber-500 w-full sm:w-48 text-[11px]">
+                        </div>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                            <span>🚨 Kiểm tra an toàn hệ thống:</span>
+                            <input type="text" id="scheduleKiemTra" onchange="saveFlexSchedule()" placeholder="Trước 16:00 ca chiều..." class="bg-white border border-amber-200 rounded-lg p-1.5 font-bold text-rose-950 text-right focus:outline-none focus:border-amber-500 w-full sm:w-48 text-[11px]">
+                        </div>
                     </div>
                 </div>
-                <div class="bg-slate-900 text-amber-300 p-4 rounded-2xl border-l-4 border-amber-500 text-xs font-medium italic mt-4 shadow-md shadow-slate-950/10">
-                    <i class="fa-solid fa-quote-left mr-1.5 text-amber-400"></i> <span id="folkSayingLabel">An toàn để sản xuất, sản xuất phải an toàn.</span>
+
+                <div class="bg-slate-900 text-amber-300 p-4 rounded-2xl border-l-4 border-amber-500 text-xs font-medium mt-2 shadow-md shadow-slate-950/10 flex items-start gap-2">
+                    <i class="fa-solid fa-quote-left text-base text-amber-400 shrink-0 mt-0.5"></i>
+                    <div class="space-y-1 w-full">
+                        <span id="folkSayingLabel" class="block italic text-slate-200 font-medium">Đang tải châm ngôn vận hành...</span>
+                        <div class="flex justify-end">
+                            <button onclick="refreshRandomFolkSaying()" class="text-[10px] text-amber-400/70 hover:text-amber-300 flex items-center gap-1 transition-colors pt-1 font-bold uppercase"><i class="fa-solid fa-shuffle"></i> Câu khác</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -295,7 +315,7 @@
                     <form id="formStaffLogic" onsubmit="executeStaffSubmit(event)" class="lg:col-span-4 grid grid-cols-1 gap-4 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 text-xs">
                         <input type="hidden" id="staffEditId" value="">
                         <div>
-                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Don vị / Phòng ban</label>
+                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Đơn vị / Phòng ban</label>
                             <input type="text" id="staffUnitCustom" required list="dynamicUnitsDatalist" placeholder="Nhập phòng ban hoặc chọn..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                             <datalist id="dynamicUnitsDatalist"></datalist>
                         </div>
@@ -670,6 +690,40 @@
         let localUsers = []; 
         let activeLoginMethod = "pass";
 
+        // KHO DỮ LIỆU CA DAO, TỤC NGỮ, THÀNH NGỮ PHONG PHÚ TỪ INTERNET
+        const InternetFolkSayings = [
+            "An toàn để sản xuất, sản xuất phải an toàn.",
+            "Muốn biết phải hỏi, muốn giỏi phải làm.",
+            "Một cây làm chẳng nên non, ba cây chụm lại nên hòn núi cao.",
+            "Cẩn tắc vô ưu - Cẩn thận kiểm tra thì không lo gặp sự cố.",
+            "Sai một ly, đi một dặm - Hãy chuẩn xác trong từng thông số kỹ thuật.",
+            "Lao động là vinh quang, mang lại hạnh phúc cho mọi nhà.",
+            "Có công mài sắt, có ngày nên kim.",
+            "Chớ thấy sóng cả mà ngã tay chèo.",
+            "Ăn quả nhớ kẻ trồng cây, uống nước nhớ nguồn.",
+            "Tay làm hàm nhai, tay quai miệng trễ.",
+            "Lửa thử vàng, gian nan thử sức.",
+            "Một hòn gạch định hình nên bức tường lớn - Mỗi cá nhân cấu thành nên ERP.",
+            "Tích tiểu thành đại, tiết kiệm vật tư là làm giàu cho nhà máy.",
+            "Chữ tín quý hơn vàng - Đảm bảo đúng tiến độ bàn giao ca kíp.",
+            "Đồng thanh tương ứng, đồng khí tương cầu.",
+            "Gió thổi là quyền của trời, vận hành chuẩn chỉnh là việc của ta.",
+            "Nắng tốt dưa, mưa tốt lúa - Thuận theo tiết khí để vận hành kho bãi.",
+            "Thương trường như chiến trường, sản xuất cần kỷ luật như quân đội.",
+            "Nước chảy đá mòn, kiên trì cải tiến hệ thống không ngừng.",
+            "Nhập ca tươi tỉnh, bàn giao rạch ròi.",
+            "Sức người sỏi đá cũng thành cơm.",
+            "Con trâu đi trước, cái cày theo sau - Vận hành đúng quy trình thiết bị.",
+            "Muốn đi nhanh thì đi một mình, muốn đi xa hãy đi cùng VINAPACO.",
+            "Gần mực thì đen, gần đèn thì rạng - Học hỏi cán bộ kỹ thuật lành nghề.",
+            "Lạt mềm buộc chặt, quy trình chặt chẽ giảm thiểu rủi ro.",
+            "Vàng thật không sợ lửa - Thiết bị chuẩn không sợ áp lực cao.",
+            "Kiến tha lâu cũng đầy tổ - Tích lũy cải tiến nhỏ, hiệu quả lớn.",
+            "Khéo ăn thì no, khéo co thì ấm - Điều phối vật tư thông minh, tối ưu chi phí.",
+            "Đi một ngày đàng, học một sàng khôn.",
+            "Một người lo bằng kho người làm - Vai trò của trưởng ca vô cùng quan trọng."
+        ];
+
         const defaultUnits = [
             "Xưởng Xeo Giấy Ca A", "Xưởng Xeo Giấy Ca B", "Xưởng Chế Biến Bột Giấy", "Phòng Cơ Điện Năng Lượng", "Phòng Kế Hoạch Vật Tư"
         ];
@@ -687,6 +741,15 @@
             db.ref(getEnvNode('repair_logs_v4')).off();
             db.ref(getEnvNode('cloud_files_v4')).off();
             db.ref(getEnvNode('system_users_v4')).off();
+            db.ref(getEnvNode('flex_schedules_v4')).off(); // Lịch linh hoạt
+
+            // Lấy dữ liệu lịch nhắc việc linh hoạt từ Firebase Realtime
+            db.ref(getEnvNode('flex_schedules_v4')).on('value', snap => {
+                const data = snap.val() || {};
+                document.getElementById('scheduleGiaoBan').value = data.giaoBan || "08:00 hàng ngày";
+                document.getElementById('scheduleNghiNgoi').value = data.nghiNgoi || "15m nghỉ / mỗi 2h";
+                document.getElementById('scheduleKiemTra').value = data.kiemTra || "Trước 16:00 ca chiều";
+            });
 
             db.ref(getEnvNode('system_users_v4')).on('value', snap => {
                 localUsers = snap.val() ? Object.values(snap.val()).filter(Boolean) : [];
@@ -744,6 +807,25 @@
             });
         }
 
+        // LÀM MỚI NGẪU NHIÊN CÂU CA DAO/TỤC NGỮ PHONG PHÚ
+        window.refreshRandomFolkSaying = function() {
+            const randomIndex = Math.floor(Math.random() * InternetFolkSayings.length);
+            document.getElementById('folkSayingLabel').innerText = InternetFolkSayings[randomIndex];
+        }
+
+        // LƯU LỊCH NHẮC VIỆC THIẾT LẬP LINH HOẠT LÊN FIREBASE REALTIME
+        window.saveFlexSchedule = function() {
+            const gb = document.getElementById('scheduleGiaoBan').value.trim();
+            const nn = document.getElementById('scheduleNghiNgoi').value.trim();
+            const kt = document.getElementById('scheduleKiemTra').value.trim();
+            
+            db.ref(getEnvNode('flex_schedules_v4')).set({
+                giaoBan: gb,
+                nghiNgoi: nn,
+                kiemTra: kt
+            });
+        }
+
         function smoothScrollToElement(elementId) {
             const target = document.getElementById(elementId);
             if(target) {
@@ -757,7 +839,7 @@
                 return;
             }
             if (confirm("Hệ thống sẽ đồng bộ toàn bộ dữ liệu đang Chạy thử hiện tại sang môi trường Chạy thật. Xác nhận phê duyệt?")) {
-                const nodesToMigrate = ['materials_v3', 'incidents_v3', 'shifts_v3', 'staff_v4', 'allocations_v4', 'repair_logs_v4', 'cloud_files_v4', 'system_users_v4'];
+                const nodesToMigrate = ['materials_v3', 'incidents_v3', 'shifts_v3', 'staff_v4', 'allocations_v4', 'repair_logs_v4', 'cloud_files_v4', 'system_users_v4', 'flex_schedules_v4'];
                 let completed = 0;
                 nodesToMigrate.forEach(node => {
                     db.ref(node + '_testing').once('value', snap => {
@@ -860,6 +942,7 @@
                 db.ref('repair_logs_v4_testing').remove();
                 db.ref('cloud_files_v4_testing').remove();
                 db.ref('system_users_v4_testing').remove();
+                db.ref('flex_schedules_v4_testing').remove();
                 alert("Đã làm sạch dữ liệu thử nghiệm!");
             }
         }
@@ -877,7 +960,6 @@
             handleUsernameInput(document.getElementById('secUser').value);
         }
 
-        // PHẦN LOGIC ĐỔI MÀU HOÀN HẢO CHO CẢ 2 PHƯƠNG THỨC ĐĂNG NHẬP
         window.switchLoginMethod = function(method) {
             activeLoginMethod = method;
             const container = document.getElementById('dynamicSecretContainer');
@@ -886,13 +968,11 @@
             const currentUsername = document.getElementById('secUser').value;
 
             if(method === 'pass') {
-                // Tab Mật khẩu: Xanh nõn chuối (#adff2f) | Tab Mã PIN: Trở về màu xám mặc định
                 tabPass.className = "w-1/2 py-2.5 text-xs font-bold rounded-xl bg-[#adff2f] shadow-sm text-slate-950 transition-all";
                 tabPin.className = "w-1/2 py-2.5 text-xs font-bold rounded-xl text-slate-500 transition-all bg-transparent";
                 container.innerHTML = `<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Mật khẩu hệ thống</label>
                     <input type="password" id="secPass" required placeholder="••••••••" class="w-full high-contrast-box rounded-xl p-3 bg-slate-50 text-slate-900 text-base">`;
             } else {
-                // Tab Mã PIN: Xanh lục ngọc dịu mắt (#20b2aa / Light Sea Green) hài hòa cực đẹp | Tab Mật khẩu: Trở về xám mặc định
                 tabPin.className = "w-1/2 py-2.5 text-xs font-bold rounded-xl bg-[#20b2aa] shadow-sm text-white transition-all";
                 tabPass.className = "w-1/2 py-2.5 text-xs font-bold rounded-xl text-slate-500 transition-all bg-transparent";
                 container.innerHTML = `<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Mã PIN cá nhân (6 số)</label>
@@ -1310,7 +1390,14 @@
             document.getElementById('appMainContainer').classList.remove('hidden');
         }
 
-        window.addEventListener('DOMContentLoaded', () => { startRealtimeCoreSync(); setInterval(triggerLiveTimeAndLunarCalendar, 1000); });
+        window.addEventListener('DOMContentLoaded', () => { 
+            startRealtimeCoreSync(); 
+            setInterval(triggerLiveTimeAndLunarCalendar, 1000);
+            refreshRandomFolkSaying(); // Tải ngẫu nhiên châm ngôn khi bật trang
+            
+            // Cứ mỗi 5 phút tự động đảo châm ngôn một lần cho sinh động
+            setInterval(refreshRandomFolkSaying, 300000); 
+        });
     </script>
 </body>
 </html>
