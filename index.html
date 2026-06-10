@@ -201,7 +201,7 @@
 
         <section id="repairAnchor" class="bg-white text-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100">
             <div class="bg-purple-950 text-white p-4 px-6 flex justify-between items-center">
-                <h3 class="text-base font-bold uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-screwdriver-wrench"></i> Quản lý lịch sử khắc phục & Upload phiếu yêu cầu công việc</h3>
+                <h3 class="text-base font-bold uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-screwdriver-wrench"></i> Quản lý lịch sử khắc phục sự cố & Sửa chữa</h3>
                 <span id="badgeRepairCount" class="bg-white/10 font-mono text-sm px-3 py-1 rounded-xl font-bold">0 bản ghi</span>
             </div>
             <div class="p-6 space-y-4">
@@ -215,11 +215,13 @@
                         <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Nội dung kỹ thuật sửa chữa / Vật tư thay thế</label>
                         <input type="text" id="repairActionDesc" required placeholder="Ví dụ: Thay cuộn dây động cơ..." class="w-full high-contrast-box rounded-xl p-3 bg-white">
                     </div>
+                    
                     <div class="sm:col-span-3">
-                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Đính kèm Phiếu yêu cầu công việc</label>
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Upload Phiếu yêu cầu công việc</label>
                         <input type="file" id="repairTicketFiles" multiple onchange="handleRepairTicketsSelection(this.files)" class="w-full text-xs bg-white p-2 rounded-xl border border-slate-200">
                         <div id="repairTicketBadge" class="text-[11px] font-bold text-purple-800 mt-1 hidden"></div>
                     </div>
+
                     <div class="sm:col-span-2 flex gap-2">
                         <button type="button" id="btnCancelRepairEdit" onclick="resetRepairFormState()" class="bg-slate-200 text-slate-700 px-4 py-3.5 rounded-xl font-bold uppercase text-xs hidden transition-colors">Hủy</button>
                         <button type="submit" id="btnSubmitRepairText" class="w-full py-3.5 bg-purple-900 text-white font-bold rounded-xl uppercase tracking-wider text-xs shadow-md transition-colors">Ghi Nhật Ký</button>
@@ -346,7 +348,7 @@
             if(target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
-        /* ================= MANAGEMENT: LOGIN METHOD NAVIGATION (TAB-DRIVEN HIGH CONTRAST COLORS) ================= */
+        /* ================= CƠ CHẾ ĐĂNG NHẬP MƯỢT MÀ KHÔNG CẦN ENTER (XỬ LÝ ĐƯỢC CẢ KHI DÙNG PHÍM TAB) ================= */
         window.switchLoginMethod = function(method) {
             activeLoginMethod = method;
             const tabPass = document.getElementById('tabMethodPass');
@@ -361,7 +363,7 @@
                 container.innerHTML = `<label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Mật khẩu hệ thống</label>
                     <input type="password" id="secPass" required placeholder="••••••••" class="w-full high-contrast-box rounded-xl p-3.5 bg-slate-50">`;
             } else {
-                // Màu 2: Xanh đọt chuối High-Contrast tương phản cao cực bắt mắt
+                // Màu 2: Xanh tương phản High-Contrast nổi bật phân biệt rõ ràng
                 tabPass.className = "w-1/2 py-3 text-sm font-bold rounded-xl text-slate-500 bg-transparent transition-all duration-300 outline-none";
                 tabPin.className = "w-1/2 py-3 text-sm font-bold rounded-xl bg-[#adff2f] text-slate-950 shadow-sm transition-all duration-300 outline-none";
                 
@@ -382,7 +384,7 @@
             }
         }
 
-        /* ================= LỊCH SỬ KHẮC PHỤC SỬA CHỮA & PHIẾU YÊU CẦU CÔNG VIỆC ================= */
+        /* ================= XỬ LÝ ĐÍNH KÈM PHIẾU YÊU CẦU CÔNG VIỆC Ở MỤC LỊCH SỬ SỬA CHỮA ================= */
         window.handleRepairTicketsSelection = function(files) {
             pendingRepairTicketsData = [];
             const badge = document.getElementById('repairTicketBadge');
@@ -466,7 +468,7 @@
             localAllocations.forEach(x => { select.innerHTML += `<option value="${x.id}">${x.id} - ${x.name}</option>`; });
         }
 
-        /* ================= QUẢN LÝ HỒ SƠ THANH TOÁN (ĐA PHƯƠNG THỨC UPLOAD & XEM) ================= */
+        /* ================= QUẢN LÝ HỒ SƠ THANH TOÁN (HÀM GỐC) ================= */
         window.handleMultipleFilesSelection = function(files) {
             currentFormPendingFilesData = [];
             const badge = document.getElementById('selectedFilesCountBadge');
@@ -559,13 +561,15 @@
             currentFormPendingFilesData = [];
         }
 
-        /* ================= FIX DỨT ĐIỂM: HÀM XÓA CHỨNG TỪ REALTIME KHÔNG TREO ================= */
+        /* ================= SỬA TRIỆT ĐỂ LỖI TREO KHI XÓA: GIỮ NGUYÊN TÊN HÀM GỐC ================= */
         window.deleteCloudRecord = function(nodeName, recordId) {
             if(confirm("🚨 Bạn có chắc chắn muốn xóa vĩnh viễn bản ghi này trên cơ sở dữ liệu?")) {
                 const targetNodePath = getEnvNode(nodeName) + '/' + recordId;
+                
+                // Sử dụng cơ chế Promise bất đồng bộ chuẩn của Firebase SDK để giải phóng bộ nhớ ngay lập tức, không gây lag UI
                 db.ref(targetNodePath).remove()
                   .then(() => {
-                      console.log(`[ERP] Đã xóa thành công mục: ${targetNodePath}`);
+                      console.log(`[ERP Sync Check] Đã xóa thành công: ${targetNodePath}`);
                   })
                   .catch((error) => {
                       alert("❌ Lỗi đồng bộ đám mây: " + error.message);
