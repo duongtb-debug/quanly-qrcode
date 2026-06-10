@@ -14,21 +14,23 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=500;700;800&display=swap');
         
+        html { scroll-behavior: smooth; }
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             background-color: #012217; 
             color: #f8fafc;
-            font-size: 17px; 
+            font-size: 16px; 
         }
 
         .high-contrast-box {
-            border: 3px solid #cbd5e1 !important;
+            border: 2px solid #cbd5e1 !important;
             color: #0f172a !important;
-            font-weight: 800 !important;
+            font-weight: 700 !important;
         }
         .high-contrast-box:focus {
             border-color: #047857 !important;
             background-color: #f0fdf4 !important;
+            outline: none;
         }
 
         .stage-3d { perspective: 1000px; }
@@ -38,6 +40,12 @@
             box-shadow: -6px 12px 18px rgba(0, 0, 0, 0.5), inset 1px 2px 4px rgba(255,255,255,0.4);
             transition: height 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
+        }
+        
+        /* Đồng bộ hiển thị bảng biểu cân đối */
+        table th, table td {
+            vertical-align: middle !important;
+            text-align: left;
         }
     </style>
 </head>
@@ -97,13 +105,18 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-2 bg-amber-50 border-2 border-amber-300 p-2 rounded-xl">
-                <div class="text-xs font-black text-amber-900 uppercase">Chế độ vận hành:</div>
-                <select id="systemEnvironmentMode" onchange="toggleSystemEnvironment(this.value)" class="bg-white border border-amber-400 text-xs font-black rounded p-1.5 text-slate-900">
-                    <option value="TESTING">⚠️ CHẠY THỬ (Dữ liệu thử nghiệm)</option>
-                    <option value="PRODUCTION">✅ CHẠY THẬT (Dữ liệu chính thức)</option>
-                </select>
-                <button id="btnClearTestDataBtn" onclick="purgeAllTestingData()" class="bg-red-600 hover:bg-red-700 text-white font-black text-[11px] px-2.5 py-1.5 rounded uppercase">Xóa Dữ Liệu Thử</button>
+            <div class="flex flex-col sm:flex-row items-center gap-2 bg-amber-50 border-2 border-amber-300 p-2 rounded-xl">
+                <div class="flex items-center gap-1">
+                    <span class="text-xs font-black text-amber-900 uppercase">Vận hành:</span>
+                    <select id="systemEnvironmentMode" onchange="toggleSystemEnvironment(this.value)" class="bg-white border border-amber-400 text-xs font-black rounded p-1.5 text-slate-900">
+                        <option value="TESTING">⚠️ CHẠY THỬ (Dữ liệu thử nghiệm)</option>
+                        <option value="PRODUCTION">✅ CHẠY THẬT (Dữ liệu chính thức)</option>
+                    </select>
+                </div>
+                <div id="testingDataActions" class="flex gap-1">
+                    <button onclick="promoteTestingToProduction()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-black text-[11px] px-2.5 py-1.5 rounded uppercase flex items-center gap-1 shadow"><i class="fa-solid fa-cloud-arrow-up"></i> Duyệt Dùng Thật</button>
+                    <button onclick="purgeAllTestingData()" class="bg-red-600 hover:bg-red-700 text-white font-black text-[11px] px-2.5 py-1.5 rounded uppercase flex items-center gap-1 shadow"><i class="fa-solid fa-trash-can"></i> Từ Chối & Xóa Thử</button>
+                </div>
             </div>
             
             <div class="flex flex-wrap items-center gap-3 bg-slate-100 p-3 rounded-xl border border-slate-300">
@@ -168,14 +181,15 @@
             </div>
         </section>
 
-        <section class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
+        <section id="secUserAnchor" class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
             <div class="bg-slate-800 text-white p-4 flex justify-between items-center">
-                <h3 class="text-lg font-black uppercase flex items-center gap-2"><i class="fa-solid fa-user-gear text-emerald-400"></i> Cơ chế thiết lập & Quản lý tài khoản cán bộ vận hành</h3>
+                <h3 class="text-base font-black uppercase flex items-center gap-2"><i class="fa-solid fa-user-gear text-emerald-400"></i> Cơ chế thiết lập & Quản lý tài khoản cán bộ vận hành</h3>
                 <span id="badgeUserCount" class="bg-black/30 font-mono text-sm px-3 py-1 rounded font-bold">0 tài khoản</span>
             </div>
-            <div class="p-6 space-y-6">
+            <div class="p-5 space-y-6">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     <form id="formUserLogic" onsubmit="executeUserAccountSubmit(event)" class="lg:col-span-5 grid grid-cols-1 gap-3 bg-slate-50 p-4 rounded-xl border-2 text-sm">
+                        <input type="hidden" id="userEditId" value="">
                         <div>
                             <label class="block font-black text-slate-700 mb-0.5">Tên đăng nhập (Username)</label>
                             <input type="text" id="sysUsername" required placeholder="Ví dụ: nguyenvanua" class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
@@ -183,7 +197,7 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block font-black text-slate-700 mb-0.5">Mật khẩu</label>
-                                <input type="password" id="sysPassword" required placeholder="Mật khẩu đăng nhập..." class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
+                                <input type="password" id="sysPassword" required placeholder="Mật khẩu..." class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
                             </div>
                             <div>
                                 <label class="block font-black text-slate-700 mb-0.5">Mã PIN (6 số)</label>
@@ -199,7 +213,10 @@
                                 <option value="Nhân viên Kho vật tư">Nhân viên Kho vật tư</option>
                             </select>
                         </div>
-                        <button type="submit" class="w-full bg-slate-800 text-white font-black py-3 rounded-xl uppercase text-xs tracking-wider mt-2">Khởi tạo / Cập nhật tài khoản</button>
+                        <div class="flex gap-2">
+                            <button type="button" id="btnCancelUserEdit" onclick="resetUserFormState()" class="bg-slate-300 px-4 py-2 rounded-xl font-bold uppercase text-xs hidden">Hủy</button>
+                            <button type="submit" id="btnSubmitUserText" class="w-full bg-slate-800 text-white font-black py-3 rounded-xl uppercase text-xs tracking-wider">Khởi tạo / Cập nhật tài khoản</button>
+                        </div>
                     </form>
                     <div class="lg:col-span-7">
                         <div class="overflow-x-auto border rounded-xl max-h-[280px] overflow-y-auto bg-white">
@@ -208,7 +225,7 @@
                                     <tr>
                                         <th class="p-3">Tên Đăng Nhập</th>
                                         <th class="p-3">Vai Trò Quyền Hạn</th>
-                                        <th class="p-3 text-right">Hành Động</th>
+                                        <th class="p-3 text-center w-[120px]">Hành Động</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tableUsersBody" class="divide-y divide-slate-200 font-bold text-slate-900"></tbody>
@@ -219,16 +236,16 @@
             </div>
         </section>
 
-        <section class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
+        <section id="staffAnchor" class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
             <div class="bg-[#1e3a8a] text-white p-4 flex justify-between items-center">
-                <h3 class="text-lg font-black uppercase flex items-center gap-2"><i class="fa-solid fa-users-gear"></i> 1. Quản lý danh mục Đơn vị, Nhân sự & Hồ sơ công tác đa tầng</h3>
+                <h3 class="text-base font-black uppercase flex items-center gap-2"><i class="fa-solid fa-users-gear"></i> 1. Quản lý danh mục Đơn vị, Nhân sự & Hồ sơ công tác đa tầng</h3>
                 <span id="badgeStaffCount" class="bg-black/30 font-mono text-sm px-3 py-1 rounded font-bold">0 nhân sự</span>
             </div>
-            <div class="p-6 space-y-6">
+            <div class="p-5 space-y-6">
                 <div class="bg-blue-50 border-2 border-blue-200 p-4 rounded-xl grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                     <div class="md:col-span-8">
                         <h4 class="font-black text-blue-900 text-sm uppercase">⚡ Nhập nhanh hàng loạt nhân sự chống trùng lặp dữ liệu</h4>
-                        <p class="text-xs text-blue-700 font-bold mt-0.5">Nạp tệp danh sách (.txt/.csv) phân tách dấu phẩy [Mã Nhân sự, Họ tên, Đơn vị]. Hệ thống tự động lọc mã duy nhất và lưu kho.</p>
+                        <p class="text-xs text-blue-700 font-bold mt-0.5">Nạp tệp danh sách (.txt/.csv) phân tách dấu phẩy [Mã Nhân sự, Họ tên, Đơn vị].</p>
                     </div>
                     <div class="md:col-span-4 text-right">
                         <input type="file" id="bulkStaffFile" onchange="triggerBulkStaffImport(event)" class="text-xs bg-white p-2 rounded-lg border w-full font-bold">
@@ -238,55 +255,37 @@
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     <form id="formStaffLogic" onsubmit="executeStaffSubmit(event)" class="lg:col-span-5 grid grid-cols-1 gap-3 bg-slate-50 p-4 rounded-xl border-2 text-sm">
                         <input type="hidden" id="staffEditId" value="">
-                        <div class="grid grid-cols-1 gap-2">
-                            <div>
-                                <label class="block font-black text-slate-700 mb-0.5">Mã Nhân sự (Tự động hoặc Nhập tay)</label>
-                                <div class="flex gap-2">
-                                    <input type="text" id="staffCode" required placeholder="Ví dụ: VNP-HR-00001" class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base font-mono">
-                                    <button type="button" onclick="generateSequentialStaffId()" class="bg-blue-700 text-white font-black px-3 rounded-xl text-xs uppercase whitespace-nowrap"><i class="fa-solid fa-wand-magic-sparkles"></i> Tự sinh</button>
-                                </div>
+                        <div>
+                            <label class="block font-black text-slate-700 mb-0.5">Mã Nhân sự (Tự động hoặc Nhập tay)</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="staffCode" required placeholder="Ví dụ: VNP-HR-00001" class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base font-mono">
+                                <button type="button" onclick="generateSequentialStaffId()" class="bg-blue-700 text-white font-black px-3 rounded-xl text-xs uppercase whitespace-nowrap"><i class="fa-solid fa-wand-magic-sparkles"></i> Tự sinh</button>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 gap-2">
-                            <div>
-                                <label class="block font-black text-slate-700 mb-0.5">Họ và tên</label>
-                                <input type="text" id="staffName" required placeholder="Nhập tên..." class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
-                            </div>
+                        <div>
+                            <label class="block font-black text-slate-700 mb-0.5">Họ và tên</label>
+                            <input type="text" id="staffName" required placeholder="Nhập tên..." class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
                         </div>
-                        
-                        <div class="grid grid-cols-1 gap-2">
-                            <div>
-                                <label class="block font-black text-slate-700 mb-0.5">Đơn vị / Phòng ban / Phân xưởng</label>
-                                <input type="text" id="staffUnitCustom" required list="dynamicUnitsDatalist" placeholder="Nhập phòng ban hoặc chọn từ danh sách gợi ý..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
-                                <datalist id="dynamicUnitsDatalist">
-                                    <option value="Xưởng Xeo Giấy Ca A">
-                                    <option value="Xưởng Xeo Giấy Ca B">
-                                    <option value="Xưởng Chế Biến Bột Giấy">
-                                    <option value="Phòng Cơ Điện Năng Lượng">
-                                    <option value="Phòng Kế Hoạch Vật Tư">
-                                </datalist>
-                            </div>
+                        <div>
+                            <label class="block font-black text-slate-700 mb-0.5">Đơn vị / Phòng ban / Phân xưởng</label>
+                            <input type="text" id="staffUnitCustom" required list="dynamicUnitsDatalist" placeholder="Nhập phòng ban hoặc chọn..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                            <datalist id="dynamicUnitsDatalist"></datalist>
                         </div>
-
-                        <div class="grid grid-cols-1 gap-2">
-                            <div>
-                                <label class="block font-black text-slate-700 mb-0.5">Ảnh chân dung</label>
-                                <input type="file" id="staffPhotoFile" accept="image/*" onchange="previewStaffPhoto(event)" class="w-full text-xs bg-white p-1 rounded-lg border">
-                                <img id="staffPhotoPreview" src="" class="h-16 w-16 object-cover rounded border mt-1 hidden">
-                            </div>
+                        <div>
+                            <label class="block font-black text-slate-700 mb-0.5">Ảnh chân dung</label>
+                            <input type="file" id="staffPhotoFile" accept="image/*" onchange="previewStaffPhoto(event)" class="w-full text-xs bg-white p-1 rounded-lg border">
+                            <img id="staffPhotoPreview" src="" class="h-16 w-16 object-cover rounded border mt-1 hidden">
                         </div>
-
                         <div class="bg-white p-3 rounded-xl border space-y-2">
-                            <label class="block font-black text-blue-900 text-xs uppercase"><i class="fa-solid fa-folder-open"></i> Quá trình công tác đính kèm (File/Folder)</label>
+                            <label class="block font-black text-blue-900 text-xs uppercase"><i class="fa-solid fa-folder-open"></i> Quá trình công tác đính kèm</label>
                             <div class="grid grid-cols-2 gap-2">
                                 <input type="file" id="staffDocFiles" multiple class="text-xs bg-slate-50 p-1 rounded border">
                                 <input type="file" id="staffDocFolder" webkitdirectory directory multiple class="text-xs bg-slate-50 p-1 rounded border">
                             </div>
                         </div>
-
                         <div class="flex justify-end gap-2 pt-1">
                             <button type="button" id="btnCancelStaffEdit" onclick="resetStaffFormState()" class="bg-slate-300 px-4 py-2 rounded-xl font-bold uppercase text-xs hidden">Hủy</button>
-                            <button type="submit" id="btnSubmitStaffText" class="w-full bg-[#1e3a8a] text-white font-black py-3 rounded-xl uppercase text-xs tracking-wider">Lưu thông tin & Hồ sơ nhân sự</button>
+                            <button type="submit" id="btnSubmitStaffText" class="w-full bg-[#1e3a8a] text-white font-black py-3 rounded-xl uppercase text-xs tracking-wider">Lưu thông tin nhân sự</button>
                         </div>
                     </form>
 
@@ -300,11 +299,10 @@
                             <table class="w-full text-left border-collapse text-sm">
                                 <thead class="bg-slate-100 font-black text-slate-700 border-b sticky top-0 z-10">
                                     <tr>
-                                        <th class="p-3">Ảnh</th>
-                                        <th class="p-3">Mã Nhân sự</th>
+                                        <th class="p-3 w-[60px]">Ảnh</th>
+                                        <th class="p-3 w-[140px]">Mã Nhân sự</th>
                                         <th class="p-3">Họ Tên / Đơn Vị</th>
-                                        <th class="p-3">Hồ Sơ Đính Kèm</th>
-                                        <th class="p-3 text-right">Hành Động</th>
+                                        <th class="p-3 text-center w-[120px]">Hành Động</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tableStaffBody" class="divide-y divide-slate-200 font-bold text-slate-900"></tbody>
@@ -315,12 +313,12 @@
             </div>
         </section>
 
-        <section class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
+        <section id="materialAnchor" class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
             <div class="bg-[#005c3e] text-white p-4 flex justify-between items-center">
-                <h3 class="text-lg font-black uppercase flex items-center gap-2"><i class="fa-solid fa-box"></i> 2. Quản lý vật tư tiêu hao (Hóa chất, Lưới xeo, Bột giấy)</h3>
+                <h3 class="text-base font-black uppercase flex items-center gap-2"><i class="fa-solid fa-box"></i> 2. Quản lý vật tư tiêu hao (Hóa chất, Lưới xeo, Bột giấy)</h3>
                 <span id="badgeMaterialCount" class="bg-black/30 font-mono text-sm px-3 py-1 rounded font-bold">0 loại</span>
             </div>
-            <div class="p-6 space-y-6">
+            <div class="p-5 space-y-6">
                 <form id="formMaterialLogic" onsubmit="executeMaterialSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border-2 text-sm">
                     <input type="hidden" id="matEditId" value="">
                     <div>
@@ -335,18 +333,19 @@
                         <label class="block font-black text-slate-700 mb-1">Đơn vị đo lường</label>
                         <input type="text" id="matUnit" required placeholder="Tấn, Cuộn, Kg..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
                     </div>
-                    <div class="flex items-end">
-                        <button type="submit" class="w-full bg-[#005c3e] text-white font-black py-4 rounded-xl uppercase tracking-wider text-xs">Cập nhật kho vật tư</button>
+                    <div class="flex items-end gap-2">
+                        <button type="button" id="btnCancelMatEdit" onclick="resetMaterialFormState()" class="bg-slate-300 px-4 py-4 rounded-xl font-bold uppercase text-xs hidden">Hủy</button>
+                        <button type="submit" id="btnSubmitMatText" class="w-full bg-[#005c3e] text-white font-black py-4 rounded-xl uppercase tracking-wider text-xs">Cập nhật kho</button>
                     </div>
                 </form>
                 <div class="overflow-x-auto border rounded-xl">
-                    <table class="w-full text-left border-collapse text-base">
+                    <table class="w-full text-left border-collapse text-sm">
                         <thead class="bg-slate-100 font-black text-slate-700 border-b">
                             <tr>
-                                <th class="p-4">Tên Vật Tư Tiêu Hao</th>
-                                <th class="p-4">Số Lượng Thực Tế</th>
-                                <th class="p-4">Đơn Vị Tính</th>
-                                <th class="p-4 text-right pr-6">Hành Động</th>
+                                <th class="p-3">Tên Vật Tư Tiêu Hao</th>
+                                <th class="p-3 w-[150px]">Số Lượng Thực Tế</th>
+                                <th class="p-3 w-[150px]">Đơn Vị Tính</th>
+                                <th class="p-3 text-center w-[120px]">Hành Động</th>
                             </tr>
                         </thead>
                         <tbody id="tableMaterialBody" class="divide-y divide-slate-200 font-bold"></tbody>
@@ -355,12 +354,12 @@
             </div>
         </section>
 
-        <section class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
+        <section id="incidentAnchor" class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
             <div class="bg-rose-900 text-white p-4 flex justify-between items-center">
-                <h3 class="text-lg font-black uppercase flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> 3. Trung tâm điều phối xử lý sự cố khẩn cấp ca kíp nhà máy</h3>
+                <h3 class="text-base font-black uppercase flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> 3. Trung tâm điều phối xử lý sự cố khẩn cấp ca kíp nhà máy</h3>
                 <span id="badgeIncidentCount" class="bg-black/30 font-mono text-sm px-3 py-1 rounded font-bold">0 sự cố</span>
             </div>
-            <div class="p-6 space-y-6">
+            <div class="p-5 space-y-6">
                 <form id="formIncidentLogic" onsubmit="executeIncidentSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border-2 text-sm">
                     <input type="hidden" id="incEditId" value="">
                     <div>
@@ -378,18 +377,19 @@
                             <option value="🟡 TRUNG BÌNH - THEO DÕI">🟡 TRUNG BÌNH - THEO DÕI</option>
                         </select>
                     </div>
-                    <div class="flex items-end">
-                        <button type="submit" class="w-full bg-rose-900 text-white font-black py-4 rounded-xl uppercase tracking-wider text-xs">Phát Lệnh Điều Động</button>
+                    <div class="flex items-end gap-2">
+                        <button type="button" id="btnCancelIncEdit" onclick="resetIncidentFormState()" class="bg-slate-300 px-4 py-4 rounded-xl font-bold uppercase text-xs hidden">Hủy</button>
+                        <button type="submit" id="btnSubmitIncText" class="w-full bg-rose-900 text-white font-black py-4 rounded-xl uppercase tracking-wider text-xs">Phát Lệnh</button>
                     </div>
                 </form>
                 <div class="overflow-x-auto border rounded-xl">
-                    <table class="w-full text-left border-collapse text-base">
+                    <table class="w-full text-left border-collapse text-sm">
                         <thead class="bg-slate-100 font-black text-slate-700 border-b">
                             <tr>
-                                <th class="p-4">Vị Trí Sự Cố</th>
-                                <th class="p-4">Nội Dung Biểu Hiện</th>
-                                <th class="p-4">Mức Độ</th>
-                                <th class="p-4 text-right pr-6">Hành Động</th>
+                                <th class="p-3">Vị Trí Sự Cố</th>
+                                <th class="p-3">Nội Dung Biểu Hiện</th>
+                                <th class="p-3 w-[220px]">Mức Độ</th>
+                                <th class="p-3 text-center w-[120px]">Hành Động</th>
                             </tr>
                         </thead>
                         <tbody id="tableIncidentBody" class="divide-y divide-slate-200 font-bold"></tbody>
@@ -398,12 +398,12 @@
             </div>
         </section>
 
-        <section class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
+        <section id="shiftAnchor" class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
             <div class="bg-indigo-900 text-white p-4 flex justify-between items-center">
-                <h3 class="text-lg font-black uppercase flex items-center gap-2"><i class="fa-solid fa-book-open"></i> 4. Nhật ký điện tử số hóa bàn giao ca kíp sản xuất giấy</h3>
+                <h3 class="text-base font-black uppercase flex items-center gap-2"><i class="fa-solid fa-book-open"></i> 4. Nhật ký điện tử số hóa bàn giao ca kíp sản xuất giấy</h3>
                 <span id="badgeShiftCount" class="bg-black/30 font-mono text-sm px-3 py-1 rounded font-bold">0 ca kíp</span>
             </div>
-            <div class="p-6 space-y-6">
+            <div class="p-5 space-y-6">
                 <form id="formShiftLogic" onsubmit="executeShiftSubmit(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border-2 text-sm">
                     <input type="hidden" id="shiftEditId" value="">
                     <div>
@@ -418,18 +418,19 @@
                         <label class="block font-black text-slate-700 mb-1">Nội dung lưu ý đặc biệt</label>
                         <input type="text" id="shiftNotes" required placeholder="Ví dụ: Máy nghiền cần châm dầu..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
                     </div>
-                    <div class="flex items-end">
-                        <button type="submit" class="w-full bg-indigo-900 text-white font-black py-4 rounded-xl uppercase tracking-wider text-xs">Ký Xác Nhận Lưu Nhật Ký</button>
+                    <div class="flex items-end gap-2">
+                        <button type="button" id="btnCancelShiftEdit" onclick="resetShiftFormState()" class="bg-slate-300 px-4 py-4 rounded-xl font-bold uppercase text-xs hidden">Hủy</button>
+                        <button type="submit" id="btnSubmitShiftText" class="w-full bg-indigo-900 text-white font-black py-4 rounded-xl uppercase tracking-wider text-xs">Ký Xác Nhận</button>
                     </div>
                 </form>
                 <div class="overflow-x-auto border rounded-xl">
-                    <table class="w-full text-left border-collapse text-base">
+                    <table class="w-full text-left border-collapse text-sm">
                         <thead class="bg-slate-100 font-black text-slate-700 border-b">
                             <tr>
-                                <th class="p-4">Trưởng Ca Đương Nhiệm</th>
-                                <th class="p-4">Kíp Vận Hành</th>
-                                <th class="p-4">Nội Dung Chỉ Dẫn</th>
-                                <th class="p-4 text-right pr-6">Hành Động</th>
+                                <th class="p-3 w-[200px]">Trưởng Ca Đương Nhiệm</th>
+                                <th class="p-3 w-[150px]">Kíp Vận Hành</th>
+                                <th class="p-3">Nội Dung Chỉ Dẫn</th>
+                                <th class="p-3 text-center w-[120px]">Hành Động</th>
                             </tr>
                         </thead>
                         <tbody id="tableShiftBody" class="divide-y divide-slate-200 font-bold"></tbody>
@@ -438,22 +439,22 @@
             </div>
         </section>
 
-        <section class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
+        <section id="allocAnchor" class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
             <div class="bg-[#243047] text-white p-4 flex justify-between items-center">
-                <h3 class="text-lg font-black uppercase flex items-center gap-2"><i class="fa-solid fa-qrcode text-cyan-400"></i> 5. Quản lý cấp phát thiết bị vật tư & Mã hóa QR Code định danh</h3>
+                <h3 class="text-base font-black uppercase flex items-center gap-2"><i class="fa-solid fa-qrcode text-cyan-400"></i> 5. Quản lý cấp phát thiết bị vật tư & Mã hóa QR Code định danh</h3>
                 <span id="badgeAllocCount" class="bg-black/30 font-mono text-sm px-3 py-1 rounded font-bold">0 thiết bị</span>
             </div>
             
-            <div class="p-6 space-y-6">
+            <div class="p-5 space-y-6">
                 <form id="formAllocationLogic" onsubmit="executeAllocationSubmit(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-4 bg-slate-50 p-5 rounded-xl border-2 text-sm">
                     <input type="hidden" id="allocEditId" value="">
                     
                     <div class="sm:col-span-3">
-                        <label class="block font-black text-slate-700 mb-1">Mã thiết bị tự sinh tăng dần</label>
+                        <label class="block font-black text-slate-700 mb-1">Mã thiết bị tự sinh</label>
                         <input type="text" id="allocGeneratedId" readonly class="w-full high-contrast-box rounded-xl p-3 bg-slate-200 font-mono text-center text-emerald-900 text-base font-black">
                     </div>
                     <div class="sm:col-span-3">
-                        <label class="block font-black text-slate-700 mb-1">Tên thiết bị / Vật tư cấp phát</label>
+                        <label class="block font-black text-slate-700 mb-1">Tên thiết bị cấp phát</label>
                         <input type="text" id="allocDeviceName" required placeholder="Ví dụ: Máy đo áp suất hơi..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
                     </div>
                     
@@ -466,11 +467,8 @@
                             <option value="Động cơ điện & Bơm Áp Lực Cao">Động cơ điện & Bơm Áp Lực Cao</option>
                             <option value="Hệ thống Van Điều Áp & Đường Ống Hơi">Hệ thống Van Điều Áp & Đường Ống Hơi</option>
                             <option value="Hệ thống Đo Lường & Tự Động Hóa (DCS/SCADA)">Hệ thống Đo Lường & Tự Động Hóa (DCS/SCADA)</option>
-                            <option value="Thiết bị Xử Lý Nước Thải & Hóa Chất">Thiết bị Xử Lý Nước Thải & Hóa Chất</option>
-                            <option value="Hệ thống Máy Nén Khí Trung Tâm">Hệ thống Máy Nén Khí Trung Tâm</option>
-                            <option value="Thiết bị Nâng Hạ, Cẩu Trục Phân Xưởng">Thiết bị Nâng Hạ, Cẩu Trục Phân Xưởng</option>
-                            <option value="Thiết bị Phụ Trợ & Cầm Tay Sửa Chữa">Thiết bị Phụ Trợ & Cầm Tay Sửa Chữa</option>
-                            <option value="MỚI">-- Khác (Tự nhập bổ sung nhóm mới) --</option>
+                            <option value="Thiết bị Xử Lý Nước Thải & Hóa Chemical">Thiết bị Xử Lý Nước Thải & Hóa Chemical</option>
+                            <option value="MỚI">-- Khác (Tự nhập bổ sung) --</option>
                         </select>
                         <input type="text" id="allocGroupCustom" placeholder="Nhập chủng loại thiết bị mới..." class="w-full high-contrast-box rounded-xl p-2.5 bg-yellow-50 mt-2 hidden text-base">
                     </div>
@@ -500,15 +498,15 @@
                 </form>
 
                 <div class="overflow-x-auto border-2 rounded-xl">
-                    <table class="w-full text-left border-collapse text-base">
-                        <thead class="bg-slate-100 font-black text-slate-700 border-b-2 text-sm uppercase">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead class="bg-slate-100 font-black text-slate-700 border-b-2 text-xs uppercase">
                             <tr>
-                                <th class="p-4">Mã Thiết Bị</th>
-                                <th class="p-4">Tên Tài Sản / Chủng Loại</th>
-                                <th class="p-4">Đơn Vị Quản Lý & Người Sử Dụng</th>
-                                <th class="p-4 text-center">Trạng Thái</th>
-                                <th class="p-4 text-center w-[130px]">Mã QR</th>
-                                <th class="p-4 text-right pr-6">Hành Động</th>
+                                <th class="p-3 w-[130px]">Mã Thiết Bị</th>
+                                <th class="p-3">Tên Tài Sản / Chủng Loại</th>
+                                <th class="p-3">Đơn Vị Quản Lý & Nhân Sự</th>
+                                <th class="p-3 text-center w-[120px]">Trạng Thái</th>
+                                <th class="p-3 text-center w-[100px]">Mã QR</th>
+                                <th class="p-3 text-center w-[120px]">Hành Động</th>
                             </tr>
                         </thead>
                         <tbody id="tableAllocBody" class="divide-y divide-slate-200 font-bold text-slate-900"></tbody>
@@ -517,13 +515,14 @@
             </div>
         </section>
 
-        <section class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
+        <section id="repairAnchor" class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
             <div class="bg-[#582f8e] text-white p-4 flex justify-between items-center">
-                <h3 class="text-lg font-black uppercase flex items-center gap-2"><i class="fa-solid fa-screwdriver-wrench"></i> Quản lý lịch sử khắc phục & Sửa chữa thiết bị nhà máy</h3>
+                <h3 class="text-base font-black uppercase flex items-center gap-2"><i class="fa-solid fa-screwdriver-wrench"></i> Quản lý lịch sử khắc phục & Sửa chữa thiết bị nhà máy</h3>
                 <span id="badgeRepairCount" class="bg-black/30 font-mono text-sm px-3 py-1 rounded font-bold">0 bản ghi</span>
             </div>
-            <div class="p-6 space-y-4">
+            <div class="p-5 space-y-4">
                 <form id="formRepairHistory" onsubmit="executeRepairLogSubmit(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-4 bg-slate-50 p-4 rounded-xl border-2 text-sm items-end">
+                    <input type="hidden" id="repairEditId" value="">
                     <div class="sm:col-span-3">
                         <label class="block font-black text-slate-700 mb-1">Thiết bị báo hỏng</label>
                         <select id="repairAssetSelect" class="w-full high-contrast-box rounded-xl p-3 bg-white text-base"></select>
@@ -532,18 +531,19 @@
                         <label class="block font-black text-slate-700 mb-1">Nội dung kỹ thuật sửa chữa / Vật tư thay thế</label>
                         <input type="text" id="repairActionDesc" required placeholder="Ví dụ: Thay cuộn dây động cơ, căn chỉnh trục..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
                     </div>
-                    <div class="sm:col-span-3">
-                        <button type="submit" class="w-full py-4 bg-[#582f8e] text-white font-black rounded-xl text-xs uppercase tracking-wider shadow-md">Ghi Nhật Ký Sửa Chữa</button>
+                    <div class="sm:col-span-3 flex gap-2">
+                        <button type="button" id="btnCancelRepairEdit" onclick="resetRepairFormState()" class="bg-slate-300 px-4 py-4 rounded-xl font-bold uppercase text-xs hidden">Hủy</button>
+                        <button type="submit" id="btnSubmitRepairText" class="w-full py-4 bg-[#582f8e] text-white font-black rounded-xl text-xs uppercase tracking-wider shadow-md">Ghi Nhật Ký</button>
                     </div>
                 </form>
                 <div class="overflow-x-auto border rounded-xl">
-                    <table class="w-full text-left border-collapse text-base">
+                    <table class="w-full text-left border-collapse text-sm">
                         <thead class="bg-slate-100 font-black text-slate-700 border-b">
                             <tr>
-                                <th class="p-4">Mã Thiết Bị</th>
-                                <th class="p-4">Nội Dung Khắc Phục</th>
-                                <th class="p-4 text-center">Thời Gian</th>
-                                <th class="p-4 text-right pr-6">Hành Động</th>
+                                <th class="p-3 w-[130px]">Mã Thiết Bị</th>
+                                <th class="p-3">Nội Dung Khắc Phục</th>
+                                <th class="p-3 text-center w-[180px]">Thời Gian</th>
+                                <th class="p-3 text-center w-[120px]">Hành Động</th>
                             </tr>
                         </thead>
                         <tbody id="tableRepairLogsBody" class="divide-y divide-slate-200 font-bold"></tbody>
@@ -554,10 +554,10 @@
 
         <section class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
             <div class="bg-[#005c3e] text-white p-4 flex justify-between items-center">
-                <h3 class="text-lg font-black uppercase flex items-center gap-2"><i class="fa-solid fa-folder-tree"></i> 6. Quản lý văn bản chứng từ & Thống kê tài chính đầu tư (Tháng / Quý / Năm)</h3>
+                <h3 class="text-base font-black uppercase flex items-center gap-2"><i class="fa-solid fa-folder-tree"></i> 6. Quản lý văn bản chứng từ & Thống kê tài chính đầu tư (Tháng / Quý / Năm)</h3>
                 <span class="text-xs bg-emerald-950 font-mono text-emerald-300 px-3 py-1 rounded">Cơ sở dữ liệu tích hợp</span>
             </div>
-            <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div class="p-5 grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div class="lg:col-span-5 bg-slate-50 p-4 rounded-xl border-2 space-y-4 text-sm">
                     <h4 class="font-black text-[#005c3e] uppercase border-b pb-1">Báo cáo tài chính & Thống kê kinh phí</h4>
                     
@@ -622,15 +622,11 @@
         let localRepairLogs = [];
         let localCloudFiles = [];
         let localStaff = [];
-        let localUsers = []; // Mảng danh sách tài khoản hệ thống người dùng
+        let localUsers = []; 
         let activeLoginMethod = "pass";
 
         const defaultUnits = [
-            "Xưởng Xeo Giấy Ca A",
-            "Xưởng Xeo Giấy Ca B",
-            "Xưởng Chế Biến Bột Giấy",
-            "Phòng Cơ Điện Năng Lượng",
-            "Phòng Kế Hoạch Vật Tư"
+            "Xưởng Xeo Giấy Ca A", "Xưởng Xeo Giấy Ca B", "Xưởng Chế Biến Bột Giấy", "Phòng Cơ Điện Năng Lượng", "Phòng Kế Hoạch Vật Tư"
         ];
 
         function getEnvNode(baseNode) {
@@ -648,11 +644,9 @@
             db.ref(getEnvNode('cloud_files_v4')).off();
             db.ref(getEnvNode('system_users_v4')).off();
 
-            // Đồng bộ danh sách tài khoản người dùng
             db.ref(getEnvNode('system_users_v4')).on('value', snap => {
                 localUsers = snap.val() ? Object.values(snap.val()).filter(Boolean) : [];
                 renderUsersTable();
-                // Khởi tạo tài khoản root mặc định nếu chưa tồn tại bất cứ tài khoản nào
                 if(localUsers.length === 0) {
                     db.ref(getEnvNode('system_users_v4') + '/admin').set({
                         username: "admin", password: "vinapaco2026", pin: "123456", role: "Quản trị viên cấp cao"
@@ -662,20 +656,20 @@
 
             db.ref(getEnvNode('materials_v3')).on('value', snap => {
                 localMaterials = snap.val() ? Object.values(snap.val()).filter(Boolean) : [];
-                renderTableData('tableMaterialBody', localMaterials, ['name', 'qty', 'unit'], getEnvNode('materials_v3'));
+                renderMaterialsTable();
                 document.getElementById('badgeMaterialCount').innerText = localMaterials.length + " loại";
             });
 
             db.ref(getEnvNode('incidents_v3')).on('value', snap => {
                 localIncidents = snap.val() ? Object.values(snap.val()).filter(Boolean) : [];
-                renderTableData('tableIncidentBody', localIncidents, ['location', 'desc', 'level'], getEnvNode('incidents_v3'));
+                renderIncidentsTable();
                 document.getElementById('badgeIncidentCount').innerText = localIncidents.length + " sự cố";
                 sync3DGraphDisplay();
             });
 
             db.ref(getEnvNode('shifts_v3')).on('value', snap => {
                 localShifts = snap.val() ? Object.values(snap.val()).filter(Boolean) : [];
-                renderTableData('tableShiftBody', localShifts, ['leader', 'name', 'notes'], getEnvNode('shifts_v3'));
+                renderShiftsTable();
                 document.getElementById('badgeShiftCount').innerText = localShifts.length + " ca kíp";
             });
 
@@ -684,7 +678,7 @@
                 renderStaffTableData();
                 rebuildFilterAndAllocDropdowns();
                 rebuildDatalistGoiY();
-                generateSequentialStaffId(); // Luôn tính sẵn mã tiếp theo
+                if (!document.getElementById('staffEditId').value) generateSequentialStaffId();
             });
 
             db.ref(getEnvNode('allocations_v4')).on('value', snap => {
@@ -692,7 +686,7 @@
                 renderAllAllocationsTable();
                 populateRepairSelectBox();
                 sync3DGraphDisplay();
-                generateSequentialAllocId(); // Luôn tính toán sẵn mã thiết bị tăng dần kế tiếp
+                if (!document.getElementById('allocEditId').value) generateSequentialAllocId();
             });
 
             db.ref(getEnvNode('repair_logs_v4')).on('value', snap => {
@@ -706,84 +700,122 @@
             });
         }
 
-        // CƠ CHẾ THIẾT LẬP TÀI KHOẢN NGƯỜI DÙNG
+        // ĐIỀU CHỈNH CUỘN MÀN HÌNH MƯỢT MÀ ĐẾN MỤC TIÊU CẦN CHỈNH SỬA
+        function smoothScrollToElement(elementId) {
+            const target = document.getElementById(elementId);
+            if(target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        // CƠ CHẾ CHẤP NHẬN DUYỆT ĐẨY DỮ LIỆU TỪ TESTING LÊN PRODUCTION ĐỒNG BỘ ĐỘC LẬP
+        window.promoteTestingToProduction = function() {
+            if (currentEnv !== "TESTING") {
+                alert("Bạn chỉ có thể thực hiện tính năng này khi đang ở chế độ CHẠY THỬ!");
+                return;
+            }
+            if (confirm("Hệ thống sẽ đồng bộ toàn bộ dữ liệu đang Chạy thử hiện tại sang môi trường Chạy thật (Ghi đè trùng lặp). Xác nhận phê duyệt?")) {
+                const nodesToMigrate = ['materials_v3', 'incidents_v3', 'shifts_v3', 'staff_v3', 'allocations_v4', 'repair_logs_v4', 'cloud_files_v4', 'system_users_v4'];
+                let completed = 0;
+                nodesToMigrate.forEach(node => {
+                    db.ref(node + '_testing').once('value', snap => {
+                        const data = snap.val();
+                        if (data) {
+                            db.ref(node).set(data);
+                        }
+                        completed++;
+                        if (completed === nodesToMigrate.length) {
+                            alert("🚀 Đồng bộ hoàn tất! Dữ liệu thử nghiệm đã được chuẩn hóa lên môi trường CHẠY THẬT.");
+                        }
+                    });
+                });
+            }
+        }
+
+        // TÀI KHOẢN NGƯỜI DÙNG
         window.executeUserAccountSubmit = function(e) {
             e.preventDefault();
+            const editId = document.getElementById('userEditId').value;
             const u = document.getElementById('sysUsername').value.trim().toLowerCase();
             const p = document.getElementById('sysPassword').value.trim();
             const pin = document.getElementById('sysPin').value.trim();
             const r = document.getElementById('sysRole').value;
 
-            if(!u || !p || !pin) return;
-
             db.ref(getEnvNode('system_users_v4') + '/' + u).set({
                 username: u, password: p, pin: pin, role: r
             });
-            document.getElementById('formUserLogic').reset();
-            alert(`Đã cập nhật cấu hình tài khoản [${u}] thành công!`);
+            resetUserFormState();
         }
-
+        window.triggerUserEditMode = function(username) {
+            const usr = localUsers.find(x => x.username === username); if(!usr) return;
+            document.getElementById('userEditId').value = usr.username;
+            document.getElementById('sysUsername').value = usr.username;
+            document.getElementById('sysUsername').readOnly = true;
+            document.getElementById('sysPassword').value = usr.password;
+            document.getElementById('sysPin').value = usr.pin;
+            document.getElementById('sysRole').value = usr.role;
+            document.getElementById('btnCancelUserEdit').classList.remove('hidden');
+            document.getElementById('btnSubmitUserText').innerText = "Cập nhật tài khoản";
+            smoothScrollToElement('secUserAnchor');
+        }
+        window.resetUserFormState = function() {
+            document.getElementById('formUserLogic').reset();
+            document.getElementById('userEditId').value = "";
+            document.getElementById('sysUsername').readOnly = false;
+            document.getElementById('btnCancelUserEdit').classList.add('hidden');
+            document.getElementById('btnSubmitUserText').innerText = "Khởi tạo / Cập nhật tài khoản";
+        }
         function renderUsersTable() {
             const tbody = document.getElementById('tableUsersBody'); if(!tbody) return; tbody.innerHTML = "";
             localUsers.forEach(usr => {
                 tbody.innerHTML += `<tr class="hover:bg-slate-50">
                     <td class="p-3 font-mono font-black text-slate-800">${usr.username}</td>
                     <td class="p-3 text-xs text-emerald-800 font-bold"><i class="fa-solid fa-user-shield"></i> ${usr.role}</td>
-                    <td class="p-3 text-right">
-                        <button onclick="deleteCloudRecord('${getEnvNode('system_users_v4')}','${usr.username}')" class="text-red-600"><i class="fa-solid fa-trash-can"></i></button>
+                    <td class="p-3 text-center space-x-2">
+                        <button onclick="triggerUserEditMode('${usr.username}')" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('system_users_v4')}','${usr.username}')" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash-can"></i></button>
                     </td>
                 </tr>`;
             });
             document.getElementById('badgeUserCount').innerText = localUsers.length + " tài khoản";
         }
 
-        // CƠ CHẾ TỰ SINH MÃ NHÂN SỰ TĂNG DẦN LIÊN TỤC (DẠNG CHUỖI VNP-HR-00001)
+        // TỰ ĐỘNG SINH MÃ NHÂN SỰ
         window.generateSequentialStaffId = function() {
             let maxIndex = 0;
             localStaff.forEach(st => {
                 if(st.id && st.id.startsWith("VNP-HR-")) {
                     const numPart = parseInt(st.id.replace("VNP-HR-", ""), 10);
-                    if(!isNaN(numPart) && numPart > maxIndex) {
-                        maxIndex = numPart;
-                    }
+                    if(!isNaN(numPart) && numPart > maxIndex) maxIndex = numPart;
                 }
             });
-            const nextIndex = maxIndex + 1;
-            const paddedNum = String(nextIndex).padStart(5, '0');
+            const paddedNum = String(maxIndex + 1).padStart(5, '0');
             document.getElementById('staffCode').value = `VNP-HR-${paddedNum}`;
         }
 
-        // CƠ CHẾ TỰ SINH MÃ THIẾT BỊ TĂNG DẦN LIÊN TỤC (DẠNG CHUỖI VNP-EQ-00001)
+        // TỰ ĐỘNG SINH MÃ THIẾT BỊ
         function generateSequentialAllocId() { 
             let maxIndex = 0;
             localAllocations.forEach(alloc => {
                 if(alloc.id && alloc.id.startsWith("VNP-EQ-")) {
                     const numPart = parseInt(alloc.id.replace("VNP-EQ-", ""), 10);
-                    if(!isNaN(numPart) && numPart > maxIndex) {
-                        maxIndex = numPart;
-                    }
+                    if(!isNaN(numPart) && numPart > maxIndex) maxIndex = numPart;
                 }
             });
-            const nextIndex = maxIndex + 1;
-            const paddedNum = String(nextIndex).padStart(5, '0');
+            const paddedNum = String(maxIndex + 1).padStart(5, '0');
             document.getElementById('allocGeneratedId').value = `VNP-EQ-${paddedNum}`; 
         }
 
-        // ĐIỀU CHỈNH MÔI TRƯỜNG CHẠY THỬ / CHẠY THẬT
         window.toggleSystemEnvironment = function(mode) {
             currentEnv = mode;
-            const clearBtn = document.getElementById('btnClearTestDataBtn');
-            if(mode === 'PRODUCTION') {
-                clearBtn.classList.add('hidden');
-            } else {
-                clearBtn.classList.remove('hidden');
-            }
+            const actionArea = document.getElementById('testingDataActions');
+            if(mode === 'PRODUCTION') actionArea.classList.add('hidden');
+            else actionArea.classList.remove('hidden');
             startRealtimeCoreSync();
         }
 
-        // XÓA SẠCH DỮ LIỆU THỬ NGHIỆM NẾU KHÔNG CHUẨN
         window.purgeAllTestingData = function() {
-            if(confirm("Hệ thống sẽ xóa toàn bộ danh mục nhân sự, thiết bị, tài khoản thử nghiệm... thuộc môi trường CHẠY THỬ để làm sạch kho dữ liệu. Xác nhận xóa?")) {
+            if(confirm("Xóa toàn bộ danh mục dữ liệu thuộc môi trường CHẠY THỬ?")) {
                 db.ref('materials_v3_testing').remove();
                 db.ref('incidents_v3_testing').remove();
                 db.ref('shifts_v3_testing').remove();
@@ -792,32 +824,23 @@
                 db.ref('repair_logs_v4_testing').remove();
                 db.ref('cloud_files_v4_testing').remove();
                 db.ref('system_users_v4_testing').remove();
-                alert("Đã dọn dẹp sạch sẽ dữ liệu thử nghiệm lỗi!");
+                alert("Đã làm sạch dữ liệu thử nghiệm!");
             }
         }
 
-        // TỰ ĐỘNG ĐIỀN MẬT KHẨU TỪ DATABASE KHI CÓ USERNAME & CHỌN GHI NHỚ
         window.handleUsernameInput = function(usernameValue) {
             const rememberMe = document.getElementById('rememberCredentials').checked;
             const passwordInput = document.getElementById('secPass');
             if(!passwordInput) return;
-
             const targetUser = localUsers.find(x => x.username === usernameValue.trim().toLowerCase());
             if(rememberMe && targetUser) {
-                if(activeLoginMethod === 'pass') {
-                    passwordInput.value = targetUser.password;
-                } else {
-                    passwordInput.value = targetUser.pin;
-                }
+                passwordInput.value = (activeLoginMethod === 'pass') ? targetUser.password : targetUser.pin;
             }
         }
-
         window.toggleRememberMeState = function() {
-            const u = document.getElementById('secUser').value;
-            handleUsernameInput(u);
+            handleUsernameInput(document.getElementById('secUser').value);
         }
 
-        // ĐĂNG NHẬP ĐỐI CHIẾU DỮ LIỆU ĐỘNG TỪ DATABASE NGƯỜI DÙNG
         window.switchLoginMethod = function(method) {
             activeLoginMethod = method;
             const container = document.getElementById('dynamicSecretContainer');
@@ -843,7 +866,6 @@
             event.preventDefault();
             const u = document.getElementById('secUser').value.trim().toLowerCase();
             const p = document.getElementById('secPass').value;
-
             const matchedUser = localUsers.find(x => x.username === u);
             if (matchedUser && ((activeLoginMethod === 'pass' && matchedUser.password === p) || (activeLoginMethod === 'pin' && matchedUser.pin === p))) {
                 document.getElementById('securityLockOverlay').style.display = 'none';
@@ -853,17 +875,14 @@
             }
         }
 
-        // ĐỒ THỊ TRỰC QUAN ĐỘNG 3D
         function sync3DGraphDisplay() {
             const countNew = localAllocations.filter(x => x.status === 'Cấp Mới').length;
             const countIssue = localAllocations.filter(x => x.status === 'Đang Sự Cố').length;
             const countFixed = localAllocations.filter(x => x.status === 'Đã Khắc Phục').length;
-
             document.getElementById('3dValNew').innerText = countNew + " TB";
             document.getElementById('3dValIssue').innerText = countIssue + " TB";
             document.getElementById('3dValDone').innerText = countFixed + " việc";
             document.getElementById('3dValPending').innerText = countIssue + " việc";
-
             const max = Math.max(countNew, countIssue, countFixed, 1);
             document.getElementById('3dBarNew').style.height = ((countNew / max) * 75 + 25) + "%";
             document.getElementById('3dBarIssue').style.height = ((countIssue / max) * 75 + 25) + "%";
@@ -871,83 +890,29 @@
             document.getElementById('3dBarPending').style.height = ((countIssue / max) * 75 + 25) + "%";
         }
 
-        // PHÂN HỆ 1: NHÂN SỰ
+        // MỤC 1: LOGIC NHÂN SỰ
         let currentStaffPhotoBase64 = "";
         window.previewStaffPhoto = function(e) {
-            const file = e.target.files[0];
-            if(!file) return;
+            const file = e.target.files[0]; if(!file) return;
             const reader = new FileReader();
             reader.onload = function(evt) {
                 currentStaffPhotoBase64 = evt.target.result;
                 const img = document.getElementById('staffPhotoPreview');
-                img.src = currentStaffPhotoBase64;
-                img.classList.remove('hidden');
+                img.src = currentStaffPhotoBase64; img.classList.remove('hidden');
             };
             reader.readAsDataURL(file);
         }
-
         window.executeStaffSubmit = function(e) {
             e.preventDefault();
             const code = document.getElementById('staffCode').value.trim();
             const name = document.getElementById('staffName').value.trim();
             const finalUnitName = document.getElementById('staffUnitCustom').value.trim();
 
-            if(!document.getElementById('staffEditId').value && localStaff.some(x => x.id === code)) {
-                alert("Mã Nhân sự này đã tồn tại!");
-                return;
-            }
-
             db.ref(getEnvNode('staff_v3') + '/' + code).set({
                 id: code, name: name, unit: finalUnitName, photo: currentStaffPhotoBase64 || ""
             });
             resetStaffFormState();
         }
-
-        window.triggerBulkStaffImport = function(e) {
-            const file = e.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                const text = evt.target.result;
-                const lines = text.split('\n');
-                let count = 0;
-                lines.forEach(line => {
-                    const parts = line.split(',');
-                    if(parts.length >= 3) {
-                        const code = parts[0].trim();
-                        const name = parts[1].trim();
-                        const unit = parts[2].trim();
-                        if(code && !localStaff.some(x => x.id === code)) {
-                            db.ref(getEnvNode('staff_v3') + '/' + code).set({ id: code, name: name, unit: unit, photo: "" });
-                            count++;
-                        }
-                    }
-                });
-                alert(`Đã nạp ${count} nhân sự vào kho hệ thống!`);
-            };
-            reader.readAsText(file);
-        }
-
-        function renderStaffTableData() {
-            const table = document.getElementById('tableStaffBody');
-            const filter = document.getElementById('filterStaffUnit').value;
-            if(!table) return; table.innerHTML = "";
-            const target = (filter === 'TẤT CẢ' || !filter) ? localStaff : localStaff.filter(x => x.unit === filter);
-            target.forEach(st => {
-                table.innerHTML += `<tr class="hover:bg-slate-50">
-                    <td class="p-3"><img src="${st.photo || 'https://via.placeholder.com/50'}" class="w-10 h-10 object-cover rounded-full border"></td>
-                    <td class="p-3 font-mono font-black text-blue-900">${st.id}</td>
-                    <td class="p-3"><div>${st.name}</div><span class="text-xs text-slate-500 font-bold">${st.unit}</span></td>
-                    <td class="p-3 text-xs text-slate-400 italic">Hồ sơ đính kèm sẵn sàng</td>
-                    <td class="p-3 text-right space-x-2">
-                        <button onclick="triggerStaffEditMode('${st.id}')" class="text-blue-600"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('staff_v3')}','${st.id}')" class="text-red-600"><i class="fa-solid fa-trash-can"></i></button>
-                    </td>
-                </tr>`;
-            });
-            document.getElementById('badgeStaffCount').innerText = localStaff.length + " nhân sự";
-        }
-
         window.triggerStaffEditMode = function(id) {
             const st = localStaff.find(x => x.id === id); if(!st) return;
             document.getElementById('staffEditId').value = st.id;
@@ -955,67 +920,183 @@
             document.getElementById('staffCode').readOnly = true;
             document.getElementById('staffName').value = st.name;
             document.getElementById('staffUnitCustom').value = st.unit;
+            if(st.photo) {
+                document.getElementById('staffPhotoPreview').src = st.photo;
+                document.getElementById('staffPhotoPreview').classList.remove('hidden');
+                currentStaffPhotoBase64 = st.photo;
+            }
             document.getElementById('btnCancelStaffEdit').classList.remove('hidden');
+            document.getElementById('btnSubmitStaffText').innerText = "Cập nhật nhân sự";
+            smoothScrollToElement('staffAnchor');
         }
-
         window.resetStaffFormState = function() {
-            document.getElementById('staffEditId').value = ""; document.getElementById('staffCode').value = "";
-            document.getElementById('staffCode').readOnly = false; document.getElementById('staffName').value = "";
-            document.getElementById('staffUnitCustom').value = "";
-            document.getElementById('staffPhotoPreview').classList.add('hidden'); currentStaffPhotoBase64 = "";
+            document.getElementById('formStaffLogic').reset();
+            document.getElementById('staffEditId').value = "";
+            document.getElementById('staffCode').readOnly = false;
+            document.getElementById('staffPhotoPreview').classList.add('hidden');
+            currentStaffPhotoBase64 = "";
             document.getElementById('btnCancelStaffEdit').classList.add('hidden');
+            document.getElementById('btnSubmitStaffText').innerText = "Lưu thông tin nhân sự";
             generateSequentialStaffId();
         }
-
-        function rebuildDatalistGoiY() {
-            const dl = document.getElementById('dynamicUnitsDatalist'); if(!dl) return;
-            const currentUnits = [...new Set([...defaultUnits, ...localStaff.map(x => x.unit)])].filter(Boolean);
-            dl.innerHTML = "";
-            currentUnits.forEach(u => { dl.innerHTML += `<option value="${u}">`; });
+        window.triggerBulkStaffImport = function(e) {
+            const file = e.target.files[0]; if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const text = evt.target.result; const lines = text.split('\n');
+                lines.forEach(line => {
+                    const parts = line.split(',');
+                    if(parts.length >= 3) {
+                        const code = parts[0].trim(); const name = parts[1].trim(); const unit = parts[2].trim();
+                        if(code) db.ref(getEnvNode('staff_v3') + '/' + code).set({ id: code, name: name, unit: unit, photo: "" });
+                    }
+                });
+            };
+            reader.readAsText(file);
+        }
+        function renderStaffTableData() {
+            const table = document.getElementById('tableStaffBody'); const filter = document.getElementById('filterStaffUnit').value;
+            if(!table) return; table.innerHTML = "";
+            const target = (filter === 'TẤT CẢ' || !filter) ? localStaff : localStaff.filter(x => x.unit === filter);
+            target.forEach(st => {
+                table.innerHTML += `<tr class="hover:bg-slate-50">
+                    <td class="p-3"><img src="${st.photo || 'https://via.placeholder.com/50'}" class="w-10 h-10 object-cover rounded-full border"></td>
+                    <td class="p-3 font-mono font-black text-blue-900">${st.id}</td>
+                    <td class="p-3"><div>${st.name}</div><span class="text-xs text-slate-500 font-bold">${st.unit}</span></td>
+                    <td class="p-3 text-center space-x-2">
+                        <button onclick="triggerStaffEditMode('${st.id}')" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('staff_v3')}','${st.id}')" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                </tr>`;
+            });
+            document.getElementById('badgeStaffCount').innerText = localStaff.length + " nhân sự";
         }
 
-        function rebuildFilterAndAllocDropdowns() {
-            const filterBox = document.getElementById('filterStaffUnit');
-            const allocBox = document.getElementById('allocDepartmentBox');
-            
-            const currentSelectedFilter = filterBox.value;
-            const currentSelectedAlloc = allocBox ? allocBox.value : "";
-
-            const allUnits = [...new Set([...defaultUnits, ...localStaff.map(x => x.unit)])].filter(Boolean);
-
-            filterBox.innerHTML = `<option value="TẤT CẢ">-- Lọc theo tất cả đơn vị thành viên --</option>`;
-            allUnits.forEach(un => { filterBox.innerHTML += `<option value="${un}">${un}</option>`; });
-            if(currentSelectedFilter) filterBox.value = currentSelectedFilter;
-
-            if(allocBox) {
-                allocBox.innerHTML = "";
-                allUnits.forEach(un => { allocBox.innerHTML += `<option value="${un}">${un}</option>`; });
-                if(currentSelectedAlloc) allocBox.value = currentSelectedAlloc;
-            }
-        }
-
-        // XỬ LÝ CHUNG MỤC 2, 3, 4
-        function executeGenericSubmit(e, nodeName, fields) {
+        // MỤC 2: VẬT TƯ TIÊU HAO
+        window.executeMaterialSubmit = function(e) {
             e.preventDefault();
-            const editId = document.getElementById(fields[0].slice(3).toLowerCase() + 'EditId')?.value;
-            const targetId = editId ? editId : "ID-" + Math.floor(100000 + Math.random() * 900000);
-            const payload = { id: targetId };
-            fields.forEach(f => { payload[f.slice(3).toLowerCase()] = document.getElementById(f).value.trim(); });
-            db.ref(getEnvNode(nodeName) + '/' + targetId).set(payload);
-            document.getElementById(e.target.id).reset();
+            const editId = document.getElementById('matEditId').value;
+            const targetId = editId ? editId : "MAT-" + Date.now().toString().slice(-6);
+            db.ref(getEnvNode('materials_v3') + '/' + targetId).set({
+                id: targetId,
+                name: document.getElementById('matName').value.trim(),
+                qty: document.getElementById('matQty').value,
+                unit: document.getElementById('matUnit').value.trim()
+            });
+            resetMaterialFormState();
         }
-        window.executeMaterialSubmit = e => executeGenericSubmit(e, 'materials_v3', ['matName', 'matQty', 'matUnit']);
-        window.executeIncidentSubmit = e => executeGenericSubmit(e, 'incidents_v3', ['incLocation', 'incDesc', 'incLevel']);
-        window.executeShiftSubmit = e => executeGenericSubmit(e, 'shifts_v3', ['shiftLeader', 'shiftName', 'shiftNotes']);
+        window.triggerMaterialEditMode = function(id) {
+            const item = localMaterials.find(x => x.id === id); if(!item) return;
+            document.getElementById('matEditId').value = item.id;
+            document.getElementById('matName').value = item.name;
+            document.getElementById('matQty').value = item.qty;
+            document.getElementById('matUnit').value = item.unit;
+            document.getElementById('btnCancelMatEdit').classList.remove('hidden');
+            document.getElementById('btnSubmitMatText').innerText = "Cập nhật";
+            smoothScrollToElement('materialAnchor');
+        }
+        window.resetMaterialFormState = function() {
+            document.getElementById('formMaterialLogic').reset();
+            document.getElementById('matEditId').value = "";
+            document.getElementById('btnCancelMatEdit').classList.add('hidden');
+            document.getElementById('btnSubmitMatText').innerText = "Cập nhật kho";
+        }
+        function renderMaterialsTable() {
+            const tbody = document.getElementById('tableMaterialBody'); if(!tbody) return; tbody.innerHTML = "";
+            localMaterials.forEach(x => {
+                tbody.innerHTML += `<tr class="hover:bg-slate-50">
+                    <td class="p-3 font-bold text-slate-800">${x.name}</td>
+                    <td class="p-3 font-mono text-emerald-800">${x.qty}</td>
+                    <td class="p-3 text-slate-600">${x.unit}</td>
+                    <td class="p-3 text-center space-x-2">
+                        <button onclick="triggerMaterialEditMode('${x.id}')" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('materials_v3')}','${x.id}')" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash-can"></i></button>
+                    </td></tr>`;
+            });
+        }
 
-        function renderTableData(tableId, dataList, fields, fullNodePath) {
-            const tbody = document.getElementById(tableId); if(!tbody) return; tbody.innerHTML = "";
-            dataList.forEach(x => {
-                let rowsHtml = "";
-                fields.forEach(f => { rowsHtml += `<td class="p-4">${x[f] || ''}</td>`; });
-                tbody.innerHTML += `<tr class="hover:bg-slate-50">${rowsHtml}
-                    <td class="p-4 text-right pr-6">
-                        <button onclick="deleteCloudRecord('${fullNodePath}','${x.id}')" class="text-red-600 font-black"><i class="fa-solid fa-trash-can"></i> Gỡ</button>
+        // MỤC 3: ĐIỀU HÀNH SỰ CỐ
+        window.executeIncidentSubmit = function(e) {
+            e.preventDefault();
+            const editId = document.getElementById('incEditId').value;
+            const targetId = editId ? editId : "INC-" + Date.now().toString().slice(-6);
+            db.ref(getEnvNode('incidents_v3') + '/' + targetId).set({
+                id: targetId,
+                location: document.getElementById('incLocation').value.trim(),
+                desc: document.getElementById('incDesc').value.trim(),
+                level: document.getElementById('incLevel').value
+            });
+            resetIncidentFormState();
+        }
+        window.triggerIncidentEditMode = function(id) {
+            const item = localIncidents.find(x => x.id === id); if(!item) return;
+            document.getElementById('incEditId').value = item.id;
+            document.getElementById('incLocation').value = item.location;
+            document.getElementById('incDesc').value = item.desc;
+            document.getElementById('incLevel').value = item.level;
+            document.getElementById('btnCancelIncEdit').classList.remove('hidden');
+            document.getElementById('btnSubmitIncText').innerText = "Cập nhật";
+            smoothScrollToElement('incidentAnchor');
+        }
+        window.resetIncidentFormState = function() {
+            document.getElementById('formIncidentLogic').reset();
+            document.getElementById('incEditId').value = "";
+            document.getElementById('btnCancelIncEdit').classList.add('hidden');
+            document.getElementById('btnSubmitIncText').innerText = "Phát Lệnh Điều Động";
+        }
+        function renderIncidentsTable() {
+            const tbody = document.getElementById('tableIncidentBody'); if(!tbody) return; tbody.innerHTML = "";
+            localIncidents.forEach(x => {
+                tbody.innerHTML += `<tr class="hover:bg-slate-50">
+                    <td class="p-3 font-bold text-slate-800">${x.location}</td>
+                    <td class="p-3 text-slate-700">${x.desc}</td>
+                    <td class="p-3 text-xs font-black text-rose-700">${x.level}</td>
+                    <td class="p-3 text-center space-x-2">
+                        <button onclick="triggerIncidentEditMode('${x.id}')" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('incidents_v3')}','${x.id}')" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash-can"></i></button>
+                    </td></tr>`;
+            });
+        }
+
+        // MỤC 4: NHẬT KÝ CA KÍP
+        window.executeShiftSubmit = function(e) {
+            e.preventDefault();
+            const editId = document.getElementById('shiftEditId').value;
+            const targetId = editId ? editId : "SHIFT-" + Date.now().toString().slice(-6);
+            db.ref(getEnvNode('shifts_v3') + '/' + targetId).set({
+                id: targetId,
+                leader: document.getElementById('shiftLeader').value.trim(),
+                name: document.getElementById('shiftName').value.trim(),
+                notes: document.getElementById('shiftNotes').value.trim()
+            });
+            resetShiftFormState();
+        }
+        window.triggerShiftEditMode = function(id) {
+            const item = localShifts.find(x => x.id === id); if(!item) return;
+            document.getElementById('shiftEditId').value = item.id;
+            document.getElementById('shiftLeader').value = item.leader;
+            document.getElementById('shiftName').value = item.name;
+            document.getElementById('shiftNotes').value = item.notes;
+            document.getElementById('btnCancelShiftEdit').classList.remove('hidden');
+            document.getElementById('btnSubmitShiftText').innerText = "Cập nhật";
+            smoothScrollToElement('shiftAnchor');
+        }
+        window.resetShiftFormState = function() {
+            document.getElementById('formShiftLogic').reset();
+            document.getElementById('shiftEditId').value = "";
+            document.getElementById('btnCancelShiftEdit').classList.add('hidden');
+            document.getElementById('btnSubmitShiftText').innerText = "Ký Xác Nhận Lưu Nhật Ký";
+        }
+        function renderShiftsTable() {
+            const tbody = document.getElementById('tableShiftBody'); if(!tbody) return; tbody.innerHTML = "";
+            localShifts.forEach(x => {
+                tbody.innerHTML += `<tr class="hover:bg-slate-50">
+                    <td class="p-3 font-bold text-slate-800">${x.leader}</td>
+                    <td class="p-3 text-indigo-900">${x.name}</td>
+                    <td class="p-3 text-slate-600 text-xs">${x.notes}</td>
+                    <td class="p-3 text-center space-x-2">
+                        <button onclick="triggerShiftEditMode('${x.id}')" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('shifts_v3')}','${x.id}')" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash-can"></i></button>
                     </td></tr>`;
             });
         }
@@ -1026,7 +1107,6 @@
             if(val === 'MỚI') { customInput.classList.remove('hidden'); customInput.required = true; }
             else { customInput.classList.add('hidden'); customInput.required = false; }
         }
-
         window.executeAllocationSubmit = function(e) {
             e.preventDefault();
             const editId = document.getElementById('allocEditId').value;
@@ -1046,30 +1126,6 @@
             });
             resetAllocFormState();
         }
-
-        function renderAllAllocationsTable() {
-            const tbody = document.getElementById('tableAllocBody'); if(!tbody) return; tbody.innerHTML = "";
-            localAllocations.forEach(x => {
-                const qrString = JSON.stringify({id: x.id, ten: x.name, dv: x.department});
-                tbody.innerHTML += `<tr class="hover:bg-slate-50">
-                    <td class="p-4 font-mono font-black text-emerald-900">${x.id}</td>
-                    <td class="p-4 font-black text-slate-900">${x.name}<span class="block text-xs text-slate-400">Loại: ${x.groupType}</span></td>
-                    <td class="p-4 text-slate-700">${x.department}<span class="block text-xs font-black text-indigo-700">Sử dụng: ${x.userPerson}</span></td>
-                    <td class="p-4 text-center"><span class="px-3 py-1 rounded-lg text-xs font-black ${x.status==='Cấp Mới'?'bg-emerald-100 text-emerald-900':x.status==='Đang Sự Cố'?'bg-rose-100 text-rose-900':'bg-blue-100 text-blue-900'}">${x.status}</span></td>
-                    <td class="p-2 flex justify-center"><div class="qr-target-node border bg-white p-0.5 rounded" data-qr="${qrString}"></div></td>
-                    <td class="p-4 text-right pr-6 space-x-2">
-                        <button onclick="triggerAllocEditMode('${x.id}')" class="text-blue-700"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('allocations_v4')}','${x.id}')" class="text-red-600"><i class="fa-solid fa-trash-can"></i></button>
-                    </td></tr>`;
-            });
-            setTimeout(() => {
-                document.querySelectorAll('.qr-target-node').forEach(div => {
-                    if(div.innerHTML === "") new QRCode(div, { text: div.getAttribute('data-qr'), width: 70, height: 70 });
-                });
-            }, 150);
-            document.getElementById('badgeAllocCount').innerText = localAllocations.length + " thiết bị";
-        }
-
         window.triggerAllocEditMode = function(id) {
             const item = localAllocations.find(x => x.id === id); if(!item) return;
             document.getElementById('allocEditId').value = item.id;
@@ -1078,45 +1134,67 @@
             document.getElementById('allocStatus').value = item.status;
             document.getElementById('allocDepartmentBox').value = item.department;
             document.getElementById('allocUserPerson').value = item.userPerson;
-            
-            const standardGroups = [
-                "Hệ thống Thiết bị Xeo Giấy (Paper Machine)", "Hệ thống Lò Hơi & Mạng Nhiệt (Boiler System)",
-                "Thiết bị Chế Biến Bột Giấy & Nghiền Bột", "Động cơ điện & Bơm Áp Lực Cao",
-                "Hệ thống Van Điều Áp & Đường Ống Hơi", "Hệ thống Đo Lường & Tự Động Hóa (DCS/SCADA)",
-                "Thiết bị Xử Lý Nước Thải & Hóa Chất", "Hệ thống Máy Nén Khí Trung Tâm",
-                "Thiết bị Nâng Hạ, Cẩu Trục Phân Xưởng", "Thiết bị Phụ Trợ & Cầm Tay Sửa Chữa"
-            ];
-            if(standardGroups.includes(item.groupType)) {
-                document.getElementById('allocGroupSelect').value = item.groupType;
-                document.getElementById('allocGroupCustom').classList.add('hidden');
-            } else {
-                document.getElementById('allocGroupSelect').value = 'MỚI';
-                document.getElementById('allocGroupCustom').value = item.groupType;
-                document.getElementById('allocGroupCustom').classList.remove('hidden');
-            }
+            document.getElementById('allocGroupSelect').value = item.groupType;
             document.getElementById('btnCancelAllocEdit').classList.remove('hidden');
+            smoothScrollToElement('allocAnchor');
         }
-
         window.resetAllocFormState = function() {
-            document.getElementById('allocEditId').value = ""; document.getElementById('allocDeviceName').value = "";
-            document.getElementById('allocUserPerson').value = ""; document.getElementById('btnCancelAllocEdit').classList.add('hidden');
-            document.getElementById('allocGroupSelect').value = "Hệ thống Thiết bị Xeo Giấy (Paper Machine)";
-            document.getElementById('allocGroupCustom').value = ""; document.getElementById('allocGroupCustom').classList.add('hidden');
+            document.getElementById('allocEditId').value = ""; document.getElementById('formAllocationLogic').reset();
+            document.getElementById('btnCancelAllocEdit').classList.add('hidden');
             generateSequentialAllocId();
         }
-
-        // LỊCH SỬ KHẮC PHỤC
-        window.executeRepairLogSubmit = function(e) {
-            e.preventDefault(); const assetId = document.getElementById('repairAssetSelect').value;
-            const actionDesc = document.getElementById('repairActionDesc').value.trim(); if(!assetId) return;
-            const logId = "REPAIR-" + Date.now().toString().slice(-6);
-            db.ref(getEnvNode('repair_logs_v4') + '/' + logId).set({
-                id: logId, assetId: assetId, actionDesc: actionDesc,
-                timeStr: new Date().toLocaleTimeString('vi-VN') + " " + new Date().toLocaleDateString('vi-VN')
+        function renderAllAllocationsTable() {
+            const tbody = document.getElementById('tableAllocBody'); if(!tbody) return; tbody.innerHTML = "";
+            localAllocations.forEach(x => {
+                const qrString = JSON.stringify({id: x.id, ten: x.name, dv: x.department});
+                tbody.innerHTML += `<tr class="hover:bg-slate-50">
+                    <td class="p-3 font-mono font-black text-emerald-900">${x.id}</td>
+                    <td class="p-3 font-bold text-slate-900">${x.name}<span class="block text-xs text-slate-400 font-medium">Loại: ${x.groupType}</span></td>
+                    <td class="p-3 text-slate-700 font-medium">${x.department}<span class="block text-xs font-black text-indigo-700">Sử dụng: ${x.userPerson}</span></td>
+                    <td class="p-3 text-center"><span class="px-2.5 py-1 rounded text-xs font-black ${x.status==='Cấp Mới'?'bg-emerald-100 text-emerald-900':x.status==='Đang Sự Cố'?'bg-rose-100 text-rose-900':'bg-blue-100 text-blue-900'}">${x.status}</span></td>
+                    <td class="p-1 flex justify-center"><div class="qr-target-node border bg-white p-0.5 rounded" data-qr="${qrString}"></div></td>
+                    <td class="p-3 text-center space-x-1">
+                        <button onclick="triggerAllocEditMode('${x.id}')" class="text-blue-700 hover:text-blue-900"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('allocations_v4')}','${x.id}')" class="text-red-600 hover:text-red-900"><i class="fa-solid fa-trash-can"></i></button>
+                    </td></tr>`;
             });
-            document.getElementById('repairActionDesc').value = "";
+            setTimeout(() => {
+                document.querySelectorAll('.qr-target-node').forEach(div => {
+                    if(div.innerHTML === "") new QRCode(div, { text: div.getAttribute('data-qr'), width: 60, height: 60 });
+                });
+            }, 150);
+            document.getElementById('badgeAllocCount').innerText = localAllocations.length + " thiết bị";
         }
 
+        // LỊCH SỬ SỬA CHỮA
+        window.executeRepairLogSubmit = function(e) {
+            e.preventDefault(); 
+            const editId = document.getElementById('repairEditId').value;
+            const assetId = document.getElementById('repairAssetSelect').value;
+            const actionDesc = document.getElementById('repairActionDesc').value.trim(); if(!assetId) return;
+            const targetId = editId ? editId : "REP-" + Date.now().toString().slice(-6);
+            
+            db.ref(getEnvNode('repair_logs_v4') + '/' + targetId).set({
+                id: targetId, assetId: assetId, actionDesc: actionDesc,
+                timeStr: new Date().toLocaleTimeString('vi-VN') + " " + new Date().toLocaleDateString('vi-VN')
+            });
+            resetRepairFormState();
+        }
+        window.triggerRepairEditMode = function(id) {
+            const log = localRepairLogs.find(x => x.id === id); if(!log) return;
+            document.getElementById('repairEditId').value = log.id;
+            document.getElementById('repairAssetSelect').value = log.assetId;
+            document.getElementById('repairActionDesc').value = log.actionDesc;
+            document.getElementById('btnCancelRepairEdit').classList.remove('hidden');
+            document.getElementById('btnSubmitRepairText').innerText = "Cập nhật";
+            smoothScrollToElement('repairAnchor');
+        }
+        window.resetRepairFormState = function() {
+            document.getElementById('repairEditId').value = "";
+            document.getElementById('repairActionDesc').value = "";
+            document.getElementById('btnCancelRepairEdit').classList.add('hidden');
+            document.getElementById('btnSubmitRepairText').innerText = "Ghi Nhật Ký";
+        }
         function renderRepairLogsTable() {
             const tbody = document.getElementById('tableRepairLogsBody'); if(!tbody) return; tbody.innerHTML = "";
             localRepairLogs.forEach(x => {
@@ -1124,8 +1202,10 @@
                     <td class="p-3 font-mono font-black text-purple-900">${x.assetId}</td>
                     <td class="p-3 font-bold text-slate-800">${x.actionDesc}</td>
                     <td class="p-3 text-center font-mono text-xs">${x.timeStr}</td>
-                    <td class="p-3 text-right pr-6"><button onclick="deleteCloudRecord('${getEnvNode('repair_logs_v4')}','${x.id}')" class="text-red-500"><i class="fa-solid fa-trash-can"></i></button></td>
-                </tr>`;
+                    <td class="p-3 text-center space-x-2">
+                        <button onclick="triggerRepairEditMode('${x.id}')" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('repair_logs_v4')}','${x.id}')" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-trash-can"></i></button>
+                    </td></tr>`;
             });
             document.getElementById('badgeRepairCount').innerText = localRepairLogs.length + " bản ghi";
         }
@@ -1135,7 +1215,7 @@
             localAllocations.forEach(x => { select.innerHTML += `<option value="${x.id}">${x.id} - ${x.name}</option>`; });
         }
 
-        // QUẢN LÝ TÀI LIỆU VĂN BẢN
+        // CHỨNG TỪ VÀ THƯ MỤC
         window.handleAdvancedFileAndFolderUpload = function(files, isFolderStructure) {
             const category = document.getElementById('fileStorageCategory').value; if(!files.length) return;
             Array.from(files).forEach(file => {
@@ -1143,20 +1223,18 @@
                 const fileId = "FILE-" + Math.floor(100000 + Math.random() * 900000);
                 db.ref(getEnvNode('cloud_files_v4') + '/' + fileId).set({ id: fileId, category: category, name: file.name, fullPath: pathString, isFolderItem: isFolderStructure });
             });
-            alert("Đã đồng bộ văn bản lên Cloud!");
         }
-
         function renderFileExplorerTree() {
             const treeContainer = document.getElementById('fileExplorerTreeContainer'); if(!treeContainer) return; treeContainer.innerHTML = "";
             if(!localCloudFiles.length) { treeContainer.innerHTML = `<p class="text-slate-400 text-xs italic text-center p-4">Chưa có chứng từ.</p>`; return; }
             const categoriesMap = {}; localCloudFiles.forEach(f => { if(!categoriesMap[f.category]) categoriesMap[f.category] = []; categoriesMap[f.category].push(f); });
             Object.keys(categoriesMap).forEach(cat => {
-                const catWrapper = document.createElement('div'); catWrapper.className = "border rounded-xl p-3 bg-slate-50 space-y-1.5 text-xs font-bold";
+                const catWrapper = document.createElement('div'); catWrapper.className = "border rounded-xl p-3 bg-slate-50 space-y-1.5 text-xs font-bold text-slate-800";
                 catWrapper.innerHTML = `<div class="text-slate-700 uppercase border-b pb-1 flex items-center gap-1.5 font-black"><i class="fa-solid fa-folder-closed text-yellow-600"></i> ${cat}</div>`;
                 categoriesMap[cat].forEach(file => {
                     catWrapper.innerHTML += `<div class="p-2 bg-white rounded border flex justify-between items-center">
                         <span class="truncate"><i class="${file.isFolderItem ? 'fa-solid fa-folder text-amber-500' : 'fa-solid fa-file text-indigo-500'} mr-1"></i> ${file.fullPath}</span>
-                        <button onclick="deleteCloudRecord('${getEnvNode('cloud_files_v4')}','${file.id}')" class="text-red-500 font-black">×</button></div>`;
+                        <button onclick="deleteCloudRecord('${getEnvNode('cloud_files_v4')}','${file.id}')" class="text-red-500 font-black text-sm hover:text-red-700">×</button></div>`;
                 });
                 treeContainer.appendChild(catWrapper);
             });
@@ -1164,7 +1242,26 @@
 
         window.deleteCloudRecord = function(fullNodePath, id) { if(confirm("Xác nhận xóa bỏ vĩnh viễn bản ghi này?")) db.ref(fullNodePath + '/' + id).remove(); }
 
-        // ĐỒNG HỒ THỜI GIAN THỰC REALTIME
+        function rebuildDatalistGoiY() {
+            const dl = document.getElementById('dynamicUnitsDatalist'); if(!dl) return;
+            const currentUnits = [...new Set([...defaultUnits, ...localStaff.map(x => x.unit)])].filter(Boolean);
+            dl.innerHTML = "";
+            currentUnits.forEach(u => { dl.innerHTML += `<option value="${u}">`; });
+        }
+        function rebuildFilterAndAllocDropdowns() {
+            const filterBox = document.getElementById('filterStaffUnit'); const allocBox = document.getElementById('allocDepartmentBox');
+            const currentSelectedFilter = filterBox.value; const currentSelectedAlloc = allocBox ? allocBox.value : "";
+            const allUnits = [...new Set([...defaultUnits, ...localStaff.map(x => x.unit)])].filter(Boolean);
+            filterBox.innerHTML = `<option value="TẤT CẢ">-- Lọc theo tất cả đơn vị thành viên --</option>`;
+            allUnits.forEach(un => { filterBox.innerHTML += `<option value="${un}">${un}</option>`; });
+            if(currentSelectedFilter) filterBox.value = currentSelectedFilter;
+            if(allocBox) {
+                allocBox.innerHTML = "";
+                allUnits.forEach(un => { allocBox.innerHTML += `<option value="${un}">${un}</option>`; });
+                if(currentSelectedAlloc) allocBox.value = currentSelectedAlloc;
+            }
+        }
+
         function triggerLiveTimeAndLunarCalendar() {
             const now = new Date(); document.getElementById('liveClockStr').innerText = now.toLocaleTimeString('vi-VN');
             const solarDay = now.getDate(); const solarMonth = now.getMonth() + 1;
