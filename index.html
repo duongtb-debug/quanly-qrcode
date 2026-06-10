@@ -39,9 +39,6 @@
             transition: height 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
         }
-
-        .file-node { background-color: #f8fafc; border: 2px solid #e2e8f0; }
-        .folder-node { background-color: #fef3c7; border: 2px solid #f59e0b; }
     </style>
 </head>
 <body class="min-h-screen p-3 md:p-6 space-y-6">
@@ -106,7 +103,7 @@
         <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div class="lg:col-span-8 bg-white text-slate-900 rounded-2xl p-5 border-2 border-slate-300 shadow-xl space-y-4">
                 <div class="flex justify-between items-center border-b pb-2">
-                    <h3 class="text-base font-black uppercase text-[#005c3e]"><i class="fa-solid fa-chart-column mr-1"></i> Trực quan trạng thái cấp phát thiết bị & Thống kê tiến độ công việc (Mô hình 3D)</h3>
+                    <h3 class="text-base font-black uppercase text-[#005c3e]"><i class="fa-solid fa-chart-column mr-1"></i> Trực quan trạng thái cấp phát thiết bị & Thống kê tiến độ công việc</h3>
                 </div>
                 <div class="grid grid-cols-4 gap-2 pt-2 text-center text-xs font-black">
                     <div class="space-y-2">
@@ -142,7 +139,7 @@
 
             <div class="lg:col-span-4 bg-white text-slate-900 rounded-2xl p-5 border-2 border-slate-300 shadow-xl flex flex-col justify-between">
                 <div class="space-y-2">
-                    <h4 class="text-xs font-black text-slate-500 uppercase tracking-wider"><i class="fa-solid fa-mug-hot text-amber-600"></i> Lịch nhắc việc & Chế độ nghỉ ngơi ca kíp điều độ</h4>
+                    <h4 class="text-xs font-black text-slate-500 uppercase tracking-wider"><i class="fa-solid fa-mug-hot text-amber-600"></i> Lịch nhắc việc & Chế độ nghỉ ngơi</h4>
                     <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 text-xs font-bold space-y-1.5 text-amber-950">
                         <div class="flex justify-between"><span>📢 Giao ban ca kíp vận hành:</span> <span class="bg-amber-200 px-1.5 py-0.5 rounded">08:00</span></div>
                         <div class="flex justify-between text-emerald-900 font-black"><span>☕ Thời gian xả hơi giữa ca:</span> <span class="bg-emerald-200 px-1.5 py-0.5 rounded">15m nghỉ / mỗi 2h làm</span></div>
@@ -156,8 +153,100 @@
         </section>
 
         <section class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
+            <div class="bg-[#1e3a8a] text-white p-4 flex justify-between items-center">
+                <h3 class="text-lg font-black uppercase flex items-center gap-2"><i class="fa-solid fa-users-gear"></i> 1. Quản lý danh mục Đơn vị, Nhân sự & Hồ sơ công tác đa tầng</h3>
+                <span id="badgeStaffCount" class="bg-black/30 font-mono text-sm px-3 py-1 rounded font-bold">0 nhân sự</span>
+            </div>
+            <div class="p-6 space-y-6">
+                <div class="bg-blue-50 border-2 border-blue-200 p-4 rounded-xl grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                    <div class="md:col-span-8">
+                        <h4 class="font-black text-blue-900 text-sm uppercase">⚡ Nhập nhanh hàng loạt nhân sự chống trùng lặp dữ liệu</h4>
+                        <p class="text-xs text-blue-700 font-bold mt-0.5">Nạp tệp danh sách (.txt/.csv) phân tách dấu phẩy [Mã Nhân sự, Họ tên, Đơn vị]. Hệ thống tự động lọc mã duy nhất và lưu kho.</p>
+                    </div>
+                    <div class="md:col-span-4 text-right">
+                        <input type="file" id="bulkStaffFile" onchange="triggerBulkStaffImport(event)" class="text-xs bg-white p-2 rounded-lg border w-full font-bold">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <form id="formStaffLogic" onsubmit="executeStaffSubmit(event)" class="lg:col-span-5 grid grid-cols-1 gap-3 bg-slate-50 p-4 rounded-xl border-2 text-sm">
+                        <input type="hidden" id="staffEditId" value="">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-black text-slate-700 mb-0.5">Mã Nhân sự</label>
+                                <input type="text" id="staffCode" required placeholder="Ví dụ: VNP-0102" class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
+                            </div>
+                            <div>
+                                <label class="block font-black text-slate-700 mb-0.5">Họ và tên</label>
+                                <input type="text" id="staffName" required placeholder="Nhập tên..." class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 gap-2">
+                            <div>
+                                <label class="block font-black text-slate-700 mb-0.5">Đơn vị / Phòng ban / Phân xưởng</label>
+                                <select id="staffUnitSelect" onchange="handleUnitSelectChange(this.value)" class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
+                                    <option value="Xưởng Xeo Giấy Ca A">Xưởng Xeo Giấy Ca A</option>
+                                    <option value="Xưởng Xeo Giấy Ca B">Xưởng Xeo Giấy Ca B</option>
+                                    <option value="Xưởng Chế Biến Bột Giấy">Xưởng Chế Biến Bột Giấy</option>
+                                    <option value="Phòng Cơ Điện Năng Lượng">Phòng Cơ Điện Năng Lượng</option>
+                                    <option value="Phòng Kế Hoạch Vật Tư">Phòng Kế Hoạch Vật Tư</option>
+                                    <option value="TỰ_NHẬP">-- Khác (Tự nhập bổ sung đơn vị) --</option>
+                                </select>
+                                <input type="text" id="staffUnitCustom" placeholder="Nhập tên phòng ban / phân xưởng mới..." class="w-full high-contrast-box rounded-xl p-2.5 bg-yellow-50 mt-2 hidden text-base">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-2">
+                            <div>
+                                <label class="block font-black text-slate-700 mb-0.5">Ảnh chân dung</label>
+                                <input type="file" id="staffPhotoFile" accept="image/*" onchange="previewStaffPhoto(event)" class="w-full text-xs bg-white p-1 rounded-lg border">
+                                <img id="staffPhotoPreview" src="" class="h-16 w-16 object-cover rounded border mt-1 hidden">
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-3 rounded-xl border space-y-2">
+                            <label class="block font-black text-blue-900 text-xs uppercase"><i class="fa-solid fa-folder-open"></i> Quá trình công tác đính kèm (File/Folder)</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="file" id="staffDocFiles" multiple class="text-xs bg-slate-50 p-1 rounded border">
+                                <input type="file" id="staffDocFolder" webkitdirectory directory multiple class="text-xs bg-slate-50 p-1 rounded border">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end gap-2 pt-1">
+                            <button type="button" id="btnCancelStaffEdit" onclick="resetStaffFormState()" class="bg-slate-300 px-4 py-2 rounded-xl font-bold uppercase text-xs hidden">Hủy</button>
+                            <button type="submit" id="btnSubmitStaffText" class="w-full bg-[#1e3a8a] text-white font-black py-3 rounded-xl uppercase text-xs tracking-wider">Lưu thông tin & Hồ sơ nhân sự</button>
+                        </div>
+                    </form>
+
+                    <div class="lg:col-span-7 space-y-3">
+                        <div class="flex gap-2 bg-slate-100 p-2 rounded-xl border">
+                            <select id="filterStaffUnit" onchange="renderStaffTableData()" class="w-full high-contrast-box rounded-xl p-2 bg-white text-sm">
+                                <option value="TẤT CẢ">-- Lọc theo tất cả đơn vị thành viên --</option>
+                            </select>
+                        </div>
+                        <div class="overflow-x-auto border rounded-xl max-h-[350px] overflow-y-auto bg-white">
+                            <table class="w-full text-left border-collapse text-sm">
+                                <thead class="bg-slate-100 font-black text-slate-700 border-b sticky top-0 z-10">
+                                    <tr>
+                                        <th class="p-3">Ảnh</th>
+                                        <th class="p-3">Mã Nhân sự</th>
+                                        <th class="p-3">Họ Tên / Đơn Vị</th>
+                                        <th class="p-3">Hồ Sơ Đính Kèm</th>
+                                        <th class="p-3 text-right">Hành Động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableStaffBody" class="divide-y divide-slate-200 font-bold text-slate-900"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
             <div class="bg-[#005c3e] text-white p-4 flex justify-between items-center">
-                <h3 class="text-lg font-black uppercase flex items-center gap-2"><i class="fa-solid fa-box"></i> 1. Quản lý vật tư tiêu hao (Hóa chất, Lưới xeo, Bột giấy)</h3>
+                <h3 class="text-lg font-black uppercase flex items-center gap-2"><i class="fa-solid fa-box"></i> 2. Quản lý vật tư tiêu hao (Hóa chất, Lưới xeo, Bột giấy)</h3>
                 <span id="badgeMaterialCount" class="bg-black/30 font-mono text-sm px-3 py-1 rounded font-bold">0 loại</span>
             </div>
             <div class="p-6 space-y-6">
@@ -165,15 +254,15 @@
                     <input type="hidden" id="matEditId" value="">
                     <div>
                         <label class="block font-black text-slate-700 mb-1">Tên vật tư kỹ thuật</label>
-                        <input type="text" id="matName" required placeholder="Ví dụ: Lưới xeo giấy tấm lớn..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                        <input type="text" id="matName" required placeholder="Ví dụ: Lưới xeo giấy..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
                     </div>
                     <div>
-                        <label class="block font-black text-slate-700 mb-1">Số lượng tồn kho thực tế</label>
-                        <input type="number" id="matQty" required placeholder="Nhập số lượng..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                        <label class="block font-black text-slate-700 mb-1">Số lượng tồn kho</label>
+                        <input type="number" id="matQty" required placeholder="Nhập số..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
                     </div>
                     <div>
                         <label class="block font-black text-slate-700 mb-1">Đơn vị đo lường</label>
-                        <input type="text" id="matUnit" required placeholder="Ví dụ: Tấn, Cuộn, Kg..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                        <input type="text" id="matUnit" required placeholder="Tấn, Cuộn, Kg..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
                     </div>
                     <div class="flex items-end">
                         <button type="submit" class="w-full bg-[#005c3e] text-white font-black py-4 rounded-xl uppercase tracking-wider text-xs">Cập nhật kho vật tư</button>
@@ -197,7 +286,7 @@
 
         <section class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
             <div class="bg-rose-900 text-white p-4 flex justify-between items-center">
-                <h3 class="text-lg font-black uppercase flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> 2. Trung tâm điều phối xử lý sự cố khẩn cấp ca kíp nhà máy</h3>
+                <h3 class="text-lg font-black uppercase flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation"></i> 3. Trung tâm điều phối xử lý sự cố khẩn cấp ca kíp nhà máy</h3>
                 <span id="badgeIncidentCount" class="bg-black/30 font-mono text-sm px-3 py-1 rounded font-bold">0 sự cố</span>
             </div>
             <div class="p-6 space-y-6">
@@ -205,21 +294,21 @@
                     <input type="hidden" id="incEditId" value="">
                     <div>
                         <label class="block font-black text-slate-700 mb-1">Khu vực / Phân xưởng xảy ra</label>
-                        <input type="text" id="incLocation" required placeholder="Ví dụ: Khu vực lò hơi số 2..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                        <input type="text" id="incLocation" required placeholder="Ví dụ: Lò hơi số 2..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
                     </div>
                     <div>
-                        <label class="block font-black text-slate-700 mb-1">Mô tả hiện trạng sự cố kỹ thuật</label>
-                        <input type="text" id="incDesc" required placeholder="Ví dụ: Kẹt van áp suất hơi..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                        <label class="block font-black text-slate-700 mb-1">Mô tả hiện trạng sự cố</label>
+                        <input type="text" id="incDesc" required placeholder="Ví dụ: Kẹt van áp suất..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
                     </div>
                     <div>
-                        <label class="block font-black text-slate-700 mb-1">Mức độ nguy hại khẩn cấp</label>
+                        <label class="block font-black text-slate-700 mb-1">Mức độ nguy hại</label>
                         <select id="incLevel" class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
                             <option value="🔴 NGUY HIỂM - DỪNG MÁY">🔴 NGUY HIỂM - DỪNG MÁY</option>
                             <option value="🟡 TRUNG BÌNH - THEO DÕI">🟡 TRUNG BÌNH - THEO DÕI</option>
                         </select>
                     </div>
                     <div class="flex items-end">
-                        <button type="submit" class="w-full bg-rose-900 text-white font-black py-4 rounded-xl uppercase tracking-wider text-xs">Phát Lệnh Điều Động Xử Lý</button>
+                        <button type="submit" class="w-full bg-rose-900 text-white font-black py-4 rounded-xl uppercase tracking-wider text-xs">Phát Lệnh Điều Động</button>
                     </div>
                 </form>
                 <div class="overflow-x-auto border rounded-xl">
@@ -240,7 +329,7 @@
 
         <section class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
             <div class="bg-indigo-900 text-white p-4 flex justify-between items-center">
-                <h3 class="text-lg font-black uppercase flex items-center gap-2"><i class="fa-solid fa-book-open"></i> 3. Nhật ký điện tử số hóa bàn giao ca kíp sản xuất giấy</h3>
+                <h3 class="text-lg font-black uppercase flex items-center gap-2"><i class="fa-solid fa-book-open"></i> 4. Nhật ký điện tử số hóa bàn giao ca kíp sản xuất giấy</h3>
                 <span id="badgeShiftCount" class="bg-black/30 font-mono text-sm px-3 py-1 rounded font-bold">0 ca kíp</span>
             </div>
             <div class="p-6 space-y-6">
@@ -252,11 +341,11 @@
                     </div>
                     <div>
                         <label class="block font-black text-slate-700 mb-1">Kíp làm việc vận hành</label>
-                        <input type="text" id="shiftName" required placeholder="Ví dụ: Kíp A1 sản xuất ngày..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                        <input type="text" id="shiftName" required placeholder="Ví dụ: Kíp A1..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
                     </div>
                     <div>
-                        <label class="block font-black text-slate-700 mb-1">Nội dung lưu ý đặc biệt cho ca sau</label>
-                        <input type="text" id="shiftNotes" required placeholder="Ví dụ: Máy nghiền bột cần châm dầu..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                        <label class="block font-black text-slate-700 mb-1">Nội dung lưu ý đặc biệt</label>
+                        <input type="text" id="shiftNotes" required placeholder="Ví dụ: Máy nghiền cần châm dầu..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
                     </div>
                     <div class="flex items-end">
                         <button type="submit" class="w-full bg-indigo-900 text-white font-black py-4 rounded-xl uppercase tracking-wider text-xs">Ký Xác Nhận Lưu Nhật Ký</button>
@@ -268,7 +357,7 @@
                             <tr>
                                 <th class="p-4">Trưởng Ca Đương Nhiệm</th>
                                 <th class="p-4">Kíp Vận Hành</th>
-                                <th class="p-4">Nội Dung Chỉ Dẫn / Bàn Giao Kỹ Thuật</th>
+                                <th class="p-4">Nội Dung Chỉ Dẫn</th>
                                 <th class="p-4 text-right pr-6">Hành Động</th>
                             </tr>
                         </thead>
@@ -279,95 +368,8 @@
         </section>
 
         <section class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
-            <div class="bg-[#1e3a8a] text-white p-4 flex justify-between items-center">
-                <h3 class="text-lg font-black uppercase flex items-center gap-2"><i class="fa-solid fa-users-gear"></i> Quản lý danh mục Đơn vị, Nhân sự & Hồ sơ công tác đa tầng</h3>
-                <span id="badgeStaffCount" class="bg-black/30 font-mono text-sm px-3 py-1 rounded font-bold">0 nhân sự</span>
-            </div>
-            <div class="p-6 space-y-6">
-                <div class="bg-blue-50 border-2 border-blue-200 p-4 rounded-xl grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-                    <div class="md:col-span-8">
-                        <h4 class="font-black text-blue-900 text-sm uppercase">⚡ Nhập nhanh hàng loạt nhân sự chống trùng lặp dữ liệu</h4>
-                        <p class="text-xs text-blue-700 font-bold mt-0.5">Nạp tệp danh sách (.txt/.csv) phân tách dấu phẩy. Hệ thống tự động lọc mã duy nhất và phân loại chính xác về các mục đơn vị xưởng phụ trách.</p>
-                    </div>
-                    <div class="md:col-span-4 text-right">
-                        <input type="file" id="bulkStaffFile" onchange="triggerBulkStaffImport(event)" class="text-xs bg-white p-2 rounded-lg border w-full font-bold">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    <form id="formStaffLogic" onsubmit="executeStaffSubmit(event)" class="lg:col-span-5 grid grid-cols-1 gap-3 bg-slate-50 p-4 rounded-xl border-2 text-sm">
-                        <input type="hidden" id="staffEditId" value="">
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block font-black text-slate-700 mb-0.5">Mã nhân viên</label>
-                                <input type="text" id="staffCode" required placeholder="Ví dụ: VNP-0102" class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
-                            </div>
-                            <div>
-                                <label class="block font-black text-slate-700 mb-0.5">Họ và tên</label>
-                                <input type="text" id="staffName" required placeholder="Nhập tên..." class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block font-black text-slate-700 mb-0.5">Đơn vị / Phân xưởng</label>
-                                <select id="staffUnit" class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
-                                    <option value="Xưởng Xeo Giấy Ca A">Xưởng Xeo Giấy Ca A</option>
-                                    <option value="Xưởng Xeo Giấy Ca B">Xưởng Xeo Giấy Ca B</option>
-                                    <option value="Xưởng Chế Biến Bột Giấy">Xưởng Chế Biến Bột Giấy</option>
-                                    <option value="Phòng Cơ Điện Năng Lượng">Phòng Cơ Điện Năng Lượng</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block font-black text-slate-700 mb-0.5">Ảnh chân dung</label>
-                                <input type="file" id="staffPhotoFile" accept="image/*" onchange="previewStaffPhoto(event)" class="w-full text-xs bg-white p-1 rounded-lg border">
-                                <img id="staffPhotoPreview" src="" class="h-16 w-16 object-cover rounded border mt-1 hidden">
-                            </div>
-                        </div>
-                        <div class="bg-white p-3 rounded-xl border space-y-2">
-                            <label class="block font-black text-blue-900 text-xs uppercase"><i class="fa-solid fa-folder-open"></i> Tải hồ sơ quá trình công tác (File/Folder)</label>
-                            <div class="grid grid-cols-2 gap-2">
-                                <input type="file" id="staffDocFiles" multiple class="text-xs bg-slate-50 p-1 rounded border">
-                                <input type="file" id="staffDocFolder" webkitdirectory directory multiple class="text-xs bg-slate-50 p-1 rounded border">
-                            </div>
-                        </div>
-                        <div class="flex justify-end gap-2 pt-1">
-                            <button type="button" id="btnCancelStaffEdit" onclick="resetStaffFormState()" class="bg-slate-300 px-4 py-2 rounded-xl font-bold uppercase text-xs hidden">Hủy</button>
-                            <button type="submit" id="btnSubmitStaffText" class="w-full bg-[#1e3a8a] text-white font-black py-3 rounded-xl uppercase text-xs tracking-wider">Lưu thông tin & Hồ sơ nhân sự</button>
-                        </div>
-                    </form>
-
-                    <div class="lg:col-span-7 space-y-3">
-                        <div class="flex gap-2 bg-slate-100 p-2 rounded-xl border">
-                            <select id="filterStaffUnit" onchange="renderStaffTableData()" class="w-full high-contrast-box rounded-xl p-2 bg-white text-sm">
-                                <option value="TẤT CẢ">-- Lọc theo tất cả đơn vị thành viên --</option>
-                                <option value="Xưởng Xeo Giấy Ca A">Xưởng Xeo Giấy Ca A</option>
-                                <option value="Xưởng Xeo Giấy Ca B">Xưởng Xeo Giấy Ca B</option>
-                                <option value="Xưởng Chế Biến Bột Giấy">Xưởng Chế Biến Bột Giấy</option>
-                                <option value="Phòng Cơ Điện Năng Lượng">Phòng Cơ Điện Năng Lượng</option>
-                            </select>
-                        </div>
-                        <div class="overflow-x-auto border rounded-xl max-h-[320px] overflow-y-auto bg-white">
-                            <table class="w-full text-left border-collapse text-sm">
-                                <thead class="bg-slate-100 font-black text-slate-700 border-b sticky top-0 z-10">
-                                    <tr>
-                                        <th class="p-3">Ảnh</th>
-                                        <th class="p-3">Mã NV</th>
-                                        <th class="p-3">Họ Tên / Đơn Vị</th>
-                                        <th class="p-3">Hồ Sơ Đính Kèm</th>
-                                        <th class="p-3 text-right">Hành Động</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tableStaffBody" class="divide-y divide-slate-200 font-bold text-slate-900"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
             <div class="bg-[#243047] text-white p-4 flex justify-between items-center">
-                <h3 class="text-lg font-black uppercase flex items-center gap-2"><i class="fa-solid fa-qrcode text-cyan-400"></i> 4. Quản lý cấp phát thiết bị vật tư & Mã hóa QR Code định danh</h3>
+                <h3 class="text-lg font-black uppercase flex items-center gap-2"><i class="fa-solid fa-qrcode text-cyan-400"></i> 5. Quản lý cấp phát thiết bị vật tư & Mã hóa QR Code định danh</h3>
                 <span id="badgeAllocCount" class="bg-black/30 font-mono text-sm px-3 py-1 rounded font-bold">0 thiết bị</span>
             </div>
             
@@ -387,14 +389,19 @@
                     <div class="sm:col-span-3">
                         <label class="block font-black text-slate-700 mb-1">Chủng loại nhóm thiết bị</label>
                         <select id="allocGroupSelect" onchange="handleGroupSelectChange(this.value)" class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
-                            <option value="Hệ thống đo lường tự động hóa">Hệ thống đo lường tự động hóa</option>
-                            <option value="Động cơ điện & Bơm áp lực cao">Động cơ điện & Bơm áp lực cao</option>
-                            <option value="Hệ thống van điều áp & Đường ống hơi">Hệ thống van điều áp & Đường ống hơi</option>
-                            <option value="Thiết bị xeo giấy kỹ thuật số">Thiết bị xeo giấy kỹ thuật số</option>
-                            <option value="Hệ thống lò hơi và bồn hóa chất">Hệ thống lò hơi và bồn hóa chất</option>
-                            <option value="MỚI">-- Khác (Tự nhập bổ sung) --</option>
+                            <option value="Hệ thống Thiết bị Xeo Giấy (Paper Machine)">Hệ thống Thiết bị Xeo Giấy (Paper Machine)</option>
+                            <option value="Hệ thống Lò Hơi & Mạng Nhiệt (Boiler System)">Hệ thống Lò Hơi & Mạng Nhiệt (Boiler System)</option>
+                            <option value="Thiết bị Chế Biến Bột Giấy & Nghiền Bột">Thiết bị Chế Biến Bột Giấy & Nghiền Bột</option>
+                            <option value="Động cơ điện & Bơm Áp Lực Cao">Động cơ điện & Bơm Áp Lực Cao</option>
+                            <option value="Hệ thống Van Điều Áp & Đường Ống Hơi">Hệ thống Van Điều Áp & Đường Ống Hơi</option>
+                            <option value="Hệ thống Đo Lường & Tự Động Hóa (DCS/SCADA)">Hệ thống Đo Lường & Tự Động Hóa (DCS/SCADA)</option>
+                            <option value="Thiết bị Xử Lý Nước Thải & Hóa Chất">Thiết bị Xử Lý Nước Thải & Hóa Chất</option>
+                            <option value="Hệ thống Máy Nén Khí Trung Tâm">Hệ thống Máy Nén Khí Trung Tâm</option>
+                            <option value="Thiết bị Nâng Hạ, Cẩu Trục Phân Xưởng">Thiết bị Nâng Hạ, Cẩu Trục Phân Xưởng</option>
+                            <option value="Thiết bị Phụ Trợ & Cầm Tay Sửa Chữa">Thiết bị Phụ Trợ & Cầm Tay Sửa Chữa</option>
+                            <option value="MỚI">-- Khác (Tự nhập bổ sung nhóm mới) --</option>
                         </select>
-                        <input type="text" id="allocGroupCustom" placeholder="Nhập chủng loại mới..." class="w-full high-contrast-box rounded-xl p-2.5 bg-yellow-50 mt-2 hidden text-base">
+                        <input type="text" id="allocGroupCustom" placeholder="Nhập chủng loại thiết bị mới..." class="w-full high-contrast-box rounded-xl p-2.5 bg-yellow-50 mt-2 hidden text-base">
                     </div>
 
                     <div class="sm:col-span-3">
@@ -407,17 +414,17 @@
                     </div>
 
                     <div class="sm:col-span-6">
-                        <label class="block font-black text-slate-700 mb-1">Đơn vị quản lý (Phòng ban nhận bàn giao)</label>
+                        <label class="block font-black text-slate-700 mb-1">Đơn vị quản lý (Liên kết động với danh sách Đơn vị)</label>
                         <select id="allocDepartmentBox" class="w-full high-contrast-box rounded-xl p-3 bg-white text-base"></select>
                     </div>
                     <div class="sm:col-span-6">
-                        <label class="block font-black text-slate-700 mb-1">Người sử dụng trực tiếp gắn với đơn vị</label>
-                        <input type="text" id="allocUserPerson" required placeholder="Họ và tên cán bộ/công nhân vận hành trực tiếp..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
+                        <label class="block font-black text-slate-700 mb-1">Người sử dụng trực tiếp</label>
+                        <input type="text" id="allocUserPerson" required placeholder="Tên cán bộ vận hành..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-base">
                     </div>
 
                     <div class="sm:col-span-12 flex justify-end gap-2 pt-2">
                         <button type="button" id="btnCancelAllocEdit" onclick="resetAllocFormState()" class="bg-slate-300 px-5 py-2.5 rounded-xl font-bold uppercase text-xs hidden">Hủy</button>
-                        <button type="submit" id="btnSubmitAllocText" class="bg-slate-900 text-white font-black px-6 py-4 rounded-xl text-xs uppercase tracking-wider">Ghi Nhận Cấp Phát & Cập Nhật Hệ Thống</button>
+                        <button type="submit" id="btnSubmitAllocText" class="bg-slate-900 text-white font-black px-6 py-4 rounded-xl text-xs uppercase tracking-wider">Ghi Nhận Cấp Phát & Cập Nhật</button>
                     </div>
                 </form>
 
@@ -476,7 +483,7 @@
 
         <section class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
             <div class="bg-[#005c3e] text-white p-4 flex justify-between items-center">
-                <h3 class="text-lg font-black uppercase flex items-center gap-2"><i class="fa-solid fa-folder-tree"></i> 5. Quản lý văn bản chứng từ & Thống kê tài chính đầu tư (Tháng / Quý / Năm)</h3>
+                <h3 class="text-lg font-black uppercase flex items-center gap-2"><i class="fa-solid fa-folder-tree"></i> 6. Quản lý văn bản chứng từ & Thống kê tài chính đầu tư (Tháng / Quý / Năm)</h3>
                 <span class="text-xs bg-emerald-950 font-mono text-emerald-300 px-3 py-1 rounded">Cơ sở dữ liệu tích hợp</span>
             </div>
             <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -544,6 +551,15 @@
         let localStaff = [];
         let activeLoginMethod = "pass";
 
+        // Bộ đơn vị tĩnh dự phòng ban đầu
+        const defaultUnits = [
+            "Xưởng Xeo Giấy Ca A",
+            "Xưởng Xeo Giấy Ca B",
+            "Xưởng Chế Biến Bột Giấy",
+            "Phòng Cơ Điện Năng Lượng",
+            "Phòng Kế Hoạch Vật Tư"
+        ];
+
         function startRealtimeCoreSync() {
             db.ref('materials_v3').on('value', snap => {
                 localMaterials = snap.val() ? Object.values(snap.val()).filter(Boolean) : [];
@@ -567,7 +583,7 @@
             db.ref('staff_v3').on('value', snap => {
                 localStaff = snap.val() ? Object.values(snap.val()).filter(Boolean) : [];
                 renderStaffTableData();
-                rebuildUnitDepartmentDropdowns();
+                rebuildFilterAndAllocDropdowns();
             });
 
             db.ref('allocations_v4').on('value', snap => {
@@ -640,7 +656,13 @@
             document.getElementById('3dBarPending').style.height = ((countIssue / max) * 75 + 25) + "%";
         }
 
-        // XỬ LÝ NHÂN SỰ CHUYÊN NGHIỆP CHỐNG TRÙNG VÀ LỌC ĐƠN VỊ
+        // PHÂN HỆ 1: QUẢN LÝ NHÂN SỰ TOÀN DIỆN
+        window.handleUnitSelectChange = function(val) {
+            const customInput = document.getElementById('staffUnitCustom');
+            if(val === 'TỰ_NHẬP') { customInput.classList.remove('hidden'); customInput.required = true; }
+            else { customInput.classList.add('hidden'); customInput.required = false; }
+        }
+
         let currentStaffPhotoBase64 = "";
         window.previewStaffPhoto = function(e) {
             const file = e.target.files[0];
@@ -659,15 +681,18 @@
             e.preventDefault();
             const code = document.getElementById('staffCode').value.trim();
             const name = document.getElementById('staffName').value.trim();
-            const unit = document.getElementById('staffUnit').value;
+            const selectUnit = document.getElementById('staffUnitSelect').value;
+            const customUnit = document.getElementById('staffUnitCustom').value.trim();
+            
+            const finalUnitName = (selectUnit === 'TỰ_NHẬP') ? customUnit : selectUnit;
 
             if(!document.getElementById('staffEditId').value && localStaff.some(x => x.id === code)) {
-                alert("Mã nhân viên đã tồn tại trên hệ thống!");
+                alert("Mã Nhân sự này đã tồn tại trên hệ thống!");
                 return;
             }
 
             db.ref('staff_v3/' + code).set({
-                id: code, name: name, unit: unit, photo: currentStaffPhotoBase64 || ""
+                id: code, name: name, unit: finalUnitName, photo: currentStaffPhotoBase64 || ""
             });
             resetStaffFormState();
         }
@@ -692,7 +717,7 @@
                         }
                     }
                 });
-                alert(`Đã lọc trùng và nạp thành công ${count} nhân sự về các tổ đội phân xưởng!`);
+                alert(`Đã lọc trùng và nạp thành công ${count} nhân sự lên hệ thống!`);
             };
             reader.readAsText(file);
         }
@@ -701,13 +726,13 @@
             const table = document.getElementById('tableStaffBody');
             const filter = document.getElementById('filterStaffUnit').value;
             if(!table) return; table.innerHTML = "";
-            const target = filter === 'TẤT CẢ' ? localStaff : localStaff.filter(x => x.unit === filter);
+            const target = (filter === 'TẤT CẢ' || !filter) ? localStaff : localStaff.filter(x => x.unit === filter);
             target.forEach(st => {
                 table.innerHTML += `<tr class="hover:bg-slate-50">
                     <td class="p-3"><img src="${st.photo || 'https://via.placeholder.com/50'}" class="w-10 h-10 object-cover rounded-full border"></td>
                     <td class="p-3 font-mono font-black text-blue-900">${st.id}</td>
                     <td class="p-3"><div>${st.name}</div><span class="text-xs text-slate-500 font-bold">${st.unit}</span></td>
-                    <td class="p-3 text-xs text-slate-400 italic">Hồ sơ quá trình công tác đính kèm đầy đủ</td>
+                    <td class="p-3 text-xs text-slate-400 italic">Quá trình công tác đính kèm đầy đủ</td>
                     <td class="p-3 text-right space-x-2">
                         <button onclick="triggerStaffEditMode('${st.id}')" class="text-blue-600"><i class="fa-solid fa-pen"></i></button>
                         <button onclick="deleteCloudRecord('staff_v3','${st.id}')" class="text-red-600"><i class="fa-solid fa-trash-can"></i></button>
@@ -723,27 +748,53 @@
             document.getElementById('staffCode').value = st.id;
             document.getElementById('staffCode').readOnly = true;
             document.getElementById('staffName').value = st.name;
-            document.getElementById('staffUnit').value = st.unit;
+            
+            if(defaultUnits.includes(st.unit)) {
+                document.getElementById('staffUnitSelect').value = st.unit;
+                document.getElementById('staffUnitCustom').classList.add('hidden');
+            } else {
+                document.getElementById('staffUnitSelect').value = 'TỰ_NHẬP';
+                document.getElementById('staffUnitCustom').value = st.unit;
+                document.getElementById('staffUnitCustom').classList.remove('hidden');
+            }
             document.getElementById('btnCancelStaffEdit').classList.remove('hidden');
         }
 
         window.resetStaffFormState = function() {
             document.getElementById('staffEditId').value = ""; document.getElementById('staffCode').value = "";
             document.getElementById('staffCode').readOnly = false; document.getElementById('staffName').value = "";
+            document.getElementById('staffUnitSelect').value = "Xưởng Xeo Giấy Ca A";
+            document.getElementById('staffUnitCustom').value = "";
+            document.getElementById('staffUnitCustom').classList.add('hidden');
             document.getElementById('staffPhotoPreview').classList.add('hidden'); currentStaffPhotoBase64 = "";
             document.getElementById('btnCancelStaffEdit').classList.add('hidden');
         }
 
-        function rebuildUnitDepartmentDropdowns() {
-            const box = document.getElementById('allocDepartmentBox'); if(!box) return; box.innerHTML = "";
-            const uniqueUnits = [...new Set(localStaff.map(x => x.unit))];
-            if(!uniqueUnits.length) {
-                box.innerHTML = `<option value="Xưởng Xeo Giấy Ca A">Xưởng Xeo Giấy Ca A</option>`; return;
+        // Tự động xây dựng danh sách lọc và danh sách cấp phát theo phòng ban thực tế
+        function rebuildFilterAndAllocDropdowns() {
+            const filterBox = document.getElementById('filterStaffUnit');
+            const allocBox = document.getElementById('allocDepartmentBox');
+            
+            const currentSelectedFilter = filterBox.value;
+            const currentSelectedAlloc = allocBox ? allocBox.value : "";
+
+            // Tổng hợp các phòng ban từ mặc định + phòng ban tự nhập có trong database
+            const allUnits = [...new Set([...defaultUnits, ...localStaff.map(x => x.unit)])].filter(Boolean);
+
+            // Rebuild bộ lọc nhân sự
+            filterBox.innerHTML = `<option value="TẤT CẢ">-- Lọc theo tất cả đơn vị thành viên --</option>`;
+            allUnits.forEach(un => { filterBox.innerHTML += `<option value="${un}">${un}</option>`; });
+            if(currentSelectedFilter) filterBox.value = currentSelectedFilter;
+
+            // Rebuild hộp chọn phân xưởng nhận cấp phát thiết bị
+            if(allocBox) {
+                allocBox.innerHTML = "";
+                allUnits.forEach(un => { allocBox.innerHTML += `<option value="${un}">${un}</option>`; });
+                if(currentSelectedAlloc) allocBox.value = currentSelectedAlloc;
             }
-            uniqueUnits.forEach(un => { box.innerHTML += `<option value="${un}">${un}</option>`; });
         }
 
-        // NGHIỆP VỤ MỤC 1, 2, 3 SƠ KHỞI CỦA KHỐI CƠ ĐIỆN VÀ VẬN HÀNH KHÔNG THIẾU MỘT MỤC NÀO
+        // NGHIỆP VỤ MỤC 2, 3, 4 (VẬT TƯ, SỰ CỐ, CA KÍP)
         function executeGenericSubmit(e, node, fields) {
             e.preventDefault();
             const editId = document.getElementById(fields[0].slice(3).toLowerCase() + 'EditId')?.value;
@@ -769,7 +820,7 @@
             });
         }
 
-        // MỤC 4: CẤP PHÁT THIẾT BỊ VẬT TƯ CHUYÊN SÂU
+        // MỤC 5: QUẢN LÝ CẤP PHÁT THIẾT BỊ VẬT TƯ CHUYÊN SÂU
         window.handleGroupSelectChange = function(val) {
             const customInput = document.getElementById('allocGroupCustom');
             if(val === 'MỚI') { customInput.classList.remove('hidden'); customInput.required = true; }
@@ -806,8 +857,8 @@
                     <td class="p-4 text-slate-700">${x.department}<span class="block text-xs font-black text-indigo-700">Người dùng trực tiếp: ${x.userPerson}</span></td>
                     <td class="p-4 text-center"><span class="px-3 py-1 rounded-lg text-xs font-black ${x.status==='Cấp Mới'?'bg-emerald-100 text-emerald-900':x.status==='Đang Sự Cố'?'bg-rose-100 text-rose-900':'bg-blue-100 text-blue-900'}">${x.status}</span></td>
                     <td class="p-2 flex justify-center"><div class="qr-target-node border bg-white p-0.5 rounded" data-qr="${qrString}"></div></td>
-                    <td class="p-4 text-right pr-6 space-x-2 whitespace-nowrap">
-                        <button onclick="triggerAllocEditMode('${x.id}')" class="text-blue-700 hover:underline"><i class="fa-solid fa-pen"></i> Sửa</button>
+                    <td class="p-4 text-right pr-6 space-x-2">
+                        <button onclick="triggerAllocEditMode('${x.id}')" class="text-blue-700"><i class="fa-solid fa-pen"></i> Sửa</button>
                         <button onclick="deleteCloudRecord('allocations_v4','${x.id}')" class="text-red-600 ml-2"><i class="fa-solid fa-trash-can"></i></button>
                     </td></tr>`;
             });
@@ -827,12 +878,30 @@
             document.getElementById('allocStatus').value = item.status;
             document.getElementById('allocDepartmentBox').value = item.department;
             document.getElementById('allocUserPerson').value = item.userPerson;
+            
+            const standardGroups = [
+                "Hệ thống Thiết bị Xeo Giấy (Paper Machine)", "Hệ thống Lò Hơi & Mạng Nhiệt (Boiler System)",
+                "Thiết bị Chế Biến Bột Giấy & Nghiền Bột", "Động cơ điện & Bơm Áp Lực Cao",
+                "Hệ thống Van Điều Áp & Đường Ống Hơi", "Hệ thống Đo Lường & Tự Động Hóa (DCS/SCADA)",
+                "Thiết bị Xử Lý Nước Thải & Hóa Chất", "Hệ thống Máy Nén Khí Trung Tâm",
+                "Thiết bị Nâng Hạ, Cẩu Trục Phân Xưởng", "Thiết bị Phụ Trợ & Cầm Tay Sửa Chữa"
+            ];
+            if(standardGroups.includes(item.groupType)) {
+                document.getElementById('allocGroupSelect').value = item.groupType;
+                document.getElementById('allocGroupCustom').classList.add('hidden');
+            } else {
+                document.getElementById('allocGroupSelect').value = 'MỚI';
+                document.getElementById('allocGroupCustom').value = item.groupType;
+                document.getElementById('allocGroupCustom').classList.remove('hidden');
+            }
             document.getElementById('btnCancelAllocEdit').classList.remove('hidden');
         }
 
         window.resetAllocFormState = function() {
             document.getElementById('allocEditId').value = ""; document.getElementById('allocDeviceName').value = "";
             document.getElementById('allocUserPerson').value = ""; document.getElementById('btnCancelAllocEdit').classList.add('hidden');
+            document.getElementById('allocGroupSelect').value = "Hệ thống Thiết bị Xeo Giấy (Paper Machine)";
+            document.getElementById('allocGroupCustom').value = ""; document.getElementById('allocGroupCustom').classList.add('hidden');
             generateSequentialAllocId();
         }
 
@@ -866,7 +935,7 @@
             localAllocations.forEach(x => { select.innerHTML += `<option value="${x.id}">${x.id} - ${x.name}</option>`; });
         }
 
-        // MỤC 5: HỆ THỐNG QUẢN LÝ FILE & FOLDER TÁCH BIỆT TRỰC QUAN
+        // MỤC 6: HỆ THỐNG QUẢN LÝ FILE & FOLDER TÁCH BIỆT TRỰC QUAN
         window.handleAdvancedFileAndFolderUpload = function(files, isFolderStructure) {
             const category = document.getElementById('fileStorageCategory').value; if(!files.length) return;
             Array.from(files).forEach(file => {
@@ -874,12 +943,12 @@
                 const fileId = "FILE-" + Math.floor(100000 + Math.random() * 900000);
                 db.ref('cloud_files_v4/' + fileId).set({ id: fileId, category: category, name: file.name, fullPath: pathString, isFolderItem: isFolderStructure });
             });
-            alert("Đã đồng bộ tệp tin/thư mục văn bản lên Cloud!");
+            alert("Đã đồng bộ văn bản thành công!");
         }
 
         function renderFileExplorerTree() {
             const treeContainer = document.getElementById('fileExplorerTreeContainer'); if(!treeContainer) return; treeContainer.innerHTML = "";
-            if(!localCloudFiles.length) { treeContainer.innerHTML = `<p class="text-slate-400 text-xs italic text-center p-4">Chưa có chứng từ.</p>`; return; }
+            if(!localCloudFiles.length) { treeContainer.innerHTML = `<p class="text-slate-400 text-xs italic text-center p-4">Chưa có chứng từ lưu trữ.</p>`; return; }
             const categoriesMap = {}; localCloudFiles.forEach(f => { if(!categoriesMap[f.category]) categoriesMap[f.category] = []; categoriesMap[f.category].push(f); });
             Object.keys(categoriesMap).forEach(cat => {
                 const catWrapper = document.createElement('div'); catWrapper.className = "border rounded-xl p-3 bg-slate-50 space-y-1.5 text-xs font-bold";
@@ -896,7 +965,7 @@
         function generateSequentialAllocId() { document.getElementById('allocGeneratedId').value = "VNP-EQ-" + Math.floor(10000 + Math.random() * 90000); }
         window.deleteCloudRecord = function(node, id) { if(confirm("Xác nhận gỡ bỏ bản ghi này?")) db.ref(node + '/' + id).remove(); }
 
-        // ĐỒNG HỒ & THUẬT TOÁN LỊCH VẠN NIÊN REALTIME QUỐC TẾ
+        // ĐỒNG HỒ & LỊCH VẠN NIÊN REALTIME
         function triggerLiveTimeAndLunarCalendar() {
             const now = new Date(); document.getElementById('liveClockStr').innerText = now.toLocaleTimeString('vi-VN');
             const solarDay = now.getDate(); const solarMonth = now.getMonth() + 1;
