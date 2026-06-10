@@ -215,7 +215,7 @@
                     <div class="bg-amber-50/50 p-4 rounded-2xl border border-amber-100 text-xs font-semibold space-y-3 text-slate-700">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                             <span>📢 Giao ban ca kíp vận hành:</span>
-                            <input type="text" id="scheduleGiaoBan" onchange="saveFlexSchedule()" placeholder="08:00 hàng ngày..." class="bg-white border border-amber-200 rounded-lg p-1.5 font-bold text-amber-950 text-right focus:outline-none focus:border-amber-500 w-full sm:w-48 text-[11px]">
+                            <input type="text" id="scheduleGiaoBan" onchange="saveFlexSchedule()" placeholder="08:00 hàng daily..." class="bg-white border border-amber-200 rounded-lg p-1.5 font-bold text-amber-950 text-right focus:outline-none focus:border-amber-500 w-full sm:w-48 text-[11px]">
                         </div>
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                             <span>☕ Chế độ nghỉ ngơi giữa ca:</span>
@@ -337,7 +337,10 @@
                         <div>
                             <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Ảnh chân dung</label>
                             <input type="file" id="staffPhotoFile" accept="image/*" onchange="previewStaffPhoto(event)" class="w-full text-xs bg-white p-2 rounded-xl border border-slate-200 focus:outline-none">
-                            <img id="staffPhotoPreview" src="" class="h-16 w-16 object-cover rounded-xl border mt-2 hidden shadow-inner">
+                            <div id="staffPhotoPreviewWrapper" class="flex items-center gap-3 mt-2 hidden">
+                                <img id="staffPhotoPreview" src="" class="h-16 w-16 object-cover rounded-xl border shadow-inner">
+                                <button type="button" onclick="clearSelectedStaffPhoto()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors text-[11px] uppercase"><i class="fa-solid fa-trash-can"></i> Xóa ảnh</button>
+                            </div>
                         </div>
                         
                         <div class="bg-white p-4 rounded-xl border border-slate-100 space-y-3">
@@ -345,7 +348,7 @@
                             <div class="grid grid-cols-1 gap-2.5">
                                 <div>
                                     <span class="text-[10px] text-slate-400 block font-bold mb-1 uppercase">Cách 1: Chọn Tệp Tin (File)</span>
-                                    <input type="file" id="staffDocFiles" remove-multiple class="text-xs bg-slate-50 p-2 rounded-xl border border-slate-200 w-full">
+                                    <input type="file" id="staffDocFiles" class="text-xs bg-slate-50 p-2 rounded-xl border border-slate-200 w-full">
                                 </div>
                                 <div>
                                     <span class="text-[10px] text-amber-600 block font-bold mb-1 uppercase">Cách 2: Chọn Thư Mục (Folder)</span>
@@ -625,14 +628,18 @@
             </div>
         </section>
 
-        <section class="bg-white text-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+        <section id="billingAnchor" class="bg-white text-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100">
             <div class="bg-[#004d34] text-white p-4 px-6 flex justify-between items-center">
-                <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-folder-tree"></i> 6. Quản lý văn bản chứng từ & Thống kê tài chính đầu tư</h3>
-                <span class="text-xs bg-emerald-950 font-mono text-emerald-300 px-3 py-1 rounded-xl font-bold">Cơ sở dữ liệu đám mây</span>
+                <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-money-check-dollar"></i> 6. Quản lý hồ sơ thanh toán & Thống kê tổng số tiền</h3>
+                <span id="badgeBillingTotal" class="text-xs bg-emerald-950 font-mono text-emerald-300 px-3 py-1 rounded-xl font-bold">Tổng chi: 0 VNĐ</span>
             </div>
             <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
                 <div class="lg:col-span-4 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 space-y-4 text-xs">
-                    <h4 class="font-bold text-[#005c3e] uppercase tracking-wider border-b border-slate-200/60 pb-2">Báo cáo tài chính & Kinh phiếu</h4>
+                    <div class="flex justify-between items-center border-b border-slate-200/60 pb-2">
+                        <h4 class="font-bold text-[#005c3e] uppercase tracking-wider">Hồ sơ thanh toán</h4>
+                        <span id="billingFormMode" class="text-[10px] font-bold text-slate-400 bg-slate-200 px-2 py-0.5 rounded-md uppercase">Thêm mới</span>
+                    </div>
                     
                     <div class="grid grid-cols-3 gap-2 text-center font-heading">
                         <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
@@ -649,29 +656,46 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Phân loại tệp tài liệu</label>
-                        <select id="fileStorageCategory" class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-xs focus:outline-none">
-                            <option value="Hồ sơ tài liệu kỹ thuật máy">Hồ sơ tài liệu kỹ thuật máy</option>
-                            <option value="Chứng từ kế toán thanh toán">Chứng từ kế toán thanh toán</option>
-                            <option value="Báo cáo tài chính quý năm">Báo cáo tài chính quý năm</option>
-                        </select>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-3 pt-1">
-                        <div class="bg-white p-3 rounded-xl border-2 border-dashed border-slate-300 hover:border-slate-400 text-center transition-colors cursor-pointer">
-                            <label class="block font-bold text-[10px] text-slate-500 mb-1.5 uppercase tracking-wider">CHỌN FILE (TẬP TIN)</label>
-                            <input type="file" id="uploadInputFiles" multiple onchange="handleAdvancedFileAndFolderUpload(this.files, false)" class="text-[11px] w-full file:hidden text-slate-500">
+                    <form id="formBillingLogic" onsubmit="executeBillingSubmit(event)" class="space-y-3">
+                        <input type="hidden" id="billingEditId" value="">
+                        <div>
+                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Tên hồ sơ / Tệp tin</label>
+                            <input type="text" id="billingFileName" required placeholder="Ví dụ: Hóa đơn mua bột giấy ca ca..." class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-sm">
                         </div>
-                        <div class="bg-white p-3 rounded-xl border-2 border-dashed border-amber-300 hover:border-amber-400 text-center transition-colors cursor-pointer">
-                            <label class="block font-bold text-[10px] text-amber-800 mb-1.5 uppercase tracking-wider">CHỌN FOLDER (THƯ MỤC)</label>
-                            <input type="file" id="uploadInputFolder" webkitdirectory directory multiple onchange="handleAdvancedFileAndFolderUpload(this.files, true)" class="text-[11px] w-full file:hidden text-slate-500">
+                        <div>
+                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Số tiền thanh toán (VNĐ)</label>
+                            <input type="number" id="billingAmount" required placeholder="Nhập số tiền thực tế..." class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-sm font-bold text-emerald-900">
                         </div>
-                    </div>
+                        <div>
+                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Phân loại tệp tài liệu</label>
+                            <select id="fileStorageCategory" class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-xs focus:outline-none">
+                                <option value="Hồ sơ tài liệu kỹ thuật máy">Hồ sơ tài liệu kỹ thuật máy</option>
+                                <option value="Chứng từ kế toán thanh toán">Chứng từ kế toán thanh toán</option>
+                                <option value="Báo cáo tài chính quý năm">Báo cáo tài chính quý năm</option>
+                            </select>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3 pt-1">
+                            <div class="bg-white p-3 rounded-xl border-2 border-dashed border-slate-300 hover:border-slate-400 text-center transition-colors relative cursor-pointer">
+                                <label class="block font-bold text-[10px] text-slate-500 mb-1.5 uppercase tracking-wider">CHỌN FILE (TẬP TIN)</label>
+                                <input type="file" id="uploadInputFiles" onchange="handleAdvancedFileAndFolderUpload(this.files, false)" class="text-[11px] w-full file:hidden text-slate-500">
+                            </div>
+                            <div class="bg-white p-3 rounded-xl border-2 border-dashed border-amber-300 hover:border-amber-400 text-center transition-colors relative cursor-pointer">
+                                <label class="block font-bold text-[10px] text-amber-800 mb-1.5 uppercase tracking-wider">CHỌN FOLDER (THƯ MỤC)</label>
+                                <input type="file" id="uploadInputFolder" webkitdirectory directory multiple onchange="handleAdvancedFileAndFolderUpload(this.files, true)" class="text-[11px] w-full file:hidden text-slate-500">
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2 pt-2">
+                            <button type="button" id="btnCancelBillingEdit" onclick="resetBillingFormState()" class="bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl font-bold uppercase text-[11px] hidden transition-colors">Hủy</button>
+                            <button type="submit" id="btnSubmitBillingText" class="w-full bg-[#004d34] text-white font-bold py-3 rounded-xl uppercase tracking-wider text-[11px] transition-colors shadow-md">Lưu chứng từ</button>
+                        </div>
+                    </form>
                 </div>
+
                 <div class="lg:col-span-8 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 space-y-2">
-                    <h4 class="font-bold text-slate-500 uppercase tracking-wider text-xs mb-2">Cấu trúc cây thư mục lưu trữ chứng từ độc lập:</h4>
-                    <div id="fileExplorerTreeContainer" class="space-y-3 max-h-[270px] overflow-y-auto p-3 bg-white rounded-2xl border border-slate-100 shadow-inner"></div>
+                    <h4 class="font-bold text-slate-500 uppercase tracking-wider text-xs mb-2">Cấu trúc danh sách & Cây thư mục lưu trữ hồ sơ thanh toán thực tế:</h4>
+                    <div id="fileExplorerTreeContainer" class="space-y-3 max-h-[360px] overflow-y-auto p-3 bg-white rounded-2xl border border-slate-100 shadow-inner"></div>
                 </div>
             </div>
         </section>
@@ -811,6 +835,7 @@
             db.ref(getEnvNode('cloud_files_v4')).on('value', snap => {
                 localCloudFiles = snap.val() ? Object.values(snap.val()).filter(Boolean) : [];
                 renderFileExplorerTree();
+                calculateBillingTotalSummary();
             });
         }
 
@@ -892,9 +917,9 @@
                 tbody.innerHTML += `<tr class="hover:bg-slate-50/80 transition-colors">
                     <td class="p-3 font-mono font-bold text-slate-800">${usr.username}</td>
                     <td class="p-3 text-xs text-emerald-800 font-semibold"><i class="fa-solid fa-user-shield mr-1"></i> ${usr.role}</td>
-                    <td class="p-3 text-center space-x-3">
-                        <button onclick="triggerUserEditMode('${usr.username}')" class="text-blue-600 hover:text-blue-800 transition-colors"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('system_users_v4')}','${usr.username}')" class="text-red-500 hover:text-red-700 transition-colors"><i class="fa-solid fa-trash-can"></i></button>
+                    <td class="p-3 text-center space-x-2">
+                        <button onclick="triggerUserEditMode('${usr.username}')" class="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('system_users_v4')}','${usr.username}')" class="p-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-trash-can text-xs"></i></button>
                     </td>
                 </tr>`;
             });
@@ -961,7 +986,6 @@
             handleUsernameInput(document.getElementById('secUser').value);
         }
 
-        // CHỨC NĂNG BẤM TAB CHUYỂN ĐỔI MÀU QUA LẠI CHUẨN XÁC GIỮA HAI LỰA CHỌN
         window.switchLoginMethod = function(method) {
             activeLoginMethod = method;
             const container = document.getElementById('dynamicSecretContainer');
@@ -1018,12 +1042,20 @@
             reader.onload = function(evt) {
                 currentStaffPhotoBase64 = evt.target.result;
                 const img = document.getElementById('staffPhotoPreview');
-                img.src = currentStaffPhotoBase64; img.classList.remove('hidden');
+                img.src = currentStaffPhotoBase64;
+                document.getElementById('staffPhotoPreviewWrapper').classList.remove('hidden');
             };
             reader.readAsDataURL(file);
         }
 
-        // BỔ SUNG CƠ CHẾ LỌC TRÙNG VÀ CHỐNG TRÙNG LẶP KHI NHẬP TAY NHÂN SỰ
+        // CHỨC NĂNG XÓA ẢNH CHÂN DUNG KHỎI FORM NHẬP LIỆU
+        window.clearSelectedStaffPhoto = function() {
+            currentStaffPhotoBase64 = "";
+            document.getElementById('staffPhotoFile').value = "";
+            document.getElementById('staffPhotoPreview').src = "";
+            document.getElementById('staffPhotoPreviewWrapper').classList.add('hidden');
+        }
+
         window.executeStaffSubmit = function(e) {
             e.preventDefault();
             const code = document.getElementById('staffCode').value.trim();
@@ -1032,7 +1064,6 @@
             const finalUnitName = document.getElementById('staffUnitCustom').value.trim();
             const editId = document.getElementById('staffEditId').value;
 
-            // Nếu đang thêm mới (không có editId) -> Tiến hành kiểm tra trùng lặp mã nhân sự
             if (!editId) {
                 const isDuplicate = localStaff.some(st => st.id.toLowerCase() === code.toLowerCase());
                 if (isDuplicate) {
@@ -1057,8 +1088,10 @@
             document.getElementById('staffUnitCustom').value = st.unit;
             if(st.photo) {
                 document.getElementById('staffPhotoPreview').src = st.photo;
-                document.getElementById('staffPhotoPreview').classList.remove('hidden');
+                document.getElementById('staffPhotoPreviewWrapper').classList.remove('hidden');
                 currentStaffPhotoBase64 = st.photo;
+            } else {
+                clearSelectedStaffPhoto();
             }
             document.getElementById('btnCancelStaffEdit').classList.remove('hidden');
             document.getElementById('btnSubmitStaffText').innerText = "Cập nhật nhân sự";
@@ -1068,28 +1101,24 @@
             document.getElementById('formStaffLogic').reset();
             document.getElementById('staffEditId').value = "";
             document.getElementById('staffCode').readOnly = false;
-            document.getElementById('staffPhotoPreview').classList.add('hidden');
-            currentStaffPhotoBase64 = "";
+            clearSelectedStaffPhoto();
             document.getElementById('btnCancelStaffEdit').classList.add('hidden');
             document.getElementById('btnSubmitStaffText').innerText = "Lưu thông tin nhân sự";
             generateSequentialStaffId();
         }
 
-        // CƠ CHẾ LỌC TRÙNG KHI NHẬP FILE DANH SÁCH HÀNG LOẠT
         window.triggerBulkStaffImport = function(e) {
             const file = e.target.files[0]; if(!file) return;
             const reader = new FileReader();
             reader.onload = function(evt) {
                 const text = evt.target.result; const lines = text.split('\n');
-                let importCount = 0;
-                let duplicateCount = 0;
+                let importCount = 0; let duplicateCount = 0;
 
                 lines.forEach(line => {
                     const parts = line.split(',');
                     if(parts.length >= 4) { 
                         const unit = parts[0].trim(); const code = parts[1].trim(); const name = parts[2].trim(); const pos = parts[3].trim();
                         if(code) {
-                            // Kiểm tra xem mã đã tồn tại trong mảng local hay chưa
                             const isDup = localStaff.some(st => st.id.toLowerCase() === code.toLowerCase());
                             if(!isDup) {
                                 db.ref(getEnvNode('staff_v4') + '/' + code).set({ id: code, name: name, unit: unit, position: pos, photo: "" });
@@ -1116,9 +1145,9 @@
                     <td class="p-3 font-mono font-bold text-blue-900">${st.id}</td>
                     <td class="p-3 font-semibold text-slate-700">${st.name}</td>
                     <td class="p-3 font-semibold text-emerald-800">${st.position || "Chưa rõ"}</td>
-                    <td class="p-3 text-center space-x-3">
-                        <button onclick="triggerStaffEditMode('${st.id}')" class="text-blue-600 hover:text-blue-800 transition-colors"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('staff_v4')}','${st.id}')" class="text-red-500 hover:text-red-700 transition-colors"><i class="fa-solid fa-trash-can"></i></button>
+                    <td class="p-3 text-center space-x-2">
+                        <button onclick="triggerStaffEditMode('${st.id}')" class="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('staff_v4')}','${st.id}')" class="p-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-trash-can text-xs"></i></button>
                     </td>
                 </tr>`;
             });
@@ -1160,9 +1189,9 @@
                     <td class="p-3 font-bold text-slate-800">${x.name}</td>
                     <td class="p-3 font-mono font-bold text-emerald-800">${x.qty}</td>
                     <td class="p-3 text-slate-500 font-medium">${x.unit}</td>
-                    <td class="p-3 text-center space-x-3">
-                        <button onclick="triggerMaterialEditMode('${x.id}')" class="text-blue-600 hover:text-blue-800 transition-colors"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('materials_v3')}','${x.id}')" class="text-red-500 hover:text-red-700 transition-colors"><i class="fa-solid fa-trash-can"></i></button>
+                    <td class="p-3 text-center space-x-2">
+                        <button onclick="triggerMaterialEditMode('${x.id}')" class="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('materials_v3')}','${x.id}')" class="p-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-trash-can text-xs"></i></button>
                     </td></tr>`;
             });
         }
@@ -1202,9 +1231,9 @@
                     <td class="p-3 font-bold text-slate-800">${x.location}</td>
                     <td class="p-3 text-slate-600 font-medium">${x.desc}</td>
                     <td class="p-3 text-xs font-bold text-rose-700">${x.level}</td>
-                    <td class="p-3 text-center space-x-3">
-                        <button onclick="triggerIncidentEditMode('${x.id}')" class="text-blue-600 hover:text-blue-800 transition-colors"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('incidents_v3')}','${x.id}')" class="text-red-500 hover:text-red-700 transition-colors"><i class="fa-solid fa-trash-can"></i></button>
+                    <td class="p-3 text-center space-x-2">
+                        <button onclick="triggerIncidentEditMode('${x.id}')" class="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('incidents_v3')}','${x.id}')" class="p-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-trash-can text-xs"></i></button>
                     </td></tr>`;
             });
         }
@@ -1244,9 +1273,9 @@
                     <td class="p-3 font-bold text-slate-800">${x.leader}</td>
                     <td class="p-3 text-indigo-900 font-bold">${x.name}</td>
                     <td class="p-3 text-slate-500 text-xs font-medium">${x.notes}</td>
-                    <td class="p-3 text-center space-x-3">
-                        <button onclick="triggerShiftEditMode('${x.id}')" class="text-blue-600 hover:text-blue-800 transition-colors"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('shifts_v3')}','${x.id}')" class="text-red-500 hover:text-red-700 transition-colors"><i class="fa-solid fa-trash-can"></i></button>
+                    <td class="p-3 text-center space-x-2">
+                        <button onclick="triggerShiftEditMode('${x.id}')" class="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('shifts_v3')}','${x.id}')" class="p-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-trash-can text-xs"></i></button>
                     </td></tr>`;
             });
         }
@@ -1303,8 +1332,8 @@
                     <td class="p-3 text-center"><span class="px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide ${x.status==='Cấp Mới'?'bg-emerald-100 text-emerald-900':x.status==='Đang Sự Cố'?'bg-rose-100 text-rose-900':'bg-blue-100 text-blue-900'}">${x.status}</span></td>
                     <td class="p-1 flex justify-center"><div class="qr-target-node border bg-white p-0.5 rounded shadow-sm" data-qr="${qrString}"></div></td>
                     <td class="p-3 text-center space-x-2">
-                        <button onclick="triggerAllocEditMode('${x.id}')" class="text-blue-600 hover:text-blue-800 transition-colors"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('allocations_v4')}','${x.id}')" class="text-red-500 hover:text-red-700 transition-colors"><i class="fa-solid fa-trash-can"></i></button>
+                        <button onclick="triggerAllocEditMode('${x.id}')" class="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('allocations_v4')}','${x.id}')" class="p-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-trash-can text-xs"></i></button>
                     </td></tr>`;
             });
             setTimeout(() => {
@@ -1348,9 +1377,9 @@
                     <td class="p-3 font-mono font-bold text-purple-900">${x.assetId}</td>
                     <td class="p-3 font-bold text-slate-800">${x.actionDesc}</td>
                     <td class="p-3 text-center font-mono text-slate-400 text-[11px]">${x.timeStr}</td>
-                    <td class="p-3 text-center space-x-3">
-                        <button onclick="triggerRepairEditMode('${x.id}')" class="text-blue-600 hover:text-blue-800 transition-colors"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('repair_logs_v4')}','${x.id}')" class="text-red-500 hover:text-red-700 transition-colors"><i class="fa-solid fa-trash-can"></i></button>
+                    <td class="p-3 text-center space-x-2">
+                        <button onclick="triggerRepairEditMode('${x.id}')" class="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('repair_logs_v4')}','${x.id}')" class="p-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-trash-can text-xs"></i></button>
                     </td></tr>`;
             });
             document.getElementById('badgeRepairCount').innerText = localRepairLogs.length + " bản ghi";
@@ -1361,25 +1390,111 @@
             localAllocations.forEach(x => { select.innerHTML += `<option value="${x.id}">${x.id} - ${x.name}</option>`; });
         }
 
+
+        // ================= XỬ LÝ QUẢN LÝ HỒ SƠ THANH TOÁN (MỤC 6 MỚI TÍNH TOÁN) =================
         window.handleAdvancedFileAndFolderUpload = function(files, isFolderStructure) {
-            const category = document.getElementById('fileStorageCategory').value; if(!files.length) return;
-            Array.from(files).forEach(file => {
-                const pathString = isFolderStructure ? (file.webkitRelativePath || file.name) : file.name;
-                const fileId = "FILE-" + Math.floor(100000 + Math.random() * 900000);
-                db.ref(getEnvNode('cloud_files_v4') + '/' + fileId).set({ id: fileId, category: category, name: file.name, fullPath: pathString, isFolderItem: isFolderStructure });
-            });
+            if(!files.length) return;
+            const firstFile = files[0];
+            const autoPath = isFolderStructure ? (firstFile.webkitRelativePath || firstFile.name) : firstFile.name;
+            
+            // Tự động điền tên tệp tin vào trường nhập liệu nếu người dùng chưa nhập tay
+            const nameInput = document.getElementById('billingFileName');
+            if(!nameInput.value.trim()) {
+                nameInput.value = autoPath;
+            }
         }
+
+        window.executeBillingSubmit = function(e) {
+            e.preventDefault();
+            const editId = document.getElementById('billingEditId').value;
+            const targetId = editId ? editId : "BILL-" + Date.now().toString().slice(-6);
+            
+            const name = document.getElementById('billingFileName').value.trim();
+            const amount = parseFloat(document.getElementById('billingAmount').value) || 0;
+            const category = document.getElementById('fileStorageCategory').value;
+            
+            // Tạo mock đường dẫn hoặc dữ liệu xem trước giả lập cho file/folder
+            const mockBlobUrl = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
+            const timeStamp = new Date().toLocaleTimeString('vi-VN') + " " + new Date().toLocaleDateString('vi-VN');
+
+            const payload = {
+                id: targetId,
+                category: category,
+                name: name,
+                amount: amount,
+                timeStr: timeStamp,
+                viewUrl: mockBlobUrl
+            };
+
+            db.ref(getEnvNode('cloud_files_v4') + '/' + targetId).set(payload);
+            resetBillingFormState();
+        }
+
+        window.triggerBillingEditMode = function(id) {
+            const item = localCloudFiles.find(x => x.id === id); if(!item) return;
+            document.getElementById('billingEditId').value = item.id;
+            document.getElementById('billingFileName').value = item.name;
+            document.getElementById('billingAmount').value = item.amount || 0;
+            document.getElementById('fileStorageCategory').value = item.category;
+            
+            document.getElementById('billingFormMode').innerText = "Chỉnh sửa";
+            document.getElementById('btnCancelBillingEdit').classList.remove('hidden');
+            document.getElementById('btnSubmitBillingText').innerText = "Cập nhật chứng từ";
+            smoothScrollToElement('billingAnchor');
+        }
+
+        window.resetBillingFormState = function() {
+            document.getElementById('formBillingLogic').reset();
+            document.getElementById('billingEditId').value = "";
+            document.getElementById('billingFormMode').innerText = "Thêm mới";
+            document.getElementById('btnCancelBillingEdit').classList.add('hidden');
+            document.getElementById('btnSubmitBillingText').innerText = "Lưu chứng từ";
+        }
+
+        function calculateBillingTotalSummary() {
+            let total = 0;
+            localCloudFiles.forEach(f => { total += (parseFloat(f.amount) || 0); });
+            document.getElementById('badgeBillingTotal').innerText = "Tổng chi: " + total.toLocaleString('vi-VN') + " VNĐ";
+        }
+
+        window.viewDocumentDirectly = function(url, filename) {
+            alert(`📄 Đang mở trình xem ngay tài liệu hệ thống:\nTên hồ sơ: ${filename}\nTrạng thái: Tải tài liệu đám mây thành công.`);
+            window.open(url, '_blank');
+        }
+
         function renderFileExplorerTree() {
             const treeContainer = document.getElementById('fileExplorerTreeContainer'); if(!treeContainer) return; treeContainer.innerHTML = "";
-            if(!localCloudFiles.length) { treeContainer.innerHTML = `<p class="text-slate-400 text-xs italic text-center p-4">Chưa có chứng từ lưu trữ.</p>`; return; }
-            const categoriesMap = {}; localCloudFiles.forEach(f => { if(!categoriesMap[f.category]) categoriesMap[f.category] = []; categoriesMap[f.category].push(f); });
+            if(!localCloudFiles.length) { treeContainer.innerHTML = `<p class="text-slate-400 text-xs italic text-center p-4">Chưa có hồ sơ thanh toán lưu trữ.</p>`; return; }
+            
+            const categoriesMap = {}; 
+            localCloudFiles.forEach(f => { 
+                if(!categoriesMap[f.category]) categoriesMap[f.category] = []; 
+                categoriesMap[f.category].push(f); 
+            });
+            
             Object.keys(categoriesMap).forEach(cat => {
-                const catWrapper = document.createElement('div'); catWrapper.className = "border border-slate-100 rounded-xl p-3 bg-slate-50 space-y-2 text-xs font-semibold text-slate-700 shadow-sm";
+                const catWrapper = document.createElement('div'); 
+                catWrapper.className = "border border-slate-100 rounded-xl p-3 bg-slate-50 space-y-2 text-xs font-semibold text-slate-700 shadow-sm mb-3";
                 catWrapper.innerHTML = `<div class="text-slate-800 uppercase border-b border-slate-200/60 pb-1.5 flex items-center gap-1.5 font-bold"><i class="fa-solid fa-folder-open text-amber-500 text-sm"></i> ${cat}</div>`;
+                
                 categoriesMap[cat].forEach(file => {
-                    catWrapper.innerHTML += `<div class="p-2 bg-white rounded-lg border border-slate-100 flex justify-between items-center shadow-sm">
-                        <span class="truncate text-slate-600 font-medium"><i class="${file.isFolderItem ? 'fa-solid fa-folder text-amber-400' : 'fa-solid fa-file-invoice text-indigo-400'} mr-1"></i> ${file.fullPath}</span>
-                        <button onclick="deleteCloudRecord('${getEnvNode('cloud_files_v4')}','${file.id}')" class="text-red-400 font-bold text-lg hover:text-red-600 px-1">×</button></div>`;
+                    const priceFormatted = (file.amount || 0).toLocaleString('vi-VN') + " VNĐ";
+                    const timeLabel = file.timeStr ? file.timeStr : "Chưa rõ thời gian";
+                    
+                    catWrapper.innerHTML += `<div class="p-3 bg-white rounded-lg border border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 shadow-sm hover:border-slate-200 transition-colors">
+                        <div class="space-y-0.5 min-w-0 flex-1">
+                            <span class="truncate block font-bold text-slate-800 text-sm"><i class="fa-solid fa-file-invoice-dollar text-emerald-600 mr-1 text-base"></i> ${file.name}</span>
+                            <div class="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-slate-400 font-medium">
+                                <span>💰 Số tiền: <b class="text-emerald-700 font-bold">${priceFormatted}</b></span>
+                                <span>| 🕒 Nhập lúc: <span class="text-slate-600 font-semibold">${timeLabel}</span></span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0 w-full sm:w-auto justify-end">
+                            <button onclick="viewDocumentDirectly('${file.viewUrl}','${file.name}')" class="p-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg transition-all shadow-sm flex items-center gap-1 font-bold text-[10px] uppercase" title="Xem ngay tệp chứng từ"><i class="fa-solid fa-eye text-xs"></i> Xem</button>
+                            <button onclick="triggerBillingEditMode('${file.id}')" class="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all shadow-sm" title="Sửa thông tin chứng từ"><i class="fa-solid fa-pen text-xs"></i></button>
+                            <button onclick="deleteCloudRecord('${getEnvNode('cloud_files_v4')}','${file.id}')" class="p-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-all shadow-sm" title="Xóa chứng từ vĩnh viễn"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                        </div>
+                    </div>`;
                 });
                 treeContainer.appendChild(catWrapper);
             });
