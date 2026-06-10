@@ -76,7 +76,7 @@
                 </div>
 
                 <div id="secError" class="text-red-600 font-black text-sm text-center hidden bg-red-50 p-2 rounded-xl border border-red-200">
-                    ❌ Vui lòng nhập đúng và đầy đủ thông tin xác thực!
+                    ❌ Tài khoản hoặc mật khẩu/mã PIN không chính xác!
                 </div>
 
                 <button type="submit" class="w-full py-3.5 bg-[#005c3e] text-white font-black rounded-xl text-base hover:bg-emerald-950 uppercase tracking-wider transition-colors shadow-lg">
@@ -169,6 +169,57 @@
         </section>
 
         <section class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
+            <div class="bg-slate-800 text-white p-4 flex justify-between items-center">
+                <h3 class="text-lg font-black uppercase flex items-center gap-2"><i class="fa-solid fa-user-gear text-emerald-400"></i> Cơ chế thiết lập & Quản lý tài khoản cán bộ vận hành</h3>
+                <span id="badgeUserCount" class="bg-black/30 font-mono text-sm px-3 py-1 rounded font-bold">0 tài khoản</span>
+            </div>
+            <div class="p-6 space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <form id="formUserLogic" onsubmit="executeUserAccountSubmit(event)" class="lg:col-span-5 grid grid-cols-1 gap-3 bg-slate-50 p-4 rounded-xl border-2 text-sm">
+                        <div>
+                            <label class="block font-black text-slate-700 mb-0.5">Tên đăng nhập (Username)</label>
+                            <input type="text" id="sysUsername" required placeholder="Ví dụ: nguyenvanua" class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-black text-slate-700 mb-0.5">Mật khẩu</label>
+                                <input type="password" id="sysPassword" required placeholder="Mật khẩu đăng nhập..." class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
+                            </div>
+                            <div>
+                                <label class="block font-black text-slate-700 mb-0.5">Mã PIN (6 số)</label>
+                                <input type="password" id="sysPin" required placeholder="Mã PIN nhanh..." class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block font-black text-slate-700 mb-0.5">Vai trò hệ thống</label>
+                            <select id="sysRole" class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
+                                <option value="Quản trị viên cấp cao">Quản trị viên cấp cao</option>
+                                <option value="Trưởng ca sản xuất">Trưởng ca sản xuất</option>
+                                <option value="Cán bộ Kỹ thuật lò hơi">Cán bộ Kỹ thuật lò hơi</option>
+                                <option value="Nhân viên Kho vật tư">Nhân viên Kho vật tư</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-slate-800 text-white font-black py-3 rounded-xl uppercase text-xs tracking-wider mt-2">Khởi tạo / Cập nhật tài khoản</button>
+                    </form>
+                    <div class="lg:col-span-7">
+                        <div class="overflow-x-auto border rounded-xl max-h-[280px] overflow-y-auto bg-white">
+                            <table class="w-full text-left border-collapse text-sm">
+                                <thead class="bg-slate-100 font-black text-slate-700 border-b sticky top-0 z-10">
+                                    <tr>
+                                        <th class="p-3">Tên Đăng Nhập</th>
+                                        <th class="p-3">Vai Trò Quyền Hạn</th>
+                                        <th class="p-3 text-right">Hành Động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableUsersBody" class="divide-y divide-slate-200 font-bold text-slate-900"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white text-slate-900 rounded-2xl shadow-xl overflow-hidden border-2 border-slate-300">
             <div class="bg-[#1e3a8a] text-white p-4 flex justify-between items-center">
                 <h3 class="text-lg font-black uppercase flex items-center gap-2"><i class="fa-solid fa-users-gear"></i> 1. Quản lý danh mục Đơn vị, Nhân sự & Hồ sơ công tác đa tầng</h3>
                 <span id="badgeStaffCount" class="bg-black/30 font-mono text-sm px-3 py-1 rounded font-bold">0 nhân sự</span>
@@ -187,11 +238,16 @@
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     <form id="formStaffLogic" onsubmit="executeStaffSubmit(event)" class="lg:col-span-5 grid grid-cols-1 gap-3 bg-slate-50 p-4 rounded-xl border-2 text-sm">
                         <input type="hidden" id="staffEditId" value="">
-                        <div class="grid grid-cols-2 gap-2">
+                        <div class="grid grid-cols-1 gap-2">
                             <div>
-                                <label class="block font-black text-slate-700 mb-0.5">Mã Nhân sự</label>
-                                <input type="text" id="staffCode" required placeholder="Ví dụ: VNP-0102" class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
+                                <label class="block font-black text-slate-700 mb-0.5">Mã Nhân sự (Tự động hoặc Nhập tay)</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="staffCode" required placeholder="Ví dụ: VNP-HR-00001" class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base font-mono">
+                                    <button type="button" onclick="generateSequentialStaffId()" class="bg-blue-700 text-white font-black px-3 rounded-xl text-xs uppercase whitespace-nowrap"><i class="fa-solid fa-wand-magic-sparkles"></i> Tự sinh</button>
+                                </div>
                             </div>
+                        </div>
+                        <div class="grid grid-cols-1 gap-2">
                             <div>
                                 <label class="block font-black text-slate-700 mb-0.5">Họ và tên</label>
                                 <input type="text" id="staffName" required placeholder="Nhập tên..." class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-base">
@@ -393,8 +449,8 @@
                     <input type="hidden" id="allocEditId" value="">
                     
                     <div class="sm:col-span-3">
-                        <label class="block font-black text-slate-700 mb-1">Mã thiết bị tự sinh</label>
-                        <input type="text" id="allocGeneratedId" readonly class="w-full high-contrast-box rounded-xl p-3 bg-slate-200 font-mono text-center text-emerald-900 text-base">
+                        <label class="block font-black text-slate-700 mb-1">Mã thiết bị tự sinh tăng dần</label>
+                        <input type="text" id="allocGeneratedId" readonly class="w-full high-contrast-box rounded-xl p-3 bg-slate-200 font-mono text-center text-emerald-900 text-base font-black">
                     </div>
                     <div class="sm:col-span-3">
                         <label class="block font-black text-slate-700 mb-1">Tên thiết bị / Vật tư cấp phát</label>
@@ -410,7 +466,7 @@
                             <option value="Động cơ điện & Bơm Áp Lực Cao">Động cơ điện & Bơm Áp Lực Cao</option>
                             <option value="Hệ thống Van Điều Áp & Đường Ống Hơi">Hệ thống Van Điều Áp & Đường Ống Hơi</option>
                             <option value="Hệ thống Đo Lường & Tự Động Hóa (DCS/SCADA)">Hệ thống Đo Lường & Tự Động Hóa (DCS/SCADA)</option>
-                            <option value="Thiết bị Xử Lý Nước Thải & Hóa Chemical">Thiết bị Xử Lý Nước Thải & Hóa Chất</option>
+                            <option value="Thiết bị Xử Lý Nước Thải & Hóa Chất">Thiết bị Xử Lý Nước Thải & Hóa Chất</option>
                             <option value="Hệ thống Máy Nén Khí Trung Tâm">Hệ thống Máy Nén Khí Trung Tâm</option>
                             <option value="Thiết bị Nâng Hạ, Cẩu Trục Phân Xưởng">Thiết bị Nâng Hạ, Cẩu Trục Phân Xưởng</option>
                             <option value="Thiết bị Phụ Trợ & Cầm Tay Sửa Chữa">Thiết bị Phụ Trợ & Cầm Tay Sửa Chữa</option>
@@ -557,7 +613,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Chuỗi nhận diện môi trường làm việc độc lập
         let currentEnv = "TESTING"; 
 
         let localMaterials = [];
@@ -567,6 +622,7 @@
         let localRepairLogs = [];
         let localCloudFiles = [];
         let localStaff = [];
+        let localUsers = []; // Mảng danh sách tài khoản hệ thống người dùng
         let activeLoginMethod = "pass";
 
         const defaultUnits = [
@@ -577,14 +633,12 @@
             "Phòng Kế Hoạch Vật Tư"
         ];
 
-        // Hàm lấy node căn cứ vào môi trường Chạy Thử hoặc Chạy Thật
         function getEnvNode(baseNode) {
             return currentEnv === "PRODUCTION" ? baseNode : baseNode + "_testing";
         }
 
         // TỔNG LỰC ĐỒNG BỘ THEO MÔI TRƯỜNG VẬN HÀNH
         function startRealtimeCoreSync() {
-            // Hủy lắng nghe các node cũ để tránh xung đột dữ liệu khi đổi môi trường
             db.ref(getEnvNode('materials_v3')).off();
             db.ref(getEnvNode('incidents_v3')).off();
             db.ref(getEnvNode('shifts_v3')).off();
@@ -592,6 +646,19 @@
             db.ref(getEnvNode('allocations_v4')).off();
             db.ref(getEnvNode('repair_logs_v4')).off();
             db.ref(getEnvNode('cloud_files_v4')).off();
+            db.ref(getEnvNode('system_users_v4')).off();
+
+            // Đồng bộ danh sách tài khoản người dùng
+            db.ref(getEnvNode('system_users_v4')).on('value', snap => {
+                localUsers = snap.val() ? Object.values(snap.val()).filter(Boolean) : [];
+                renderUsersTable();
+                // Khởi tạo tài khoản root mặc định nếu chưa tồn tại bất cứ tài khoản nào
+                if(localUsers.length === 0) {
+                    db.ref(getEnvNode('system_users_v4') + '/admin').set({
+                        username: "admin", password: "vinapaco2026", pin: "123456", role: "Quản trị viên cấp cao"
+                    });
+                }
+            });
 
             db.ref(getEnvNode('materials_v3')).on('value', snap => {
                 localMaterials = snap.val() ? Object.values(snap.val()).filter(Boolean) : [];
@@ -617,6 +684,7 @@
                 renderStaffTableData();
                 rebuildFilterAndAllocDropdowns();
                 rebuildDatalistGoiY();
+                generateSequentialStaffId(); // Luôn tính sẵn mã tiếp theo
             });
 
             db.ref(getEnvNode('allocations_v4')).on('value', snap => {
@@ -624,6 +692,7 @@
                 renderAllAllocationsTable();
                 populateRepairSelectBox();
                 sync3DGraphDisplay();
+                generateSequentialAllocId(); // Luôn tính toán sẵn mã thiết bị tăng dần kế tiếp
             });
 
             db.ref(getEnvNode('repair_logs_v4')).on('value', snap => {
@@ -635,8 +704,69 @@
                 localCloudFiles = snap.val() ? Object.values(snap.val()).filter(Boolean) : [];
                 renderFileExplorerTree();
             });
+        }
 
-            generateSequentialAllocId();
+        // CƠ CHẾ THIẾT LẬP TÀI KHOẢN NGƯỜI DÙNG
+        window.executeUserAccountSubmit = function(e) {
+            e.preventDefault();
+            const u = document.getElementById('sysUsername').value.trim().toLowerCase();
+            const p = document.getElementById('sysPassword').value.trim();
+            const pin = document.getElementById('sysPin').value.trim();
+            const r = document.getElementById('sysRole').value;
+
+            if(!u || !p || !pin) return;
+
+            db.ref(getEnvNode('system_users_v4') + '/' + u).set({
+                username: u, password: p, pin: pin, role: r
+            });
+            document.getElementById('formUserLogic').reset();
+            alert(`Đã cập nhật cấu hình tài khoản [${u}] thành công!`);
+        }
+
+        function renderUsersTable() {
+            const tbody = document.getElementById('tableUsersBody'); if(!tbody) return; tbody.innerHTML = "";
+            localUsers.forEach(usr => {
+                tbody.innerHTML += `<tr class="hover:bg-slate-50">
+                    <td class="p-3 font-mono font-black text-slate-800">${usr.username}</td>
+                    <td class="p-3 text-xs text-emerald-800 font-bold"><i class="fa-solid fa-user-shield"></i> ${usr.role}</td>
+                    <td class="p-3 text-right">
+                        <button onclick="deleteCloudRecord('${getEnvNode('system_users_v4')}','${usr.username}')" class="text-red-600"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                </tr>`;
+            });
+            document.getElementById('badgeUserCount').innerText = localUsers.length + " tài khoản";
+        }
+
+        // CƠ CHẾ TỰ SINH MÃ NHÂN SỰ TĂNG DẦN LIÊN TỤC (DẠNG CHUỖI VNP-HR-00001)
+        window.generateSequentialStaffId = function() {
+            let maxIndex = 0;
+            localStaff.forEach(st => {
+                if(st.id && st.id.startsWith("VNP-HR-")) {
+                    const numPart = parseInt(st.id.replace("VNP-HR-", ""), 10);
+                    if(!isNaN(numPart) && numPart > maxIndex) {
+                        maxIndex = numPart;
+                    }
+                }
+            });
+            const nextIndex = maxIndex + 1;
+            const paddedNum = String(nextIndex).padStart(5, '0');
+            document.getElementById('staffCode').value = `VNP-HR-${paddedNum}`;
+        }
+
+        // CƠ CHẾ TỰ SINH MÃ THIẾT BỊ TĂNG DẦN LIÊN TỤC (DẠNG CHUỖI VNP-EQ-00001)
+        function generateSequentialAllocId() { 
+            let maxIndex = 0;
+            localAllocations.forEach(alloc => {
+                if(alloc.id && alloc.id.startsWith("VNP-EQ-")) {
+                    const numPart = parseInt(alloc.id.replace("VNP-EQ-", ""), 10);
+                    if(!isNaN(numPart) && numPart > maxIndex) {
+                        maxIndex = numPart;
+                    }
+                }
+            });
+            const nextIndex = maxIndex + 1;
+            const paddedNum = String(nextIndex).padStart(5, '0');
+            document.getElementById('allocGeneratedId').value = `VNP-EQ-${paddedNum}`; 
         }
 
         // ĐIỀU CHỈNH MÔI TRƯỜNG CHẠY THỬ / CHẠY THẬT
@@ -653,7 +783,7 @@
 
         // XÓA SẠCH DỮ LIỆU THỬ NGHIỆM NẾU KHÔNG CHUẨN
         window.purgeAllTestingData = function() {
-            if(confirm("Hệ thống sẽ xóa toàn bộ danh mục nhân sự, thiết bị, vật tư, sự cố... thuộc môi trường CHẠY THỬ để làm sạch kho dữ liệu. Xác nhận xóa?")) {
+            if(confirm("Hệ thống sẽ xóa toàn bộ danh mục nhân sự, thiết bị, tài khoản thử nghiệm... thuộc môi trường CHẠY THỬ để làm sạch kho dữ liệu. Xác nhận xóa?")) {
                 db.ref('materials_v3_testing').remove();
                 db.ref('incidents_v3_testing').remove();
                 db.ref('shifts_v3_testing').remove();
@@ -661,21 +791,23 @@
                 db.ref('allocations_v4_testing').remove();
                 db.ref('repair_logs_v4_testing').remove();
                 db.ref('cloud_files_v4_testing').remove();
+                db.ref('system_users_v4_testing').remove();
                 alert("Đã dọn dẹp sạch sẽ dữ liệu thử nghiệm lỗi!");
             }
         }
 
-        // TỰ ĐỘNG ĐIỀN MẬT KHẨU KHI CÓ USERNAME & CHỌN GHI NHỚ
+        // TỰ ĐỘNG ĐIỀN MẬT KHẨU TỪ DATABASE KHI CÓ USERNAME & CHỌN GHI NHỚ
         window.handleUsernameInput = function(usernameValue) {
             const rememberMe = document.getElementById('rememberCredentials').checked;
             const passwordInput = document.getElementById('secPass');
             if(!passwordInput) return;
 
-            if(rememberMe && usernameValue.trim() === 'admin') {
+            const targetUser = localUsers.find(x => x.username === usernameValue.trim().toLowerCase());
+            if(rememberMe && targetUser) {
                 if(activeLoginMethod === 'pass') {
-                    passwordInput.value = "vinapaco2026";
+                    passwordInput.value = targetUser.password;
                 } else {
-                    passwordInput.value = "123456";
+                    passwordInput.value = targetUser.pin;
                 }
             }
         }
@@ -685,7 +817,7 @@
             handleUsernameInput(u);
         }
 
-        // ĐĂNG NHẬP CHUYỂN ĐỔI LINH HOẠT VÀ XÁC THỰC BẮT BUỘC ĐẦY ĐỦ
+        // ĐĂNG NHẬP ĐỐI CHIẾU DỮ LIỆU ĐỘNG TỪ DATABASE NGƯỜI DÙNG
         window.switchLoginMethod = function(method) {
             activeLoginMethod = method;
             const container = document.getElementById('dynamicSecretContainer');
@@ -709,10 +841,11 @@
 
         window.validateSystemAccessForm = function(event) {
             event.preventDefault();
-            const u = document.getElementById('secUser').value.trim();
+            const u = document.getElementById('secUser').value.trim().toLowerCase();
             const p = document.getElementById('secPass').value;
 
-            if (u === 'admin' && (p === 'vinapaco2026' || p === '123456')) {
+            const matchedUser = localUsers.find(x => x.username === u);
+            if (matchedUser && ((activeLoginMethod === 'pass' && matchedUser.password === p) || (activeLoginMethod === 'pin' && matchedUser.pin === p))) {
                 document.getElementById('securityLockOverlay').style.display = 'none';
                 document.getElementById('appMainContainer').classList.remove('hidden');
             } else {
@@ -720,7 +853,7 @@
             }
         }
 
-        // ĐÒ THỊ 3D TIẾN ĐỘ VÀ SỰ CỐ
+        // ĐỒ THỊ TRỰC QUAN ĐỘNG 3D
         function sync3DGraphDisplay() {
             const countNew = localAllocations.filter(x => x.status === 'Cấp Mới').length;
             const countIssue = localAllocations.filter(x => x.status === 'Đang Sự Cố').length;
@@ -831,6 +964,7 @@
             document.getElementById('staffUnitCustom').value = "";
             document.getElementById('staffPhotoPreview').classList.add('hidden'); currentStaffPhotoBase64 = "";
             document.getElementById('btnCancelStaffEdit').classList.add('hidden');
+            generateSequentialStaffId();
         }
 
         function rebuildDatalistGoiY() {
@@ -1028,7 +1162,6 @@
             });
         }
 
-        function generateSequentialAllocId() { document.getElementById('allocGeneratedId').value = "VNP-EQ-" + Math.floor(10000 + Math.random() * 90000); }
         window.deleteCloudRecord = function(fullNodePath, id) { if(confirm("Xác nhận xóa bỏ vĩnh viễn bản ghi này?")) db.ref(fullNodePath + '/' + id).remove(); }
 
         // ĐỒNG HỒ THỜI GIAN THỰC REALTIME
