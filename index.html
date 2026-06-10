@@ -215,7 +215,7 @@
                     <div class="bg-amber-50/50 p-4 rounded-2xl border border-amber-100 text-xs font-semibold space-y-3 text-slate-700">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                             <span>📢 Giao ban ca kíp vận hành:</span>
-                            <input type="text" id="scheduleGiaoBan" onchange="saveFlexSchedule()" placeholder="08:00 hàng daily..." class="bg-white border border-amber-200 rounded-lg p-1.5 font-bold text-amber-950 text-right focus:outline-none focus:border-amber-500 w-full sm:w-48 text-[11px]">
+                            <input type="text" id="scheduleGiaoBan" onchange="saveFlexSchedule()" placeholder="08:00 hàng ngày..." class="bg-white border border-amber-200 rounded-lg p-1.5 font-bold text-amber-950 text-right focus:outline-none focus:border-amber-500 w-full sm:w-48 text-[11px]">
                         </div>
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                             <span>☕ Chế độ nghỉ ngơi giữa ca:</span>
@@ -316,7 +316,7 @@
                         <input type="hidden" id="staffEditId" value="">
                         <div>
                             <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Đơn vị / Phòng ban</label>
-                            <input type="text" id="staffUnitCustom" required list="dynamicUnitsDatalist" placeholder="Nhập phòng ban hoặc chọn..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
+                            <input type="text" id="staffUnitCustom" required list="dynamicUnitsDatalist" placeholder="Nhập phòng ban mới..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                             <datalist id="dynamicUnitsDatalist"></datalist>
                         </div>
                         <div>
@@ -332,7 +332,7 @@
                         </div>
                         <div>
                             <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Chức vụ</label>
-                            <input type="text" id="staffPosition" required placeholder="Ví dụ: Kỹ sư ca, Trưởng phòng, Nhân viên..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
+                            <input type="text" id="staffPosition" required placeholder="Ví dụ: Kỹ sư ca, Trưởng phòng..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                         </div>
                         <div>
                             <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Ảnh chân dung</label>
@@ -640,21 +640,6 @@
                         <h4 class="font-bold text-[#005c3e] uppercase tracking-wider">Hồ sơ thanh toán</h4>
                         <span id="billingFormMode" class="text-[10px] font-bold text-slate-400 bg-slate-200 px-2 py-0.5 rounded-md uppercase">Thêm mới</span>
                     </div>
-                    
-                    <div class="grid grid-cols-3 gap-2 text-center font-heading">
-                        <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
-                            <div class="text-[9px] text-slate-400 font-bold uppercase">THÁNG NÀY</div>
-                            <div class="text-sm font-extrabold text-emerald-800 mt-0.5">145 Tr</div>
-                        </div>
-                        <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
-                            <div class="text-[9px] text-slate-400 font-bold uppercase">QUÝ NÀY</div>
-                            <div class="text-sm font-extrabold text-blue-800 mt-0.5">480 Tr</div>
-                        </div>
-                        <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
-                            <div class="text-[9px] text-slate-400 font-bold uppercase">NĂM 2026</div>
-                            <div class="text-sm font-extrabold text-purple-800 mt-0.5">1.9 Tỷ</div>
-                        </div>
-                    </div>
 
                     <form id="formBillingLogic" onsubmit="executeBillingSubmit(event)" class="space-y-3">
                         <input type="hidden" id="billingEditId" value="">
@@ -725,39 +710,16 @@
 
         const InternetFolkSayings = [
             "An toàn để sản xuất, sản xuất phải an toàn.",
-            "Muốn biết phải hỏi, muốn giỏi phải làm.",
-            "Một cây làm chẳng nên non, ba cây chụm lại nên hòn núi cao.",
             "Cẩn tắc vô ưu - Cẩn thận kiểm tra thì không lo gặp sự cố.",
             "Sai một ly, đi một dặm - Hãy chuẩn xác trong từng thông số kỹ thuật.",
-            "Lao động là vinh quang, mang lại hạnh phúc cho mọi nhà.",
-            "Có công mài sắt, có ngày nên kim.",
-            "Chớ thấy sóng cả mà ngã tay chèo.",
-            "Ăn quả nhớ kẻ trồng cây, uống nước nhớ nguồn.",
-            "Tay làm hàm nhai, tay quai miệng trễ.",
-            "Lửa thử vàng, gian nan thử sức.",
             "Một hòn gạch định hình nên bức tường lớn - Mỗi cá nhân cấu thành nên ERP.",
             "Tích tiểu thành đại, tiết kiệm vật tư là làm giàu cho nhà máy.",
             "Chữ tín quý hơn vàng - Đảm bảo đúng tiến độ bàn giao ca kíp.",
-            "Đồng thanh tương ứng, đồng khí tương cầu.",
-            "Gió thổi là quyền của trời, vận hành chuẩn chỉnh là việc của ta.",
-            "Nắng tốt dưa, mưa tốt lúa - Thuận theo tiết khí để vận hành kho bãi.",
-            "Thương trường như chiến trường, sản xuất cần kỷ luật như quân đội.",
-            "Nước chảy đá mòn, kiên trì cải tiến hệ thống không ngừng.",
             "Nhập ca tươi tỉnh, bàn giao rạch ròi.",
             "Sức người sỏi đá cũng thành cơm.",
-            "Con trâu đi trước, cái cày theo sau - Vận hành đúng quy trình thiết bị.",
             "Muốn đi nhanh thì đi một mình, muốn đi xa hãy đi cùng VINAPACO.",
-            "Gần mực thì đen, gần đèn thì rạng - Học hỏi cán bộ kỹ thuật lành nghề.",
-            "Lạt mềm buộc chặt, quy trình chặt chẽ giảm thiểu rủi ro.",
-            "Vàng thật không sợ lửa - Thiết bị chuẩn không sợ áp lực cao.",
-            "Kiến tha lâu cũng đầy tổ - Tích lũy cải tiến nhỏ, hiệu quả lớn.",
             "Khéo ăn thì no, khéo co thì ấm - Điều phối vật tư thông minh, tối ưu chi phí.",
-            "Đi một ngày đàng, học một sàng khôn.",
             "Một người lo bằng kho người làm - Vai trò của trưởng ca vô cùng quan trọng."
-        ];
-
-        const defaultUnits = [
-            "Xưởng Xeo Giấy Ca A", "Xưởng Xeo Giấy Ca B", "Xưởng Chế Biến Bột Giấy", "Phòng Cơ Điện Năng Lượng", "Phòng Kế Hoạch Vật Tư"
         ];
 
         function getEnvNode(baseNode) {
@@ -777,9 +739,9 @@
 
             db.ref(getEnvNode('flex_schedules_v4')).on('value', snap => {
                 const data = snap.val() || {};
-                document.getElementById('scheduleGiaoBan').value = data.giaoBan || "08:00 hàng ngày";
-                document.getElementById('scheduleNghiNgoi').value = data.nghiNgoi || "15m nghỉ / mỗi 2h";
-                document.getElementById('scheduleKiemTra').value = data.kiemTra || "Trước 16:00 ca chiều";
+                document.getElementById('scheduleGiaoBan').value = data.giaoBan || "";
+                document.getElementById('scheduleNghiNgoi').value = data.nghiNgoi || "";
+                document.getElementById('scheduleKiemTra').value = data.kiemTra || "";
             });
 
             db.ref(getEnvNode('system_users_v4')).on('value', snap => {
@@ -873,7 +835,7 @@
                         if (data) db.ref(node).set(data);
                         completed++;
                         if (completed === nodesToMigrate.length) {
-                            alert("🚀 Đồng bộ hoàn tất! Dữ liệu thử nghiệm đã được chuẩn hóa lên môi trường CHẠY THẬT.");
+                            alert("🚀 Đồng bộ hoàn tất! Dữ liệu đã được chuẩn hóa lên môi trường CHẠY THẬT.");
                         }
                     });
                 });
@@ -1048,7 +1010,6 @@
             reader.readAsDataURL(file);
         }
 
-        // CHỨC NĂNG XÓA ẢNH CHÂN DUNG KHỎI FORM NHẬP LIỆU
         window.clearSelectedStaffPhoto = function() {
             currentStaffPhotoBase64 = "";
             document.getElementById('staffPhotoFile').value = "";
@@ -1067,7 +1028,7 @@
             if (!editId) {
                 const isDuplicate = localStaff.some(st => st.id.toLowerCase() === code.toLowerCase());
                 if (isDuplicate) {
-                    alert(`❌ Lỗi: Mã Nhân sự "${code}" đã tồn tại trên hệ thống! Vui lòng kiểm tra lại để tránh trùng lặp dữ liệu.`);
+                    alert(`❌ Lỗi: Mã Nhân sự "${code}" đã tồn tại!`);
                     return;
                 }
             }
@@ -1390,14 +1351,10 @@
             localAllocations.forEach(x => { select.innerHTML += `<option value="${x.id}">${x.id} - ${x.name}</option>`; });
         }
 
-
-        // ================= XỬ LÝ QUẢN LÝ HỒ SƠ THANH TOÁN (MỤC 6 MỚI TÍNH TOÁN) =================
         window.handleAdvancedFileAndFolderUpload = function(files, isFolderStructure) {
             if(!files.length) return;
             const firstFile = files[0];
             const autoPath = isFolderStructure ? (firstFile.webkitRelativePath || firstFile.name) : firstFile.name;
-            
-            // Tự động điền tên tệp tin vào trường nhập liệu nếu người dùng chưa nhập tay
             const nameInput = document.getElementById('billingFileName');
             if(!nameInput.value.trim()) {
                 nameInput.value = autoPath;
@@ -1413,7 +1370,6 @@
             const amount = parseFloat(document.getElementById('billingAmount').value) || 0;
             const category = document.getElementById('fileStorageCategory').value;
             
-            // Tạo mock đường dẫn hoặc dữ liệu xem trước giả lập cho file/folder
             const mockBlobUrl = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
             const timeStamp = new Date().toLocaleTimeString('vi-VN') + " " + new Date().toLocaleDateString('vi-VN');
 
@@ -1504,14 +1460,14 @@
 
         function rebuildDatalistGoiY() {
             const dl = document.getElementById('dynamicUnitsDatalist'); if(!dl) return;
-            const currentUnits = [...new Set([...defaultUnits, ...localStaff.map(x => x.unit)])].filter(Boolean);
+            const currentUnits = [...new Set(localStaff.map(x => x.unit))].filter(Boolean);
             dl.innerHTML = "";
             currentUnits.forEach(u => { dl.innerHTML += `<option value="${u}">`; });
         }
         function rebuildFilterAndAllocDropdowns() {
             const filterBox = document.getElementById('filterStaffUnit'); const allocBox = document.getElementById('allocDepartmentBox');
             const currentSelectedFilter = filterBox.value; const currentSelectedAlloc = allocBox ? allocBox.value : "";
-            const allUnits = [...new Set([...defaultUnits, ...localStaff.map(x => x.unit)])].filter(Boolean);
+            const allUnits = [...new Set(localStaff.map(x => x.unit))].filter(Boolean);
             filterBox.innerHTML = `<option value="TẤT CẢ">-- Lọc theo tất cả đơn vị thành viên --</option>`;
             allUnits.forEach(un => { filterBox.innerHTML += `<option value="${un}">${un}</option>`; });
             if(currentSelectedFilter) filterBox.value = currentSelectedFilter;
