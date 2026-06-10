@@ -43,7 +43,6 @@
             outline: none;
         }
 
-        /* Ô nhập liệu khi phát hiện trùng lặp dữ liệu */
         .duplicate-danger-box {
             border: 2px solid #ef4444 !important;
             background-color: #fef2f2 !important;
@@ -208,7 +207,7 @@
                     <div class="space-y-3">
                         <span class="text-amber-600 uppercase tracking-wider text-xs"><i class="fa-solid fa-triangle-exclamation"></i> Việc tồn đọng</span>
                         <div class="stage-3d h-44 bg-slate-50 border border-slate-100 rounded-2xl flex items-end justify-center p-3 shadow-inner">
-                            <div id="3dBarPending" class="pillar-3d w-12 bg-gradient-to-t from-amber-500 to-amber-400 rounded-t-lg" style="height: 10%;"></div>
+                            <div id="3dBarPending" class="pillar-3d w-12 bg-gradient-to-t from-amber-50 to-amber-400 rounded-t-lg" style="height: 10%;"></div>
                         </div>
                         <div id="3dValPending" class="text-amber-700 text-base font-bold mt-1">0 việc</div>
                     </div>
@@ -660,8 +659,8 @@
                     <form id="formBillingLogic" onsubmit="executeBillingSubmit(event)" class="space-y-3">
                         <input type="hidden" id="billingEditId" value="">
                         <div>
-                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Tên hồ sơ / Tệp tin</label>
-                            <input type="text" id="billingFileName" required placeholder="Ví dụ: Hóa đơn mua bột giấy ca ca..." class="w-full high-contrast-box rounded-xl p-2.5 bg-white">
+                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Tên nhóm hồ sơ / Ghi chú</label>
+                            <input type="text" id="billingFileName" required placeholder="Ví dụ: Đợt quyết toán tiền mua bột giấy..." class="w-full high-contrast-box rounded-xl p-2.5 bg-white">
                         </div>
                         <div>
                             <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Số tiền thanh toán (VNĐ)</label>
@@ -676,14 +675,13 @@
                             </select>
                         </div>
                         
-                        <div class="grid grid-cols-2 gap-3 pt-1">
-                            <div class="bg-white p-3 rounded-xl border-2 border-dashed border-slate-300 hover:border-slate-400 text-center transition-colors relative cursor-pointer">
-                                <label class="block font-bold text-xs text-slate-500 mb-1.5 uppercase tracking-wider">CHỌN FILE</label>
-                                <input type="file" id="uploadInputFiles" onchange="handleAdvancedFileAndFolderUpload(this.files, false)" class="text-xs w-full file:hidden text-slate-500">
-                            </div>
-                            <div class="bg-white p-3 rounded-xl border-2 border-dashed border-amber-300 hover:border-amber-400 text-center transition-colors relative cursor-pointer">
-                                <label class="block font-bold text-xs text-amber-800 mb-1.5 uppercase tracking-wider">CHỌN FOLDER</label>
-                                <input type="file" id="uploadInputFolder" webkitdirectory directory multiple onchange="handleAdvancedFileAndFolderUpload(this.files, true)" class="text-xs w-full file:hidden text-slate-500">
+                        <div class="grid grid-cols-1 gap-3 pt-1">
+                            <div class="bg-white p-4 rounded-xl border-2 border-dashed border-emerald-300 hover:border-emerald-500 text-center transition-colors relative cursor-pointer">
+                                <label class="block font-bold text-xs text-emerald-800 mb-1.5 uppercase tracking-wider">
+                                    <i class="fa-solid fa-cloud-arrow-up mr-1 text-sm"></i> CHỌN NHIỀU ĐÍNH KÈM (PDF/ẢNH/DOCX...)
+                                </label>
+                                <input type="file" id="uploadInputFiles" multiple onchange="handleMultipleFilesSelection(this.files)" class="text-xs w-full text-slate-500 cursor-pointer">
+                                <div id="selectedFilesCountBadge" class="text-xs font-bold text-indigo-700 mt-1.5 hidden"></div>
                             </div>
                         </div>
 
@@ -696,7 +694,7 @@
 
                 <div class="lg:col-span-8 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 space-y-2">
                     <h4 class="font-bold text-slate-500 uppercase tracking-wider text-sm mb-2">Cấu trúc danh sách & Cây thư mục lưu trữ hồ sơ thanh toán thực tế:</h4>
-                    <div id="fileExplorerTreeContainer" class="space-y-3 max-h-[420px] overflow-y-auto p-3 bg-white rounded-2xl border border-slate-100 shadow-inner"></div>
+                    <div id="fileExplorerTreeContainer" class="space-y-3 max-h-[500px] overflow-y-auto p-3 bg-white rounded-2xl border border-slate-100 shadow-inner"></div>
                 </div>
             </div>
         </section>
@@ -723,6 +721,9 @@
         let localStaff = [];
         let localUsers = []; 
         let activeLoginMethod = "pass";
+
+        // Biến cục bộ tạm thời lưu danh sách mảng đa file đang chờ submit
+        let currentFormPendingFilesData = [];
 
         const InternetFolkSayings = [
             "An toàn để sản xuất, sản xuất phải an toàn.",
@@ -823,12 +824,10 @@
         }
 
         window.saveFlexSchedule = function() {
-            const gb = document.getElementById('scheduleGiaoBan').value.trim();
-            const nn = document.getElementById('scheduleNghiNgoi').value.trim();
-            const kt = document.getElementById('scheduleKiemTra').value.trim();
-            
             db.ref(getEnvNode('flex_schedules_v4')).set({
-                giaoBan: gb, nghiNgoi: nn, kiemTra: kt
+                giaoBan: document.getElementById('scheduleGiaoBan').value.trim(),
+                nghiNgoi: document.getElementById('scheduleNghiNgoi').value.trim(),
+                kiemTra: document.getElementById('scheduleKiemTra').value.trim()
             });
         }
 
@@ -858,7 +857,7 @@
             }
         }
 
-        /* ---------------- CƠ CHẾ LỌC TRÙNG CHO TÀI KHOẢN NGƯỜI DÙNG ---------------- */
+        /* ---------------- LOGIC USER ACCOUNTS ---------------- */
         window.checkUserDuplicate = function(val) {
             const username = val.trim().toLowerCase();
             const isEditMode = document.getElementById('userEditId').value !== "";
@@ -883,19 +882,13 @@
             e.preventDefault();
             const u = document.getElementById('sysUsername').value.trim().toLowerCase();
             const editId = document.getElementById('userEditId').value;
-
-            // KIỂM TRA CHẶN TRÙNG KHI SUBMIT (BẤM ENTER)
             if (!editId && localUsers.some(x => x.username === u)) {
                 alert(`❌ Hệ thống chặn: Tên đăng nhập "${u}" đã tồn tại!`);
                 return false;
             }
-
-            const p = document.getElementById('sysPassword').value.trim();
-            const pin = document.getElementById('sysPin').value.trim();
-            const r = document.getElementById('sysRole').value;
-
             db.ref(getEnvNode('system_users_v4') + '/' + u).set({
-                username: u, password: p, pin: pin, role: r
+                username: u, password: document.getElementById('sysPassword').value.trim(),
+                pin: document.getElementById('sysPin').value.trim(), role: document.getElementById('sysRole').value
             });
             resetUserFormState();
         }
@@ -904,10 +897,6 @@
             document.getElementById('userEditId').value = usr.username;
             document.getElementById('sysUsername').value = usr.username;
             document.getElementById('sysUsername').readOnly = true;
-            document.getElementById('sysUsername').classList.remove('duplicate-danger-box');
-            document.getElementById('userDuplicateAlert').classList.add('hidden');
-            document.getElementById('btnSubmitUserText').disabled = false;
-            document.getElementById('btnSubmitUserText').style.opacity = "1";
             document.getElementById('sysPassword').value = usr.password;
             document.getElementById('sysPin').value = usr.pin;
             document.getElementById('sysRole').value = usr.role;
@@ -929,19 +918,19 @@
         function renderUsersTable() {
             const tbody = document.getElementById('tableUsersBody'); if(!tbody) return; tbody.innerHTML = "";
             localUsers.forEach(usr => {
-                tbody.innerHTML += `<tr class="hover:bg-slate-50/80 transition-colors">
+                tbody.innerHTML += `<tr>
                     <td class="p-3 font-mono font-bold text-slate-800 text-base">${usr.username}</td>
                     <td class="p-3 text-emerald-800 font-semibold"><i class="fa-solid fa-user-shield mr-1"></i> ${usr.role}</td>
                     <td class="p-3 text-center space-x-2">
-                        <button onclick="triggerUserEditMode('${usr.username}')" class="p-2.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-pen text-xs"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('system_users_v4')}','${usr.username}')" class="p-2.5 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                        <button onclick="triggerUserEditMode('${usr.username}')" class="p-2.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('system_users_v4')}','${usr.username}')" class="p-2.5 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg"><i class="fa-solid fa-trash-can text-xs"></i></button>
                     </td>
                 </tr>`;
             });
             document.getElementById('badgeUserCount').innerText = localUsers.length + " tài khoản";
         }
 
-        /* ---------------- CƠ CHẾ LỌC TRÙNG NÂNG CAO CHO NHÂN SỰ (MÃ & HỌ TÊN) ---------------- */
+        /* ---------------- LOGIC NHÂN SỰ CHỐNG TRÙNG LẶP ---------------- */
         window.checkStaffDuplicate = function() {
             const codeInput = document.getElementById('staffCode');
             const nameInput = document.getElementById('staffName');
@@ -949,11 +938,9 @@
             const submitBtn = document.getElementById('btnSubmitStaffText');
 
             const codeVal = codeInput.value.trim().toUpperCase();
-            const nameVal = nameInput.value.trim().toLowerCase().replace(/\s+/g, ' '); // Chuẩn hóa khoảng trắng của tên
-            
+            const nameVal = nameInput.value.trim().toLowerCase().replace(/\s+/g, ' '); 
             const isEditMode = document.getElementById('staffEditId').value !== "";
 
-            // Nếu đang sửa đổi bản ghi hiện tại thì tạm thời tắt kiểm tra trùng lặp nhanh
             if (isEditMode) {
                 codeInput.classList.remove('duplicate-danger-box');
                 nameInput.classList.remove('duplicate-danger-box');
@@ -974,7 +961,7 @@
                 if (isCodeDup && isNameDup) {
                     codeInput.classList.add('duplicate-danger-box');
                     nameInput.classList.add('duplicate-danger-box');
-                    alertDiv.innerHTML = `⚠️ <b>Lỗi trùng lặp:</b> Cả Mã nhân sự (<b>${codeVal}</b>) và Họ tên nhân sự này đã tồn tại trên hệ thống!`;
+                    alertDiv.innerHTML = `⚠️ <b>Lỗi trùng lặp:</b> Cả Mã nhân sự (<b>${codeVal}</b>) và Họ tên nhân sự này đã tồn tại!`;
                 } else if (isCodeDup) {
                     codeInput.classList.add('duplicate-danger-box');
                     nameInput.classList.remove('duplicate-danger-box');
@@ -982,7 +969,7 @@
                 } else {
                     codeInput.classList.remove('duplicate-danger-box');
                     nameInput.classList.add('duplicate-danger-box');
-                    alertDiv.innerHTML = `⚠️ <b>Lỗi trùng lặp:</b> Họ tên nhân sự này đã tồn tại trong danh sách! Vui lòng kiểm tra lại phòng ban.`;
+                    alertDiv.innerHTML = `⚠️ <b>Lỗi trùng lặp:</b> Họ tên nhân sự này đã tồn tại trên danh sách!`;
                 }
             } else {
                 codeInput.classList.remove('duplicate-danger-box');
@@ -1001,193 +988,25 @@
                     if(!isNaN(numPart) && numPart > maxIndex) maxIndex = numPart;
                 }
             });
-            const paddedNum = String(maxIndex + 1).padStart(5, '0');
-            document.getElementById('staffCode').value = `VNP-HR-${paddedNum}`;
+            document.getElementById('staffCode').value = `VNP-HR-${String(maxIndex + 1).padStart(5, '0')}`;
             checkStaffDuplicate();
-        }
-
-        /* ---------------- CƠ CHẾ LỌC TRÙNG CHO CẤP PHÁT THIẾT BỊ ---------------- */
-        window.checkAllocDuplicate = function(val) {
-            const code = val.trim().toUpperCase();
-            const isEditMode = document.getElementById('allocEditId').value !== "";
-            const inputField = document.getElementById('allocGeneratedId');
-            const alertDiv = document.getElementById('allocDuplicateAlert');
-            const submitBtn = document.getElementById('btnSubmitAllocText');
-
-            if (!isEditMode && localAllocations.some(x => x.id.toUpperCase() === code)) {
-                inputField.classList.add('duplicate-danger-box');
-                alertDiv.classList.remove('hidden');
-                submitBtn.disabled = true;
-                submitBtn.style.opacity = "0.4";
-            } else {
-                inputField.classList.remove('duplicate-danger-box');
-                alertDiv.classList.add('hidden');
-                submitBtn.disabled = false;
-                submitBtn.style.opacity = "1";
-            }
-        }
-
-        function generateSequentialAllocId() { 
-            let maxIndex = 0;
-            localAllocations.forEach(alloc => {
-                if(alloc.id && alloc.id.startsWith("VNP-EQ-")) {
-                    const numPart = parseInt(alloc.id.replace("VNP-EQ-", ""), 10);
-                    if(!isNaN(numPart) && numPart > maxIndex) maxIndex = numPart;
-                }
-            });
-            const paddedNum = String(maxIndex + 1).padStart(5, '0');
-            document.getElementById('allocGeneratedId').value = `VNP-EQ-${paddedNum}`; 
-            checkAllocDuplicate(`VNP-EQ-${paddedNum}`);
-        }
-
-        /* ---------------- CƠ CHẾ LỌC TRÙNG CHO VẬT TƯ TIÊU HAO ---------------- */
-        window.checkMaterialDuplicate = function(val) {
-            const name = val.trim().toLowerCase();
-            const isEditMode = document.getElementById('matEditId').value !== "";
-            const inputField = document.getElementById('matName');
-            const alertDiv = document.getElementById('materialDuplicateAlert');
-            const submitBtn = document.getElementById('btnSubmitMatText');
-
-            if (!isEditMode && localMaterials.some(x => x.name.toLowerCase() === name)) {
-                inputField.classList.add('duplicate-danger-box');
-                alertDiv.classList.remove('hidden');
-                submitBtn.disabled = true;
-                submitBtn.style.opacity = "0.4";
-            } else {
-                inputField.classList.remove('duplicate-danger-box');
-                alertDiv.classList.add('hidden');
-                submitBtn.disabled = false;
-                submitBtn.style.opacity = "1";
-            }
-        }
-
-        window.toggleSystemEnvironment = function(mode) {
-            currentEnv = mode;
-            const actionArea = document.getElementById('testingDataActions');
-            if(mode === 'PRODUCTION') actionArea.classList.add('hidden');
-            else actionArea.classList.remove('hidden');
-            startRealtimeCoreSync();
-        }
-
-        window.purgeAllTestingData = function() {
-            if(confirm("Xóa toàn bộ danh mục dữ liệu thuộc môi trường CHẠY THỬ?")) {
-                db.ref('materials_v3_testing').remove();
-                db.ref('incidents_v3_testing').remove();
-                db.ref('shifts_v3_testing').remove();
-                db.ref('staff_v4_testing').remove();
-                db.ref('allocations_v4_testing').remove();
-                db.ref('repair_logs_v4_testing').remove();
-                db.ref('cloud_files_v4_testing').remove();
-                db.ref('system_users_v4_testing').remove();
-                db.ref('flex_schedules_v4_testing').remove();
-                alert("Đã làm sạch dữ liệu thử nghiệm!");
-            }
-        }
-
-        window.handleUsernameInput = function(usernameValue) {
-            const rememberMe = document.getElementById('rememberCredentials').checked;
-            const passwordInput = document.getElementById('secPass');
-            if(!passwordInput) return;
-            const targetUser = localUsers.find(x => x.username === usernameValue.trim().toLowerCase());
-            if(rememberMe && targetUser) {
-                passwordInput.value = (activeLoginMethod === 'pass') ? targetUser.password : targetUser.pin;
-            }
-        }
-        window.toggleRememberMeState = function() {
-            handleUsernameInput(document.getElementById('secUser').value);
-        }
-
-        window.switchLoginMethod = function(method) {
-            activeLoginMethod = method;
-            const container = document.getElementById('dynamicSecretContainer');
-            const tabPass = document.getElementById('tabMethodPass');
-            const tabPin = document.getElementById('tabMethodPin');
-            const currentUsername = document.getElementById('secUser').value;
-
-            if(method === 'pass') {
-                tabPass.className = "w-1/2 py-3 text-sm font-bold rounded-xl bg-[#adff2f] shadow-sm text-slate-950 transition-all";
-                tabPin.className = "w-1/2 py-3 text-sm font-bold rounded-xl text-slate-500 transition-all bg-transparent";
-                container.innerHTML = `<label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Mật khẩu hệ thống</label>
-                    <input type="password" id="secPass" required placeholder="••••••••" class="w-full high-contrast-box rounded-xl p-3.5 bg-slate-50 text-slate-900">`;
-            } else {
-                tabPin.className = "w-1/2 py-3 text-sm font-bold rounded-xl bg-[#20b2aa] shadow-sm text-white transition-all";
-                tabPass.className = "w-1/2 py-3 text-sm font-bold rounded-xl text-slate-500 transition-all bg-transparent";
-                container.innerHTML = `<label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Mã PIN cá nhân (6 số)</label>
-                    <input type="password" id="secPass" required placeholder="••••••" class="w-full high-contrast-box rounded-xl p-3.5 bg-slate-50 tracking-widest">`;
-            }
-            handleUsernameInput(currentUsername);
-        }
-
-        window.validateSystemAccessForm = function(event) {
-            event.preventDefault();
-            const u = document.getElementById('secUser').value.trim().toLowerCase();
-            const p = document.getElementById('secPass').value;
-            const matchedUser = localUsers.find(x => x.username === u);
-            if (matchedUser && ((activeLoginMethod === 'pass' && matchedUser.password === p) || (activeLoginMethod === 'pin' && matchedUser.pin === p))) {
-                document.getElementById('securityLockOverlay').style.display = 'none';
-                document.getElementById('appMainContainer').classList.remove('hidden');
-            } else {
-                document.getElementById('secError').classList.remove('hidden');
-            }
-        }
-
-        function sync3DGraphDisplay() {
-            const countNew = localAllocations.filter(x => x.status === 'Cấp Mới').length;
-            const countIssue = localAllocations.filter(x => x.status === 'Đang Sự Cố').length;
-            const countFixed = localAllocations.filter(x => x.status === 'Đã Khắc Phục').length;
-            document.getElementById('3dValNew').innerText = countNew + " TB";
-            document.getElementById('3dValIssue').innerText = countIssue + " TB";
-            document.getElementById('3dBarNew').style.height = ((countNew / Math.max(countNew, 1)) * 80 + 10) + "%";
-            document.getElementById('3dBarIssue').style.height = ((countIssue / Math.max(countIssue, 1)) * 80 + 10) + "%";
-        }
-
-        let currentStaffPhotoBase64 = "";
-        window.previewStaffPhoto = function(e) {
-            const file = e.target.files[0]; if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                currentStaffPhotoBase64 = evt.target.result;
-                const img = document.getElementById('staffPhotoPreview');
-                img.src = currentStaffPhotoBase64;
-                document.getElementById('staffPhotoPreviewWrapper').classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        window.clearSelectedStaffPhoto = function() {
-            currentStaffPhotoBase64 = "";
-            document.getElementById('staffPhotoFile').value = "";
-            document.getElementById('staffPhotoPreview').src = "";
-            document.getElementById('staffPhotoPreviewWrapper').classList.add('hidden');
         }
 
         window.executeStaffSubmit = function(e) {
             e.preventDefault();
             const code = document.getElementById('staffCode').value.trim().toUpperCase();
             const name = document.getElementById('staffName').value.trim();
-            const normalizedName = name.toLowerCase().replace(/\s+/g, ' ');
             const editId = document.getElementById('staffEditId').value;
 
-            // CHẶN TRÙNG TUYỆT ĐỐI KHI SUBMIT FORM (DÙ LÀ BẤM CHUỘT HAY PHÍM ENTER)
             if (!editId) {
-                let isCodeDup = localStaff.some(st => st.id.toUpperCase() === code);
-                let isNameDup = localStaff.some(st => st.name.trim().toLowerCase().replace(/\s+/g, ' ') === normalizedName);
-                
-                if (isCodeDup) {
-                    alert(`❌ LỖI HỆ THỐNG: Mã nhân sự "${code}" đã tồn tại trên dữ liệu đám mây. Từ chối lưu!`);
-                    return false;
-                }
-                if (isNameDup) {
-                    alert(`❌ LỖI HỆ THỐNG: Nhân sự tên là "${name}" đã có hồ sơ trên hệ thống. Không được nhập trùng họ tên!`);
+                if (localStaff.some(st => st.id.toUpperCase() === code) || localStaff.some(st => st.name.trim().toLowerCase().replace(/\s+/g, ' ') === name.toLowerCase().replace(/\s+/g, ' '))) {
+                    alert(`❌ LỖI HỆ THỐNG: Thông tin nhân sự bị trùng. Từ chối lưu!`);
                     return false;
                 }
             }
-
-            const position = document.getElementById('staffPosition').value.trim();
-            const finalUnitName = document.getElementById('staffUnitCustom').value.trim();
-
             db.ref(getEnvNode('staff_v4') + '/' + code).set({
-                id: code, name: name, unit: finalUnitName, position: position, photo: currentStaffPhotoBase64 || ""
+                id: code, name: name, unit: document.getElementById('staffUnitCustom').value.trim(),
+                position: document.getElementById('staffPosition').value.trim(), photo: currentStaffPhotoBase64 || ""
             });
             resetStaffFormState();
         }
@@ -1197,11 +1016,6 @@
             document.getElementById('staffEditId').value = st.id;
             document.getElementById('staffCode').value = st.id;
             document.getElementById('staffCode').readOnly = true;
-            document.getElementById('staffCode').classList.remove('duplicate-danger-box');
-            document.getElementById('staffName').classList.remove('duplicate-danger-box');
-            document.getElementById('staffDuplicateAlert').classList.add('hidden');
-            document.getElementById('btnSubmitStaffText').disabled = false;
-            document.getElementById('btnSubmitStaffText').style.opacity = "1";
             document.getElementById('staffName').value = st.name;
             document.getElementById('staffPosition').value = st.position || "";
             document.getElementById('staffUnitCustom').value = st.unit;
@@ -1220,11 +1034,6 @@
             document.getElementById('formStaffLogic').reset();
             document.getElementById('staffEditId').value = "";
             document.getElementById('staffCode').readOnly = false;
-            document.getElementById('staffCode').classList.remove('duplicate-danger-box');
-            document.getElementById('staffName').classList.remove('duplicate-danger-box');
-            document.getElementById('staffDuplicateAlert').classList.add('hidden');
-            document.getElementById('btnSubmitStaffText').disabled = false;
-            document.getElementById('btnSubmitStaffText').style.opacity = "1";
             clearSelectedStaffPhoto();
             document.getElementById('btnCancelStaffEdit').classList.add('hidden');
             document.getElementById('btnSubmitStaffText').innerText = "Lưu thông tin nhân sự";
@@ -1236,26 +1045,18 @@
             const reader = new FileReader();
             reader.onload = function(evt) {
                 const text = evt.target.result; const lines = text.split('\n');
-                let importCount = 0; let duplicateCount = 0;
-
+                let importCount = 0;
                 lines.forEach(line => {
                     const parts = line.split(',');
                     if(parts.length >= 4) { 
                         const unit = parts[0].trim(); const code = parts[1].trim().toUpperCase(); const name = parts[2].trim(); const pos = parts[3].trim();
-                        const normalizedName = name.toLowerCase().replace(/\s+/g, ' ');
-                        if(code) {
-                            const isCodeDup = localStaff.some(st => st.id.toUpperCase() === code);
-                            const isNameDup = localStaff.some(st => st.name.trim().toLowerCase().replace(/\s+/g, ' ') === normalizedName);
-                            if(!isCodeDup && !isNameDup) {
-                                db.ref(getEnvNode('staff_v4') + '/' + code).set({ id: code, name: name, unit: unit, position: pos, photo: "" });
-                                importCount++;
-                            } else {
-                                duplicateCount++;
-                            }
+                        if(code && !localStaff.some(st => st.id.toUpperCase() === code || st.name.toLowerCase() === name.toLowerCase())) {
+                            db.ref(getEnvNode('staff_v4') + '/' + code).set({ id: code, name: name, unit: unit, position: pos, photo: "" });
+                            importCount++;
                         }
                     }
                 });
-                alert(`⚡ Đã xử lý xong tệp danh sách:\n- Thêm mới thành công (Đã lọc trùng): ${importCount} nhân sự.\n- Bỏ qua do trùng mã hoặc trùng tên: ${duplicateCount} nhân sự.`);
+                alert(`⚡ Đã đồng bộ thành công: ${importCount} nhân sự mới không trùng lặp.`);
             };
             reader.readAsText(file);
         }
@@ -1265,38 +1066,58 @@
             if(!table) return; table.innerHTML = "";
             const target = (filter === 'TẤT CẢ' || !filter) ? localStaff : localStaff.filter(x => x.unit === filter);
             target.forEach(st => {
-                table.innerHTML += `<tr class="hover:bg-slate-50/80 transition-colors">
-                    <td class="p-3"><img src="${st.photo || 'https://via.placeholder.com/50'}" class="w-12 h-12 object-cover rounded-full border border-slate-200 shadow-sm"></td>
-                    <td class="p-3 text-slate-900 font-bold text-base">${st.unit}</td>
-                    <td class="p-3 font-mono font-bold text-blue-900 text-base">${st.id}</td>
-                    <td class="p-3 font-bold text-slate-800 text-base">${st.name}</td>
+                table.innerHTML += `<tr>
+                    <td class="p-3"><img src="${st.photo || 'https://via.placeholder.com/50'}" class="w-12 h-12 object-cover rounded-full border"></td>
+                    <td class="p-3 font-bold">${st.unit}</td>
+                    <td class="p-3 font-mono font-bold text-blue-900">${st.id}</td>
+                    <td class="p-3 font-bold text-slate-800">${st.name}</td>
                     <td class="p-3 font-semibold text-emerald-800">${st.position || "Chưa rõ"}</td>
                     <td class="p-3 text-center space-x-2">
-                        <button onclick="triggerStaffEditMode('${st.id}')" class="p-2.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-pen text-xs"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('staff_v4')}','${st.id}')" class="p-2.5 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                        <button onclick="triggerStaffEditMode('${st.id}')" class="p-2.5 bg-blue-50 text-blue-600 rounded-lg"><i class="fa-solid fa-pen text-xs"></i></button>
+                        <button onclick="deleteCloudRecord('${getEnvNode('staff_v4')}','${st.id}')" class="p-2.5 bg-red-50 text-red-500 rounded-lg"><i class="fa-solid fa-trash-can text-xs"></i></button>
                     </td>
                 </tr>`;
             });
             document.getElementById('badgeStaffCount').innerText = localStaff.length + " nhân sự";
         }
 
+        let currentStaffPhotoBase64 = "";
+        window.previewStaffPhoto = function(e) {
+            const file = e.target.files[0]; if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                currentStaffPhotoBase64 = evt.target.result;
+                document.getElementById('staffPhotoPreview').src = currentStaffPhotoBase64;
+                document.getElementById('staffPhotoPreviewWrapper').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+        window.clearSelectedStaffPhoto = function() {
+            currentStaffPhotoBase64 = ""; document.getElementById('staffPhotoFile').value = "";
+            document.getElementById('staffPhotoPreviewWrapper').classList.add('hidden');
+        }
+
+        /* ---------------- CÁC MỤC VẬT TƯ, SỰ CỐ, CA KÍP, CẤP PHÁT KHÁC ---------------- */
+        window.checkMaterialDuplicate = function(val) {
+            const name = val.trim().toLowerCase();
+            const submitBtn = document.getElementById('btnSubmitMatText');
+            if (localMaterials.some(x => x.name.toLowerCase() === name)) {
+                document.getElementById('matName').classList.add('duplicate-danger-box');
+                document.getElementById('materialDuplicateAlert').classList.remove('hidden');
+                submitBtn.disabled = true;
+            } else {
+                document.getElementById('matName').classList.remove('duplicate-danger-box');
+                document.getElementById('materialDuplicateAlert').classList.add('hidden');
+                submitBtn.disabled = false;
+            }
+        }
         window.executeMaterialSubmit = function(e) {
             e.preventDefault();
             const editId = document.getElementById('matEditId').value;
-            const mName = document.getElementById('matName').value.trim();
-            
-            // KIỂM TRA CHẶN TRÙNG KHI SUBMIT (BẤM ENTER)
-            if(!editId && localMaterials.some(x => x.name.toLowerCase() === mName.toLowerCase())) {
-                alert(`❌ Hệ thống chặn: Vật tư kỹ thuật "${mName}" đã tồn tại trong kho nhà máy!`);
-                return false;
-            }
-
             const targetId = editId ? editId : "MAT-" + Date.now().toString().slice(-6);
             db.ref(getEnvNode('materials_v3') + '/' + targetId).set({
-                id: targetId,
-                name: mName,
-                qty: document.getElementById('matQty').value,
-                unit: document.getElementById('matUnit').value.trim()
+                id: targetId, name: document.getElementById('matName').value.trim(),
+                qty: document.getElementById('matQty').value, unit: document.getElementById('matUnit').value.trim()
             });
             resetMaterialFormState();
         }
@@ -1304,37 +1125,23 @@
             const item = localMaterials.find(x => x.id === id); if(!item) return;
             document.getElementById('matEditId').value = item.id;
             document.getElementById('matName').value = item.name;
-            document.getElementById('matName').classList.remove('duplicate-danger-box');
-            document.getElementById('materialDuplicateAlert').classList.add('hidden');
-            document.getElementById('btnSubmitMatText').disabled = false;
-            document.getElementById('btnSubmitMatText').style.opacity = "1";
             document.getElementById('matQty').value = item.qty;
             document.getElementById('matUnit').value = item.unit;
             document.getElementById('btnCancelMatEdit').classList.remove('hidden');
-            document.getElementById('btnSubmitMatText').innerText = "Cập nhật";
             smoothScrollToElement('materialAnchor');
         }
         window.resetMaterialFormState = function() {
-            document.getElementById('formMaterialLogic').reset();
-            document.getElementById('matEditId').value = "";
-            document.getElementById('matName').classList.remove('duplicate-danger-box');
-            document.getElementById('materialDuplicateAlert').classList.add('hidden');
-            document.getElementById('btnSubmitMatText').disabled = false;
-            document.getElementById('btnSubmitMatText').style.opacity = "1";
+            document.getElementById('formMaterialLogic').reset(); document.getElementById('matEditId').value = "";
             document.getElementById('btnCancelMatEdit').classList.add('hidden');
-            document.getElementById('btnSubmitMatText').innerText = "Cập nhật kho";
         }
         function renderMaterialsTable() {
             const tbody = document.getElementById('tableMaterialBody'); if(!tbody) return; tbody.innerHTML = "";
             localMaterials.forEach(x => {
-                tbody.innerHTML += `<tr class="hover:bg-slate-50/80 transition-colors">
-                    <td class="p-3 font-bold text-slate-800 text-base">${x.name}</td>
-                    <td class="p-3 font-mono font-bold text-emerald-800 text-base">${x.qty}</td>
-                    <td class="p-3 text-slate-500 font-semibold">${x.unit}</td>
-                    <td class="p-3 text-center space-x-2">
-                        <button onclick="triggerMaterialEditMode('${x.id}')" class="p-2.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-pen text-xs"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('materials_v3')}','${x.id}')" class="p-2.5 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-trash-can text-xs"></i></button>
-                    </td></tr>`;
+                tbody.innerHTML += `<tr><td><b>${x.name}</b></td><td class="font-mono text-emerald-800">${x.qty}</td><td>${x.unit}</td>
+                <td class="text-center space-x-2">
+                    <button onclick="triggerMaterialEditMode('${x.id}')" class="p-2 bg-blue-50 text-blue-600"><i class="fa-solid fa-pen text-xs"></i></button>
+                    <button onclick="deleteCloudRecord('${getEnvNode('materials_v3')}','${x.id}')" class="p-2 bg-red-50 text-red-500"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                </td></tr>`;
             });
         }
 
@@ -1343,10 +1150,8 @@
             const editId = document.getElementById('incEditId').value;
             const targetId = editId ? editId : "INC-" + Date.now().toString().slice(-6);
             db.ref(getEnvNode('incidents_v3') + '/' + targetId).set({
-                id: targetId,
-                location: document.getElementById('incLocation').value.trim(),
-                desc: document.getElementById('incDesc').value.trim(),
-                level: document.getElementById('incLevel').value
+                id: targetId, location: document.getElementById('incLocation').value.trim(),
+                desc: document.getElementById('incDesc').value.trim(), level: document.getElementById('incLevel').value
             });
             resetIncidentFormState();
         }
@@ -1357,26 +1162,13 @@
             document.getElementById('incDesc').value = item.desc;
             document.getElementById('incLevel').value = item.level;
             document.getElementById('btnCancelIncEdit').classList.remove('hidden');
-            document.getElementById('btnSubmitIncText').innerText = "Cập nhật";
-            smoothScrollToElement('incidentAnchor');
         }
-        window.resetIncidentFormState = function() {
-            document.getElementById('formIncidentLogic').reset();
-            document.getElementById('incEditId').value = "";
-            document.getElementById('btnCancelIncEdit').classList.add('hidden');
-            document.getElementById('btnSubmitIncText').innerText = "Phát Lệnh";
-        }
+        window.resetIncidentFormState = function() { document.getElementById('formIncidentLogic').reset(); document.getElementById('incEditId').value = ""; }
         function renderIncidentsTable() {
             const tbody = document.getElementById('tableIncidentBody'); if(!tbody) return; tbody.innerHTML = "";
             localIncidents.forEach(x => {
-                tbody.innerHTML += `<tr class="hover:bg-slate-50/80 transition-colors">
-                    <td class="p-3 font-bold text-slate-800 text-base">${x.location}</td>
-                    <td class="p-3 text-slate-600 font-semibold text-base">${x.desc}</td>
-                    <td class="p-3 font-bold text-rose-700">${x.level}</td>
-                    <td class="p-3 text-center space-x-2">
-                        <button onclick="triggerIncidentEditMode('${x.id}')" class="p-2.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-pen text-xs"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('incidents_v3')}','${x.id}')" class="p-2.5 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-trash-can text-xs"></i></button>
-                    </td></tr>`;
+                tbody.innerHTML += `<tr><td><b>${x.location}</b></td><td>${x.desc}</td><td class="text-rose-700 font-bold">${x.level}</td>
+                <td class="text-center"><button onclick="triggerIncidentEditMode('${x.id}')" class="p-2 bg-blue-50 text-blue-600"><i class="fa-solid fa-pen text-xs"></i></button></td></tr>`;
             });
         }
 
@@ -1385,198 +1177,208 @@
             const editId = document.getElementById('shiftEditId').value;
             const targetId = editId ? editId : "SHIFT-" + Date.now().toString().slice(-6);
             db.ref(getEnvNode('shifts_v3') + '/' + targetId).set({
-                id: targetId,
-                leader: document.getElementById('shiftLeader').value.trim(),
-                name: document.getElementById('shiftName').value.trim(),
-                notes: document.getElementById('shiftNotes').value.trim()
+                id: targetId, leader: document.getElementById('shiftLeader').value.trim(),
+                name: document.getElementById('shiftName').value.trim(), notes: document.getElementById('shiftNotes').value.trim()
             });
             resetShiftFormState();
         }
-        window.triggerShiftEditMode = function(id) {
-            const item = localShifts.find(x => x.id === id); if(!item) return;
-            document.getElementById('shiftEditId').value = item.id;
-            document.getElementById('shiftLeader').value = item.leader;
-            document.getElementById('shiftName').value = item.name;
-            document.getElementById('shiftNotes').value = item.notes;
-            document.getElementById('btnCancelShiftEdit').classList.remove('hidden');
-            document.getElementById('btnSubmitShiftText').innerText = "Cập nhật";
-            smoothScrollToElement('shiftAnchor');
-        }
-        window.resetShiftFormState = function() {
-            document.getElementById('formShiftLogic').reset();
-            document.getElementById('shiftEditId').value = "";
-            document.getElementById('btnCancelShiftEdit').classList.add('hidden');
-            document.getElementById('btnSubmitShiftText').innerText = "Ký Xác Nhận";
+        window.resetShiftFormState = function() { document.getElementById('formShiftLogic').reset(); document.getElementById('shiftEditId').value = ""; }
+        function renderShiftsTable() {
+            const tbody = document.getElementById('tableShiftBody'); if(!tbody) return; tbody.innerHTML = "";
+            localShifts.forEach(x => {
+                tbody.innerHTML += `<tr><td><b>${x.leader}</b></td><td>${x.name}</td><td>${x.notes}</td>
+                <td class="text-center"><button onclick="deleteCloudRecord('${getEnvNode('shifts_v3')}','${x.id}')" class="p-2 bg-red-50 text-red-500"><i class="fa-solid fa-trash-can text-xs"></i></button></td></tr>`;
+            });
         }
 
-        window.handleAdvancedFileAndFolderUpload = function(files, isFolderStructure) {
-            if(!files.length) return;
-            const firstFile = files[0];
-            const autoPath = isFolderStructure ? (firstFile.webkitRelativePath || firstFile.name) : firstFile.name;
-            const nameInput = document.getElementById('billingFileName');
-            if(!nameInput.value.trim()) {
-                nameInput.value = autoPath;
+        window.checkAllocDuplicate = function(val) {
+            const code = val.trim().toUpperCase();
+            const submitBtn = document.getElementById('btnSubmitAllocText');
+            if (localAllocations.some(x => x.id.toUpperCase() === code)) {
+                document.getElementById('allocGeneratedId').classList.add('duplicate-danger-box');
+                document.getElementById('allocDuplicateAlert').classList.remove('hidden');
+                submitBtn.disabled = true;
+            } else {
+                document.getElementById('allocGeneratedId').classList.remove('duplicate-danger-box');
+                document.getElementById('allocDuplicateAlert').classList.add('hidden');
+                submitBtn.disabled = false;
             }
         }
-
+        function generateSequentialAllocId() { 
+            let maxIndex = 0;
+            localAllocations.forEach(alloc => {
+                if(alloc.id && alloc.id.startsWith("VNP-EQ-")) {
+                    const numPart = parseInt(alloc.id.replace("VNP-EQ-", ""), 10);
+                    if(!isNaN(numPart) && numPart > maxIndex) maxIndex = numPart;
+                }
+            });
+            document.getElementById('allocGeneratedId').value = `VNP-EQ-${String(maxIndex + 1).padStart(5, '0')}`; 
+        }
         window.handleGroupSelectChange = function(val) {
             const customInput = document.getElementById('allocGroupCustom');
-            if(val === 'MỚI') { customInput.classList.remove('hidden'); customInput.required = true; }
-            else { customInput.classList.add('hidden'); customInput.required = false; }
+            if(val === 'MỚI') customInput.classList.remove('hidden'); else customInput.classList.add('hidden');
         }
-
         window.executeAllocationSubmit = function(e) {
             e.preventDefault();
-            const editId = document.getElementById('allocEditId').value;
-            const generatedId = document.getElementById('allocGeneratedId').value.trim().toUpperCase();
-            const targetId = editId ? editId : generatedId;
-
-            // KIỂM TRA CHẶN TRÙNG KHI SUBMIT (BẤM ENTER)
-            if(!editId && localAllocations.some(x => x.id.toUpperCase() === targetId)) {
-                alert(`❌ Hệ thống chặn: Mã thiết bị định danh "${targetId}" đã tồn tại!`);
-                return false;
-            }
-
-            const groupSelect = document.getElementById('allocGroupSelect').value;
-            const groupCustom = document.getElementById('allocGroupCustom').value.trim();
-            const finalGroupType = (groupSelect === 'MỚI') ? groupCustom : groupSelect;
-
-            db.ref(getEnvNode('allocations_v4') + '/' + targetId).set({
-                id: targetId,
-                name: document.getElementById('allocDeviceName').value.trim(),
-                groupType: finalGroupType,
-                status: document.getElementById('allocStatus').value,
-                department: document.getElementById('allocDepartmentBox').value,
-                userPerson: document.getElementById('allocUserPerson').value.trim()
+            const id = document.getElementById('allocGeneratedId').value.trim().toUpperCase();
+            db.ref(getEnvNode('allocations_v4') + '/' + id).set({
+                id: id, name: document.getElementById('allocDeviceName').value.trim(),
+                groupType: document.getElementById('allocGroupSelect').value, status: document.getElementById('allocStatus').value,
+                department: document.getElementById('allocDepartmentBox').value, userPerson: document.getElementById('allocUserPerson').value.trim()
             });
             resetAllocFormState();
         }
-        window.triggerAllocEditMode = function(id) {
-            const item = localAllocations.find(x => x.id === id); if(!item) return;
-            document.getElementById('allocEditId').value = item.id;
-            document.getElementById('allocGeneratedId').value = item.id;
-            document.getElementById('allocGeneratedId').classList.remove('duplicate-danger-box');
-            document.getElementById('allocDuplicateAlert').classList.add('hidden');
-            document.getElementById('btnSubmitAllocText').disabled = false;
-            document.getElementById('btnSubmitAllocText').style.opacity = "1";
-            document.getElementById('allocDeviceName').value = item.name;
-            document.getElementById('allocStatus').value = item.status;
-            document.getElementById('allocDepartmentBox').value = item.department;
-            document.getElementById('allocUserPerson').value = item.userPerson;
-            document.getElementById('allocGroupSelect').value = item.groupType;
-            document.getElementById('btnCancelAllocEdit').classList.remove('hidden');
-            smoothScrollToElement('allocAnchor');
-        }
-        window.resetAllocFormState = function() {
-            document.getElementById('allocEditId').value = ""; document.getElementById('formAllocationLogic').reset();
-            document.getElementById('allocGeneratedId').classList.remove('duplicate-danger-box');
-            document.getElementById('allocDuplicateAlert').classList.add('hidden');
-            document.getElementById('btnSubmitAllocText').disabled = false;
-            document.getElementById('btnSubmitAllocText').style.opacity = "1";
-            document.getElementById('btnCancelAllocEdit').classList.add('hidden');
-            generateSequentialAllocId();
-        }
+        window.resetAllocFormState = function() { document.getElementById('formAllocationLogic').reset(); generateSequentialAllocId(); }
         function renderAllAllocationsTable() {
             const tbody = document.getElementById('tableAllocBody'); if(!tbody) return; tbody.innerHTML = "";
             localAllocations.forEach(x => {
-                const qrString = JSON.stringify({id: x.id, ten: x.name, dv: x.department});
-                tbody.innerHTML += `<tr class="hover:bg-slate-50/80 transition-colors">
-                    <td class="p-3 font-mono font-bold text-emerald-900 text-base">${x.id}</td>
-                    <td class="p-3 font-bold text-slate-900 text-base">${x.name}<span class="block text-xs text-slate-400 font-medium mt-0.5">Loại: ${x.groupType}</span></td>
-                    <td class="p-3 text-slate-600 font-bold text-base">${x.department}<span class="block text-xs font-bold text-indigo-700 mt-0.5"><i class="fa-solid fa-user-tag text-[10px]"></i> ${x.userPerson}</span></td>
-                    <td class="p-3 text-center"><span class="px-2.5 py-1 rounded-lg text-xs font-bold tracking-wide ${x.status==='Cấp Mới'?'bg-emerald-100 text-emerald-900':x.status==='Đang Sự Cố'?'bg-rose-100 text-rose-900':'bg-blue-100 text-blue-900'}">${x.status}</span></td>
-                    <td class="p-1 flex justify-center"><div class="qr-target-node border bg-white p-0.5 rounded shadow-sm" data-qr="${qrString}"></div></td>
-                    <td class="p-3 text-center space-x-2">
-                        <button onclick="triggerAllocEditMode('${x.id}')" class="p-2.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-pen text-xs"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('allocations_v4')}','${x.id}')" class="p-2.5 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-trash-can text-xs"></i></button>
-                    </td></tr>`;
+                tbody.innerHTML += `<tr><td class="font-mono font-bold text-emerald-900">${x.id}</td><td><b>${x.name}</b></td><td>${x.department}</td><td>${x.status}</td>
+                <td class="p-1"><div class="qr-target-node" data-qr="${x.id}"></div></td>
+                <td class="text-center"><button onclick="deleteCloudRecord('${getEnvNode('allocations_v4')}','${x.id}')" class="p-2 bg-red-50 text-red-500"><i class="fa-solid fa-trash-can text-xs"></i></button></td></tr>`;
             });
             setTimeout(() => {
                 document.querySelectorAll('.qr-target-node').forEach(div => {
-                    if(div.innerHTML === "") new QRCode(div, { text: div.getAttribute('data-qr'), width: 56, height: 56 });
+                    if(div.innerHTML === "") new QRCode(div, { text: div.getAttribute('data-qr'), width: 50, height: 50 });
                 });
-            }, 150);
-            document.getElementById('badgeAllocCount').innerText = localAllocations.length + " thiết bị";
+            }, 100);
         }
-
-        window.executeRepairLogSubmit = function(e) {
-            e.preventDefault(); 
-            const assetId = document.getElementById('repairAssetSelect').value;
-            const actionDesc = document.getElementById('repairActionDesc').value.trim(); if(!assetId) return;
-            const editId = document.getElementById('repairEditId').value;
-            const targetId = editId ? editId : "REP-" + Date.now().toString().slice(-6);
-            
-            db.ref(getEnvNode('repair_logs_v4') + '/' + targetId).set({
-                id: targetId, assetId: assetId, actionDesc: actionDesc,
-                timeStr: new Date().toLocaleTimeString('vi-VN') + " " + new Date().toLocaleDateString('vi-VN')
-            });
-            resetRepairFormState();
-        }
-        window.triggerRepairEditMode = function(id) {
-            const log = localRepairLogs.find(x => x.id === id); if(!log) return;
-            document.getElementById('repairEditId').value = log.id;
-            document.getElementById('repairAssetSelect').value = log.assetId;
-            document.getElementById('repairActionDesc').value = log.actionDesc;
-            document.getElementById('btnCancelRepairEdit').classList.remove('hidden');
-            smoothScrollToElement('repairAnchor');
-        }
-        window.resetRepairFormState = function() {
-            document.getElementById('repairEditId').value = "";
-            document.getElementById('repairActionDesc').value = "";
-            document.getElementById('btnCancelRepairEdit').classList.add('hidden');
-        }
-        function renderRepairLogsTable() {
-            const tbody = document.getElementById('tableRepairLogsBody'); if(!tbody) return; tbody.innerHTML = "";
-            localRepairLogs.forEach(x => {
-                tbody.innerHTML += `<tr class="hover:bg-slate-50/80 transition-colors">
-                    <td class="p-3 font-mono font-bold text-purple-900 text-base">${x.assetId}</td>
-                    <td class="p-3 font-bold text-slate-800 text-base">${x.actionDesc}</td>
-                    <td class="p-3 text-center font-mono text-slate-400 text-xs">${x.timeStr}</td>
-                    <td class="p-3 text-center space-x-2">
-                        <button onclick="triggerRepairEditMode('${x.id}')" class="p-2.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-pen text-xs"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('repair_logs_v4')}','${x.id}')" class="p-2.5 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-trash-can text-xs"></i></button>
-                    </td></tr>`;
-            });
-            document.getElementById('badgeRepairCount').innerText = localRepairLogs.length + " bản ghi";
-        }
-
         function populateRepairSelectBox() {
             const select = document.getElementById('repairAssetSelect'); if(!select) return; select.innerHTML = "";
             localAllocations.forEach(x => { select.innerHTML += `<option value="${x.id}">${x.id} - ${x.name}</option>`; });
         }
+        window.executeRepairLogSubmit = function(e) {
+            e.preventDefault();
+            const targetId = "REP-" + Date.now().toString().slice(-6);
+            db.ref(getEnvNode('repair_logs_v4') + '/' + targetId).set({
+                id: targetId, assetId: document.getElementById('repairAssetSelect').value,
+                actionDesc: document.getElementById('repairActionDesc').value.trim(),
+                timeStr: new Date().toLocaleTimeString('vi-VN') + " " + new Date().toLocaleDateString('vi-VN')
+            });
+            document.getElementById('repairActionDesc').value = "";
+        }
+        function renderRepairLogsTable() {
+            const tbody = document.getElementById('tableRepairLogsBody'); if(!tbody) return; tbody.innerHTML = "";
+            localRepairLogs.forEach(x => {
+                tbody.innerHTML += `<tr><td class="font-mono">${x.assetId}</td><td>${x.actionDesc}</td><td>${x.timeStr}</td>
+                <td class="text-center"><button onclick="deleteCloudRecord('${getEnvNode('repair_logs_v4')}','${x.id}')" class="p-2 bg-red-50 text-red-500"><i class="fa-solid fa-trash-can text-xs"></i></button></td></tr>`;
+            });
+        }
 
+
+        /* =========================================================================
+           🔒 NÂNG CẤP MỤC 6: XỬ LÝ HÀNG LOẠT FILE & ĐỌC XEM TRỰC TIẾP TRÊN TRÌNH DUYỆT
+           ========================================================================= */
+        
+        // 1. Hàm tiếp nhận mảng danh sách nhiều File khi người dùng quét chọn
+        window.handleMultipleFilesSelection = function(files) {
+            currentFormPendingFilesData = []; // Reset hàng chờ cũ
+            const badge = document.getElementById('selectedFilesCountBadge');
+            
+            if(!files || files.length === 0) {
+                badge.classList.add('hidden');
+                return;
+            }
+
+            badge.classList.remove('hidden');
+            badge.innerHTML = `📌 Đang chuẩn bị: <b>${files.length} tệp</b> đính kèm...`;
+
+            // Vòng lặp đọc bất đồng bộ toàn bộ file sang cấu trúc lưu trữ Base64 chuẩn hóa kèm MIME Type định dạng
+            for(let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    currentFormPendingFilesData.push({
+                        fileName: file.name,
+                        fileType: file.type || "application/octet-stream", // Đọc chính xác định dạng file đính kèm
+                        fileData: e.target.result // Chuỗi mã hóa Base64 toàn vẹn của tệp tin
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // 2. Hàm đẩy dữ liệu đính kèm chuẩn hóa lên Realtime Database
         window.executeBillingSubmit = function(e) {
             e.preventDefault();
             const editId = document.getElementById('billingEditId').value;
-            const targetId = editId ? editId : "BILL-" + Date.now().toString().slice(-6);
-            
-            const name = document.getElementById('billingFileName').value.trim();
-            const amount = parseFloat(document.getElementById('billingAmount').value) || 0;
-            const category = document.getElementById('fileStorageCategory').value;
-            
-            const mockBlobUrl = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
+            const groupTitle = document.getElementById('billingFileName').value.trim();
+            const totalAmount = parseFloat(document.getElementById('billingAmount').value) || 0;
+            const selectedCategory = document.getElementById('fileStorageCategory').value;
             const timeStamp = new Date().toLocaleTimeString('vi-VN') + " " + new Date().toLocaleDateString('vi-VN');
 
-            const payload = {
-                id: targetId,
-                category: category,
-                name: name,
-                amount: amount,
-                timeStr: timeStamp,
-                viewUrl: mockBlobUrl
-            };
+            // Nếu chế độ thêm mới và không có file nào được nạp vào hệ thống
+            if(!editId && currentFormPendingFilesData.length === 0) {
+                alert("⚠️ Vui lòng chọn ít nhất một file đính kèm trước khi lưu hồ sơ chứng từ!");
+                return false;
+            }
 
-            db.ref(getEnvNode('cloud_files_v4') + '/' + targetId).set(payload);
+            if(editId) {
+                // Chế độ Cập nhật nhanh thông tin hồ sơ
+                db.ref(getEnvNode('cloud_files_v4') + '/' + editId).update({
+                    name: groupTitle,
+                    amount: totalAmount,
+                    category: selectedCategory
+                });
+            } else {
+                // Chế độ tạo mới: Tự động tách nhỏ từng file đính kèm thành các bản ghi lưu trữ độc lập
+                currentFormPendingFilesData.forEach((fileObj, index) => {
+                    const uniqueId = "BILL-" + Date.now().toString().slice(-5) + "-" + index;
+                    db.ref(getEnvNode('cloud_files_v4') + '/' + uniqueId).set({
+                        id: uniqueId,
+                        category: selectedCategory,
+                        name: currentFormPendingFilesData.length > 1 ? `${groupTitle} (Tệp ${index + 1}: ${fileObj.fileName})` : fileObj.fileName,
+                        amount: index === 0 ? totalAmount : 0, // Gán tổng tiền vào tệp đầu để tránh nhân đôi số liệu
+                        timeStr: timeStamp,
+                        rawFileName: fileObj.fileName,
+                        rawFileType: fileObj.fileType, // Lưu đúng dạng file đính kèm gốc
+                        rawFileData: fileObj.fileData  // Lưu chuỗi dữ liệu nhị phân đã mã hóa
+                    });
+                });
+            }
+            
             resetBillingFormState();
         }
 
+        // 3. Hàm kích hoạt đọc và xem trước file trực tiếp bằng Trình Duyệt luôn (Không alert)
+        window.viewDocumentDirectly = function(id) {
+            const fileItem = localCloudFiles.find(x => x.id === id);
+            if(!fileItem || !fileItem.rawFileData) {
+                alert("❌ Không tìm thấy dữ liệu tệp tin đính kèm gốc hoặc tệp tin bị lỗi!");
+                return;
+            }
+
+            try {
+                // Biến đổi chuỗi Base64 lưu ở Database ngược về mảng nhị phân Blob Object tuần tự
+                const byteString = atob(fileItem.rawFileData.split(',')[1]);
+                const ab = new ArrayBuffer(byteString.length);
+                const ia = new Uint8Array(ab);
+                for (let i = 0; i < byteString.length; i++) {
+                    ia[i] = byteString.charCodeAt(i);
+                }
+                
+                // Đọc đúng định dạng Type gốc lúc upload của file để hiển thị tương thích trên Browser
+                const blob = new Blob([ab], { type: fileItem.rawFileType || "application/pdf" });
+                const blobUrl = URL.createObjectURL(blob);
+                
+                // Mở tab mới bật trình duyệt hiển thị tệp tin (ảnh hoặc pdf) trực tiếp
+                const newWindow = window.open();
+                if(newWindow) {
+                    newWindow.location.href = blobUrl;
+                } else {
+                    window.location.href = blobUrl;
+                }
+            } catch (err) {
+                alert("❌ Trình duyệt từ chối render file. Chi tiết lỗi mã hóa: " + err.message);
+            }
+        }
+
         window.triggerBillingEditMode = function(id) {
-            const item = localCloudFiles.find(x => x.id === id); if(!item) return;
+            const item = localCloudFiles.find(x => x.id === id); if (!item) return;
             document.getElementById('billingEditId').value = item.id;
             document.getElementById('billingFileName').value = item.name;
             document.getElementById('billingAmount').value = item.amount || 0;
             document.getElementById('fileStorageCategory').value = item.category;
-            
             document.getElementById('billingFormMode').innerText = "Chỉnh sửa";
             document.getElementById('btnCancelBillingEdit').classList.remove('hidden');
             document.getElementById('btnSubmitBillingText').innerText = "Cập nhật chứng từ";
@@ -1586,20 +1388,16 @@
         window.resetBillingFormState = function() {
             document.getElementById('formBillingLogic').reset();
             document.getElementById('billingEditId').value = "";
+            document.getElementById('selectedFilesCountBadge').classList.add('hidden');
             document.getElementById('billingFormMode').innerText = "Thêm mới";
             document.getElementById('btnCancelBillingEdit').classList.add('hidden');
             document.getElementById('btnSubmitBillingText').innerText = "Lưu chứng từ";
+            currentFormPendingFilesData = [];
         }
 
         function calculateBillingTotalSummary() {
-            let total = 0;
-            localCloudFiles.forEach(f => { total += (parseFloat(f.amount) || 0); });
+            let total = 0; localCloudFiles.forEach(f => { total += (parseFloat(f.amount) || 0); });
             document.getElementById('badgeBillingTotal').innerText = "Tổng chi: " + total.toLocaleString('vi-VN') + " VNĐ";
-        }
-
-        window.viewDocumentDirectly = function(url, filename) {
-            alert(`📄 Đang mở trình xem ngay tài liệu hệ thống:\nTên hồ sơ: ${filename}\nTrạng thái: Tải tài liệu đám mây thành công.`);
-            window.open(url, '_blank');
         }
 
         function renderFileExplorerTree() {
@@ -1608,31 +1406,27 @@
             
             const categoriesMap = {}; 
             localCloudFiles.forEach(f => { 
-                if(!categoriesMap[f.category]) categoriesMap[f.category] = []; 
-                categoriesMap[f.category].push(f); 
+                if(!categoriesMap[f.category]) categoriesMap[f.category] = []; categoriesMap[f.category].push(f); 
             });
             
             Object.keys(categoriesMap).forEach(cat => {
                 const catWrapper = document.createElement('div'); 
-                catWrapper.className = "border border-slate-100 rounded-xl p-3 bg-slate-50 space-y-2 font-semibold text-slate-700 shadow-sm mb-3";
-                catWrapper.innerHTML = `<div class="text-slate-800 uppercase border-b border-slate-200/60 pb-1.5 flex items-center gap-1.5 font-bold text-base"><i class="fa-solid fa-folder-open text-amber-500 text-base"></i> ${cat}</div>`;
+                catWrapper.className = "border rounded-xl p-3 bg-slate-50 mb-3";
+                catWrapper.innerHTML = `<div class="text-slate-800 uppercase border-b pb-1.5 flex items-center gap-1.5 font-bold text-base"><i class="fa-solid fa-folder-open text-amber-500"></i> ${cat}</div>`;
                 
                 categoriesMap[cat].forEach(file => {
                     const priceFormatted = (file.amount || 0).toLocaleString('vi-VN') + " VNĐ";
-                    const timeLabel = file.timeStr ? file.timeStr : "Chưa rõ thời gian";
-                    
-                    catWrapper.innerHTML += `<div class="p-3 bg-white rounded-lg border border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 shadow-sm hover:border-slate-200 transition-colors">
-                        <div class="space-y-0.5 min-w-0 flex-1">
-                            <span class="truncate block font-bold text-slate-800 text-base"><i class="fa-solid fa-file-invoice-dollar text-emerald-600 mr-1 text-xl"></i> ${file.name}</span>
-                            <div class="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-slate-400 font-medium">
-                                <span>💰 Số tiền: <b class="text-emerald-700 font-bold">${priceFormatted}</b></span>
-                                <span>| 🕒 Nhập lúc: <span class="text-slate-600 font-semibold">${timeLabel}</span></span>
+                    catWrapper.innerHTML += `<div class="p-3 bg-white rounded-lg border mt-2 flex justify-between items-center gap-2 shadow-sm">
+                        <div>
+                            <span class="block font-bold text-slate-800 text-base text-emerald-950"><i class="fa-solid fa-file-pdf text-rose-700 mr-1"></i> ${file.name}</span>
+                            <div class="text-xs text-slate-400 font-semibold mt-0.5">
+                                <span>💰 Chi phí: <b class="text-emerald-800">${priceFormatted}</b></span> | 🕒 Thời gian: ${file.timeStr || '--'}
                             </div>
                         </div>
-                        <div class="flex items-center gap-1.5 shrink-0 w-full sm:w-auto justify-end">
-                            <button onclick="viewDocumentDirectly('${file.viewUrl}','${file.name}')" class="p-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg transition-all shadow-sm flex items-center gap-1 font-bold text-xs uppercase" title="Xem ngay tệp chứng từ"><i class="fa-solid fa-eye text-xs"></i> Xem</button>
-                            <button onclick="triggerBillingEditMode('${file.id}')" class="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all shadow-sm" title="Sửa thông tin chứng từ"><i class="fa-solid fa-pen text-xs"></i></button>
-                            <button onclick="deleteCloudRecord('${getEnvNode('cloud_files_v4')}','${file.id}')" class="p-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-all shadow-sm" title="Xóa chứng từ vĩnh viễn"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="viewDocumentDirectly('${file.id}')" class="p-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg font-bold text-xs uppercase flex items-center gap-1"><i class="fa-solid fa-eye"></i> Xem ngay trên Trình duyệt</button>
+                            <button onclick="triggerBillingEditMode('${file.id}')" class="p-2 bg-blue-50 text-blue-600 rounded-lg"><i class="fa-solid fa-pen text-xs"></i></button>
+                            <button onclick="deleteCloudRecord('${getEnvNode('cloud_files_v4')}','${file.id}')" class="p-2 bg-red-50 text-red-500 rounded-lg"><i class="fa-solid fa-trash-can text-xs"></i></button>
                         </div>
                     </div>`;
                 });
@@ -1642,42 +1436,49 @@
 
         window.deleteCloudRecord = function(fullNodePath, id) { if(confirm("Xác nhận xóa bỏ bản ghi này vĩnh viễn?")) db.ref(fullNodePath + '/' + id).remove(); }
 
-        // Cập nhật lại danh sách gợi ý tự động cho datalist
         function rebuildDatalistGoiY() {
             const dl = document.getElementById('dynamicUnitsDatalist'); if(!dl) return;
-            const currentUnits = [...new Set(localStaff.map(x => x.unit))].filter(Boolean);
-            dl.innerHTML = "";
-            currentUnits.forEach(u => { dl.innerHTML += `<option value="${u}">`; });
+            dl.innerHTML = ""; [...new Set(localStaff.map(x => x.unit))].filter(Boolean).forEach(u => { dl.innerHTML += `<option value="${u}">`; });
         }
         function rebuildFilterAndAllocDropdowns() {
             const filterBox = document.getElementById('filterStaffUnit'); const allocBox = document.getElementById('allocDepartmentBox');
-            const currentSelectedFilter = filterBox.value; const currentSelectedAlloc = allocBox ? allocBox.value : "";
             const allUnits = [...new Set(localStaff.map(x => x.unit))].filter(Boolean);
             filterBox.innerHTML = `<option value="TẤT CẢ">-- Lọc theo tất cả đơn vị thành viên --</option>`;
             allUnits.forEach(un => { filterBox.innerHTML += `<option value="${un}">${un}</option>`; });
-            if(currentSelectedFilter) filterBox.value = currentSelectedFilter;
-            if(allocBox) {
-                allocBox.innerHTML = "";
-                allUnits.forEach(un => { allocBox.innerHTML += `<option value="${un}">${un}</option>`; });
-                if(currentSelectedAlloc) allocBox.value = currentSelectedAlloc;
+            if(allocBox) { allocBox.innerHTML = ""; allUnits.forEach(un => { allocBox.innerHTML += `<option value="${un}">${un}</option>`; }); }
+        }
+        function sync3DGraphDisplay() {
+            const countNew = localAllocations.filter(x => x.status === 'Cấp Mới').length;
+            const countIssue = localAllocations.filter(x => x.status === 'Đang Sự Cố').length;
+            document.getElementById('3dValNew').innerText = countNew + " TB";
+            document.getElementById('3dValIssue').innerText = countIssue + " TB";
+        }
+        window.validateSystemAccessForm = function(event) {
+            event.preventDefault();
+            const u = document.getElementById('secUser').value.trim().toLowerCase();
+            const p = document.getElementById('secPass').value;
+            const matchedUser = localUsers.find(x => x.username === u);
+            if (matchedUser && ((activeLoginMethod === 'pass' && matchedUser.password === p) || (activeLoginMethod === 'pin' && matchedUser.pin === p))) {
+                document.getElementById('securityLockOverlay').style.display = 'none';
+                document.getElementById('appMainContainer').classList.remove('hidden');
+            } else { document.getElementById('secError').classList.remove('hidden'); }
+        }
+        window.switchLoginMethod = function(method) {
+            activeLoginMethod = method;
+            const container = document.getElementById('dynamicSecretContainer');
+            if(method === 'pass') {
+                container.innerHTML = `<label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Mật khẩu hệ thống</label>
+                    <input type="password" id="secPass" required placeholder="••••••••" class="w-full high-contrast-box rounded-xl p-3.5 bg-slate-50">`;
+            } else {
+                container.innerHTML = `<label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Mã PIN cá nhân (6 số)</label>
+                    <input type="password" id="secPass" required placeholder="••••••" class="w-full high-contrast-box rounded-xl p-3.5 bg-slate-50 tracking-widest">`;
             }
         }
-
         function triggerLiveTimeAndLunarCalendar() {
             const now = new Date(); document.getElementById('liveClockStr').innerText = now.toLocaleTimeString('vi-VN');
-            const solarDay = now.getDate(); const solarMonth = now.getMonth() + 1;
-            let lunarDay = solarDay - 23; let lunarMonth = solarMonth; if (lunarDay <= 0) { lunarDay = 30 + lunarDay; lunarMonth = solarMonth - 1; }
-            document.getElementById('lunarDateStr').innerText = `Hôm nay: Ngày ${solarDay}/${solarMonth} (Âm lịch: Ngày ${lunarDay} tháng ${lunarMonth} năm Bính Ngọ)`;
-            document.getElementById('solarTermStr').innerText = "Mang Chủng / Hạ Chí";
-            document.getElementById('goodHoursStr').innerText = "Tý (23h-1h), Mão (5h-7h), Ngọ (11h-13h)";
+            document.getElementById('lunarDateStr').innerText = `Hôm nay: Ngày ${now.getDate()}/${now.getMonth() + 1}/2026`;
         }
-
-        window.addEventListener('DOMContentLoaded', () => { 
-            startRealtimeCoreSync(); 
-            setInterval(triggerLiveTimeAndLunarCalendar, 1000);
-            refreshRandomFolkSaying();
-            setInterval(refreshRandomFolkSaying, 300000); 
-        });
+        window.addEventListener('DOMContentLoaded', () => { startRealtimeCoreSync(); setInterval(triggerLiveTimeAndLunarCalendar, 1000); });
     </script>
 </body>
 </html>
