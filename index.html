@@ -12,7 +12,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        /* Nhúng font chữ hiện đại dùng cho các hệ thống SaaS cao cấp */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap');
         
         html { 
@@ -20,18 +19,16 @@
         }
         body { 
             font-family: 'Inter', 'Plus Jakarta Sans', sans-serif; 
-            background-color: #022c22; /* Làm sâu thêm màu nền gỗ thông đặc trưng */
+            background-color: #022c22; 
             color: #f1f5f9;
             font-size: 15px; 
             letter-spacing: -0.01em;
         }
 
-        /* Đồng bộ hóa các tiêu đề lớn */
         h1, h2, h3, h4, .font-heading {
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
-        /* Làm mịn và tinh chỉnh các ô nhập liệu High-Contrast */
         .high-contrast-box {
             border: 1.5px solid #cbd5e1 !important;
             color: #0f172a !important;
@@ -45,7 +42,6 @@
             outline: none;
         }
 
-        /* Khắc phục và tối ưu hóa hiển thị cột biểu đồ 3D */
         .stage-3d { 
             perspective: 800px; 
         }
@@ -55,10 +51,9 @@
             box-shadow: -4px 8px 16px rgba(0, 0, 0, 0.3), inset 0px 2px 4px rgba(255,255,255,0.3);
             transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
-            min-height: 8px; /* Tránh bị mất hút khi dữ liệu bằng 0 */
+            min-height: 8px; 
         }
         
-        /* Cân đối khoảng cách, font chữ trong bảng biểu */
         table {
             border-collapse: separate !important;
             border-spacing: 0 !important;
@@ -75,7 +70,6 @@
         table tr:last-child td:first-child { border-bottom-left-radius: 12px; }
         table tr:last-child td:last-child { border-bottom-right-radius: 12px; }
 
-        /* Custom thanh cuộn nội bộ mượt mà */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -106,7 +100,7 @@
             </div>
 
             <div class="flex bg-slate-100 p-1 rounded-2xl border border-slate-200/60">
-                <button type="button" id="tabMethodPass" onclick="switchLoginMethod('pass')" class="w-1/2 py-2.5 text-xs font-bold rounded-xl bg-white shadow-sm text-slate-900 transition-all">Mật Khẩu</button>
+                <button type="button" id="tabMethodPass" onclick="switchLoginMethod('pass')" class="w-1/2 py-2.5 text-xs font-bold rounded-xl bg-[#adff2f] shadow-sm text-slate-950 transition-all">Mật Khẩu</button>
                 <button type="button" id="tabMethodPin" onclick="switchLoginMethod('pin')" class="w-1/2 py-2.5 text-xs font-bold rounded-xl text-slate-500 transition-all">Mã PIN</button>
             </div>
 
@@ -283,14 +277,14 @@
 
         <section id="staffAnchor" class="bg-white text-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100">
             <div class="bg-blue-900 text-white p-4 px-6 flex justify-between items-center">
-                <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-users"></i> 1. Danh mục Đơn vị, Chức vụ, Nhân sự & Hồ sơ công tác</h3>
+                <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-users"></i> 1. Danh mục Đơn vị, Mã nhân sự, Họ tên, Chức vụ & Hồ sơ công tác</h3>
                 <span id="badgeStaffCount" class="bg-white/10 font-mono text-xs px-3 py-1 rounded-xl font-bold">0 nhân sự</span>
             </div>
             <div class="p-6 space-y-6">
                 <div class="bg-blue-50/60 border border-blue-100 p-4 rounded-2xl grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                     <div class="md:col-span-8">
                         <h4 class="font-bold text-blue-900 text-xs uppercase tracking-wider">⚡ Nhập nhanh hàng loạt nhân sự chống trùng lặp dữ liệu</h4>
-                        <p class="text-xs text-blue-600 font-medium mt-0.5">Nạp tệp danh sách (.txt/.csv) phân tách dấu phẩy theo định dạng: [Đơn vị, Chức vụ, Mã Nhân sự, Họ tên].</p>
+                        <p class="text-xs text-blue-600 font-medium mt-0.5">Nạp tệp danh sách (.txt/.csv) phân tách dấu phẩy theo định dạng chuẩn mới: [Đơn vị, Mã Nhân sự, Họ tên, Chức vụ].</p>
                     </div>
                     <div class="md:col-span-4">
                         <input type="file" id="bulkStaffFile" onchange="triggerBulkStaffImport(event)" class="text-xs bg-white p-2.5 rounded-xl border border-slate-200 w-full font-semibold focus:outline-none">
@@ -306,10 +300,6 @@
                             <datalist id="dynamicUnitsDatalist"></datalist>
                         </div>
                         <div>
-                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Chức vụ</label>
-                            <input type="text" id="staffPosition" required placeholder="Ví dụ: Kỹ sư ca, Trưởng phòng, Nhân viên..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
-                        </div>
-                        <div>
                             <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Mã Nhân sự</label>
                             <div class="flex gap-2">
                                 <input type="text" id="staffCode" required placeholder="Ví dụ: VNP-HR-00001" class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm font-mono">
@@ -319,6 +309,10 @@
                         <div>
                             <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Họ và tên</label>
                             <input type="text" id="staffName" required placeholder="Nhập tên nhân sự..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Chức vụ</label>
+                            <input type="text" id="staffPosition" required placeholder="Ví dụ: Kỹ sư ca, Trưởng phòng, Nhân viên..." class="w-full high-contrast-box rounded-xl p-3 bg-white text-sm">
                         </div>
                         <div>
                             <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Ảnh chân dung</label>
@@ -350,9 +344,9 @@
                                     <tr>
                                         <th class="p-3 w-[60px]">Ảnh</th>
                                         <th class="p-3 w-[180px]">Đơn Vị / Phòng Ban</th>
-                                        <th class="p-3 w-[130px]">Chức Vụ</th>
                                         <th class="p-3 w-[130px]">Mã Nhân sự</th>
                                         <th class="p-3">Họ Tên Cán Bộ</th>
+                                        <th class="p-3 w-[130px]">Chức Vụ</th>
                                         <th class="p-3 text-center w-[100px]">Hành Động</th>
                                     </tr>
                                 </thead>
@@ -610,7 +604,7 @@
             </div>
             <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div class="lg:col-span-4 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 space-y-4 text-xs">
-                    <h4 class="font-bold text-[#005c3e] uppercase tracking-wider border-b border-slate-200/60 pb-2">Báo cáo tài chính & Kinh phí</h4>
+                    <h4 class="font-bold text-[#005c3e] uppercase tracking-wider border-b border-slate-200/60 pb-2">Báo cáo tài chính & Kinh phiếu</h4>
                     
                     <div class="grid grid-cols-3 gap-2 text-center font-heading">
                         <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
@@ -684,12 +678,11 @@
             return currentEnv === "PRODUCTION" ? baseNode : baseNode + "_testing";
         }
 
-        // TỔNG LỰC ĐỒNG BỘ THEO MÔI TRƯỜNG VẬN HÀNH
         function startRealtimeCoreSync() {
             db.ref(getEnvNode('materials_v3')).off();
             db.ref(getEnvNode('incidents_v3')).off();
             db.ref(getEnvNode('shifts_v3')).off();
-            db.ref(getEnvNode('staff_v4')).off(); // Nâng cấp node dữ liệu chứa chức vụ
+            db.ref(getEnvNode('staff_v4')).off(); 
             db.ref(getEnvNode('allocations_v4')).off();
             db.ref(getEnvNode('repair_logs_v4')).off();
             db.ref(getEnvNode('cloud_files_v4')).off();
@@ -779,7 +772,6 @@
             }
         }
 
-        // TÀI KHOẢN NGƯỜI DÙNG
         window.executeUserAccountSubmit = function(e) {
             e.preventDefault();
             const u = document.getElementById('sysUsername').value.trim().toLowerCase();
@@ -826,7 +818,6 @@
             document.getElementById('badgeUserCount').innerText = localUsers.length + " tài khoản";
         }
 
-        // TỰ ĐỘNG SINH MÃ NHÂN SỰ
         window.generateSequentialStaffId = function() {
             let maxIndex = 0;
             localStaff.forEach(st => {
@@ -839,7 +830,6 @@
             document.getElementById('staffCode').value = `VNP-HR-${paddedNum}`;
         }
 
-        // TỰ ĐỘNG SINH MÃ THIẾT BỊ
         function generateSequentialAllocId() { 
             let maxIndex = 0;
             localAllocations.forEach(alloc => {
@@ -887,6 +877,7 @@
             handleUsernameInput(document.getElementById('secUser').value);
         }
 
+        // TỐI ƯU HOÁ MÀU XANH NÕN CHUỐI CHO LỰA CHỌN ĐĂNG NHẬP ĐANG ACTIVE
         window.switchLoginMethod = function(method) {
             activeLoginMethod = method;
             const container = document.getElementById('dynamicSecretContainer');
@@ -895,13 +886,13 @@
             const currentUsername = document.getElementById('secUser').value;
 
             if(method === 'pass') {
-                tabPass.className = "w-1/2 py-2.5 text-xs font-bold rounded-xl bg-white shadow-sm text-slate-900 transition-all";
-                tabPin.className = "w-1/2 py-2.5 text-xs font-bold rounded-xl text-slate-500 transition-all";
+                tabPass.className = "w-1/2 py-2.5 text-xs font-bold rounded-xl bg-[#adff2f] shadow-sm text-slate-950 transition-all";
+                tabPin.className = "w-1/2 py-2.5 text-xs font-bold rounded-xl text-slate-500 transition-all bg-transparent";
                 container.innerHTML = `<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Mật khẩu hệ thống</label>
-                    <input type="password" id="secPass" required placeholder="••••••••" class="w-full high-contrast-box rounded-xl p-3 bg-slate-50 text-base">`;
+                    <input type="password" id="secPass" required placeholder="••••••••" class="w-full high-contrast-box rounded-xl p-3 bg-slate-50 text-slate-900 text-base">`;
             } else {
-                tabPin.className = "w-1/2 py-2.5 text-xs font-bold rounded-xl bg-white shadow-sm text-slate-900 transition-all";
-                tabPass.className = "w-1/2 py-2.5 text-xs font-bold rounded-xl text-slate-500 transition-all";
+                tabPin.className = "w-1/2 py-2.5 text-xs font-bold rounded-xl bg-[#adff2f] shadow-sm text-slate-950 transition-all";
+                tabPass.className = "w-1/2 py-2.5 text-xs font-bold rounded-xl text-slate-500 transition-all bg-transparent";
                 container.innerHTML = `<label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Mã PIN cá nhân (6 số)</label>
                     <input type="password" id="secPass" required placeholder="••••••" class="w-full high-contrast-box rounded-xl p-3 bg-slate-50 text-base tracking-widest">`;
             }
@@ -936,7 +927,7 @@
             document.getElementById('3dBarPending').style.height = ((countIssue / max) * 80 + 10) + "%";
         }
 
-        // MỤC 1: LOGIC NHÂN SỰ VÀ TRƯỜNG CHỨC VỤ MỚI
+        // MỤC 1: LOGIC NHÂN SỰ ĐÃ ĐƯỢC ĐỒNG BỘ THỨ TỰ TRƯỜNG TOÀN DIỆN
         let currentStaffPhotoBase64 = "";
         window.previewStaffPhoto = function(e) {
             const file = e.target.files[0]; if(!file) return;
@@ -994,8 +985,9 @@
                 const text = evt.target.result; const lines = text.split('\n');
                 lines.forEach(line => {
                     const parts = line.split(',');
-                    if(parts.length >= 4) { // Cấu trúc: Đơn vị, Chức vụ, Mã, Họ tên
-                        const unit = parts[0].trim(); const pos = parts[1].trim(); const code = parts[2].trim(); const name = parts[3].trim();
+                    // Định dạng nạp mới: [Đơn vị, Mã Nhân sự, Họ tên, Chức vụ]
+                    if(parts.length >= 4) { 
+                        const unit = parts[0].trim(); const code = parts[1].trim(); const name = parts[2].trim(); const pos = parts[3].trim();
                         if(code) db.ref(getEnvNode('staff_v4') + '/' + code).set({ id: code, name: name, unit: unit, position: pos, photo: "" });
                     }
                 });
@@ -1007,12 +999,13 @@
             if(!table) return; table.innerHTML = "";
             const target = (filter === 'TẤT CẢ' || !filter) ? localStaff : localStaff.filter(x => x.unit === filter);
             target.forEach(st => {
+                // Bố trí lại trật tự hiển thị cột: Ảnh -> Đơn vị -> Mã nhân sự -> Họ tên -> Chức vụ
                 table.innerHTML += `<tr class="hover:bg-slate-50/80 transition-colors">
                     <td class="p-3"><img src="${st.photo || 'https://via.placeholder.com/50'}" class="w-10 h-10 object-cover rounded-full border border-slate-200 shadow-sm"></td>
                     <td class="p-3 text-slate-900 font-bold">${st.unit}</td>
-                    <td class="p-3 font-semibold text-emerald-800">${st.position || "Chưa rõ"}</td>
                     <td class="p-3 font-mono font-bold text-blue-900">${st.id}</td>
                     <td class="p-3 font-semibold text-slate-700">${st.name}</td>
+                    <td class="p-3 font-semibold text-emerald-800">${st.position || "Chưa rõ"}</td>
                     <td class="p-3 text-center space-x-3">
                         <button onclick="triggerStaffEditMode('${st.id}')" class="text-blue-600 hover:text-blue-800 transition-colors"><i class="fa-solid fa-pen"></i></button>
                         <button onclick="deleteCloudRecord('${getEnvNode('staff_v4')}','${st.id}')" class="text-red-500 hover:text-red-700 transition-colors"><i class="fa-solid fa-trash-can"></i></button>
