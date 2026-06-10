@@ -45,6 +45,13 @@
             outline: none;
         }
 
+        /* Ô nhập liệu khi phát hiện trùng lặp dữ liệu */
+        .duplicate-danger-box {
+            border: 2px solid #ef4444 !important;
+            background-color: #fef2f2 !important;
+            color: #991b1b !important;
+        }
+
         .stage-3d { 
             perspective: 800px; 
         }
@@ -65,12 +72,12 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             font-weight: 800 !important;
             letter-spacing: 0.03em;
-            font-size: 1rem !important; /* Tăng cỡ chữ tiêu đề bảng */
+            font-size: 1rem !important;
         }
         table th, table td {
             vertical-align: middle !important;
-            padding: 14px 18px !important; /* Tăng khoảng cách ô rộng rãi */
-            font-size: 0.95rem !important; /* Tăng cỡ chữ nội dung bảng */
+            padding: 14px 18px !important;
+            font-size: 0.95rem !important;
         }
         table tr:last-child td:first-child { border-bottom-left-radius: 12px; }
         table tr:last-child td:last-child { border-bottom-right-radius: 12px; }
@@ -256,7 +263,8 @@
                         <input type="hidden" id="userEditId" value="">
                         <div>
                             <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Tên đăng nhập (Username)</label>
-                            <input type="text" id="sysUsername" required placeholder="Ví dụ: nguyenvanua" class="w-full high-contrast-box rounded-xl p-3 bg-white">
+                            <input type="text" id="sysUsername" required placeholder="Ví dụ: nguyenvanua" oninput="checkUserDuplicate(this.value)" class="w-full high-contrast-box rounded-xl p-3 bg-white">
+                            <div id="userDuplicateAlert" class="text-red-600 font-bold text-xs mt-1 hidden">⚠️ Tên đăng nhập này đã tồn tại trên hệ thống!</div>
                         </div>
                         <div class="grid grid-cols-2 gap-3">
                             <div>
@@ -327,9 +335,10 @@
                         <div>
                             <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Mã Nhân sự</label>
                             <div class="flex gap-2">
-                                <input type="text" id="staffCode" required placeholder="Ví dụ: VNP-HR-00001" class="w-full high-contrast-box rounded-xl p-3 bg-white font-mono">
+                                <input type="text" id="staffCode" required placeholder="Ví dụ: VNP-HR-00001" oninput="checkStaffDuplicate(this.value)" class="w-full high-contrast-box rounded-xl p-3 bg-white font-mono">
                                 <button type="button" onclick="generateSequentialStaffId()" class="bg-blue-800 text-white font-bold px-3.5 rounded-xl text-xs uppercase whitespace-nowrap shadow transition-colors"><i class="fa-solid fa-wand-magic-sparkles"></i> Tự sinh</button>
                             </div>
+                            <div id="staffDuplicateAlert" class="text-red-600 font-bold text-xs mt-1 hidden">⚠️ Mã nhân sự này đã tồn tại trên hệ thống!</div>
                         </div>
                         <div>
                             <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Họ và tên</label>
@@ -404,7 +413,8 @@
                     <input type="hidden" id="matEditId" value="">
                     <div>
                         <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Tên vật tư kỹ thuật</label>
-                        <input type="text" id="matName" required placeholder="Ví dụ: Lưới xeo giấy..." class="w-full high-contrast-box rounded-xl p-3 bg-white">
+                        <input type="text" id="matName" required placeholder="Ví dụ: Lưới xeo giấy..." oninput="checkMaterialDuplicate(this.value)" class="w-full high-contrast-box rounded-xl p-3 bg-white">
+                        <div id="materialDuplicateAlert" class="text-red-600 font-bold text-xs mt-1 hidden">⚠️ Tên vật tư này đã tồn tại!</div>
                     </div>
                     <div>
                         <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Số lượng tồn kho</label>
@@ -531,8 +541,9 @@
                     <input type="hidden" id="allocEditId" value="">
                     
                     <div class="sm:col-span-3">
-                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Mã thiết bị tự sinh</label>
-                        <input type="text" id="allocGeneratedId" readonly class="w-full high-contrast-box rounded-xl p-3 bg-slate-200 font-mono text-center text-emerald-950 font-bold">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Mã thiết bị định danh</label>
+                        <input type="text" id="allocGeneratedId" oninput="checkAllocDuplicate(this.value)" class="w-full high-contrast-box rounded-xl p-3 bg-white font-mono text-center text-emerald-950 font-bold">
+                        <div id="allocDuplicateAlert" class="text-red-600 font-bold text-xs mt-1 hidden">⚠️ Mã thiết bị này đã tồn tại!</div>
                     </div>
                     <div class="sm:col-span-3">
                         <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Tên thiết bị cấp phát</label>
@@ -847,6 +858,27 @@
             }
         }
 
+        /* ---------------- CƠ CHẾ LỌC TRÙNG CHO TÀI KHOẢN NGƯỜI DÙNG ---------------- */
+        window.checkUserDuplicate = function(val) {
+            const username = val.trim().toLowerCase();
+            const isEditMode = document.getElementById('userEditId').value !== "";
+            const inputField = document.getElementById('sysUsername');
+            const alertDiv = document.getElementById('userDuplicateAlert');
+            const submitBtn = document.getElementById('btnSubmitUserText');
+
+            if (!isEditMode && localUsers.some(x => x.username === username)) {
+                inputField.classList.add('duplicate-danger-box');
+                alertDiv.classList.remove('hidden');
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = "0.4";
+            } else {
+                inputField.classList.remove('duplicate-danger-box');
+                alertDiv.classList.add('hidden');
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = "1";
+            }
+        }
+
         window.executeUserAccountSubmit = function(e) {
             e.preventDefault();
             const u = document.getElementById('sysUsername').value.trim().toLowerCase();
@@ -864,6 +896,10 @@
             document.getElementById('userEditId').value = usr.username;
             document.getElementById('sysUsername').value = usr.username;
             document.getElementById('sysUsername').readOnly = true;
+            document.getElementById('sysUsername').classList.remove('duplicate-danger-box');
+            document.getElementById('userDuplicateAlert').classList.add('hidden');
+            document.getElementById('btnSubmitUserText').disabled = false;
+            document.getElementById('btnSubmitUserText').style.opacity = "1";
             document.getElementById('sysPassword').value = usr.password;
             document.getElementById('sysPin').value = usr.pin;
             document.getElementById('sysRole').value = usr.role;
@@ -875,6 +911,10 @@
             document.getElementById('formUserLogic').reset();
             document.getElementById('userEditId').value = "";
             document.getElementById('sysUsername').readOnly = false;
+            document.getElementById('sysUsername').classList.remove('duplicate-danger-box');
+            document.getElementById('userDuplicateAlert').classList.add('hidden');
+            document.getElementById('btnSubmitUserText').disabled = false;
+            document.getElementById('btnSubmitUserText').style.opacity = "1";
             document.getElementById('btnCancelUserEdit').classList.add('hidden');
             document.getElementById('btnSubmitUserText').innerText = "Khởi tạo tài khoản";
         }
@@ -893,6 +933,27 @@
             document.getElementById('badgeUserCount').innerText = localUsers.length + " tài khoản";
         }
 
+        /* ---------------- CƠ CHẾ LỌC TRÙNG CHO NHÂN SỰ ---------------- */
+        window.checkStaffDuplicate = function(val) {
+            const code = val.trim().toUpperCase();
+            const isEditMode = document.getElementById('staffEditId').value !== "";
+            const inputField = document.getElementById('staffCode');
+            const alertDiv = document.getElementById('staffDuplicateAlert');
+            const submitBtn = document.getElementById('btnSubmitStaffText');
+
+            if (!isEditMode && localStaff.some(x => x.id.toUpperCase() === code)) {
+                inputField.classList.add('duplicate-danger-box');
+                alertDiv.classList.remove('hidden');
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = "0.4";
+            } else {
+                inputField.classList.remove('duplicate-danger-box');
+                alertDiv.classList.add('hidden');
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = "1";
+            }
+        }
+
         window.generateSequentialStaffId = function() {
             let maxIndex = 0;
             localStaff.forEach(st => {
@@ -903,6 +964,28 @@
             });
             const paddedNum = String(maxIndex + 1).padStart(5, '0');
             document.getElementById('staffCode').value = `VNP-HR-${paddedNum}`;
+            checkStaffDuplicate(`VNP-HR-${paddedNum}`);
+        }
+
+        /* ---------------- CƠ CHẾ LỌC TRÙNG CHO CẤP PHÁT THIẾT BỊ ---------------- */
+        window.checkAllocDuplicate = function(val) {
+            const code = val.trim().toUpperCase();
+            const isEditMode = document.getElementById('allocEditId').value !== "";
+            const inputField = document.getElementById('allocGeneratedId');
+            const alertDiv = document.getElementById('allocDuplicateAlert');
+            const submitBtn = document.getElementById('btnSubmitAllocText');
+
+            if (!isEditMode && localAllocations.some(x => x.id.toUpperCase() === code)) {
+                inputField.classList.add('duplicate-danger-box');
+                alertDiv.classList.remove('hidden');
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = "0.4";
+            } else {
+                inputField.classList.remove('duplicate-danger-box');
+                alertDiv.classList.add('hidden');
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = "1";
+            }
         }
 
         function generateSequentialAllocId() { 
@@ -915,6 +998,28 @@
             });
             const paddedNum = String(maxIndex + 1).padStart(5, '0');
             document.getElementById('allocGeneratedId').value = `VNP-EQ-${paddedNum}`; 
+            checkAllocDuplicate(`VNP-EQ-${paddedNum}`);
+        }
+
+        /* ---------------- CƠ CHẾ LỌC TRÙNG CHO VẬT TƯ TIÊU HAO ---------------- */
+        window.checkMaterialDuplicate = function(val) {
+            const name = val.trim().toLowerCase();
+            const isEditMode = document.getElementById('matEditId').value !== "";
+            const inputField = document.getElementById('matName');
+            const alertDiv = document.getElementById('materialDuplicateAlert');
+            const submitBtn = document.getElementById('btnSubmitMatText');
+
+            if (!isEditMode && localMaterials.some(x => x.name.toLowerCase() === name)) {
+                inputField.classList.add('duplicate-danger-box');
+                alertDiv.classList.remove('hidden');
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = "0.4";
+            } else {
+                inputField.classList.remove('duplicate-danger-box');
+                alertDiv.classList.add('hidden');
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = "1";
+            }
         }
 
         window.toggleSystemEnvironment = function(mode) {
@@ -1024,7 +1129,7 @@
 
         window.executeStaffSubmit = function(e) {
             e.preventDefault();
-            const code = document.getElementById('staffCode').value.trim();
+            const code = document.getElementById('staffCode').value.trim().toUpperCase();
             const name = document.getElementById('staffName').value.trim();
             const position = document.getElementById('staffPosition').value.trim();
             const finalUnitName = document.getElementById('staffUnitCustom').value.trim();
@@ -1033,7 +1138,7 @@
             if (!editId) {
                 const isDuplicate = localStaff.some(st => st.id.toLowerCase() === code.toLowerCase());
                 if (isDuplicate) {
-                    alert(`❌ Lỗi: Mã Nhân sự "${code}" đã tồn tại!`);
+                    alert(`❌ Lỗi: Mã Nhân sự "${code}" đã tồn tại! Hệ thống đã chặn ghi đè.`);
                     return;
                 }
             }
@@ -1049,6 +1154,10 @@
             document.getElementById('staffEditId').value = st.id;
             document.getElementById('staffCode').value = st.id;
             document.getElementById('staffCode').readOnly = true;
+            document.getElementById('staffCode').classList.remove('duplicate-danger-box');
+            document.getElementById('staffDuplicateAlert').classList.add('hidden');
+            document.getElementById('btnSubmitStaffText').disabled = false;
+            document.getElementById('btnSubmitStaffText').style.opacity = "1";
             document.getElementById('staffName').value = st.name;
             document.getElementById('staffPosition').value = st.position || "";
             document.getElementById('staffUnitCustom').value = st.unit;
@@ -1067,6 +1176,10 @@
             document.getElementById('formStaffLogic').reset();
             document.getElementById('staffEditId').value = "";
             document.getElementById('staffCode').readOnly = false;
+            document.getElementById('staffCode').classList.remove('duplicate-danger-box');
+            document.getElementById('staffDuplicateAlert').classList.add('hidden');
+            document.getElementById('btnSubmitStaffText').disabled = false;
+            document.getElementById('btnSubmitStaffText').style.opacity = "1";
             clearSelectedStaffPhoto();
             document.getElementById('btnCancelStaffEdit').classList.add('hidden');
             document.getElementById('btnSubmitStaffText').innerText = "Lưu thông tin nhân sự";
@@ -1083,9 +1196,9 @@
                 lines.forEach(line => {
                     const parts = line.split(',');
                     if(parts.length >= 4) { 
-                        const unit = parts[0].trim(); const code = parts[1].trim(); const name = parts[2].trim(); const pos = parts[3].trim();
+                        const unit = parts[0].trim(); const code = parts[1].trim().toUpperCase(); const name = parts[2].trim(); const pos = parts[3].trim();
                         if(code) {
-                            const isDup = localStaff.some(st => st.id.toLowerCase() === code.toLowerCase());
+                            const isDup = localStaff.some(st => st.id.toUpperCase() === code);
                             if(!isDup) {
                                 db.ref(getEnvNode('staff_v4') + '/' + code).set({ id: code, name: name, unit: unit, position: pos, photo: "" });
                                 importCount++;
@@ -1095,7 +1208,7 @@
                         }
                     }
                 });
-                alert(`⚡ Đã xử lý xong tệp danh sách:\n- Thêm mới thành công: ${importCount} nhân sự.\n- Bỏ qua do trùng mã: ${duplicateCount} nhân sự.`);
+                alert(`⚡ Đã xử lý xong tệp danh sách:\n- Thêm mới thành công (Đã lọc trùng): ${importCount} nhân sự.\n- Bỏ qua do trùng mã hệ thống: ${duplicateCount} nhân sự.`);
             };
             reader.readAsText(file);
         }
@@ -1124,9 +1237,16 @@
             e.preventDefault();
             const editId = document.getElementById('matEditId').value;
             const targetId = editId ? editId : "MAT-" + Date.now().toString().slice(-6);
+            
+            const mName = document.getElementById('matName').value.trim();
+            if(!editId && localMaterials.some(x => x.name.toLowerCase() === mName.toLowerCase())) {
+                alert("❌ Vật tư này đã có trong kho! Vui lòng dùng tính năng Sửa để cập nhật số lượng.");
+                return;
+            }
+
             db.ref(getEnvNode('materials_v3') + '/' + targetId).set({
                 id: targetId,
-                name: document.getElementById('matName').value.trim(),
+                name: mName,
                 qty: document.getElementById('matQty').value,
                 unit: document.getElementById('matUnit').value.trim()
             });
@@ -1136,6 +1256,10 @@
             const item = localMaterials.find(x => x.id === id); if(!item) return;
             document.getElementById('matEditId').value = item.id;
             document.getElementById('matName').value = item.name;
+            document.getElementById('matName').classList.remove('duplicate-danger-box');
+            document.getElementById('materialDuplicateAlert').classList.add('hidden');
+            document.getElementById('btnSubmitMatText').disabled = false;
+            document.getElementById('btnSubmitMatText').style.opacity = "1";
             document.getElementById('matQty').value = item.qty;
             document.getElementById('matUnit').value = item.unit;
             document.getElementById('btnCancelMatEdit').classList.remove('hidden');
@@ -1145,6 +1269,10 @@
         window.resetMaterialFormState = function() {
             document.getElementById('formMaterialLogic').reset();
             document.getElementById('matEditId').value = "";
+            document.getElementById('matName').classList.remove('duplicate-danger-box');
+            document.getElementById('materialDuplicateAlert').classList.add('hidden');
+            document.getElementById('btnSubmitMatText').disabled = false;
+            document.getElementById('btnSubmitMatText').style.opacity = "1";
             document.getElementById('btnCancelMatEdit').classList.add('hidden');
             document.getElementById('btnSubmitMatText').innerText = "Cập nhật kho";
         }
@@ -1264,11 +1392,16 @@
         window.executeAllocationSubmit = function(e) {
             e.preventDefault();
             const editId = document.getElementById('allocEditId').value;
-            const generatedId = document.getElementById('allocGeneratedId').value;
+            const generatedId = document.getElementById('allocGeneratedId').value.trim().toUpperCase();
             const groupSelect = document.getElementById('allocGroupSelect').value;
             const groupCustom = document.getElementById('allocGroupCustom').value.trim();
             const finalGroupType = (groupSelect === 'MỚI') ? groupCustom : groupSelect;
             const targetId = editId ? editId : generatedId;
+
+            if(!editId && localAllocations.some(x => x.id.toUpperCase() === targetId)) {
+                alert("❌ Lỗi trùng mã: Mã định danh thiết bị này đã tồn tại trên đám mây!");
+                return;
+            }
 
             db.ref(getEnvNode('allocations_v4') + '/' + targetId).set({
                 id: targetId,
@@ -1284,6 +1417,10 @@
             const item = localAllocations.find(x => x.id === id); if(!item) return;
             document.getElementById('allocEditId').value = item.id;
             document.getElementById('allocGeneratedId').value = item.id;
+            document.getElementById('allocGeneratedId').classList.remove('duplicate-danger-box');
+            document.getElementById('allocDuplicateAlert').classList.add('hidden');
+            document.getElementById('btnSubmitAllocText').disabled = false;
+            document.getElementById('btnSubmitAllocText').style.opacity = "1";
             document.getElementById('allocDeviceName').value = item.name;
             document.getElementById('allocStatus').value = item.status;
             document.getElementById('allocDepartmentBox').value = item.department;
@@ -1294,6 +1431,10 @@
         }
         window.resetAllocFormState = function() {
             document.getElementById('allocEditId').value = ""; document.getElementById('formAllocationLogic').reset();
+            document.getElementById('allocGeneratedId').classList.remove('duplicate-danger-box');
+            document.getElementById('allocDuplicateAlert').classList.add('hidden');
+            document.getElementById('btnSubmitAllocText').disabled = false;
+            document.getElementById('btnSubmitAllocText').style.opacity = "1";
             document.getElementById('btnCancelAllocEdit').classList.add('hidden');
             generateSequentialAllocId();
         }
