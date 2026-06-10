@@ -96,12 +96,12 @@
                     <i class="fa-solid fa-shield-halved"></i>
                 </div>
                 <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight mt-4">VINAPACO ERP CONTROL</h2>
-                <p class="text-xs font-semibold text-slate-500">Nhấn ENTER hoặc KÍCH CHUỘT RA NGOÀI để vào hệ thống</p>
+                <p class="text-xs font-semibold text-slate-500">Nhập thông tin tài khoản để truy cập hệ thống</p>
             </div>
 
             <div class="flex bg-slate-100 p-1 rounded-2xl border border-slate-200/60">
                 <button type="button" id="tabMethodPass" onclick="switchLoginMethod('pass')" class="w-1/2 py-2.5 text-xs font-bold rounded-xl bg-[#adff2f] shadow-sm text-slate-950 transition-all">Mật Khẩu</button>
-                <button type="button" id="tabMethodPin" onclick="switchLoginMethod('pin')" class="w-1/2 py-2.5 text-xs font-bold rounded-xl text-slate-500 transition-all">Mã PIN</button>
+                <button type="button" id="tabMethodPin" onclick="switchLoginMethod('pin')" class="w-1/2 py-2.5 text-xs font-bold rounded-xl text-slate-500 transition-all bg-transparent">Mã PIN</button>
             </div>
 
             <div class="space-y-4">
@@ -123,7 +123,7 @@
                 </div>
 
                 <div id="secError" class="text-red-600 font-bold text-xs text-center hidden bg-red-50 p-3 rounded-xl border border-red-200 animate-pulse">
-                    ❌ Tài khoản hoặc bảo mật mật mã không chính xác!
+                    ❌ Tài khoản hoặc mật mã không chính xác!
                 </div>
 
                 <button type="submit" class="w-full py-4 bg-[#004d34] text-white font-bold rounded-xl text-sm hover:bg-[#003825] uppercase tracking-wider transition-all shadow-lg shadow-emerald-900/20 mt-2">
@@ -304,7 +304,7 @@
                 <div class="bg-blue-50/60 border border-blue-100 p-4 rounded-2xl grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                     <div class="md:col-span-8">
                         <h4 class="font-bold text-blue-900 text-xs uppercase tracking-wider">⚡ Nhập nhanh hàng loạt nhân sự chống trùng lặp dữ liệu</h4>
-                        <p class="text-xs text-blue-600 font-medium mt-0.5">Nạp tệp danh sách (.txt/.csv) phân tách dấu phẩy theo định dạng chuẩn mới: [Đơn vị, Mã Nhân sự, Họ tên, Chức vụ].</p>
+                        <p class="text-xs text-blue-600 font-medium mt-0.5">Nạp tệp danh sách (.txt/.csv) phân tách dấu phẩy theo định dạng chuẩn mới: [Đơn vị, Mã Nhân sự, Họ tên, Chức vụ]. Các mã trùng lặp sẽ tự động bị loại bỏ.</p>
                     </div>
                     <div class="md:col-span-4">
                         <input type="file" id="bulkStaffFile" onchange="triggerBulkStaffImport(event)" class="text-xs bg-white p-2.5 rounded-xl border border-slate-200 w-full font-semibold focus:outline-none">
@@ -339,13 +339,21 @@
                             <input type="file" id="staffPhotoFile" accept="image/*" onchange="previewStaffPhoto(event)" class="w-full text-xs bg-white p-2 rounded-xl border border-slate-200 focus:outline-none">
                             <img id="staffPhotoPreview" src="" class="h-16 w-16 object-cover rounded-xl border mt-2 hidden shadow-inner">
                         </div>
-                        <div class="bg-white p-4 rounded-xl border border-slate-100 space-y-2">
+                        
+                        <div class="bg-white p-4 rounded-xl border border-slate-100 space-y-3">
                             <label class="block font-bold text-blue-900 text-[11px] uppercase tracking-wider"><i class="fa-solid fa-folder-open"></i> Quá trình công tác đính kèm</label>
-                            <div class="grid grid-cols-1 gap-2">
-                                <input type="file" id="staffDocFiles" multiple class="text-xs bg-slate-50 p-2 rounded-xl border border-slate-200">
-                                <input type="file" id="staffDocFolder" webkitdirectory directory multiple class="text-xs bg-slate-50 p-2 rounded-xl border border-slate-200">
+                            <div class="grid grid-cols-1 gap-2.5">
+                                <div>
+                                    <span class="text-[10px] text-slate-400 block font-bold mb-1 uppercase">Cách 1: Chọn Tệp Tin (File)</span>
+                                    <input type="file" id="staffDocFiles" remove-multiple class="text-xs bg-slate-50 p-2 rounded-xl border border-slate-200 w-full">
+                                </div>
+                                <div>
+                                    <span class="text-[10px] text-amber-600 block font-bold mb-1 uppercase">Cách 2: Chọn Thư Mục (Folder)</span>
+                                    <input type="file" id="staffDocFolder" webkitdirectory directory multiple class="text-xs bg-slate-50 p-2 rounded-xl border border-slate-200 w-full">
+                                </div>
                             </div>
                         </div>
+
                         <div class="flex justify-end gap-2 pt-1">
                             <button type="button" id="btnCancelStaffEdit" onclick="resetStaffFormState()" class="bg-slate-200 text-slate-700 px-4 py-3 rounded-xl font-bold uppercase text-[11px] hidden transition-colors">Hủy</button>
                             <button type="submit" id="btnSubmitStaffText" class="w-full bg-blue-900 text-white font-bold py-3.5 rounded-xl uppercase tracking-wider text-[11px] transition-colors shadow-md">Lưu thông tin nhân sự</button>
@@ -624,7 +632,7 @@
             </div>
             <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div class="lg:col-span-4 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 space-y-4 text-xs">
-                    <h4 class="font-bold text-[#005c3e] uppercase tracking-wider border-b border-slate-200/60 pb-2">Báo cáo tài chính & Kinh phí</h4>
+                    <h4 class="font-bold text-[#005c3e] uppercase tracking-wider border-b border-slate-200/60 pb-2">Báo cáo tài chính & Kinh phiếu</h4>
                     
                     <div class="grid grid-cols-3 gap-2 text-center font-heading">
                         <div class="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
@@ -649,13 +657,14 @@
                             <option value="Báo cáo tài chính quý năm">Báo cáo tài chính quý năm</option>
                         </select>
                     </div>
+                    
                     <div class="grid grid-cols-2 gap-3 pt-1">
                         <div class="bg-white p-3 rounded-xl border-2 border-dashed border-slate-300 hover:border-slate-400 text-center transition-colors cursor-pointer">
-                            <label class="block font-bold text-[10px] text-slate-500 mb-1.5 uppercase tracking-wider">TẢI FILE</label>
+                            <label class="block font-bold text-[10px] text-slate-500 mb-1.5 uppercase tracking-wider">CHỌN FILE (TẬP TIN)</label>
                             <input type="file" id="uploadInputFiles" multiple onchange="handleAdvancedFileAndFolderUpload(this.files, false)" class="text-[11px] w-full file:hidden text-slate-500">
                         </div>
                         <div class="bg-white p-3 rounded-xl border-2 border-dashed border-amber-300 hover:border-amber-400 text-center transition-colors cursor-pointer">
-                            <label class="block font-bold text-[10px] text-amber-800 mb-1.5 uppercase tracking-wider">TẢI FOLDER</label>
+                            <label class="block font-bold text-[10px] text-amber-800 mb-1.5 uppercase tracking-wider">CHỌN FOLDER (THƯ MỤC)</label>
                             <input type="file" id="uploadInputFolder" webkitdirectory directory multiple onchange="handleAdvancedFileAndFolderUpload(this.files, true)" class="text-[11px] w-full file:hidden text-slate-500">
                         </div>
                     </div>
@@ -690,7 +699,6 @@
         let localUsers = []; 
         let activeLoginMethod = "pass";
 
-        // KHO DỮ LIỆU CA DAO, TỤC NGỮ, THÀNH NGỮ PHONG PHÚ TỪ INTERNET
         const InternetFolkSayings = [
             "An toàn để sản xuất, sản xuất phải an toàn.",
             "Muốn biết phải hỏi, muốn giỏi phải làm.",
@@ -741,9 +749,8 @@
             db.ref(getEnvNode('repair_logs_v4')).off();
             db.ref(getEnvNode('cloud_files_v4')).off();
             db.ref(getEnvNode('system_users_v4')).off();
-            db.ref(getEnvNode('flex_schedules_v4')).off(); // Lịch linh hoạt
+            db.ref(getEnvNode('flex_schedules_v4')).off();
 
-            // Lấy dữ liệu lịch nhắc việc linh hoạt từ Firebase Realtime
             db.ref(getEnvNode('flex_schedules_v4')).on('value', snap => {
                 const data = snap.val() || {};
                 document.getElementById('scheduleGiaoBan').value = data.giaoBan || "08:00 hàng ngày";
@@ -807,30 +814,24 @@
             });
         }
 
-        // LÀM MỚI NGẪU NHIÊN CÂU CA DAO/TỤC NGỮ PHONG PHÚ
         window.refreshRandomFolkSaying = function() {
             const randomIndex = Math.floor(Math.random() * InternetFolkSayings.length);
             document.getElementById('folkSayingLabel').innerText = InternetFolkSayings[randomIndex];
         }
 
-        // LƯU LỊCH NHẮC VIỆC THIẾT LẬP LINH HOẠT LÊN FIREBASE REALTIME
         window.saveFlexSchedule = function() {
             const gb = document.getElementById('scheduleGiaoBan').value.trim();
             const nn = document.getElementById('scheduleNghiNgoi').value.trim();
             const kt = document.getElementById('scheduleKiemTra').value.trim();
             
             db.ref(getEnvNode('flex_schedules_v4')).set({
-                giaoBan: gb,
-                nghiNgoi: nn,
-                kiemTra: kt
+                giaoBan: gb, nghiNgoi: nn, kiemTra: kt
             });
         }
 
         function smoothScrollToElement(elementId) {
             const target = document.getElementById(elementId);
-            if(target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+            if(target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
         window.promoteTestingToProduction = function() {
@@ -960,6 +961,7 @@
             handleUsernameInput(document.getElementById('secUser').value);
         }
 
+        // CHỨC NĂNG BẤM TAB CHUYỂN ĐỔI MÀU QUA LẠI CHUẨN XÁC GIỮA HAI LỰA CHỌN
         window.switchLoginMethod = function(method) {
             activeLoginMethod = method;
             const container = document.getElementById('dynamicSecretContainer');
@@ -1020,18 +1022,31 @@
             };
             reader.readAsDataURL(file);
         }
+
+        // BỔ SUNG CƠ CHẾ LỌC TRÙNG VÀ CHỐNG TRÙNG LẶP KHI NHẬP TAY NHÂN SỰ
         window.executeStaffSubmit = function(e) {
             e.preventDefault();
             const code = document.getElementById('staffCode').value.trim();
             const name = document.getElementById('staffName').value.trim();
             const position = document.getElementById('staffPosition').value.trim();
             const finalUnitName = document.getElementById('staffUnitCustom').value.trim();
+            const editId = document.getElementById('staffEditId').value;
+
+            // Nếu đang thêm mới (không có editId) -> Tiến hành kiểm tra trùng lặp mã nhân sự
+            if (!editId) {
+                const isDuplicate = localStaff.some(st => st.id.toLowerCase() === code.toLowerCase());
+                if (isDuplicate) {
+                    alert(`❌ Lỗi: Mã Nhân sự "${code}" đã tồn tại trên hệ thống! Vui lòng kiểm tra lại để tránh trùng lặp dữ liệu.`);
+                    return;
+                }
+            }
 
             db.ref(getEnvNode('staff_v4') + '/' + code).set({
                 id: code, name: name, unit: finalUnitName, position: position, photo: currentStaffPhotoBase64 || ""
             });
             resetStaffFormState();
         }
+
         window.triggerStaffEditMode = function(id) {
             const st = localStaff.find(x => x.id === id); if(!st) return;
             document.getElementById('staffEditId').value = st.id;
@@ -1059,21 +1074,37 @@
             document.getElementById('btnSubmitStaffText').innerText = "Lưu thông tin nhân sự";
             generateSequentialStaffId();
         }
+
+        // CƠ CHẾ LỌC TRÙNG KHI NHẬP FILE DANH SÁCH HÀNG LOẠT
         window.triggerBulkStaffImport = function(e) {
             const file = e.target.files[0]; if(!file) return;
             const reader = new FileReader();
             reader.onload = function(evt) {
                 const text = evt.target.result; const lines = text.split('\n');
+                let importCount = 0;
+                let duplicateCount = 0;
+
                 lines.forEach(line => {
                     const parts = line.split(',');
                     if(parts.length >= 4) { 
                         const unit = parts[0].trim(); const code = parts[1].trim(); const name = parts[2].trim(); const pos = parts[3].trim();
-                        if(code) db.ref(getEnvNode('staff_v4') + '/' + code).set({ id: code, name: name, unit: unit, position: pos, photo: "" });
+                        if(code) {
+                            // Kiểm tra xem mã đã tồn tại trong mảng local hay chưa
+                            const isDup = localStaff.some(st => st.id.toLowerCase() === code.toLowerCase());
+                            if(!isDup) {
+                                db.ref(getEnvNode('staff_v4') + '/' + code).set({ id: code, name: name, unit: unit, position: pos, photo: "" });
+                                importCount++;
+                            } else {
+                                duplicateCount++;
+                            }
+                        }
                     }
                 });
+                alert(`⚡ Đã xử lý xong tệp danh sách:\n- Thêm mới thành công: ${importCount} nhân sự.\n- Bỏ qua do trùng mã: ${duplicateCount} nhân sự.`);
             };
             reader.readAsText(file);
         }
+
         function renderStaffTableData() {
             const table = document.getElementById('tableStaffBody'); const filter = document.getElementById('filterStaffUnit').value;
             if(!table) return; table.innerHTML = "";
@@ -1385,17 +1416,10 @@
             document.getElementById('goodHoursStr').innerText = "Tý (23h-1h), Mão (5h-7h), Ngọ (11h-13h)";
         }
 
-        window.openSystemDefaultAccess = function() {
-            document.getElementById('securityLockOverlay').style.display = 'none';
-            document.getElementById('appMainContainer').classList.remove('hidden');
-        }
-
         window.addEventListener('DOMContentLoaded', () => { 
             startRealtimeCoreSync(); 
             setInterval(triggerLiveTimeAndLunarCalendar, 1000);
-            refreshRandomFolkSaying(); // Tải ngẫu nhiên châm ngôn khi bật trang
-            
-            // Cứ mỗi 5 phút tự động đảo châm ngôn một lần cho sinh động
+            refreshRandomFolkSaying();
             setInterval(refreshRandomFolkSaying, 300000); 
         });
     </script>
