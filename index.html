@@ -66,7 +66,7 @@
 <body class="min-h-screen p-4 md:p-8 space-y-6">
 
     <div id="securityLockOverlay" class="fixed inset-0 bg-slate-950/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
-        <form onsubmit="validateSystemAccessForm(event)" class="bg-white rounded-[32px] shadow-2xl w-full max-w-xl p-10 space-y-6 text-slate-900 border border-slate-100 transition-all transform scale-100">
+        <form onsubmit="validateSystemAccessForm(event)" class="bg-white rounded-[32px] shadow-2xl w-full max-w-xl p-10 space-y-6 text-slate-900 border border-slate-100">
             <div class="text-center space-y-2">
                 <div class="w-20 h-20 mx-auto flex items-center justify-center bg-[#005c3e] rounded-2xl text-white text-4xl shadow-xl shadow-emerald-900/20">
                     <i class="fa-solid fa-shield-halved"></i>
@@ -76,8 +76,8 @@
             </div>
 
             <div class="flex bg-slate-100 p-1.5 rounded-2xl border border-slate-200/60">
-                <button type="button" id="tabMethodPass" onclick="switchLoginMethod('pass')" onfocus="switchLoginMethod('pass')" class="w-1/2 py-3 text-sm font-bold rounded-xl bg-[#004d34] text-white shadow-sm transition-all duration-300 outline-none focus:ring-2 focus:ring-emerald-500">Mật Khẩu</button>
-                <button type="button" id="tabMethodPin" onclick="switchLoginMethod('pin')" onfocus="switchLoginMethod('pin')" class="w-1/2 py-3 text-sm font-bold rounded-xl text-slate-500 transition-all duration-300 bg-transparent outline-none focus:ring-2 focus:ring-emerald-500">Mã PIN</button>
+                <button type="button" id="tabMethodPass" onclick="switchLoginMethod('pass')" onfocus="switchLoginMethod('pass')" class="w-1/2 py-3 text-sm font-bold rounded-xl bg-[#004d34] text-white shadow-sm transition-all duration-300 outline-none">Mật Khẩu</button>
+                <button type="button" id="tabMethodPin" onclick="switchLoginMethod('pin')" onfocus="switchLoginMethod('pin')" class="w-1/2 py-3 text-sm font-bold rounded-xl text-slate-500 transition-all duration-300 bg-transparent outline-none">Mã PIN</button>
             </div>
 
             <div class="space-y-4">
@@ -90,14 +90,6 @@
                     <input type="password" id="secPass" required placeholder="••••••••" class="w-full high-contrast-box rounded-xl p-3.5 bg-slate-50">
                 </div>
                 
-                <div class="flex items-center justify-between pt-1">
-                    <label class="flex items-center gap-2 text-sm font-bold text-slate-600 cursor-pointer select-none">
-                        <input type="checkbox" id="rememberCredentials" class="w-5 h-5 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500">
-                        Ghi nhớ đăng nhập
-                    </label>
-                    <a href="#" class="text-sm font-bold text-emerald-700 hover:underline">Quên mật khẩu / Mã PIN?</a>
-                </div>
-
                 <div id="secError" class="text-red-600 font-bold text-sm text-center hidden bg-red-50 p-4 rounded-xl border border-red-200">
                     ❌ Tài khoản hoặc mật mã không chính xác!
                 </div>
@@ -123,7 +115,7 @@
             <div class="flex flex-col sm:flex-row items-center gap-3 bg-amber-50/70 border border-amber-200 p-3 rounded-2xl">
                 <div class="flex items-center gap-1.5">
                     <span class="text-sm font-bold text-amber-900 uppercase tracking-wider pl-1">Vận hành:</span>
-                    <select id="systemEnvironmentMode" onchange="toggleSystemEnvironment(this.value)" class="bg-white border border-amber-300 font-bold rounded-xl p-2.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm">
+                    <select id="systemEnvironmentMode" onchange="toggleSystemEnvironment(this.value)" class="bg-white border border-amber-300 font-bold rounded-xl p-2.5 text-slate-900 text-sm">
                         <option value="TESTING">⚠️ CHẠY THỬ (Dữ liệu thử nghiệm)</option>
                         <option value="PRODUCTION">✅ CHẠY THẬT (Dữ liệu chính thức)</option>
                     </select>
@@ -131,14 +123,14 @@
             </div>
             
             <div class="flex flex-wrap items-center gap-4 bg-slate-50 p-3 rounded-2xl border border-slate-100">
-                <div id="liveClockStr" class="bg-slate-900 text-emerald-400 font-mono text-2xl font-bold px-5 py-2 rounded-xl shadow-inner tracking-wider">00:00:00</div>
+                <div id="liveClockStr" class="bg-slate-900 text-emerald-400 font-mono text-2xl font-bold px-5 py-2 rounded-xl tracking-wider">00:00:00</div>
                 <button onclick="location.reload()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs uppercase tracking-wider shadow-sm">Thoát</button>
             </div>
         </header>
 
         <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div class="lg:col-span-12 bg-white text-slate-900 rounded-3xl p-6 border border-slate-100 shadow-xl space-y-4">
-                <h3 class="text-base font-bold uppercase text-slate-900 tracking-wider flex items-center gap-2"><i class="fa-solid fa-chart-bar text-emerald-600"></i> Trực quan trạng thái cấp phát thiết bị</h3>
+                <h3 class="text-base font-bold uppercase text-slate-900 tracking-wider flex items-center gap-2"><i class="fa-solid fa-chart-bar text-emerald-600"></i> 3. Trực quan trạng thái cấp phát thiết bị</h3>
                 <div class="grid grid-cols-2 gap-4 pt-2 text-center text-sm font-bold max-w-md mx-auto">
                     <div class="space-y-3">
                         <span class="text-slate-400 uppercase tracking-wider text-xs">Cấp Mới</span>
@@ -155,6 +147,71 @@
                         <div id="3dValIssue" class="text-rose-700 text-base font-bold mt-1">0 TB</div>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <section id="allocationAnchor" class="bg-white text-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+            <div class="bg-emerald-950 text-white p-4 px-6 flex justify-between items-center">
+                <h3 class="text-base font-bold uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-box"></i> 1 & 2. Quản lý thông tin cấp phát & Danh sách thiết bị</h3>
+                <span id="badgeAssetCount" class="bg-white/10 font-mono text-sm px-3 py-1 rounded-xl font-bold">0 thiết bị</span>
+            </div>
+            <div class="p-6 space-y-6">
+                <form id="formAssetAllocation" onsubmit="executeAssetSubmit(event)" class="grid grid-cols-1 md:grid-cols-12 gap-4 bg-slate-50 p-5 rounded-2xl border border-slate-100 text-sm">
+                    <input type="hidden" id="assetEditId" value="">
+                    <div class="md:col-span-3">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Mã thiết bị (Duy nhất)</label>
+                        <input type="text" id="assetId" required placeholder="Ví dụ: TB-001" oninput="checkDuplicateAssetId(this.value)" class="w-full high-contrast-box rounded-xl p-3 bg-white">
+                        <div id="duplicateWarning" class="text-red-600 font-bold text-xs mt-1 hidden">⚠️ Mã thiết bị đã tồn tại trong hệ thống!</div>
+                    </div>
+                    <div class="md:col-span-3">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Tên thiết bị / Máy móc</label>
+                        <input type="text" id="assetName" required placeholder="Ví dụ: Động cơ bơm thủy lực" class="w-full high-contrast-box rounded-xl p-3 bg-white">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Phòng ban bàn giao</label>
+                        <select id="assetDepartment" class="w-full high-contrast-box rounded-xl p-3 bg-white focus:outline-none">
+                            <option value="Phòng Cơ Điện">Phòng Cơ Điện</option>
+                            <option value="Xưởng Xeo Giấy">Xưởng Xeo Giấy</option>
+                            <option value="Phòng Kế Toán">Phòng Kế Toán</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Trạng thái vận hành</label>
+                        <select id="assetStatus" class="w-full high-contrast-box rounded-xl p-3 bg-white focus:outline-none">
+                            <option value="Cấp Mới">Cấp Mới</option>
+                            <option value="Đang Sự Cố">Đang Sự Cố</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2 flex items-end">
+                        <button type="submit" id="btnSubmitAsset" class="w-full py-3.5 bg-emerald-800 text-white font-bold rounded-xl uppercase text-xs tracking-wider shadow-md">Lưu Thiết Bị</button>
+                    </div>
+                </form>
+
+                <div class="overflow-x-auto border border-slate-100 rounded-2xl bg-white">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 font-bold text-slate-500 border-b border-slate-100 uppercase tracking-wider">
+                            <tr>
+                                <th class="p-3">Mã TB</th>
+                                <th class="p-3">Tên Thiết Bị / Máy Móc</th>
+                                <th class="p-3">Phòng Ban Cấp Phát</th>
+                                <th class="p-3 text-center">Trạng Thái</th>
+                                <th class="p-3 text-center w-[120px]">Hành Động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableAssetsBody" class="divide-y divide-slate-100 font-semibold text-slate-700">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white text-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+            <div class="bg-blue-950 text-white p-4 px-6">
+                <h3 class="text-base font-bold uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-sitemap"></i> 4. Sơ đồ cây cấu trúc quản lý thiết bị theo phòng ban</h3>
+            </div>
+            <div class="p-6">
+                <div id="departmentTreeContainer" class="space-y-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 shadow-inner">
+                    </div>
             </div>
         </section>
 
@@ -265,18 +322,24 @@
         function getEnvNode(baseNode) { return currentEnv === "PRODUCTION" ? baseNode : baseNode + "_testing"; }
 
         function startRealtimeCoreSync() {
+            // Đồng bộ dữ liệu thiết bị (Mục 1 & 2)
             db.ref(getEnvNode('allocations_v4')).on('value', snap => {
                 localAllocations = snap.val() ? Object.values(snap.val()).filter(Boolean) : [];
+                renderAssetsTable();
+                renderDepartmentTree();
                 populateRepairSelectBox();
                 sync3DGraphDisplay();
+                document.getElementById('badgeAssetCount').innerText = localAllocations.length + " thiết bị";
             });
 
+            // Đồng bộ dữ liệu lịch sử khắc phục (Mục 5)
             db.ref(getEnvNode('repair_logs_v4')).on('value', snap => {
                 localRepairLogs = snap.val() ? Object.values(snap.val()).filter(Boolean) : [];
                 renderRepairLogsTable();
                 document.getElementById('badgeRepairCount').innerText = localRepairLogs.length + " bản ghi";
             });
 
+            // Đồng bộ hồ sơ chứng từ thanh toán (Mục 6)
             db.ref(getEnvNode('cloud_files_v4')).on('value', snap => {
                 localCloudFiles = snap.val() ? Object.values(snap.val()).filter(Boolean) : [];
                 renderFileExplorerTree();
@@ -285,6 +348,78 @@
         }
 
         function toggleSystemEnvironment(val) { currentEnv = val; startRealtimeCoreSync(); }
+
+        /* ================= LOGIC XỬ LÝ MỤC 1 & 2 (THIẾT BỊ) ================= */
+        window.checkDuplicateAssetId = function(val) {
+            const id = val.trim().toUpperCase();
+            const exists = localAllocations.some(x => x.id === id);
+            const warning = document.getElementById('duplicateWarning');
+            const input = document.getElementById('assetId');
+            if(exists) {
+                warning.classList.remove('hidden');
+                input.classList.add('duplicate-danger-box');
+            } else {
+                warning.classList.add('hidden');
+                input.classList.remove('duplicate-danger-box');
+            }
+        }
+
+        window.executeAssetSubmit = function(e) {
+            e.preventDefault();
+            const id = document.getElementById('assetId').value.trim().toUpperCase();
+            const name = document.getElementById('assetName').value.trim();
+            const dept = document.getElementById('assetDepartment').value;
+            const status = document.getElementById('assetStatus').value;
+
+            db.ref(getEnvNode('allocations_v4') + '/' + id).set({ id, name, dept, status }, function(err) {
+                if(!err) {
+                    document.getElementById('formAssetAllocation').reset();
+                    document.getElementById('assetId').classList.remove('duplicate-danger-box');
+                    document.getElementById('duplicateWarning').classList.add('hidden');
+                }
+            });
+        }
+
+        function renderAssetsTable() {
+            const tbody = document.getElementById('tableAssetsBody'); if(!tbody) return; tbody.innerHTML = "";
+            localAllocations.forEach(x => {
+                const badgeClass = x.status === 'Cấp Mới' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800';
+                tbody.innerHTML += `<tr>
+                    <td class="font-mono font-bold text-slate-900">${x.id}</td>
+                    <td>${x.name}</td>
+                    <td><i class="fa-solid fa-building text-slate-400 mr-1"></i> ${x.dept}</td>
+                    <td class="text-center"><span class="px-2.5 py-1 text-xs font-bold rounded-full ${badgeClass}">${x.status}</span></td>
+                    <td class="text-center">
+                        <button onclick="deleteCloudRecord('allocations_v4','${x.id}')" class="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-100"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                    </td>
+                </tr>`;
+            });
+        }
+
+        /* ================= LOGIC XỬ LÝ MỤC 4 (CÂY SƠ ĐỒ PHÒNG BAN) ================= */
+        function renderDepartmentTree() {
+            const container = document.getElementById('departmentTreeContainer'); if(!container) return; container.innerHTML = "";
+            const depts = ["Phòng Cơ Điện", "Xưởng Xeo Giấy", "Phòng Kế Toán"];
+            
+            depts.forEach(d => {
+                const items = localAllocations.filter(x => x.dept === d);
+                let childHtml = '';
+                if(items.length === 0) {
+                    childHtml = `<div class="text-xs text-slate-400 italic pl-6 pt-1">Chưa bàn giao thiết bị nào</div>`;
+                } else {
+                    items.forEach(it => {
+                        childHtml += `<div class="text-sm text-slate-700 pl-6 pt-1 flex items-center gap-1.5 font-medium">
+                            <i class="fa-solid fa-square-poll-horizontal text-emerald-600 text-xs"></i> 
+                            <span>[${it.id}] - ${it.name}</span>
+                        </div>`;
+                    });
+                }
+                container.innerHTML += `<div class="p-2 border-l-2 border-slate-300 bg-white rounded-r-xl shadow-sm">
+                    <div class="font-bold text-sm text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-folder text-amber-500"></i> ${d} (${items.length})</div>
+                    <div class="space-y-1 mt-1">${childHtml}</div>
+                </div>`;
+            });
+        }
 
         /* ================= XOAY ĐỔI MÀU GIAO DIỆN CHUẨN XÁC KHI DÙNG PHÍM TAB/FOCUS ================= */
         window.switchLoginMethod = function(method) {
@@ -453,8 +588,6 @@
         window.deleteCloudRecord = function(nodeName, recordId) {
             if(confirm("🚨 Bạn có chắc chắn muốn xóa vĩnh viễn bản ghi này trên đám mây?")) {
                 const targetNodePath = getEnvNode(nodeName) + '/' + recordId;
-                
-                // Giải phóng tiến trình UI ngay lập tức thông qua Promise phản hồi trạng thái
                 db.ref(targetNodePath).remove()
                   .then(() => { console.log(`[ERP Sync] Thành công: ${targetNodePath}`); })
                   .catch((error) => { alert("❌ Lỗi đồng bộ: " + error.message); });
