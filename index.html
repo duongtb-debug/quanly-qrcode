@@ -315,7 +315,7 @@
                 <div class="bg-blue-50/60 border border-blue-100 p-4 rounded-2xl grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                     <div class="md:col-span-8">
                         <h4 class="font-bold text-blue-900 text-sm uppercase tracking-wider">⚡ Nhập nhanh hàng loạt nhân sự chống trùng lặp dữ liệu</h4>
-                        <p class="text-xs text-blue-600 font-medium mt-0.5">Nạp tệp danh sách (.txt/.csv) phân tách dấu phẩy theo định dạng chuẩn mới: [Đơn vị, Mã Nhân sự, Họ tên, Chức vụ]. Các mã trùng lặp sẽ tự động bị loại bỏ.</p>
+                        <p class="text-xs text-blue-600 font-medium mt-0.5">Nạp tệp danh sách (.txt/.csv) phân tách dấu phẩy theo định dạng chuẩn mới: [Đơn vị, Mã Nhân sự, Họ tên, Chức vụ]. Các mã hoặc họ tên trùng lặp sẽ tự động bị loại bỏ.</p>
                     </div>
                     <div class="md:col-span-4">
                         <input type="file" id="bulkStaffFile" onchange="triggerBulkStaffImport(event)" class="text-xs bg-white p-2.5 rounded-xl border border-slate-200 w-full font-semibold focus:outline-none">
@@ -333,15 +333,17 @@
                         <div>
                             <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Mã Nhân sự</label>
                             <div class="flex gap-2">
-                                <input type="text" id="staffCode" required placeholder="Ví dụ: VNP-HR-00001" oninput="checkStaffDuplicate(this.value)" class="w-full high-contrast-box rounded-xl p-3 bg-white font-mono">
+                                <input type="text" id="staffCode" required placeholder="Ví dụ: VNP-HR-00001" oninput="checkStaffDuplicate()" class="w-full high-contrast-box rounded-xl p-3 bg-white font-mono">
                                 <button type="button" onclick="generateSequentialStaffId()" class="bg-blue-800 text-white font-bold px-3.5 rounded-xl text-xs uppercase whitespace-nowrap shadow transition-colors"><i class="fa-solid fa-wand-magic-sparkles"></i> Tự sinh</button>
                             </div>
-                            <div id="staffDuplicateAlert" class="text-red-600 font-bold text-xs mt-1 hidden">⚠️ Mã nhân sự này đã tồn tại trên hệ thống!</div>
                         </div>
                         <div>
                             <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Họ và tên</label>
-                            <input type="text" id="staffName" required placeholder="Nhập tên nhân sự..." class="w-full high-contrast-box rounded-xl p-3 bg-white">
+                            <input type="text" id="staffName" required placeholder="Nhập tên nhân sự..." oninput="checkStaffDuplicate()" class="w-full high-contrast-box rounded-xl p-3 bg-white">
                         </div>
+                        
+                        <div id="staffDuplicateAlert" class="text-red-600 font-bold text-xs p-3 bg-red-50 rounded-xl border border-red-200 hidden"></div>
+
                         <div>
                             <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Chức vụ</label>
                             <input type="text" id="staffPosition" required placeholder="Ví dụ: Kỹ sư ca, Trưởng phòng..." class="w-full high-contrast-box rounded-xl p-3 bg-white">
@@ -939,21 +941,52 @@
             document.getElementById('badgeUserCount').innerText = localUsers.length + " tài khoản";
         }
 
-        /* ---------------- CƠ CHẾ LỌC TRÙNG CHO NHÂN SỰ ---------------- */
-        window.checkStaffDuplicate = function(val) {
-            const code = val.trim().toUpperCase();
-            const isEditMode = document.getElementById('staffEditId').value !== "";
-            const inputField = document.getElementById('staffCode');
+        /* ---------------- CƠ CHẾ LỌC TRÙNG NÂNG CAO CHO NHÂN SỰ (MÃ & HỌ TÊN) ---------------- */
+        window.checkStaffDuplicate = function() {
+            const codeInput = document.getElementById('staffCode');
+            const nameInput = document.getElementById('staffName');
             const alertDiv = document.getElementById('staffDuplicateAlert');
             const submitBtn = document.getElementById('btnSubmitStaffText');
 
-            if (!isEditMode && localStaff.some(x => x.id.toUpperCase() === code)) {
-                inputField.classList.add('duplicate-danger-box');
-                alertDiv.classList.remove('hidden');
+            const codeVal = codeInput.value.trim().toUpperCase();
+            const nameVal = nameInput.value.trim().toLowerCase().replace(/\s+/g, ' '); // Chuẩn hóa khoảng trắng của tên
+            
+            const isEditMode = document.getElementById('staffEditId').value !== "";
+
+            // Nếu đang sửa đổi bản ghi hiện tại thì tạm thời tắt kiểm tra trùng lặp nhanh
+            if (isEditMode) {
+                codeInput.classList.remove('duplicate-danger-box');
+                nameInput.classList.remove('duplicate-danger-box');
+                alertDiv.classList.add('hidden');
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = "1";
+                return;
+            }
+
+            let isCodeDup = localStaff.some(x => x.id.toUpperCase() === codeVal);
+            let isNameDup = localStaff.some(x => x.name.trim().toLowerCase().replace(/\s+/g, ' ') === nameVal && nameVal !== "");
+
+            if (isCodeDup || isNameDup) {
                 submitBtn.disabled = true;
                 submitBtn.style.opacity = "0.4";
+                alertDiv.classList.remove('hidden');
+                
+                if (isCodeDup && isNameDup) {
+                    codeInput.classList.add('duplicate-danger-box');
+                    nameInput.classList.add('duplicate-danger-box');
+                    alertDiv.innerHTML = `⚠️ <b>Lỗi trùng lặp:</b> Cả Mã nhân sự (<b>${codeVal}</b>) và Họ tên nhân sự này đã tồn tại trên hệ thống!`;
+                } else if (isCodeDup) {
+                    codeInput.classList.add('duplicate-danger-box');
+                    nameInput.classList.remove('duplicate-danger-box');
+                    alertDiv.innerHTML = `⚠️ <b>Lỗi trùng lặp:</b> Mã nhân sự <b>${codeVal}</b> đã được cấp cho người khác!`;
+                } else {
+                    codeInput.classList.remove('duplicate-danger-box');
+                    nameInput.classList.add('duplicate-danger-box');
+                    alertDiv.innerHTML = `⚠️ <b>Lỗi trùng lặp:</b> Họ tên nhân sự này đã tồn tại trong danh sách! Vui lòng kiểm tra lại phòng ban.`;
+                }
             } else {
-                inputField.classList.remove('duplicate-danger-box');
+                codeInput.classList.remove('duplicate-danger-box');
+                nameInput.classList.remove('duplicate-danger-box');
                 alertDiv.classList.add('hidden');
                 submitBtn.disabled = false;
                 submitBtn.style.opacity = "1";
@@ -970,7 +1003,7 @@
             });
             const paddedNum = String(maxIndex + 1).padStart(5, '0');
             document.getElementById('staffCode').value = `VNP-HR-${paddedNum}`;
-            checkStaffDuplicate(`VNP-HR-${paddedNum}`);
+            checkStaffDuplicate();
         }
 
         /* ---------------- CƠ CHẾ LỌC TRÙNG CHO CẤP PHÁT THIẾT BỊ ---------------- */
@@ -1131,15 +1164,25 @@
         window.executeStaffSubmit = function(e) {
             e.preventDefault();
             const code = document.getElementById('staffCode').value.trim().toUpperCase();
+            const name = document.getElementById('staffName').value.trim();
+            const normalizedName = name.toLowerCase().replace(/\s+/g, ' ');
             const editId = document.getElementById('staffEditId').value;
 
-            // KIỂM TRA CHẶN TRÙNG KHI SUBMIT (BẤM ENTER)
-            if (!editId && localStaff.some(st => st.id.toUpperCase() === code)) {
-                alert(`❌ Hệ thống chặn: Mã nhân sự "${code}" đã tồn tại! Vui lòng kiểm tra lại.`);
-                return false;
+            // CHẶN TRÙNG TUYỆT ĐỐI KHI SUBMIT FORM (DÙ LÀ BẤM CHUỘT HAY PHÍM ENTER)
+            if (!editId) {
+                let isCodeDup = localStaff.some(st => st.id.toUpperCase() === code);
+                let isNameDup = localStaff.some(st => st.name.trim().toLowerCase().replace(/\s+/g, ' ') === normalizedName);
+                
+                if (isCodeDup) {
+                    alert(`❌ LỖI HỆ THỐNG: Mã nhân sự "${code}" đã tồn tại trên dữ liệu đám mây. Từ chối lưu!`);
+                    return false;
+                }
+                if (isNameDup) {
+                    alert(`❌ LỖI HỆ THỐNG: Nhân sự tên là "${name}" đã có hồ sơ trên hệ thống. Không được nhập trùng họ tên!`);
+                    return false;
+                }
             }
 
-            const name = document.getElementById('staffName').value.trim();
             const position = document.getElementById('staffPosition').value.trim();
             const finalUnitName = document.getElementById('staffUnitCustom').value.trim();
 
@@ -1155,6 +1198,7 @@
             document.getElementById('staffCode').value = st.id;
             document.getElementById('staffCode').readOnly = true;
             document.getElementById('staffCode').classList.remove('duplicate-danger-box');
+            document.getElementById('staffName').classList.remove('duplicate-danger-box');
             document.getElementById('staffDuplicateAlert').classList.add('hidden');
             document.getElementById('btnSubmitStaffText').disabled = false;
             document.getElementById('btnSubmitStaffText').style.opacity = "1";
@@ -1177,6 +1221,7 @@
             document.getElementById('staffEditId').value = "";
             document.getElementById('staffCode').readOnly = false;
             document.getElementById('staffCode').classList.remove('duplicate-danger-box');
+            document.getElementById('staffName').classList.remove('duplicate-danger-box');
             document.getElementById('staffDuplicateAlert').classList.add('hidden');
             document.getElementById('btnSubmitStaffText').disabled = false;
             document.getElementById('btnSubmitStaffText').style.opacity = "1";
@@ -1197,9 +1242,11 @@
                     const parts = line.split(',');
                     if(parts.length >= 4) { 
                         const unit = parts[0].trim(); const code = parts[1].trim().toUpperCase(); const name = parts[2].trim(); const pos = parts[3].trim();
+                        const normalizedName = name.toLowerCase().replace(/\s+/g, ' ');
                         if(code) {
-                            const isDup = localStaff.some(st => st.id.toUpperCase() === code);
-                            if(!isDup) {
+                            const isCodeDup = localStaff.some(st => st.id.toUpperCase() === code);
+                            const isNameDup = localStaff.some(st => st.name.trim().toLowerCase().replace(/\s+/g, ' ') === normalizedName);
+                            if(!isCodeDup && !isNameDup) {
                                 db.ref(getEnvNode('staff_v4') + '/' + code).set({ id: code, name: name, unit: unit, position: pos, photo: "" });
                                 importCount++;
                             } else {
@@ -1208,7 +1255,7 @@
                         }
                     }
                 });
-                alert(`⚡ Đã xử lý xong tệp danh sách:\n- Thêm mới thành công (Đã lọc trùng): ${importCount} nhân sự.\n- Bỏ qua do trùng mã hệ thống: ${duplicateCount} nhân sự.`);
+                alert(`⚡ Đã xử lý xong tệp danh sách:\n- Thêm mới thành công (Đã lọc trùng): ${importCount} nhân sự.\n- Bỏ qua do trùng mã hoặc trùng tên: ${duplicateCount} nhân sự.`);
             };
             reader.readAsText(file);
         }
@@ -1595,6 +1642,7 @@
 
         window.deleteCloudRecord = function(fullNodePath, id) { if(confirm("Xác nhận xóa bỏ bản ghi này vĩnh viễn?")) db.ref(fullNodePath + '/' + id).remove(); }
 
+        // Cập nhật lại danh sách gợi ý tự động cho datalist
         function rebuildDatalistGoiY() {
             const dl = document.getElementById('dynamicUnitsDatalist'); if(!dl) return;
             const currentUnits = [...new Set(localStaff.map(x => x.unit))].filter(Boolean);
