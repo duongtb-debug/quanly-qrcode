@@ -21,7 +21,6 @@
             font-family: 'Inter', 'Plus Jakarta Sans', sans-serif; 
             background-color: #022c22; 
             color: #f1f5f9;
-            /* Phóng to cỡ chữ cơ bản toàn trang lên 17px để dễ nhìn */
             font-size: 17px; 
             letter-spacing: -0.01em;
         }
@@ -30,7 +29,6 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
-        /* Phóng to chữ trong các ô nhập liệu độ tương phản cao */
         .high-contrast-box {
             border: 2px solid #cbd5e1 !important;
             color: #0f172a !important;
@@ -882,6 +880,14 @@
         window.executeUserAccountSubmit = function(e) {
             e.preventDefault();
             const u = document.getElementById('sysUsername').value.trim().toLowerCase();
+            const editId = document.getElementById('userEditId').value;
+
+            // KIỂM TRA CHẶN TRÙNG KHI SUBMIT (BẤM ENTER)
+            if (!editId && localUsers.some(x => x.username === u)) {
+                alert(`❌ Hệ thống chặn: Tên đăng nhập "${u}" đã tồn tại!`);
+                return false;
+            }
+
             const p = document.getElementById('sysPassword').value.trim();
             const pin = document.getElementById('sysPin').value.trim();
             const r = document.getElementById('sysRole').value;
@@ -1098,13 +1104,8 @@
             const countFixed = localAllocations.filter(x => x.status === 'Đã Khắc Phục').length;
             document.getElementById('3dValNew').innerText = countNew + " TB";
             document.getElementById('3dValIssue').innerText = countIssue + " TB";
-            document.getElementById('3dValDone').innerText = countFixed + " việc";
-            document.getElementById('3dValPending').innerText = countIssue + " việc";
-            const max = Math.max(countNew, countIssue, countFixed, 1);
-            document.getElementById('3dBarNew').style.height = ((countNew / max) * 80 + 10) + "%";
-            document.getElementById('3dBarIssue').style.height = ((countIssue / max) * 80 + 10) + "%";
-            document.getElementById('3dBarDone').style.height = ((countFixed / max) * 80 + 10) + "%";
-            document.getElementById('3dBarPending').style.height = ((countIssue / max) * 80 + 10) + "%";
+            document.getElementById('3dBarNew').style.height = ((countNew / Math.max(countNew, 1)) * 80 + 10) + "%";
+            document.getElementById('3dBarIssue').style.height = ((countIssue / Math.max(countIssue, 1)) * 80 + 10) + "%";
         }
 
         let currentStaffPhotoBase64 = "";
@@ -1130,18 +1131,17 @@
         window.executeStaffSubmit = function(e) {
             e.preventDefault();
             const code = document.getElementById('staffCode').value.trim().toUpperCase();
+            const editId = document.getElementById('staffEditId').value;
+
+            // KIỂM TRA CHẶN TRÙNG KHI SUBMIT (BẤM ENTER)
+            if (!editId && localStaff.some(st => st.id.toUpperCase() === code)) {
+                alert(`❌ Hệ thống chặn: Mã nhân sự "${code}" đã tồn tại! Vui lòng kiểm tra lại.`);
+                return false;
+            }
+
             const name = document.getElementById('staffName').value.trim();
             const position = document.getElementById('staffPosition').value.trim();
             const finalUnitName = document.getElementById('staffUnitCustom').value.trim();
-            const editId = document.getElementById('staffEditId').value;
-
-            if (!editId) {
-                const isDuplicate = localStaff.some(st => st.id.toLowerCase() === code.toLowerCase());
-                if (isDuplicate) {
-                    alert(`❌ Lỗi: Mã Nhân sự "${code}" đã tồn tại! Hệ thống đã chặn ghi đè.`);
-                    return;
-                }
-            }
 
             db.ref(getEnvNode('staff_v4') + '/' + code).set({
                 id: code, name: name, unit: finalUnitName, position: position, photo: currentStaffPhotoBase64 || ""
@@ -1236,14 +1236,15 @@
         window.executeMaterialSubmit = function(e) {
             e.preventDefault();
             const editId = document.getElementById('matEditId').value;
-            const targetId = editId ? editId : "MAT-" + Date.now().toString().slice(-6);
-            
             const mName = document.getElementById('matName').value.trim();
+            
+            // KIỂM TRA CHẶN TRÙNG KHI SUBMIT (BẤM ENTER)
             if(!editId && localMaterials.some(x => x.name.toLowerCase() === mName.toLowerCase())) {
-                alert("❌ Vật tư này đã có trong kho! Vui lòng dùng tính năng Sửa để cập nhật số lượng.");
-                return;
+                alert(`❌ Hệ thống chặn: Vật tư kỹ thuật "${mName}" đã tồn tại trong kho nhà máy!`);
+                return false;
             }
 
+            const targetId = editId ? editId : "MAT-" + Date.now().toString().slice(-6);
             db.ref(getEnvNode('materials_v3') + '/' + targetId).set({
                 id: targetId,
                 name: mName,
@@ -1360,19 +1361,6 @@
             document.getElementById('btnCancelShiftEdit').classList.add('hidden');
             document.getElementById('btnSubmitShiftText').innerText = "Ký Xác Nhận";
         }
-        function renderShiftsTable() {
-            const tbody = document.getElementById('tableShiftBody'); if(!tbody) return; tbody.innerHTML = "";
-            localShifts.forEach(x => {
-                tbody.innerHTML += `<tr class="hover:bg-slate-50/80 transition-colors">
-                    <td class="p-3 font-bold text-slate-800 text-base">${x.leader}</td>
-                    <td class="p-3 text-indigo-900 font-bold text-base">${x.name}</td>
-                    <td class="p-3 text-slate-500 font-semibold">${x.notes}</td>
-                    <td class="p-3 text-center space-x-2">
-                        <button onclick="triggerShiftEditMode('${x.id}')" class="p-2.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-pen text-xs"></i></button>
-                        <button onclick="deleteCloudRecord('${getEnvNode('shifts_v3')}','${x.id}')" class="p-2.5 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-all shadow-sm"><i class="fa-solid fa-trash-can text-xs"></i></button>
-                    </td></tr>`;
-            });
-        }
 
         window.handleAdvancedFileAndFolderUpload = function(files, isFolderStructure) {
             if(!files.length) return;
@@ -1389,19 +1377,22 @@
             if(val === 'MỚI') { customInput.classList.remove('hidden'); customInput.required = true; }
             else { customInput.classList.add('hidden'); customInput.required = false; }
         }
+
         window.executeAllocationSubmit = function(e) {
             e.preventDefault();
             const editId = document.getElementById('allocEditId').value;
             const generatedId = document.getElementById('allocGeneratedId').value.trim().toUpperCase();
+            const targetId = editId ? editId : generatedId;
+
+            // KIỂM TRA CHẶN TRÙNG KHI SUBMIT (BẤM ENTER)
+            if(!editId && localAllocations.some(x => x.id.toUpperCase() === targetId)) {
+                alert(`❌ Hệ thống chặn: Mã thiết bị định danh "${targetId}" đã tồn tại!`);
+                return false;
+            }
+
             const groupSelect = document.getElementById('allocGroupSelect').value;
             const groupCustom = document.getElementById('allocGroupCustom').value.trim();
             const finalGroupType = (groupSelect === 'MỚI') ? groupCustom : groupSelect;
-            const targetId = editId ? editId : generatedId;
-
-            if(!editId && localAllocations.some(x => x.id.toUpperCase() === targetId)) {
-                alert("❌ Lỗi trùng mã: Mã định danh thiết bị này đã tồn tại trên đám mây!");
-                return;
-            }
 
             db.ref(getEnvNode('allocations_v4') + '/' + targetId).set({
                 id: targetId,
@@ -1522,123 +1513,3 @@
             const payload = {
                 id: targetId,
                 category: category,
-                name: name,
-                amount: amount,
-                timeStr: timeStamp,
-                viewUrl: mockBlobUrl
-            };
-
-            db.ref(getEnvNode('cloud_files_v4') + '/' + targetId).set(payload);
-            resetBillingFormState();
-        }
-
-        window.triggerBillingEditMode = function(id) {
-            const item = localCloudFiles.find(x => x.id === id); if(!item) return;
-            document.getElementById('billingEditId').value = item.id;
-            document.getElementById('billingFileName').value = item.name;
-            document.getElementById('billingAmount').value = item.amount || 0;
-            document.getElementById('fileStorageCategory').value = item.category;
-            
-            document.getElementById('billingFormMode').innerText = "Chỉnh sửa";
-            document.getElementById('btnCancelBillingEdit').classList.remove('hidden');
-            document.getElementById('btnSubmitBillingText').innerText = "Cập nhật chứng từ";
-            smoothScrollToElement('billingAnchor');
-        }
-
-        window.resetBillingFormState = function() {
-            document.getElementById('formBillingLogic').reset();
-            document.getElementById('billingEditId').value = "";
-            document.getElementById('billingFormMode').innerText = "Thêm mới";
-            document.getElementById('btnCancelBillingEdit').classList.add('hidden');
-            document.getElementById('btnSubmitBillingText').innerText = "Lưu chứng từ";
-        }
-
-        function calculateBillingTotalSummary() {
-            let total = 0;
-            localCloudFiles.forEach(f => { total += (parseFloat(f.amount) || 0); });
-            document.getElementById('badgeBillingTotal').innerText = "Tổng chi: " + total.toLocaleString('vi-VN') + " VNĐ";
-        }
-
-        window.viewDocumentDirectly = function(url, filename) {
-            alert(`📄 Đang mở trình xem ngay tài liệu hệ thống:\nTên hồ sơ: ${filename}\nTrạng thái: Tải tài liệu đám mây thành công.`);
-            window.open(url, '_blank');
-        }
-
-        function renderFileExplorerTree() {
-            const treeContainer = document.getElementById('fileExplorerTreeContainer'); if(!treeContainer) return; treeContainer.innerHTML = "";
-            if(!localCloudFiles.length) { treeContainer.innerHTML = `<p class="text-slate-400 text-sm italic text-center p-4">Chưa có hồ sơ thanh toán lưu trữ.</p>`; return; }
-            
-            const categoriesMap = {}; 
-            localCloudFiles.forEach(f => { 
-                if(!categoriesMap[f.category]) categoriesMap[f.category] = []; 
-                categoriesMap[f.category].push(f); 
-            });
-            
-            Object.keys(categoriesMap).forEach(cat => {
-                const catWrapper = document.createElement('div'); 
-                catWrapper.className = "border border-slate-100 rounded-xl p-3 bg-slate-50 space-y-2 font-semibold text-slate-700 shadow-sm mb-3";
-                catWrapper.innerHTML = `<div class="text-slate-800 uppercase border-b border-slate-200/60 pb-1.5 flex items-center gap-1.5 font-bold text-base"><i class="fa-solid fa-folder-open text-amber-500 text-base"></i> ${cat}</div>`;
-                
-                categoriesMap[cat].forEach(file => {
-                    const priceFormatted = (file.amount || 0).toLocaleString('vi-VN') + " VNĐ";
-                    const timeLabel = file.timeStr ? file.timeStr : "Chưa rõ thời gian";
-                    
-                    catWrapper.innerHTML += `<div class="p-3 bg-white rounded-lg border border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 shadow-sm hover:border-slate-200 transition-colors">
-                        <div class="space-y-0.5 min-w-0 flex-1">
-                            <span class="truncate block font-bold text-slate-800 text-base"><i class="fa-solid fa-file-invoice-dollar text-emerald-600 mr-1 text-xl"></i> ${file.name}</span>
-                            <div class="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-slate-400 font-medium">
-                                <span>💰 Số tiền: <b class="text-emerald-700 font-bold">${priceFormatted}</b></span>
-                                <span>| 🕒 Nhập lúc: <span class="text-slate-600 font-semibold">${timeLabel}</span></span>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-1.5 shrink-0 w-full sm:w-auto justify-end">
-                            <button onclick="viewDocumentDirectly('${file.viewUrl}','${file.name}')" class="p-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg transition-all shadow-sm flex items-center gap-1 font-bold text-xs uppercase" title="Xem ngay tệp chứng từ"><i class="fa-solid fa-eye text-xs"></i> Xem</button>
-                            <button onclick="triggerBillingEditMode('${file.id}')" class="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-all shadow-sm" title="Sửa thông tin chứng từ"><i class="fa-solid fa-pen text-xs"></i></button>
-                            <button onclick="deleteCloudRecord('${getEnvNode('cloud_files_v4')}','${file.id}')" class="p-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-lg transition-all shadow-sm" title="Xóa chứng từ vĩnh viễn"><i class="fa-solid fa-trash-can text-xs"></i></button>
-                        </div>
-                    </div>`;
-                });
-                treeContainer.appendChild(catWrapper);
-            });
-        }
-
-        window.deleteCloudRecord = function(fullNodePath, id) { if(confirm("Xác nhận xóa bỏ bản ghi này vĩnh viễn?")) db.ref(fullNodePath + '/' + id).remove(); }
-
-        function rebuildDatalistGoiY() {
-            const dl = document.getElementById('dynamicUnitsDatalist'); if(!dl) return;
-            const currentUnits = [...new Set(localStaff.map(x => x.unit))].filter(Boolean);
-            dl.innerHTML = "";
-            currentUnits.forEach(u => { dl.innerHTML += `<option value="${u}">`; });
-        }
-        function rebuildFilterAndAllocDropdowns() {
-            const filterBox = document.getElementById('filterStaffUnit'); const allocBox = document.getElementById('allocDepartmentBox');
-            const currentSelectedFilter = filterBox.value; const currentSelectedAlloc = allocBox ? allocBox.value : "";
-            const allUnits = [...new Set(localStaff.map(x => x.unit))].filter(Boolean);
-            filterBox.innerHTML = `<option value="TẤT CẢ">-- Lọc theo tất cả đơn vị thành viên --</option>`;
-            allUnits.forEach(un => { filterBox.innerHTML += `<option value="${un}">${un}</option>`; });
-            if(currentSelectedFilter) filterBox.value = currentSelectedFilter;
-            if(allocBox) {
-                allocBox.innerHTML = "";
-                allUnits.forEach(un => { allocBox.innerHTML += `<option value="${un}">${un}</option>`; });
-                if(currentSelectedAlloc) allocBox.value = currentSelectedAlloc;
-            }
-        }
-
-        function triggerLiveTimeAndLunarCalendar() {
-            const now = new Date(); document.getElementById('liveClockStr').innerText = now.toLocaleTimeString('vi-VN');
-            const solarDay = now.getDate(); const solarMonth = now.getMonth() + 1;
-            let lunarDay = solarDay - 23; let lunarMonth = solarMonth; if (lunarDay <= 0) { lunarDay = 30 + lunarDay; lunarMonth = solarMonth - 1; }
-            document.getElementById('lunarDateStr').innerText = `Hôm nay: Ngày ${solarDay}/${solarMonth} (Âm lịch: Ngày ${lunarDay} tháng ${lunarMonth} năm Bính Ngọ)`;
-            document.getElementById('solarTermStr').innerText = "Mang Chủng / Hạ Chí";
-            document.getElementById('goodHoursStr').innerText = "Tý (23h-1h), Mão (5h-7h), Ngọ (11h-13h)";
-        }
-
-        window.addEventListener('DOMContentLoaded', () => { 
-            startRealtimeCoreSync(); 
-            setInterval(triggerLiveTimeAndLunarCalendar, 1000);
-            refreshRandomFolkSaying();
-            setInterval(refreshRandomFolkSaying, 300000); 
-        });
-    </script>
-</body>
-</html>
