@@ -3,457 +3,644 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vinapaco Digital Platform - Lưu Trữ Trực Tuyến</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Hệ Thống Quản Trị ERP Toàn Diện - VINAPACO 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .theme-bg-gradient { background: linear-gradient(135deg, #0b4a75 0%, #1e3a8a 100%); }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght=400;500;600;700&family=Plus+Jakarta+Sans:wght=500;700;800&display=swap');
+        
+        html { scroll-behavior: smooth; }
+        body { 
+            font-family: 'Inter', 'Plus Jakarta Sans', sans-serif; 
+            background-color: #022c22; 
+            color: #f1f5f9;
+            font-size: 17px; 
+            letter-spacing: -0.01em;
+        }
+        h1, h2, h3, h4, .font-heading { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        .high-contrast-box {
+            border: 2px solid #cbd5e1 !important;
+            color: #0f172a !important;
+            font-weight: 600 !important;
+            font-size: 1.1rem !important;
+            transition: all 0.2s ease-in-out;
+        }
+        .high-contrast-box:focus {
+            border-color: #059669 !important;
+            background-color: #f0fdf4 !important;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+            outline: none;
+        }
+        .duplicate-danger-box {
+            border: 2px solid #ef4444 !important;
+            background-color: #fef2f2 !important;
+            color: #991b1b !important;
+        }
+        .stage-3d { perspective: 800px; }
+        .pillar-3d {
+            transform: rotateX(15deg) rotateY(-10deg);
+            transform-style: preserve-3d;
+            box-shadow: -4px 8px 16px rgba(0, 0, 0, 0.3), inset 0px 2px 4px rgba(255,255,255,0.3);
+            transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            min-height: 8px; 
+        }
+        table { border-collapse: separate !important; border-spacing: 0 !important; }
+        table th { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800 !important; letter-spacing: 0.03em; font-size: 1rem !important; }
+        table th, table td { vertical-align: middle !important; padding: 14px 18px !important; font-size: 0.95rem !important; }
+        table tr:last-child td:first-child { border-bottom-left-radius: 12px; }
+        table tr:last-child td:last-child { border-bottom-right-radius: 12px; }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
-<body class="text-slate-800">
+<body class="min-h-screen p-4 md:p-8 space-y-6">
 
-    <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-100">
-        <div class="w-full max-w-md p-8 bg-white rounded-2xl shadow-xl border border-slate-200">
-            <div class="text-center mb-6">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-900 text-white font-bold text-2xl mb-2">VP</div>
-                <h2 class="text-xl font-bold text-blue-950">VINAPACO DIGITAL PLATFORM</h2>
-                <p class="text-xs text-slate-500 mt-1">Cơ chế bảo mật đa tầng & lưu trữ đồng bộ</p>
-            </div>
-            
-            <div class="mb-4">
-                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Chọn Tầng Quản Trị Hệ Thống</label>
-                <select id="login-role" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-900">
-                    <option value="SUPER_ADMIN">Tầng 1: Super Admin (Tổng Công Ty - Toàn Quyền)</option>
-                    <option value="UNIT_ADMIN_1">Tầng 2: User Con - Nhà Máy Giấy Phong Châu (Độc lập)</option>
-                    <option value="UNIT_ADMIN_2">Tầng 2: User Con - Lâm Trường Phù Ninh (Độc lập)</option>
-                </select>
+    <div id="securityLockOverlay" class="fixed inset-0 bg-slate-950/40 backdrop-blur-md flex items-center justify-center z-50 p-4">
+        <form onsubmit="validateSystemAccessForm(event)" class="bg-white rounded-[32px] shadow-2xl w-full max-w-xl p-10 space-y-6 text-slate-900 border border-slate-100">
+            <div class="text-center space-y-2">
+                <div class="w-20 h-20 mx-auto flex items-center justify-center bg-[#005c3e] rounded-2xl text-white text-4xl shadow-xl shadow-emerald-900/20">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight mt-4">VINAPACO ERP CONTROL</h2>
+                <p class="text-sm font-semibold text-slate-500">Nhập thông tin tài khoản để truy cập hệ thống</p>
             </div>
 
-            <div class="mb-4">
-                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Tài khoản / Mã nhân viên</label>
-                <input type="text" id="login-username" value="vinapaco_user" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-900">
-            </div>
-            <div class="mb-4">
-                <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Mật khẩu bảo mật</label>
-                <input type="password" id="login-password" value="••••••••" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-900">
+            <div class="flex bg-slate-100 p-1.5 rounded-2xl border border-slate-200/60">
+                <button type="button" id="tabMethodPass" onclick="switchLoginMethod('pass')" onfocus="switchLoginMethod('pass')" class="w-1/2 py-3 text-sm font-bold rounded-xl bg-[#004d34] text-white shadow-sm transition-all duration-300 outline-none">Mật Khẩu</button>
+                <button type="button" id="tabMethodPin" onclick="switchLoginMethod('pin')" onfocus="switchLoginMethod('pin')" class="w-1/2 py-3 text-sm font-bold rounded-xl text-slate-500 transition-all duration-300 bg-transparent outline-none">Mã PIN</button>
             </div>
 
-            <button onclick="handleLogin()" class="w-full py-2.5 mt-2 bg-blue-900 hover:bg-blue-950 text-white font-medium rounded-lg text-sm transition shadow-md">
-                Xác Thực Đăng Nhập
-            </button>
-        </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Tài khoản</label>
+                    <input type="text" id="secUser" required placeholder="admin" class="w-full high-contrast-box rounded-xl p-3.5 bg-slate-50 text-slate-900">
+                </div>
+                <div id="dynamicSecretContainer">
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Mật khẩu hệ thống</label>
+                    <input type="password" id="secPass" required placeholder="••••••••" class="w-full high-contrast-box rounded-xl p-3.5 bg-slate-50">
+                </div>
+                
+                <div id="secError" class="text-red-600 font-bold text-sm text-center hidden bg-red-50 p-4 rounded-xl border border-red-200">
+                    ❌ Tài khoản hoặc mật mã không chính xác!
+                </div>
+
+                <button type="submit" class="w-full py-4 bg-[#004d34] text-white font-bold rounded-xl text-base hover:bg-[#003825] uppercase tracking-wider transition-all shadow-lg shadow-emerald-900/20 mt-2">
+                    Đăng Nhập Hệ Thống
+                </button>
+            </div>
+        </form>
     </div>
 
-    <div id="main-app" class="hidden min-h-screen flex flex-col">
-        <header class="theme-bg-gradient text-white px-6 py-4 flex justify-between items-center shadow-lg">
-            <div class="flex items-center space-x-3">
-                <span class="bg-white text-blue-900 font-black px-2.5 py-1 rounded-md text-sm shadow-inner">VNP</span>
+    <div id="appMainContainer" class="hidden max-w-[1600px] mx-auto space-y-6">
+        
+        <header class="bg-white text-slate-900 rounded-3xl p-6 flex flex-col lg:flex-row items-center justify-between shadow-xl gap-4 border border-slate-100">
+            <div class="flex items-center gap-4">
+                <div class="bg-[#005c3e] text-white p-4 rounded-2xl text-3xl shadow-md shadow-emerald-900/10"><i class="fa-solid fa-industry"></i></div>
                 <div>
-                    <h1 class="text-md font-bold tracking-wide">VINAPACO CENTRALIZED SYSTEM</h1>
-                    <p class="text-[10px] text-blue-200" id="user-display-role">Đang tải...</p>
+                    <span class="block text-xs font-bold text-slate-400 uppercase tracking-widest">TỔNG CÔNG TY GIẤY VIỆT NAM</span>
+                    <h1 class="text-2xl md:text-3xl font-black text-[#005c3e] tracking-tight">VINAPACO SYSTEM CONTROL 2026</h1>
                 </div>
             </div>
-            <div class="flex items-center space-x-4">
-                <span id="current-unit-badge" class="bg-emerald-600 text-white text-xs px-3 py-1 rounded-full font-medium">Đơn vị: --</span>
-                <button onclick="handleLogout()" class="bg-red-700 hover:bg-red-800 text-xs px-3 py-1.5 rounded-md font-medium transition">Đăng xuất ↩</button>
+
+            <div class="flex flex-col sm:flex-row items-center gap-3 bg-amber-50/70 border border-amber-200 p-3 rounded-2xl">
+                <div class="flex items-center gap-1.5">
+                    <span class="text-sm font-bold text-amber-900 uppercase tracking-wider pl-1">Vận hành:</span>
+                    <select id="systemEnvironmentMode" onchange="toggleSystemEnvironment(this.value)" class="bg-white border border-amber-300 font-bold rounded-xl p-2.5 text-slate-900 text-sm">
+                        <option value="TESTING">⚠️ CHẠY THỬ (Dữ liệu thử nghiệm)</option>
+                        <option value="PRODUCTION">✅ CHẠY THẬT (Dữ liệu chính thức)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-4 bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                <div id="liveClockStr" class="bg-slate-900 text-emerald-400 font-mono text-2xl font-bold px-5 py-2 rounded-xl tracking-wider">00:00:00</div>
+                <button onclick="location.reload()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs uppercase tracking-wider shadow-sm">Thoát</button>
             </div>
         </header>
 
-        <div class="flex flex-1">
-            <nav class="w-64 bg-slate-900 text-slate-300 p-4 flex flex-col justify-between">
-                <div class="space-y-1">
-                    <button onclick="switchTab('dashboard')" class="w-full text-left px-3 py-2.5 text-sm rounded-lg hover:bg-slate-800 hover:text-white font-medium flex items-center space-x-2 transition"><span>📊</span> <span>Màn hình chính (Tổng quan)</span></button>
-                    <button onclick="switchTab('personnel')" class="w-full text-left px-3 py-2.5 text-sm rounded-lg hover:bg-slate-800 hover:text-white font-medium flex items-center space-x-2 transition"><span>👥</span> <span>Quản lý Nhân sự</span></button>
-                    <button onclick="switchTab('assets')" class="w-full text-left px-3 py-2.5 text-sm rounded-lg hover:bg-slate-800 hover:text-white font-medium flex items-center space-x-2 transition"><span>⚙️</span> <span>Quản lý Thiết bị</span></button>
-                    <button onclick="switchTab('finance')" class="w-full text-left px-3 py-2.5 text-sm rounded-lg hover:bg-slate-800 hover:text-white font-medium flex items-center space-x-2 transition"><span>💰</span> <span>Hồ sơ Thanh toán</span></button>
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div class="lg:col-span-12 bg-white text-slate-900 rounded-3xl p-6 border border-slate-100 shadow-xl space-y-4">
+                <h3 class="text-base font-bold uppercase text-slate-900 tracking-wider flex items-center gap-2"><i class="fa-solid fa-chart-bar text-emerald-600"></i> 3. Trực quan trạng thái cấp phát thiết bị</h3>
+                <div class="grid grid-cols-2 gap-4 pt-2 text-center text-sm font-bold max-w-md mx-auto">
+                    <div class="space-y-3">
+                        <span class="text-slate-400 uppercase tracking-wider text-xs">Cấp Mới</span>
+                        <div class="stage-3d h-44 bg-slate-50 border border-slate-100 rounded-2xl flex items-end justify-center p-3 shadow-inner">
+                            <div id="3dBarNew" class="pillar-3d w-12 bg-gradient-to-t from-emerald-600 to-emerald-400 rounded-t-lg" style="height: 10%;"></div>
+                        </div>
+                        <div id="3dValNew" class="text-emerald-700 text-base font-bold mt-1">0 TB</div>
+                    </div>
+                    <div class="space-y-3">
+                        <span class="text-slate-400 uppercase tracking-wider text-xs">Đang Sự Cố</span>
+                        <div class="stage-3d h-44 bg-slate-50 border border-slate-100 rounded-2xl flex items-end justify-center p-3 shadow-inner">
+                            <div id="3dBarIssue" class="pillar-3d w-12 bg-gradient-to-t from-rose-600 to-rose-400 rounded-t-lg" style="height: 10%;"></div>
+                        </div>
+                        <div id="3dValIssue" class="text-rose-700 text-base font-bold mt-1">0 TB</div>
+                    </div>
                 </div>
+            </div>
+        </section>
+
+        <section id="allocationAnchor" class="bg-white text-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+            <div class="bg-emerald-950 text-white p-4 px-6 flex justify-between items-center">
+                <h3 class="text-base font-bold uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-box"></i> 1 & 2. Quản lý thông tin cấp phát & Danh sách thiết bị</h3>
+                <span id="badgeAssetCount" class="bg-white/10 font-mono text-sm px-3 py-1 rounded-xl font-bold">0 thiết bị</span>
+            </div>
+            <div class="p-6 space-y-6">
+                <form id="formAssetAllocation" onsubmit="executeAssetSubmit(event)" class="grid grid-cols-1 md:grid-cols-12 gap-4 bg-slate-50 p-5 rounded-2xl border border-slate-100 text-sm">
+                    <input type="hidden" id="assetEditId" value="">
+                    <div class="md:col-span-3">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Mã thiết bị (Duy nhất)</label>
+                        <input type="text" id="assetId" required placeholder="Ví dụ: TB-001" oninput="checkDuplicateAssetId(this.value)" class="w-full high-contrast-box rounded-xl p-3 bg-white">
+                        <div id="duplicateWarning" class="text-red-600 font-bold text-xs mt-1 hidden">⚠️ Mã thiết bị đã tồn tại trong hệ thống!</div>
+                    </div>
+                    <div class="md:col-span-3">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Tên thiết bị / Máy móc</label>
+                        <input type="text" id="assetName" required placeholder="Ví dụ: Động cơ bơm thủy lực" class="w-full high-contrast-box rounded-xl p-3 bg-white">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Phòng ban bàn giao</label>
+                        <select id="assetDepartment" class="w-full high-contrast-box rounded-xl p-3 bg-white focus:outline-none">
+                            <option value="Phòng Cơ Điện">Phòng Cơ Điện</option>
+                            <option value="Xưởng Xeo Giấy">Xưởng Xeo Giấy</option>
+                            <option value="Phòng Kế Toán">Phòng Kế Toán</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Trạng thái vận hành</label>
+                        <select id="assetStatus" class="w-full high-contrast-box rounded-xl p-3 bg-white focus:outline-none">
+                            <option value="Cấp Mới">Cấp Mới</option>
+                            <option value="Đang Sự Cố">Đang Sự Cố</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2 flex items-end">
+                        <button type="submit" id="btnSubmitAsset" class="w-full py-3.5 bg-emerald-800 text-white font-bold rounded-xl uppercase text-xs tracking-wider shadow-md">Lưu Thiết Bị</button>
+                    </div>
+                </form>
+
+                <div class="overflow-x-auto border border-slate-100 rounded-2xl bg-white">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 font-bold text-slate-500 border-b border-slate-100 uppercase tracking-wider">
+                            <tr>
+                                <th class="p-3">Mã TB</th>
+                                <th class="p-3">Tên Thiết Bị / Máy Móc</th>
+                                <th class="p-3">Phòng Ban Cấp Phát</th>
+                                <th class="p-3 text-center">Trạng Thái</th>
+                                <th class="p-3 text-center w-[120px]">Hành Động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableAssetsBody" class="divide-y divide-slate-100 font-semibold text-slate-700">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white text-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+            <div class="bg-blue-950 text-white p-4 px-6">
+                <h3 class="text-base font-bold uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-sitemap"></i> 4. Sơ đồ cây cấu trúc quản lý thiết bị theo phòng ban</h3>
+            </div>
+            <div class="p-6">
+                <div id="departmentTreeContainer" class="space-y-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 shadow-inner">
+                    </div>
+            </div>
+        </section>
+
+        <section id="repairAnchor" class="bg-white text-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+            <div class="bg-purple-950 text-white p-4 px-6 flex justify-between items-center">
+                <h3 class="text-base font-bold uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-screwdriver-wrench"></i> 5. Quản lý lịch sử khắc phục sự cố & Sửa chữa</h3>
+                <span id="badgeRepairCount" class="bg-white/10 font-mono text-sm px-3 py-1 rounded-xl font-bold">0 bản ghi</span>
+            </div>
+            <div class="p-6 space-y-4">
+                <form id="formRepairHistory" onsubmit="executeRepairLogSubmit(event)" class="grid grid-cols-1 sm:grid-cols-12 gap-4 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 text-sm items-end">
+                    <div class="sm:col-span-3">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Thiết bị báo hỏng</label>
+                        <select id="repairAssetSelect" class="w-full high-contrast-box rounded-xl p-3 bg-white focus:outline-none"></select>
+                    </div>
+                    <div class="sm:col-span-4">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Nội dung kỹ thuật sửa chữa / Vật tư thay thế</label>
+                        <input type="text" id="repairActionDesc" required placeholder="Ví dụ: Thay cuộn dây động cơ..." class="w-full high-contrast-box rounded-xl p-3 bg-white">
+                    </div>
+                    
+                    <div class="sm:col-span-3">
+                        <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Upload Phiếu yêu cầu công việc</label>
+                        <input type="file" id="repairTicketFiles" multiple onchange="handleRepairTicketsSelection(this.files)" class="w-full text-xs bg-white p-2 rounded-xl border border-slate-200">
+                        <div id="repairTicketBadge" class="text-[11px] font-bold text-purple-800 mt-1 hidden"></div>
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <button type="submit" id="btnSubmitRepairText" class="w-full py-3.5 bg-purple-900 text-white font-bold rounded-xl uppercase tracking-wider text-xs shadow-md">Ghi Nhật Ký</button>
+                    </div>
+                </form>
+                <div class="overflow-x-auto border border-slate-100 rounded-2xl bg-white">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 font-bold text-slate-500 border-b border-slate-100 uppercase tracking-wider">
+                            <tr>
+                                <th class="p-3 w-[160px]">Mã Thiết Bị</th>
+                                <th class="p-3">Nội Dung Khắc Phục</th>
+                                <th class="p-3 w-[250px]">Phiếu Yêu Cầu Đính Kèm</th>
+                                <th class="p-3 text-center w-[180px]">Thời Gian</th>
+                                <th class="p-3 text-center w-[120px]">Hành Động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableRepairLogsBody" class="divide-y divide-slate-100 font-semibold text-slate-700"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="billingAnchor" class="bg-white text-slate-900 rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+            <div class="bg-[#004d34] text-white p-4 px-6 flex justify-between items-center">
+                <h3 class="text-base font-bold uppercase tracking-wider flex items-center gap-2"><i class="fa-solid fa-money-check-dollar"></i> 6. Quản lý hồ sơ thanh toán & Thống kê tổng số tiền</h3>
+                <span id="badgeBillingTotal" class="text-sm bg-emerald-950 font-mono text-emerald-300 px-3 py-1 rounded-xl font-bold">Tổng chi: 0 VNĐ</span>
+            </div>
+            <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
-                <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 text-center text-xs">
-                    <span class="text-emerald-400 font-bold block mb-1">📅 LỊCH VẠN NIÊN VINAPACO</span>
-                    <div class="text-base font-bold text-white">11/06/2026</div>
-                    <div class="text-[10px] text-slate-400 mt-0.5">Âm lịch: Ngày 27 tháng 4 (Bính Ngọ)</div>
-                </div>
-            </nav>
-
-            <main class="flex-1 p-6 overflow-y-auto">
-                <div id="tab-dashboard" class="tab-content space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-                            <h3 class="text-xs font-bold text-slate-500 uppercase">Nhân sự trong vùng quản lý</h3>
-                            <p class="text-2xl font-bold text-blue-900 mt-2" id="dash-total-hr">0 người</p>
+                <div class="lg:col-span-4 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 space-y-4 text-sm">
+                    <h4 class="font-bold text-[#005c3e] uppercase tracking-wider border-b pb-2">Hồ sơ thanh toán</h4>
+                    <form id="formBillingLogic" onsubmit="executeBillingSubmit(event)" class="space-y-3">
+                        <input type="hidden" id="billingEditId" value="">
+                        <div>
+                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Tên nhóm hồ sơ / Ghi chú</label>
+                            <input type="text" id="billingFileName" required placeholder="Ví dụ: Đợt quyết toán tiền..." class="w-full high-contrast-box rounded-xl p-2.5 bg-white">
                         </div>
-                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-                            <h3 class="text-xs font-bold text-slate-500 uppercase">Hệ thống máy móc vận hành</h3>
-                            <p class="text-2xl font-bold text-emerald-600 mt-2" id="dash-total-assets">--</p>
+                        <div>
+                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Số tiền thanh toán (VNĐ)</label>
+                            <input type="number" id="billingAmount" required placeholder="Nhập số tiền..." class="w-full high-contrast-box rounded-xl p-2.5 bg-white font-bold text-emerald-900">
                         </div>
-                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-                            <h3 class="text-xs font-bold text-slate-500 uppercase">Kinh phí mua sắm vật tư</h3>
-                            <p class="text-2xl font-bold text-amber-600 mt-2" id="dash-total-finance">0 VNĐ</p>
+                        <div>
+                            <label class="block font-bold text-slate-500 uppercase tracking-wider mb-1">Phân loại tệp tài liệu</label>
+                            <select id="fileStorageCategory" class="w-full high-contrast-box rounded-xl p-2.5 bg-white text-xs">
+                                <option value="Hồ sơ tài liệu kỹ thuật máy">Hồ sơ tài liệu kỹ thuật máy</option>
+                                <option value="Chứng từ kế toán thanh toán">Chứng từ kế toán thanh toán</option>
+                            </select>
                         </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-                            <h3 class="text-sm font-bold text-slate-700 mb-4">📊 Trạng thái thiết bị (Hoạt động tốt vs Sự cố)</h3>
-                            <div class="w-full h-64 flex justify-center items-center"><canvas id="chartAssets"></canvas></div>
+                        <div>
+                            <label class="block font-bold text-xs text-emerald-800 mb-1.5 uppercase tracking-wider">Chọn đính kèm tài liệu</label>
+                            <input type="file" id="uploadInputFiles" multiple onchange="handleMultipleFilesSelection(this.files)" class="text-xs w-full bg-white p-2 rounded-xl border">
+                            <div id="selectedFilesCountBadge" class="text-xs font-bold text-indigo-700 mt-1.5 hidden"></div>
                         </div>
-                        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-                            <h3 class="text-sm font-bold text-slate-700 mb-4">📈 Biểu đồ dòng tiền hồ sơ</h3>
-                            <div class="w-full h-64 flex justify-center items-center"><canvas id="chartFinance"></canvas></div>
-                        </div>
-                    </div>
+                        <button type="submit" id="btnSubmitBillingText" class="w-full bg-[#004d34] text-white font-bold py-3 rounded-xl uppercase tracking-wider text-xs shadow-md">Lưu chứng từ</button>
+                    </form>
                 </div>
 
-                <div id="tab-personnel" class="tab-content hidden space-y-6">
-                    <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-                        <h2 class="text-sm font-bold text-blue-950">👥 Danh sách nhân sự & Minh chứng đào tạo</h2>
-                        <button onclick="openModal('modal-add-hr')" class="bg-blue-900 hover:bg-blue-950 text-white text-xs px-3 py-2 rounded-lg font-medium">➕ Thêm nhân viên (Chống trùng)</button>
-                    </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-50 text-slate-600 text-xs uppercase border-b border-slate-200">
-                                <tr>
-                                    <th class="p-3">Mã NV</th><th class="p-3">Họ và Tên</th><th class="p-3">CCCD</th><th class="p-3">Điện thoại</th><th class="p-3">Đơn vị</th><th class="p-3">Lịch sử đào tạo/công tác</th><th class="p-3 text-right">Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody id="hr-table-body" class="divide-y divide-slate-100"></tbody>
-                        </table>
-                    </div>
+                <div class="lg:col-span-8 bg-slate-50/60 p-5 rounded-2xl border border-slate-100 space-y-2">
+                    <h4 class="font-bold text-slate-500 uppercase tracking-wider text-sm mb-2">Cấu trúc danh sách & Cây thư mục lưu trữ:</h4>
+                    <div id="fileExplorerTreeContainer" class="space-y-3 max-h-[500px] overflow-y-auto p-3 bg-white rounded-2xl border border-slate-100 shadow-inner"></div>
                 </div>
-
-                <div id="tab-assets" class="tab-content hidden space-y-6">
-                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex justify-between items-center">
-                        <h2 class="text-sm font-bold text-blue-950">⚙️ Quản lý tình trạng thiết bị cấp phát & Sửa chữa hành động</h2>
-                        <button onclick="openModal('modal-add-asset')" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs px-3 py-2 rounded-lg font-medium">➕ Cấp phát thiết bị mới</button>
-                    </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-50 text-slate-600 text-xs uppercase border-b border-slate-200">
-                                <tr>
-                                    <th class="p-3">Mã thiết bị</th><th class="p-3">Tên tài sản</th><th class="p-3">Đơn vị</th><th class="p-3">Trạng thái</th><th class="p-3">Phiếu biên bản</th><th class="p-3 text-right">Thao tác xử lý</th>
-                                </tr>
-                            </thead>
-                            <tbody id="assets-table-body" class="divide-y divide-slate-100"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div id="tab-finance" class="tab-content hidden space-y-6">
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 space-y-4">
-                        <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                            <h2 class="text-sm font-bold text-blue-950">💰 Tổng hợp số tiền thanh toán theo Tháng / Quý / Năm</h2>
-                            <div class="flex items-center space-x-2">
-                                <select id="filter-type" onchange="initFilterValues()" class="px-2 py-1 bg-slate-50 border border-slate-300 rounded text-xs"></select>
-                                <select id="filter-value" onchange="renderFinance()" class="px-2 py-1 bg-slate-50 border border-slate-300 rounded text-xs"></select>
-                            </div>
-                        </div>
-                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                            <span class="text-xs text-slate-500 font-bold uppercase tracking-wider">Tổng số tiền giải ngân trong kỳ kết xuất:</span>
-                            <span class="text-2xl font-black text-blue-900 mt-1 block" id="report-sum-money">0 VNĐ</span>
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-                        <span class="text-xs font-bold text-slate-700 uppercase">Chứng từ số hóa đính kèm (Không giới hạn dung lượng)</span>
-                        <button onclick="openModal('modal-add-finance')" class="bg-blue-900 hover:bg-blue-950 text-white text-xs px-3 py-2 rounded-lg font-medium">➕ Tạo hồ sơ thanh toán mới</button>
-                    </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-50 text-slate-600 text-xs uppercase border-b border-slate-200">
-                                <tr>
-                                    <th class="p-3">Mã đơn</th><th class="p-3">Nội dung mua sắm</th><th class="p-3">Đơn vị</th><th class="p-3">Ngày lập</th><th class="p-3">Số tiền (VNĐ)</th><th class="p-3">Chứng từ</th><th class="p-3 text-right">Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody id="finance-table-body" class="divide-y divide-slate-100"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </main>
-        </div>
-    </div>
-
-    <div id="modal-add-hr" class="fixed inset-0 z-50 hidden bg-black/40 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl w-full max-w-md p-6 space-y-4">
-            <h3 class="text-sm font-bold text-blue-950 border-b pb-2">Thêm mới Nhân viên (Kiểm duyệt chống trùng)</h3>
-            <div class="space-y-2 text-xs">
-                <input type="text" id="hr-id" placeholder="Mã nhân viên (Ví dụ: NV99)" class="w-full p-2 border border-slate-300 rounded">
-                <input type="text" id="hr-name" placeholder="Họ và tên nhân viên" class="w-full p-2 border border-slate-300 rounded">
-                <input type="text" id="hr-cccd" placeholder="Số CCCD (Bắt buộc kiểm trùng)" class="w-full p-2 border border-slate-300 rounded">
-                <input type="text" id="hr-phone" placeholder="Số điện thoại" class="w-full p-2 border border-slate-300 rounded">
-                <input type="text" id="hr-pos" placeholder="Chức vụ ca kíp sản xuất" class="w-full p-2 border border-slate-300 rounded">
             </div>
-            <div class="flex justify-end space-x-2 pt-2 border-t">
-                <button onclick="closeModal('modal-add-hr')" class="px-3 py-1.5 bg-slate-100 rounded text-xs">Hủy</button>
-                <button onclick="submitHr()" class="px-3 py-1.5 bg-blue-900 text-white rounded text-xs">Lưu dữ liệu</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-add-asset" class="fixed inset-0 z-50 hidden bg-black/40 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl w-full max-w-md p-6 space-y-4">
-            <h3 class="text-sm font-bold text-blue-950 border-b pb-2">Cấp phát thiết bị tài sản mới</h3>
-            <div class="space-y-2 text-xs">
-                <input type="text" id="asset-id" placeholder="Mã thiết bị (Ví dụ: TB-99)" class="w-full p-2 border border-slate-300 rounded">
-                <input type="text" id="asset-name" placeholder="Tên thiết bị công nghiệp" class="w-full p-2 border border-slate-300 rounded">
-            </div>
-            <div class="flex justify-end space-x-2 pt-2 border-t">
-                <button onclick="closeModal('modal-add-asset')" class="px-3 py-1.5 bg-slate-100 rounded text-xs">Hủy</button>
-                <button onclick="submitAsset()" class="px-3 py-1.5 bg-blue-900 text-white rounded text-xs">Cấp phát</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-add-finance" class="fixed inset-0 z-50 hidden bg-black/40 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl w-full max-w-md p-6 space-y-4">
-            <h3 class="text-sm font-bold text-blue-950 border-b pb-2">Tạo mới Hồ sơ Chứng từ Mua sắm</h3>
-            <div class="space-y-2 text-xs">
-                <input type="text" id="fin-title" placeholder="Nội dung thanh toán mua sắm vật tư" class="w-full p-2 border border-slate-300 rounded">
-                <input type="number" id="fin-money" placeholder="Số tiền cần chi chi tiết (VNĐ)" class="w-full p-2 border border-slate-300 rounded">
-                <input type="date" id="fin-date" class="w-full p-2 border border-slate-300 rounded">
-            </div>
-            <div class="flex justify-end space-x-2 pt-2 border-t">
-                <button onclick="closeModal('modal-add-finance')" class="px-3 py-1.5 bg-slate-100 rounded text-xs">Hủy</button>
-                <button onclick="submitFinance()" class="px-3 py-1.5 bg-blue-900 text-white rounded text-xs">Khởi tạo</button>
-            </div>
-        </div>
+        </section>
     </div>
 
     <script>
-        let USER_SESSION = null;
+        const firebaseConfig = {
+            apiKey: "AIzaSyBre5KbRWv64Qum4EDZkOAYTJe1YyIojuA",
+            authDomain: "qltbvinapaco.firebaseapp.com",
+            databaseURL: "https://qltbvinapaco-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "qltbvinapaco"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-        // --- CƠ CHẾ KHỞI TẠO BỘ NHỚ THỰC TẾ (LOCALSTORAGE) ---
-        // Nếu trình duyệt chưa từng lưu dữ liệu, hệ thống tự động nạp dữ liệu mẫu ban đầu của Vinapaco làm gốc.
-        function getStorage(key, defaultData) {
-            const data = localStorage.getItem(key);
-            return data ? JSON.parse(data) : defaultData;
-        }
-        function saveStorage(key, data) {
-            localStorage.setItem(key, JSON.stringify(data));
-        }
+        let currentEnv = "TESTING"; 
+        let localAllocations = [];
+        let localRepairLogs = [];
+        let localCloudFiles = [];
+        let activeLoginMethod = "pass";
+        let currentFormPendingFilesData = [];
+        let pendingRepairTicketsData = [];
 
-        let db_personnel = getStorage('vnp_hr', [
-            { id: "NV001", name: "Nguyễn Văn Hùng", cccd: "025096001111", phone: "0912111222", unitId: "NM_PHONG_CHAU", position: "Trưởng ca PM1", history: "Đào tạo vận hành máy nghiền bột giấy (QuyetDinh_01.pdf)" },
-            { id: "NV002", name: "Phạm Hồng Thái", cccd: "025096003333", phone: "0912555666", unitId: "LN_PHU_NINH", position: "Cán bộ quản lý lâm trường", history: "Tập huấn lâm nghiệp bền vững FSC (FSC_Cert.png)" }
-        ]);
+        function getEnvNode(baseNode) { return currentEnv === "PRODUCTION" ? baseNode : baseNode + "_testing"; }
 
-        let db_assets = getStorage('vnp_assets', [
-            { id: "TB-01", name: "Hệ thống máy băm gỗ dăm nguyên liệu", unitId: "NM_PHONG_CHAU", status: "GOOD", file: "BienBan_NghiemThu.pdf" },
-            { id: "TB-02", name: "Lò phun hơi nhiệt áp suất lớn PM1", unitId: "NM_PHONG_CHAU", status: "SỰ CỐ", file: "Phieu_YeuCau_SuaChua.pdf" }
-        ]);
+        function startRealtimeCoreSync() {
+            // Đồng bộ dữ liệu thiết bị (Mục 1 & 2)
+            db.ref(getEnvNode('allocations_v4')).on('value', snap => {
+                localAllocations = snap.val() ? Object.values(snap.val()).filter(Boolean) : [];
+                renderAssetsTable();
+                renderDepartmentTree();
+                populateRepairSelectBox();
+                sync3DGraphDisplay();
+                document.getElementById('badgeAssetCount').innerText = localAllocations.length + " thiết bị";
+            });
 
-        let db_finance = getStorage('vnp_finance', [
-            { id: "HD001", title: "Thanh toán mua gỗ cây nguyên liệu dăm đợt 1/2026", unitId: "LN_PHU_NINH", date: "2026-02-15", money: 450000000, file: "HopDong_GiaoNhan_Go.pdf" },
-            { id: "HD002", title: "Vật tư linh kiện thay thế trục quay máy cắt giấy", unitId: "NM_PHONG_CHAU", date: "2026-05-10", money: 120000000, file: "HoaDon_VAT.xml" }
-        ]);
+            // Đồng bộ dữ liệu lịch sử khắc phục (Mục 5)
+            db.ref(getEnvNode('repair_logs_v4')).on('value', snap => {
+                localRepairLogs = snap.val() ? Object.values(snap.val()).filter(Boolean) : [];
+                renderRepairLogsTable();
+                document.getElementById('badgeRepairCount').innerText = localRepairLogs.length + " bản ghi";
+            });
 
-        // --- ĐĂNG NHẬP BẢO MẬT ĐA TẦNG ---
-        function handleLogin() {
-            const role = document.getElementById('login-role').value;
-            if(role === "SUPER_ADMIN") USER_SESSION = { role: "SUPER_ADMIN", unitId: "ALL", name: "Ban Giám Đốc Tổng Công Ty" };
-            else if(role === "UNIT_ADMIN_1") USER_SESSION = { role: "UNIT_ADMIN", unitId: "NM_PHONG_CHAU", name: "Nhà Máy Giấy Phong Châu" };
-            else USER_SESSION = { role: "UNIT_ADMIN", unitId: "LN_PHU_NINH", name: "Lâm Trường Phù Ninh" };
-
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('main-app').classList.remove('hidden');
-            document.getElementById('user-display-role').innerText = `Tài khoản: ${USER_SESSION.name}`;
-            document.getElementById('current-unit-badge').innerText = `Đơn vị: ${USER_SESSION.unitId === 'ALL' ? 'Toàn Tổng Công Ty' : USER_SESSION.unitId}`;
-            
-            initTabs();
-        }
-
-        function handleLogout() {
-            USER_SESSION = null;
-            document.getElementById('main-app').classList.add('hidden');
-            document.getElementById('login-screen').classList.remove('hidden');
-        }
-
-        function checkAccess(unitId) {
-            if (USER_SESSION.role === "SUPER_ADMIN") return true;
-            return USER_SESSION.unitId === unitId;
-        }
-
-        // --- ĐIỀU HƯỚNG VÀ RENDER PHÂN HỆ ---
-        function initTabs() {
-            switchTab('dashboard');
-            initFilterOptions();
-            renderHr();
-            renderAssets();
-            renderFinance();
-        }
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            if(tabId === 'dashboard') updateDashboard();
-        }
-
-        // 1. NGHIỆP VỤ NHÂN SỰ
-        function renderHr() {
-            const tbody = document.getElementById('hr-table-body'); tbody.innerHTML = '';
-            db_personnel.filter(p => checkAccess(p.unitId)).forEach(hr => {
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 text-xs">
-                        <td class="p-3 font-semibold text-blue-900">${hr.id}</td><td class="p-3 font-medium">${hr.name}</td>
-                        <td class="p-3">${hr.cccd}</td><td class="p-3">${hr.phone}</td><td class="p-3">${hr.unitId}</td>
-                        <td class="p-3"><span class="bg-blue-50 text-blue-800 p-1 rounded block"><strong>${hr.position}</strong>: ${hr.history}</span></td>
-                        <td class="p-3 text-right"><button onclick="deleteHr('${hr.id}')" class="text-red-600 hover:underline">Xóa</button></td>
-                    </tr>`;
+            // Đồng bộ hồ sơ chứng từ thanh toán (Mục 6)
+            db.ref(getEnvNode('cloud_files_v4')).on('value', snap => {
+                localCloudFiles = snap.val() ? Object.values(snap.val()).filter(Boolean) : [];
+                renderFileExplorerTree();
+                calculateBillingTotalSummary();
             });
         }
 
-        function submitHr() {
-            const id = document.getElementById('hr-id').value.trim();
-            const name = document.getElementById('hr-name').value.trim();
-            const cccd = document.getElementById('hr-cccd').value.trim();
-            const phone = document.getElementById('hr-phone').value.trim();
-            const pos = document.getElementById('hr-pos').value.trim();
+        function toggleSystemEnvironment(val) { currentEnv = val; startRealtimeCoreSync(); }
 
-            if(!id || !name || !cccd || !phone) { alert("Thiếu thông tin bắt buộc!"); return; }
-
-            // CHỐNG TRÙNG CỨNG
-            if(db_personnel.some(p => p.id === id || p.cccd === cccd || p.phone === phone)) {
-                alert("🚨 LỖI: Mã nhân viên, Số CCCD hoặc Số điện thoại bị TRÙNG LẶP trên hệ thống dữ liệu tập trung!"); return;
-            }
-
-            const unitId = USER_SESSION.unitId === 'ALL' ? 'NM_PHONG_CHAU' : USER_SESSION.unitId;
-            db_personnel.push({ id, name, cccd, phone, unitId, position: pos, history: "Hồ sơ mới đính kèm quyết định gốc." });
-            
-            saveStorage('vnp_hr', db_personnel); // Lưu vào bộ nhớ thực tế trình duyệt
-            alert("Đã lưu trữ dữ liệu nhân sự thành công!"); closeModal('modal-add-hr'); renderHr();
-        }
-
-        function deleteHr(id) {
-            if(confirm("Xác nhận xóa cán bộ?")) {
-                db_personnel = db_personnel.filter(p => p.id !== id); saveStorage('vnp_hr', db_personnel); renderHr();
+        /* ================= LOGIC XỬ LÝ MỤC 1 & 2 (THIẾT BỊ) ================= */
+        window.checkDuplicateAssetId = function(val) {
+            const id = val.trim().toUpperCase();
+            const exists = localAllocations.some(x => x.id === id);
+            const warning = document.getElementById('duplicateWarning');
+            const input = document.getElementById('assetId');
+            if(exists) {
+                warning.classList.remove('hidden');
+                input.classList.add('duplicate-danger-box');
+            } else {
+                warning.classList.add('hidden');
+                input.classList.remove('duplicate-danger-box');
             }
         }
 
-        // 2. NGHIỆP VỤ THIẾT BỊ
-        function renderAssets() {
-            const tbody = document.getElementById('assets-table-body'); tbody.innerHTML = '';
-            db_assets.filter(a => checkAccess(a.unitId)).forEach(asset => {
-                let status = asset.status === 'GOOD' ? '<span class="text-emerald-600 font-bold">✓ Hoạt động tốt</span>' : '<span class="text-red-600 font-bold animate-pulse">🚨 Sự cố máy</span>';
-                let actionBtn = asset.status === 'SỰ CỐ' 
-                    ? `<button onclick="changeAssetStatus('${asset.id}','GOOD')" class="bg-emerald-600 text-white p-1 rounded text-[10px]">Ghi nhận sửa xong ↩</button>`
-                    : `<button onclick="changeAssetStatus('${asset.id}','SỰ CỐ')" class="bg-amber-500 text-white p-1 rounded text-[10px]">Báo sự cố</button>`;
-                
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 text-xs">
-                        <td class="p-3 font-semibold">${asset.id}</td><td class="p-3 font-medium">${asset.name}</td><td class="p-3">${asset.unitId}</td><td>${status}</td><td class="p-3 text-blue-900 underline cursor-pointer" onclick="alert('Đang hiển thị tệp chứng từ trên trình duyệt.')">${asset.file}</td>
-                        <td class="p-3 text-right space-x-1">${actionBtn} <button onclick="deleteAsset('${asset.id}')" class="text-red-500 hover:underline">Xóa</button></td>
-                    </tr>`;
-            });
-        }
+        window.executeAssetSubmit = function(e) {
+            e.preventDefault();
+            const id = document.getElementById('assetId').value.trim().toUpperCase();
+            const name = document.getElementById('assetName').value.trim();
+            const dept = document.getElementById('assetDepartment').value;
+            const status = document.getElementById('assetStatus').value;
 
-        function submitAsset() {
-            const id = document.getElementById('asset-id').value.trim();
-            const name = document.getElementById('asset-name').value.trim();
-            if(!id || !name) return;
-            const unitId = USER_SESSION.unitId === 'ALL' ? 'NM_PHONG_CHAU' : USER_SESSION.unitId;
-            db_assets.push({ id, name, unitId, status: 'GOOD', file: 'Biên_Bản_Cấp_Phát_Mới.pdf' });
-            saveStorage('vnp_assets', db_assets); closeModal('modal-add-asset'); renderAssets();
-        }
-
-        function changeAssetStatus(id, status) {
-            const asset = db_assets.find(a => a.id === id);
-            if(asset) {
-                asset.status = status;
-                if(status === 'GOOD') alert("Thiết bị được chuyển trạng thái sang: HOẠT ĐỘNG TỐT.");
-                saveStorage('vnp_assets', db_assets); renderAssets();
-            }
-        }
-
-        function deleteAsset(id) {
-            if(confirm("Xóa thiết bị khỏi dữ liệu cấp phát?")) {
-                db_assets = db_assets.filter(a => a.id !== id); saveStorage('vnp_assets', db_assets); renderAssets();
-            }
-        }
-
-        // 3. NGHIỆP VỤ HỒ SƠ THANH TOÁN (LỌC THỜI GIAN)
-        function initFilterOptions() {
-            const type = document.getElementById('filter-type');
-            type.innerHTML = '<option value="M">Tháng</option><option value="Q" selected>Quý</option><option value="Y">Năm</option>';
-            initFilterValues();
-        }
-
-        function initFilterValues() {
-            const type = document.getElementById('filter-type').value;
-            const val = document.getElementById('filter-value'); val.innerHTML = '';
-            if(type === 'M') { for(let i=1; i<=12; i++) val.innerHTML += `<option value="${i}">Tháng ${i}</option>`; }
-            else if(type === 'Q') { for(let i=1; i<=4; i++) val.innerHTML += `<option value="${i}">Quý ${i}</option>`; }
-            else { val.innerHTML += '<option value="2026">2026</option>'; }
-            renderFinance();
-        }
-
-        function renderFinance() {
-            const type = document.getElementById('filter-type').value;
-            const value = parseInt(document.getElementById('filter-value').value) || 1;
-            const tbody = document.getElementById('finance-table-body'); tbody.innerHTML = '';
-            
-            let sum = 0;
-            db_finance.filter(f => checkAccess(f.unitId)).forEach(item => {
-                const date = new Date(item.date);
-                const m = date.getMonth() + 1;
-                let match = false;
-
-                if(type === 'M' && m === value) match = true;
-                else if(type === 'Q' && Math.ceil(m/3) === value) match = true;
-                else if(type === 'Y') match = true;
-
-                if(match) {
-                    sum += item.money;
-                    tbody.innerHTML += `
-                        <tr class="hover:bg-slate-50 text-xs">
-                            <td class="p-3 font-semibold">${item.id}</td><td class="p-3 font-medium">${item.title}</td><td class="p-3">${item.unitId}</td><td class="p-3">${item.date}</td><td class="p-3 font-bold">${item.money.toLocaleString()}</td><td class="p-3 text-emerald-700 underline cursor-pointer" onclick="alert('Đọc file chứng từ gốc...')">📎 ${item.file}</td>
-                            <td class="p-3 text-right"><button onclick="deleteFinance('${item.id}')" class="text-red-500">Xóa</button></td>
-                        </tr>`;
+            db.ref(getEnvNode('allocations_v4') + '/' + id).set({ id, name, dept, status }, function(err) {
+                if(!err) {
+                    document.getElementById('formAssetAllocation').reset();
+                    document.getElementById('assetId').classList.remove('duplicate-danger-box');
+                    document.getElementById('duplicateWarning').classList.add('hidden');
                 }
             });
-            document.getElementById('report-sum-money').innerText = `${sum.toLocaleString()} VNĐ`;
         }
 
-        function submitFinance() {
-            const title = document.getElementById('fin-title').value.trim();
-            const money = parseInt(document.getElementById('fin-money').value);
-            const date = document.getElementById('fin-date').value;
-            if(!title || !money || !date) return;
+        function renderAssetsTable() {
+            const tbody = document.getElementById('tableAssetsBody'); if(!tbody) return; tbody.innerHTML = "";
+            localAllocations.forEach(x => {
+                const badgeClass = x.status === 'Cấp Mới' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800';
+                tbody.innerHTML += `<tr>
+                    <td class="font-mono font-bold text-slate-900">${x.id}</td>
+                    <td>${x.name}</td>
+                    <td><i class="fa-solid fa-building text-slate-400 mr-1"></i> ${x.dept}</td>
+                    <td class="text-center"><span class="px-2.5 py-1 text-xs font-bold rounded-full ${badgeClass}">${x.status}</span></td>
+                    <td class="text-center">
+                        <button onclick="deleteCloudRecord('allocations_v4','${x.id}')" class="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-100"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                    </td>
+                </tr>`;
+            });
+        }
 
-            const id = "HD" + (db_finance.length + 1).toString().padStart(3, '0');
-            const unitId = USER_SESSION.unitId === 'ALL' ? 'NM_PHONG_CHAU' : USER_SESSION.unitId;
+        /* ================= LOGIC XỬ LÝ MỤC 4 (CÂY SƠ ĐỒ PHÒNG BAN) ================= */
+        function renderDepartmentTree() {
+            const container = document.getElementById('departmentTreeContainer'); if(!container) return; container.innerHTML = "";
+            const depts = ["Phòng Cơ Điện", "Xưởng Xeo Giấy", "Phòng Kế Toán"];
             
-            db_finance.push({ id, title, unitId, date, money, file: 'ChungTu_HoaDon_Online.pdf' });
-            saveStorage('vnp_finance', db_finance); closeModal('modal-add-finance'); renderFinance();
+            depts.forEach(d => {
+                const items = localAllocations.filter(x => x.dept === d);
+                let childHtml = '';
+                if(items.length === 0) {
+                    childHtml = `<div class="text-xs text-slate-400 italic pl-6 pt-1">Chưa bàn giao thiết bị nào</div>`;
+                } else {
+                    items.forEach(it => {
+                        childHtml += `<div class="text-sm text-slate-700 pl-6 pt-1 flex items-center gap-1.5 font-medium">
+                            <i class="fa-solid fa-square-poll-horizontal text-emerald-600 text-xs"></i> 
+                            <span>[${it.id}] - ${it.name}</span>
+                        </div>`;
+                    });
+                }
+                container.innerHTML += `<div class="p-2 border-l-2 border-slate-300 bg-white rounded-r-xl shadow-sm">
+                    <div class="font-bold text-sm text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-folder text-amber-500"></i> ${d} (${items.length})</div>
+                    <div class="space-y-1 mt-1">${childHtml}</div>
+                </div>`;
+            });
         }
 
-        function deleteFinance(id) {
-            if(confirm("Xóa bộ chứng từ này?")) {
-                db_finance = db_finance.filter(f => f.id !== id); saveStorage('vnp_finance', db_finance); renderFinance();
+        /* ================= XOAY ĐỔI MÀU GIAO DIỆN CHUẨN XÁC KHI DÙNG PHÍM TAB/FOCUS ================= */
+        window.switchLoginMethod = function(method) {
+            activeLoginMethod = method;
+            const tabPass = document.getElementById('tabMethodPass');
+            const tabPin = document.getElementById('tabMethodPin');
+            const container = document.getElementById('dynamicSecretContainer');
+            
+            if(method === 'pass') {
+                tabPass.className = "w-1/2 py-3 text-sm font-bold rounded-xl bg-[#004d34] text-white shadow-sm transition-all duration-300 outline-none";
+                tabPin.className = "w-1/2 py-3 text-sm font-bold rounded-xl text-slate-500 bg-transparent transition-all duration-300 outline-none";
+                container.innerHTML = `<label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Mật khẩu hệ thống</label>
+                    <input type="password" id="secPass" required placeholder="••••••••" class="w-full high-contrast-box rounded-xl p-3.5 bg-slate-50">`;
+            } else {
+                tabPass.className = "w-1/2 py-3 text-sm font-bold rounded-xl text-slate-500 bg-transparent transition-all duration-300 outline-none";
+                tabPin.className = "w-1/2 py-3 text-sm font-bold rounded-xl bg-[#adff2f] text-slate-950 shadow-sm transition-all duration-300 outline-none";
+                container.innerHTML = `<label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Mã PIN cá nhân (6 số)</label>
+                    <input type="password" id="secPass" required placeholder="••••••" class="w-full high-contrast-box rounded-xl p-3.5 bg-slate-50 tracking-widest">`;
             }
         }
 
-        // --- CẬP NHẬT TRỰC QUAN DASHBOARD VÀ BIỂU ĐỒ CHỮA ---
-        let c1 = null; let c2 = null;
-        function updateDashboard() {
-            const hrCount = db_personnel.filter(p => checkAccess(p.unitId)).length;
-            const goodA = db_assets.filter(a => checkAccess(a.unitId) && a.status === 'GOOD').length;
-            const errA = db_assets.filter(a => checkAccess(a.unitId) && a.status === 'SỰ CỐ').length;
-            const totalM = db_finance.filter(f => checkAccess(f.unitId)).reduce((s, i) => s + i.money, 0);
-
-            document.getElementById('dash-total-hr').innerText = `${hrCount} Cán bộ`;
-            document.getElementById('dash-total-assets').innerText = `${goodA} Tốt / ${errA} Sự cố`;
-            document.getElementById('dash-total-finance').innerText = `${totalM.toLocaleString()} VNĐ`;
-
-            // Render Charts
-            const ctx1 = document.getElementById('chartAssets').getContext('2d');
-            const ctx2 = document.getElementById('chartFinance').getContext('2d');
-            if(c1) c1.destroy(); if(c2) c2.destroy();
-
-            c1 = new Chart(ctx1, { type: 'pie', data: { labels: ['Hoạt động tốt', 'Sự cố'], datasets: [{ data: [goodA, errA], backgroundColor: ['#10b981', '#ef4444'] }] }, options: { responsive: true, maintainAspectRatio: false } });
-            c2 = new Chart(ctx2, { type: 'bar', data: { labels: ['Tổng chi hệ thống'], datasets: [{ label: 'VNĐ', data: [totalM], backgroundColor: '#1e3a8a' }] }, options: { responsive: true, maintainAspectRatio: false } });
+        window.validateSystemAccessForm = function(event) {
+            event.preventDefault();
+            const u = document.getElementById('secUser').value.trim().toLowerCase();
+            const p = document.getElementById('secPass').value;
+            if (u === 'admin' && (p === 'vinapaco2026' || p === '123456')) {
+                document.getElementById('securityLockOverlay').style.display = 'none';
+                document.getElementById('appMainContainer').classList.remove('hidden');
+            } else { document.getElementById('secError').classList.remove('hidden'); }
         }
 
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        /* ================= XỬ LÝ NHẬT KÝ KHẮC PHỤC SỰ CỐ & PHIẾU CÔNG VIỆC ================= */
+        window.handleRepairTicketsSelection = function(files) {
+            pendingRepairTicketsData = [];
+            const badge = document.getElementById('repairTicketBadge');
+            if(!files || files.length === 0) { badge.classList.add('hidden'); return; }
+            badge.classList.remove('hidden'); badge.innerHTML = `📁 Đã đính kèm: ${files.length} phiếu yêu cầu.`;
+
+            for(let i=0; i<files.length; i++) {
+                const file = files[i]; const reader = new FileReader();
+                reader.onload = function(e) {
+                    pendingRepairTicketsData.push({ name: file.name, type: file.type || "application/pdf", data: e.target.result });
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        window.executeRepairLogSubmit = function(e) {
+            e.preventDefault();
+            const targetId = "REP-" + Date.now().toString().slice(-6);
+            db.ref(getEnvNode('repair_logs_v4') + '/' + targetId).set({
+                id: targetId,
+                assetId: document.getElementById('repairAssetSelect').value,
+                actionDesc: document.getElementById('repairActionDesc').value.trim(),
+                timeStr: new Date().toLocaleTimeString('vi-VN') + " " + new Date().toLocaleDateString('vi-VN'),
+                tickets: pendingRepairTicketsData
+            }, function(error) {
+                if(!error) {
+                    document.getElementById('repairActionDesc').value = "";
+                    document.getElementById('repairTicketFiles').value = "";
+                    document.getElementById('repairTicketBadge').classList.add('hidden');
+                    pendingRepairTicketsData = [];
+                }
+            });
+        }
+
+        window.viewRepairTicketDirectly = function(logId, fileIndex) {
+            const logItem = localRepairLogs.find(x => x.id === logId);
+            if(!logItem || !logItem.tickets || !logItem.tickets[fileIndex]) return;
+            const fileObj = logItem.tickets[fileIndex];
+            try {
+                const byteString = atob(fileObj.data.split(',')[1]);
+                const ab = new ArrayBuffer(byteString.length); const ia = new Uint8Array(ab);
+                for (let i = 0; i < byteString.length; i++) { ia[i] = byteString.charCodeAt(i); }
+                const blob = new Blob([ab], { type: fileObj.type }); const blobUrl = URL.createObjectURL(blob);
+                window.open(blobUrl);
+            } catch(e) { alert("Lỗi mở file: " + e.message); }
+        }
+
+        function renderRepairLogsTable() {
+            const tbody = document.getElementById('tableRepairLogsBody'); if(!tbody) return; tbody.innerHTML = "";
+            localRepairLogs.forEach(x => {
+                let ticketsHtml = `<span class="text-xs text-slate-400 italic">Không có phiếu đi kèm</span>`;
+                if(x.tickets && x.tickets.length > 0) {
+                    ticketsHtml = `<div class="flex flex-wrap gap-1">`;
+                    x.tickets.forEach((t, idx) => {
+                        ticketsHtml += `<button onclick="viewRepairTicketDirectly('${x.id}', ${idx})" class="text-[11px] bg-purple-50 text-purple-700 p-1 rounded border border-purple-200 max-w-[180px] truncate block"><i class="fa-solid fa-file-invoice"></i> ${t.name}</button>`;
+                    });
+                    ticketsHtml += `</div>`;
+                }
+                tbody.innerHTML += `<tr>
+                    <td class="font-mono font-bold">${x.assetId}</td>
+                    <td>${x.actionDesc}</td>
+                    <td>${ticketsHtml}</td>
+                    <td class="text-center text-xs text-slate-500">${x.timeStr}</td>
+                    <td class="text-center">
+                        <button onclick="deleteCloudRecord('repair_logs_v4','${x.id}')" class="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-100"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                    </td>
+                </tr>`;
+            });
+        }
+
+        function populateRepairSelectBox() {
+            const select = document.getElementById('repairAssetSelect'); if(!select) return; select.innerHTML = "";
+            localAllocations.forEach(x => { select.innerHTML += `<option value="${x.id}">${x.id} - ${x.name}</option>`; });
+        }
+
+        /* ================= XỬ LÝ HỒ SƠ THANH TOÁN ================= */
+        window.handleMultipleFilesSelection = function(files) {
+            currentFormPendingFilesData = [];
+            const badge = document.getElementById('selectedFilesCountBadge');
+            if(!files || files.length === 0) { badge.classList.add('hidden'); return; }
+            badge.classList.remove('hidden'); badge.innerHTML = `📌 Đang tải: <b>${files.length} tệp</b>...`;
+
+            for(let i = 0; i < files.length; i++) {
+                const file = files[i]; const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentFormPendingFilesData.push({ fileName: file.name, fileType: file.type || "application/pdf", fileData: e.target.result });
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        window.executeBillingSubmit = function(e) {
+            e.preventDefault();
+            const editId = document.getElementById('billingEditId').value;
+            const groupTitle = document.getElementById('billingFileName').value.trim();
+            const totalAmount = parseFloat(document.getElementById('billingAmount').value) || 0;
+            const selectedCategory = document.getElementById('fileStorageCategory').value;
+            const timeStamp = new Date().toLocaleTimeString('vi-VN') + " " + new Date().toLocaleDateString('vi-VN');
+
+            if(!editId && currentFormPendingFilesData.length === 0) { alert("⚠️ Vui lòng đính kèm tệp hồ sơ thanh toán!"); return false; }
+
+            if(editId) {
+                db.ref(getEnvNode('cloud_files_v4') + '/' + editId).update({ name: groupTitle, amount: totalAmount, category: selectedCategory }, function(err) { if(!err) resetBillingFormState(); });
+            } else {
+                currentFormPendingFilesData.forEach((fileObj, index) => {
+                    const uniqueId = "BILL-" + Date.now().toString().slice(-5) + "-" + index;
+                    db.ref(getEnvNode('cloud_files_v4') + '/' + uniqueId).set({
+                        id: uniqueId, category: selectedCategory,
+                        name: currentFormPendingFilesData.length > 1 ? `${groupTitle} (Phần ${index + 1}: ${fileObj.fileName})` : fileObj.fileName,
+                        amount: index === 0 ? totalAmount : 0, timeStr: timeStamp, rawFileName: fileObj.fileName, rawFileType: fileObj.fileType, rawFileData: fileObj.fileData 
+                    });
+                });
+                resetBillingFormState();
+            }
+        }
+
+        window.viewDocumentDirectly = function(id) {
+            const fileItem = localCloudFiles.find(x => x.id === id); if(!fileItem || !fileItem.rawFileData) return;
+            try {
+                const byteString = atob(fileItem.rawFileData.split(',')[1]);
+                const ab = new ArrayBuffer(byteString.length); const ia = new Uint8Array(ab);
+                for (let i = 0; i < byteString.length; i++) { ia[i] = byteString.charCodeAt(i); }
+                const blob = new Blob([ab], { type: fileItem.rawFileType || "application/pdf" }); const blobUrl = URL.createObjectURL(blob);
+                window.open(blobUrl);
+            } catch (err) { alert("Lỗi tải tệp: " + err.message); }
+        }
+
+        window.resetBillingFormState = function() {
+            document.getElementById('formBillingLogic').reset(); document.getElementById('billingEditId').value = "";
+            document.getElementById('selectedFilesCountBadge').classList.add('hidden'); currentFormPendingFilesData = [];
+        }
+
+        /* ================= FIX TRIỆT ĐỂ LỖI TREO KHI XÓA (REALTIME ASYNC PROMISE) ================= */
+        window.deleteCloudRecord = function(nodeName, recordId) {
+            if(confirm("🚨 Bạn có chắc chắn muốn xóa vĩnh viễn bản ghi này trên đám mây?")) {
+                const targetNodePath = getEnvNode(nodeName) + '/' + recordId;
+                db.ref(targetNodePath).remove()
+                  .then(() => { console.log(`[ERP Sync] Thành công: ${targetNodePath}`); })
+                  .catch((error) => { alert("❌ Lỗi đồng bộ: " + error.message); });
+            }
+        }
+
+        function calculateBillingTotalSummary() {
+            let total = 0; localCloudFiles.forEach(f => { total += (parseFloat(f.amount) || 0); });
+            document.getElementById('badgeBillingTotal').innerText = "Tổng chi: " + total.toLocaleString('vi-VN') + " VNĐ";
+        }
+
+        function renderFileExplorerTree() {
+            const treeContainer = document.getElementById('fileExplorerTreeContainer'); if(!treeContainer) return; treeContainer.innerHTML = "";
+            if(!localCloudFiles.length) { treeContainer.innerHTML = `<p class="text-slate-400 text-sm italic text-center p-4">Chưa có hồ sơ thanh toán lưu trữ.</p>`; return; }
+            
+            const categoriesMap = {}; localCloudFiles.forEach(f => { if(!categoriesMap[f.category]) categoriesMap[f.category] = []; categoriesMap[f.category].push(f); });
+            
+            Object.keys(categoriesMap).forEach(cat => {
+                const catWrapper = document.createElement('div'); catWrapper.className = "border rounded-xl p-3 bg-slate-50 mb-3";
+                catWrapper.innerHTML = `<div class="text-slate-800 uppercase border-b pb-1.5 flex items-center gap-1.5 font-bold text-base"><i class="fa-solid fa-folder-open text-amber-500"></i> ${cat}</div>`;
+                
+                categoriesMap[cat].forEach(file => {
+                    const priceFormatted = (file.amount || 0).toLocaleString('vi-VN') + " VNĐ";
+                    catWrapper.innerHTML += `<div class="p-3 bg-white rounded-lg border mt-2 flex justify-between items-center gap-2 shadow-sm">
+                        <div>
+                            <span class="block font-bold text-slate-800 text-base text-emerald-950"><i class="fa-solid fa-file-pdf text-rose-700 mr-1"></i> ${file.name}</span>
+                            <div class="text-xs text-slate-400 font-semibold mt-0.5"><span>💰 Chi phí: <b class="text-emerald-800">${priceFormatted}</b></span> | 🕒 ${file.timeStr || '--'}</div>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="viewDocumentDirectly('${file.id}')" class="p-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg font-bold text-xs uppercase flex items-center gap-1"><i class="fa-solid fa-eye"></i> Xem</button>
+                            <button onclick="deleteCloudRecord('cloud_files_v4','${file.id}')" class="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-100"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                        </div>
+                    </div>`;
+                });
+                treeContainer.appendChild(catWrapper);
+            });
+        }
+
+        function sync3DGraphDisplay() {
+            const countNew = localAllocations.filter(x => x.status === 'Cấp Mới').length;
+            const countIssue = localAllocations.filter(x => x.status === 'Đang Sự Cố').length;
+            if(document.getElementById('3dBarNew')) {
+                document.getElementById('3dBarNew').style.height = Math.min(100, (countNew * 15) + 10) + "%";
+                document.getElementById('3dBarIssue').style.height = Math.min(100, (countIssue * 15) + 10) + "%";
+                document.getElementById('3dValNew').innerText = countNew + " TB"; document.getElementById('3dValIssue').innerText = countIssue + " TB";
+            }
+        }
+
+        function triggerLiveTimeAndLunarCalendar() {
+            const now = new Date(); if(document.getElementById('liveClockStr')) document.getElementById('liveClockStr').innerText = now.toLocaleTimeString('vi-VN');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => { startRealtimeCoreSync(); setInterval(triggerLiveTimeAndLunarCalendar, 1000); });
     </script>
 </body>
 </html>
