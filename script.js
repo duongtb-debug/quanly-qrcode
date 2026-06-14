@@ -1,5 +1,4 @@
-// Đường dẫn kết nối API Google Apps Script đúng của anh (Đã loại bỏ chữ s thừa)
-const DEPLOY_API_URL = "https://script.google.com/macros/s/AKfycby-mumhQUflD0NExUkctpsFf5dXEsVhXDnBrRMh-BnTelk7corG31LU-VNudhL79Mqn-Q/exec";
+const DEPLOY_API_URL = "https://script.google.com/macros/s/AKfycbyeUvO1Dj-_CbZSVz3hy3gsedlm9tuXBtHisSEAFD5zwwlJNnmeAI_sWnuX5tGMuPgzGQ/exec";
 
 let currentTabId = "nhansu";
 let masterCacheData = [];
@@ -54,9 +53,15 @@ function switchTab(tabId) {
         document.getElementById("calendar-view").classList.remove("active");
         document.getElementById("action-group").classList.remove("hidden");
         
-        // Khóa tính năng nhập tay để tối ưu cấu trúc cột tự động theo file Excel nạp vào
-        document.getElementById("form-allowed").classList.add("hidden");
-        document.getElementById("form-disabled").classList.remove("hidden");
+        // Tối ưu ẩn hiện Form thông minh hợp lý giao diện
+        if (tabId === "nhansu") {
+            document.getElementById("form-allowed").classList.add("hidden");
+            document.getElementById("form-disabled").classList.remove("hidden");
+        } else {
+            document.getElementById("form-allowed").classList.remove("hidden");
+            document.getElementById("form-disabled").classList.add("hidden");
+            buildDynamicForm(module.defaultFields || ["Mã", "Tên", "Trạng thái"]);
+        }
         
         syncDataFromServer();
     }
@@ -70,9 +75,10 @@ async function syncDataFromServer() {
         masterCacheData = await response.json();
         
         if (masterCacheData && masterCacheData.length > 0) {
-            dataHeaders = Object.keys(masterCacheData[0]);
+            // Lọc bỏ tận gốc các tiêu đề cột trống hoặc lỗi undefined
+            dataHeaders = Object.keys(masterCacheData[0]).filter(h => h && h.trim() !== "" && h !== "undefined");
         } else {
-            dataHeaders = ["Trạng thái", "Hệ thống trống"];
+            dataHeaders = ["Trạng thái hệ thống"];
         }
         
         setLoadingState(false);
@@ -92,7 +98,6 @@ function importExcel(input) {
             const worksheet = workbook.Sheets[workbook.SheetNames[0]];
             const rawRows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
             
-            // Tìm kiếm dòng tiêu đề thực tế trong file Excel (bỏ qua các dòng trống ở trên đầu)
             let headerIndex = 0;
             for (let i = 0; i < rawRows.length; i++) {
                 if (rawRows[i].some(cell => String(cell).trim().toLowerCase() === "stt" || String(cell).trim().toLowerCase() === "họ và tên")) {
@@ -101,8 +106,8 @@ function importExcel(input) {
                 }
             }
             
-            // Làm sạch tiêu đề: Loại bỏ ký tự xuống dòng (\n) và khoảng trắng thừa
             const rawHeaders = rawRows[headerIndex];
+            // Làm sạch tiêu đề cột và lọc bỏ cột rỗng tên
             const cleanHeaders = rawHeaders.map(h => String(h || "").replace(/\r?\n|\r/g, " ").replace(/\s+/g, " ").trim());
             
             const cleanData = [];
@@ -112,7 +117,7 @@ function importExcel(input) {
                 
                 let rowObj = {};
                 cleanHeaders.forEach((header, colIdx) => {
-                    if (header) { 
+                    if (header && header.trim() !== "") { 
                         let cellVal = rowData[colIdx];
                         rowObj[header] = cellVal !== undefined && cellVal !== null ? String(cellVal).trim() : "";
                     }
@@ -122,7 +127,7 @@ function importExcel(input) {
             
             if(!cleanData.length) return alert("Không tìm thấy dữ liệu nhân sự hợp lệ.");
             
-            dataHeaders = cleanHeaders.filter(h => h !== "");
+            dataHeaders = cleanHeaders.filter(h => h && h.trim() !== "");
             pushDataToCloud(cleanData);
         } catch(err) { alert("Lỗi phân tích file Excel: " + err.message); }
     };
@@ -156,7 +161,7 @@ function triggerSearch() {
 
 function renderGrid(dataset) {
     const counter = document.getElementById("row-counter");
-    if(counter) counter.innerText = `TỔNG SỐ BẢN GHI: ${dataset.length} / ${masterCacheData.length}`;
+    if(counter) counter.innerText = `TỔNG SỐ HỒ SƠ: ${dataset.length} / ${masterCacheData.length}`;
     
     const head = document.getElementById("thead-node");
     const body = document.getElementById("tbody-node");
@@ -169,13 +174,25 @@ function renderGrid(dataset) {
     }
 
     let headHtml = `<tr class="bg-slate-100 border-b border-slate-200"><th class="p-3 text-center w-12 border-r border-slate-200/50">STT</th>`;
-    dataHeaders.forEach(f => headHtml += `<th class="p-3 uppercase border-r border-slate-200/50 tracking-wider text-slate-700">${f}</th>`);
+    dataHeaders.forEach(f => {
+        headHtml += `<th class="p-3 uppercase border-r border-slate-200/50 tracking-wider text-slate-700">${f}</th>`;
+    });
     head.innerHTML = headHtml + `</tr>`;
 
     body.innerHTML = dataset.map((row, index) => {
         let rowHtml = `<tr class="hover:bg-slate-50 transition-colors"><td class="p-2.5 text-center font-mono text-slate-400 border-r border-slate-200/40">${index + 1}</td>`;
         dataHeaders.forEach(f => {
-            let val = String(row[f] || '').trim();
+            let val = row[f];
+            
+            // SỬA LỖI ĐỊNH DẠNG: Nếu giá trị ô là một Object dữ liệu phức tạp từ Google, ép về chữ thường
+            if (typeof val === 'object' && val !== null) {
+                val = val.toString ? val.toString() : JSON.stringify(val);
+            } else {
+                val = String(val || '').trim();
+            }
+            
+            if (val === "[object Object]") val = "-"; // Bảo hiểm xóa triệt để chữ lỗi
+
             let isCode = f.toUpperCase().includes('MÃ') || f.toUpperCase().includes('CCCD') || f.toUpperCase().includes('BHXH') || f.toUpperCase().includes('SĐT') || f.toUpperCase().includes('SDT');
             rowHtml += `<td class="p-2.5 border-r border-slate-200/40 ${isCode ? 'font-mono font-bold text-slate-900' : 'text-slate-600'}">${val || '-'}</td>`;
         });
@@ -207,31 +224,8 @@ function initPomodoroEngine() {
             let m = Math.floor(timerTimeLeft / 60).toString().padStart(2, '0');
             let s = (timerTimeLeft % 60).toString().padStart(2, '0');
             display.innerText = `${m}:${s}`;
-        } else {
-            if (timerIsWorking) {
-                alert("🚨 HẾT GIỜ LÀM VIỆC!\nĐứng dậy nghỉ ngơi chút bảo vệ sức khỏe thôi anh.");
-                timerTimeLeft = 5 * 60;
-                timerIsWorking = false;
-                label.innerText = "ĐANG NGHỈ NGƠI";
-            } else {
-                alert("🔔 HẾT GIỜ NGHỈ NGƠI!\nQuay lại làm việc thôi anh.");
-                const workInput = document.getElementById("input-work-min");
-                timerTimeLeft = parseInt(workInput ? workInput.value : 25) * 60;
-                timerIsWorking = true;
-                label.innerText = "ĐANG LÀM VIỆC";
-            }
         }
     }, 1000);
-}
-
-function applyNewTimerConfig() {
-    const workInput = document.getElementById("input-work-min");
-    let m = parseInt(workInput ? workInput.value : 25);
-    timerTimeLeft = m * 60;
-    timerIsWorking = true;
-    const label = document.getElementById("timer-label");
-    if(label) label.innerText = "ĐANG LÀM VIỆC";
-    alert(`Đã thiết lập chu kỳ làm việc mới: ${m} phút.`);
 }
 
 function renderVanNienData() {
