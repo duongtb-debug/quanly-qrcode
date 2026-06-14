@@ -1,5 +1,5 @@
 // Đường dẫn kết nối API Google Apps Script đúng của anh (Đã loại bỏ chữ s thừa)
-const DEPLOY_API_URL = "https://script.google.com/macros/s/AKfycbyeUvO1Dj-_CbZSVz3hy3gsedlm9tuXBtHisSEAFD5zwwlJNnmeAI_sWnuX5tGMuPgzGQ/exec";
+const DEPLOY_API_URL = "https://script.google.com/macros/s/AKfycby-mumhQUflD0NExUkctpsFf5dXEsVhXDnBrRMh-BnTelk7corG31LU-VNudhL79Mqn-Q/exec";
 
 let currentTabId = "nhansu";
 let masterCacheData = [];
