@@ -9,7 +9,7 @@ const appModules = {
     nhansu: {
         title: "QUẢN LÝ NHÂN SỰ CHUYÊN NGHIỆP A-Z (BẢNG FILE EXCEL)",
         getAct: "get_nhansu", saveAct: "save_nhansu", btnLabel: "<i class='fa-solid fa-cloud-arrow-up'></i> UPLOAD EXCEL NHÂN SỰ",
-        defaultFields: ["Mã NV", "Họ tên", "Giới tính", "Ngày sinh", "CCCD", "SĐT", "Mã ĐV", "Chức danh", "Ngày vào làm", "Trạng thái"]
+        defaultFields: ["Stt", "Họ và tên", "Tên", "Số sổ BHXH", "Số CCCD", "An toàn viên", "NNĐH", "Năm về hưu", "Mã đơn vị", "Năm", "Năm sinh", "Nữ (x)", "Chức danh công việc"]
     },
     thietbi: {
         title: "QUẢN LÝ THIẾT BỊ TÀI SẢN CHUYÊN NGHIỆP",
@@ -89,7 +89,6 @@ async function syncDataFromServer() {
         const response = await fetch(`${DEPLOY_API_URL}?action=${module.getAct}`);
         masterCacheData = await response.json();
         
-        // TỰ ĐỘNG CHUYỂN ĐỔI TIÊU ĐỀ: Lấy trực tiếp từ dòng đầu tiên của dữ liệu trả về để khớp 100% với file Excel vừa up
         if (masterCacheData && masterCacheData.length > 0) {
             dataHeaders = Object.keys(masterCacheData[0]);
         } else {
@@ -103,6 +102,7 @@ async function syncDataFromServer() {
     }
 }
 
+// XỬ LÝ THANH LỌC FILE EXCEL ĐỂ ĐỒNG BỘ TUYỆT ĐỐI VÀO SHEET
 function importExcel(input) {
     if (!input.files.length) return;
     const reader = new FileReader();
@@ -110,24 +110,47 @@ function importExcel(input) {
         try {
             const dataBytes = new Uint8Array(e.target.result);
             const workbook = XLSX.read(dataBytes, { type: 'array', raw: false });
-            const rawJson = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { defval: "" });
             
-            if(!rawJson.length) return alert("Tệp Excel trống.");
+            // Đọc dạng mảng hai chiều (Arrays) thay vì JSON trực tiếp để loại bỏ dòng trống bẫy ban đầu
+            const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+            const rawRows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
             
-            // Lấy chính xác danh sách cột từ file Excel thực tế
-            const excelHeaders = Object.keys(rawJson[0]);
-            const cleanData = rawJson.map(row => {
-                let cleanRow = {};
-                excelHeaders.forEach(h => {
-                    cleanRow[h] = row[h] !== undefined && row[h] !== null ? String(row[h]).trim() : "";
+            // 1. Tìm vị trí dòng tiêu đề thực sự (Dòng chứa chữ "Stt" hoặc "Họ và tên")
+            let headerIndex = 0;
+            for (let i = 0; i < rawRows.length; i++) {
+                if (rawRows[i].some(cell => String(cell).trim().toLowerCase() === "stt" || String(cell).trim().toLowerCase() === "họ và tên")) {
+                    headerIndex = i;
+                    break;
+                }
+            }
+            
+            // Làm sạch tiêu đề cột: Loại bỏ khoảng xuống dòng (\n) và khoảng cách thừa
+            const rawHeaders = rawRows[headerIndex];
+            const cleanHeaders = rawHeaders.map(h => String(h || "").replace(/\r?\n|\r/g, " ").replace(/\s+/g, " ").trim());
+            
+            // 2. Gom dữ liệu từ các hàng phía sau hàng tiêu đề
+            const cleanData = [];
+            for (let i = headerIndex + 1; i < rawRows.length; i++) {
+                const rowData = rawRows[i];
+                // Kiểm tra nếu hàng rỗng hoàn toàn thì bỏ qua
+                if (rowData.every(cell => String(cell).trim() === "")) continue;
+                
+                let rowObj = {};
+                cleanHeaders.forEach((header, colIdx) => {
+                    if (header) { // Chỉ lấy các cột có tiêu đề rõ ràng
+                        let cellVal = rowData[colIdx];
+                        rowObj[header] = cellVal !== undefined && cellVal !== null ? String(cellVal).trim() : "";
+                    }
                 });
-                return cleanRow;
-            });
+                cleanData.push(rowObj);
+            }
             
-            // Cập nhật lại cấu trúc cột hiển thị ngay lập tức
-            dataHeaders = excelHeaders;
+            if(!cleanData.length) return alert("Không tìm thấy dữ liệu nhân sự hợp lệ trong tệp.");
+            
+            // Áp cấu trúc cột mới vừa tối ưu sạch sẽ
+            dataHeaders = cleanHeaders.filter(h => h !== "");
             pushDataToCloud(cleanData);
-        } catch(err) { alert("Lỗi xử lý file: " + err.message); }
+        } catch(err) { alert("Lỗi phân tích file Excel: " + err.message); }
     };
     reader.readAsArrayBuffer(input.files[0]);
     input.value = "";
@@ -184,24 +207,21 @@ function renderGrid(dataset) {
         return;
     }
 
-    // Render tiêu đề cột động dựa trên file Excel tải lên
     let headHtml = `<tr class="bg-slate-100 border-b border-slate-200"><th class="p-3 text-center w-12 border-r border-slate-200/50">STT</th>`;
     dataHeaders.forEach(f => headHtml += `<th class="p-3 uppercase border-r border-slate-200/50 tracking-wider text-slate-700">${f}</th>`);
     head.innerHTML = headHtml + `</tr>`;
 
-    // Render nội dung các hàng dữ liệu tương ứng
     body.innerHTML = dataset.map((row, index) => {
         let rowHtml = `<tr class="hover:bg-slate-50 transition-colors"><td class="p-2.5 text-center font-mono text-slate-400 border-r border-slate-200/40">${index + 1}</td>`;
         dataHeaders.forEach(f => {
             let val = String(row[f] || '').trim();
-            let isCode = f.toUpperCase().includes('MÃ') || f.toUpperCase().includes('CCCD') || f.toUpperCase().includes('SDT') || f.toUpperCase().includes('SĐT');
+            let isCode = f.toUpperCase().includes('MÃ') || f.toUpperCase().includes('CCCD') || f.toUpperCase().includes('BHXH') || f.toUpperCase().includes('SĐT') || f.toUpperCase().includes('SDT');
             rowHtml += `<td class="p-2.5 border-r border-slate-200/40 ${isCode ? 'font-mono font-bold text-slate-900' : 'text-slate-600'}">${val || '-'}</td>`;
         });
         return rowHtml + `</tr>`;
     }).join('');
 }
 
-// Giữ nguyên lõi hệ thống Timer và Lịch
 function setLoadingState(isLoading, msg = "") {
     const dot = document.getElementById("status-dot");
     const tbody = document.getElementById("tbody-node");
