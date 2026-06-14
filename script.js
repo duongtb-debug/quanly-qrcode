@@ -9,22 +9,22 @@ const appModules = {
     nhansu: {
         title: "QUẢN LÝ NHÂN SỰ CHUYÊN NGHIỆP A-Z (BẢNG FILE EXCEL)",
         getAct: "get_nhansu", saveAct: "save_nhansu", btnLabel: "<i class='fa-solid fa-cloud-arrow-up'></i> UPLOAD EXCEL NHÂN SỰ",
-        defaultFields: ["MA_NV", "HO_TEN", "GIOI_TINH", "NGAY_SINH", "CCCD", "SDT", "MA_DV", "CHUC_DANH", "NGAY_VAO_LAM", "TRANG_THAI"]
+        defaultFields: ["Mã NV", "Họ tên", "Giới tính", "Ngày sinh", "CCCD", "SĐT", "Mã ĐV", "Chức danh", "Ngày vào làm", "Trạng thái"]
     },
     thietbi: {
         title: "QUẢN LÝ THIẾT BỊ TÀI SẢN CHUYÊN NGHIỆP",
         getAct: "get_thietbi", saveAct: "save_thietbi", btnLabel: "<i class='fa-solid fa-file-excel'></i> IMPORT EXCEL THIẾT BỊ",
-        defaultFields: ["MA_TB", "TEN_THIET_BI", "LOAI_TB", "NGAY_MUA", "NGUYEN_GIA", "MA_NV_SUDUNG", "MA_DV_QUANLY", "TRANG_THAI"]
+        defaultFields: ["Mã TB", "Tên thiết bị", "Loại TB", "Ngày mua", "Nguyên giá", "Người sử dụng", "Đơn vị quản lý", "Trạng thái"]
     },
     nhacviec: {
         title: "HỆ THỐNG NHẮC VIỆC & THEO DÕI DEADLINE",
         getAct: "get_nhacviec", saveAct: "save_nhacviec", btnLabel: "<i class='fa-solid fa-file-excel'></i> IMPORT EXCEL NHẮC VIỆC",
-        defaultFields: ["MA_TASK", "TEN_CONG_VIEC", "NGUOI_THUC_HIEN", "NGAY_BAT_DAU", "HAN_CHOT", "MUC_DO_UT", "TIEN_DO", "GHI_CHU"]
+        defaultFields: ["Mã công việc", "Tên công việc", "Người thực hiện", "Ngày bắt đầu", "Hạn chót", "Mức độ UT", "Tiến độ", "Ghi chú"]
     },
     muasam: {
         title: "HỒ SƠ QUẢN LÝ MUA SẮM SỬA CHỮA A-Z",
         getAct: "get_muasam", saveAct: "save_muasam", btnLabel: "<i class='fa-solid fa-file-excel'></i> IMPORT EXCEL MUA SẮM",
-        defaultFields: ["MA_HS", "LOAI_YEU_CAU", "MA_TB", "NOI_DUNG", "CHI_PHI", "NGUOI_DE_XUAT", "NGAY_DE_XUAT", "TRANG_THAI_DUYET"]
+        defaultFields: ["Mã HS", "Loại yêu cầu", "Mã TB", "Nội dung", "Chi phí", "Người đề xuất", "Ngày đề xuất", "Trạng thái duyệt"]
     }
 };
 
@@ -51,7 +51,6 @@ function switchTab(tabId) {
         const module = appModules[tabId];
         document.getElementById("tab-title").innerText = module.title;
         
-        // ĐÃ FIX: Đồng bộ chính xác ID vùng text nút bấm upload file
         const uploadBtnText = document.getElementById("btn-upload-excel-text");
         if(uploadBtnText) uploadBtnText.innerHTML = module.btnLabel;
         
@@ -77,19 +76,20 @@ function buildDynamicForm(fields) {
     if(!form) return;
     form.innerHTML = fields.map(f => `
         <div>
-            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">${f.replace(/_/g, ' ')}</label>
+            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">${f}</label>
             <input type="text" name="${f}" required class="w-full border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-indigo-500">
         </div>
     `).join('');
 }
 
 async function syncDataFromServer() {
-    setLoadingState(true, "Đang đồng bộ dữ liệu...");
+    setLoadingState(true, "Đang đồng bộ dữ liệu từ Google Sheet...");
     const module = appModules[currentTabId];
     try {
         const response = await fetch(`${DEPLOY_API_URL}?action=${module.getAct}`);
         masterCacheData = await response.json();
         
+        // TỰ ĐỘNG CHUYỂN ĐỔI TIÊU ĐỀ: Lấy trực tiếp từ dòng đầu tiên của dữ liệu trả về để khớp 100% với file Excel vừa up
         if (masterCacheData && masterCacheData.length > 0) {
             dataHeaders = Object.keys(masterCacheData[0]);
         } else {
@@ -114,6 +114,7 @@ function importExcel(input) {
             
             if(!rawJson.length) return alert("Tệp Excel trống.");
             
+            // Lấy chính xác danh sách cột từ file Excel thực tế
             const excelHeaders = Object.keys(rawJson[0]);
             const cleanData = rawJson.map(row => {
                 let cleanRow = {};
@@ -123,6 +124,8 @@ function importExcel(input) {
                 return cleanRow;
             });
             
+            // Cập nhật lại cấu trúc cột hiển thị ngay lập tức
+            dataHeaders = excelHeaders;
             pushDataToCloud(cleanData);
         } catch(err) { alert("Lỗi xử lý file: " + err.message); }
     };
@@ -177,25 +180,28 @@ function renderGrid(dataset) {
     
     if(!dataset.length) {
         head.innerHTML = "";
-        body.innerHTML = `<tr><td class="py-20 text-center text-slate-400 font-medium">Không tìm thấy dữ liệu phù hợp.</td></tr>`;
+        body.innerHTML = `<tr><td class="py-20 text-center text-slate-400 font-medium">Không tìm thấy dữ liệu phù hợp hoặc bảng trống.</td></tr>`;
         return;
     }
 
+    // Render tiêu đề cột động dựa trên file Excel tải lên
     let headHtml = `<tr class="bg-slate-100 border-b border-slate-200"><th class="p-3 text-center w-12 border-r border-slate-200/50">STT</th>`;
-    dataHeaders.forEach(f => headHtml += `<th class="p-3 uppercase border-r border-slate-200/50 tracking-wider text-slate-700">${f.replace(/_/g, ' ')}</th>`);
+    dataHeaders.forEach(f => headHtml += `<th class="p-3 uppercase border-r border-slate-200/50 tracking-wider text-slate-700">${f}</th>`);
     head.innerHTML = headHtml + `</tr>`;
 
+    // Render nội dung các hàng dữ liệu tương ứng
     body.innerHTML = dataset.map((row, index) => {
         let rowHtml = `<tr class="hover:bg-slate-50 transition-colors"><td class="p-2.5 text-center font-mono text-slate-400 border-r border-slate-200/40">${index + 1}</td>`;
         dataHeaders.forEach(f => {
             let val = String(row[f] || '').trim();
-            let isCode = f.toUpperCase().includes('MA') || f.toUpperCase().includes('CCCD') || f.toUpperCase().includes('SDT') || f.toUpperCase().includes('BHXH');
+            let isCode = f.toUpperCase().includes('MÃ') || f.toUpperCase().includes('CCCD') || f.toUpperCase().includes('SDT') || f.toUpperCase().includes('SĐT');
             rowHtml += `<td class="p-2.5 border-r border-slate-200/40 ${isCode ? 'font-mono font-bold text-slate-900' : 'text-slate-600'}">${val || '-'}</td>`;
         });
         return rowHtml + `</tr>`;
     }).join('');
 }
 
+// Giữ nguyên lõi hệ thống Timer và Lịch
 function setLoadingState(isLoading, msg = "") {
     const dot = document.getElementById("status-dot");
     const tbody = document.getElementById("tbody-node");
