@@ -1,4 +1,4 @@
-// Đường dẫn kết nối API Google Apps Script của anh (Hãy giữ nguyên link của anh)
+// Đường dẫn kết nối API Google Apps Script đúng của anh (Đã loại bỏ chữ s thừa)
 const DEPLOY_API_URL = "https://script.google.com/macros/s/AKfycbyeUvO1Dj-_CbZSVz3hy3gsedlm9tuXBtHisSEAFD5zwwlJNnmeAI_sWnuX5tGMuPgzGQ/exec";
 
 let currentTabId = "nhansu";
@@ -54,7 +54,7 @@ function switchTab(tabId) {
         document.getElementById("calendar-view").classList.remove("active");
         document.getElementById("action-group").classList.remove("hidden");
         
-        // Với cấu hình nạp động toàn bộ các tab, khóa nhập tay để tránh sai lệch cấu trúc cột
+        // Khóa tính năng nhập tay để tối ưu cấu trúc cột tự động theo file Excel nạp vào
         document.getElementById("form-allowed").classList.add("hidden");
         document.getElementById("form-disabled").classList.remove("hidden");
         
@@ -69,7 +69,6 @@ async function syncDataFromServer() {
         const response = await fetch(`${DEPLOY_API_URL}?action=${module.getAct}`);
         masterCacheData = await response.json();
         
-        // ĐỌC ĐỘNG TIÊU ĐỀ: Google Sheet đang trả về cột nào, hiển thị cột đó
         if (masterCacheData && masterCacheData.length > 0) {
             dataHeaders = Object.keys(masterCacheData[0]);
         } else {
@@ -79,11 +78,10 @@ async function syncDataFromServer() {
         setLoadingState(false);
         triggerSearch();
     } catch (err) {
-        document.getElementById("tbody-node").innerHTML = `<tr><td colspan="100" class="py-12 text-center text-rose-500 font-bold">LỖI KẾT NỐI API. Vui lòng kiểm tra lại cấu hình Deploy link Script.</td></tr>`;
+        document.getElementById("tbody-node").innerHTML = `<tr><td colspan="100" class="py-12 text-center text-rose-500 font-bold">LỖI KẾT NỐI API. Vui lòng kiểm tra lại cấu hình hoặc deploy lại Apps Script.</td></tr>`;
     }
 }
 
-// BÓC TÁCH ĐỘNG FILE EXCEL ĐỂ ĐẨY LÊN SHEET KHÔNG CẦN FIX CỨNG TRƯỜNG THÔNG TIN
 function importExcel(input) {
     if (!input.files.length) return;
     const reader = new FileReader();
@@ -94,7 +92,7 @@ function importExcel(input) {
             const worksheet = workbook.Sheets[workbook.SheetNames[0]];
             const rawRows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
             
-            // Tìm dòng tiêu đề thực tế (Dòng chứa chữ "Stt" hoặc "Họ và tên")
+            // Tìm kiếm dòng tiêu đề thực tế trong file Excel (bỏ qua các dòng trống ở trên đầu)
             let headerIndex = 0;
             for (let i = 0; i < rawRows.length; i++) {
                 if (rawRows[i].some(cell => String(cell).trim().toLowerCase() === "stt" || String(cell).trim().toLowerCase() === "họ và tên")) {
@@ -103,14 +101,14 @@ function importExcel(input) {
                 }
             }
             
-            // Làm sạch toàn bộ ký tự lạ ẩn (\n) trong ô tiêu đề tệp Excel
+            // Làm sạch tiêu đề: Loại bỏ ký tự xuống dòng (\n) và khoảng trắng thừa
             const rawHeaders = rawRows[headerIndex];
             const cleanHeaders = rawHeaders.map(h => String(h || "").replace(/\r?\n|\r/g, " ").replace(/\s+/g, " ").trim());
             
             const cleanData = [];
             for (let i = headerIndex + 1; i < rawRows.length; i++) {
                 const rowData = rawRows[i];
-                if (rowData.every(cell => String(cell).trim() === "")) continue; // Bỏ qua dòng trống
+                if (rowData.every(cell => String(cell).trim() === "")) continue;
                 
                 let rowObj = {};
                 cleanHeaders.forEach((header, colIdx) => {
@@ -124,7 +122,6 @@ function importExcel(input) {
             
             if(!cleanData.length) return alert("Không tìm thấy dữ liệu nhân sự hợp lệ.");
             
-            // Cập nhật cấu hình cột hiển thị động tức thì tại giao diện web
             dataHeaders = cleanHeaders.filter(h => h !== "");
             pushDataToCloud(cleanData);
         } catch(err) { alert("Lỗi phân tích file Excel: " + err.message); }
@@ -134,7 +131,7 @@ function importExcel(input) {
 }
 
 async function pushDataToCloud(dataset) {
-    setLoadingState(true, "Hệ thống đang đồng bộ động lên Google Sheet...");
+    setLoadingState(true, "Hệ thống đang lưu trữ dữ liệu động lên Google Sheet...");
     try {
         await fetch(DEPLOY_API_URL, {
             method: "POST",
@@ -143,7 +140,7 @@ async function pushDataToCloud(dataset) {
         });
         setTimeout(() => { syncDataFromServer(); }, 1500);
     } catch (err) {
-        alert("Đường truyền tải bị lỗi.");
+        alert("Đường truyền dữ liệu gặp sự cố.");
         setLoadingState(false);
     }
 }
@@ -167,16 +164,14 @@ function renderGrid(dataset) {
     
     if(!dataset.length) {
         head.innerHTML = "";
-        body.innerHTML = `<tr><td class="py-20 text-center text-slate-400 font-medium">Không tìm thấy dữ liệu. Bảng đang trống.</td></tr>`;
+        body.innerHTML = `<tr><td class="py-20 text-center text-slate-400 font-medium">Bảng trống hoặc không tìm thấy kết quả phù hợp.</td></tr>`;
         return;
     }
 
-    // Vẽ đầu bảng theo trường thông tin nhận diện động
     let headHtml = `<tr class="bg-slate-100 border-b border-slate-200"><th class="p-3 text-center w-12 border-r border-slate-200/50">STT</th>`;
     dataHeaders.forEach(f => headHtml += `<th class="p-3 uppercase border-r border-slate-200/50 tracking-wider text-slate-700">${f}</th>`);
     head.innerHTML = headHtml + `</tr>`;
 
-    // Điền dữ liệu vào từng ô tương ứng
     body.innerHTML = dataset.map((row, index) => {
         let rowHtml = `<tr class="hover:bg-slate-50 transition-colors"><td class="p-2.5 text-center font-mono text-slate-400 border-r border-slate-200/40">${index + 1}</td>`;
         dataHeaders.forEach(f => {
@@ -214,7 +209,7 @@ function initPomodoroEngine() {
             display.innerText = `${m}:${s}`;
         } else {
             if (timerIsWorking) {
-                alert("🚨 HẾT GIỜ LÀM VIỆC!\nĐứng dậy nghỉ 5 phút bảo vệ sức khỏe.");
+                alert("🚨 HẾT GIỜ LÀM VIỆC!\nĐứng dậy nghỉ ngơi chút bảo vệ sức khỏe thôi anh.");
                 timerTimeLeft = 5 * 60;
                 timerIsWorking = false;
                 label.innerText = "ĐANG NGHỈ NGƠI";
@@ -236,7 +231,7 @@ function applyNewTimerConfig() {
     timerIsWorking = true;
     const label = document.getElementById("timer-label");
     if(label) label.innerText = "ĐANG LÀM VIỆC";
-    alert(`Đã cấu hình chu kỳ làm việc mới: ${m} phút.`);
+    alert(`Đã thiết lập chu kỳ làm việc mới: ${m} phút.`);
 }
 
 function renderVanNienData() {
