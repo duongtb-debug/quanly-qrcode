@@ -6,7 +6,7 @@
     <title>VINAPACO ERP - MINI SYSTEM</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="h-screen flex bg-slate-100 overflow-hidden antialiased text-slate-800">
@@ -63,10 +63,11 @@
                 </div>
 
                 <div id="action-group" class="flex items-center gap-2">
-                    <label class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase px-4 py-2 rounded-xl cursor-pointer flex items-center gap-2 shadow-md shadow-emerald-600/10 transition-all active:scale-95">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> <span id="btn-excel-text">UPLOAD EXCEL NHÂN SỰ</span>
-                        <input type="file" id="excel-input" accept=".xlsx, .xls" class="hidden" onchange="importExcel(this)">
-                    </label>
+                    <button onclick="document.getElementById('excel-input').click()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase px-4 py-2 rounded-xl cursor-pointer flex items-center gap-2 shadow-md shadow-emerald-600/10 transition-all active:scale-95">
+                        <span id="btn-upload-excel-text"><i class="fa-solid fa-cloud-arrow-up"></i> UPLOAD EXCEL NHÂN SỰ</span>
+                    </button>
+                    <input type="file" id="excel-input" accept=".xlsx, .xls" class="hidden" onchange="importExcel(this)">
+                    
                     <button onclick="syncDataFromServer()" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-all border border-slate-200" title="Đồng bộ lại">
                         <i class="fa-solid fa-sync text-xs"></i>
                     </button>
@@ -84,7 +85,7 @@
                     </div>
                     <div class="flex-1 overflow-auto">
                         <table class="w-full text-left border-collapse text-xs min-w-max">
-                            <thead id="thead-node" class="bg-slate-100 font-bold text-slate-700 sticky top-0 border-b border-slate-200 shadow-[0_1px_0_0_rgba(226,232,240,1)] z-10"></tbody>
+                            <thead id="thead-node" class="bg-slate-100 font-bold text-slate-700 sticky top-0 border-b border-slate-200 shadow-[0_1px_0_0_rgba(226,232,240,1)] z-10"></thead>
                             <tbody id="tbody-node" class="divide-y divide-slate-100 font-medium text-slate-600"></tbody>
                         </table>
                     </div>
@@ -99,7 +100,7 @@
                     <div id="form-disabled" class="hidden h-full flex flex-col items-center justify-center text-center p-4">
                         <i class="fa-solid fa-file-excel text-slate-300 text-5xl mb-3"></i>
                         <h4 class="text-xs font-black text-slate-700 uppercase mb-1">ĐÃ KHÓA NHẬP TAY</h4>
-                        <p class="text-[11px] text-slate-400 font-medium leading-relaxed">Dữ liệu nhân sự lớn. Hãy bấm nút <span class="font-bold text-emerald-600">"UPLOAD EXCEL NHÂN SỰ"</span> ở thanh công cụ phía trên để nạp hàng loạt tệp sẵn có.</p>
+                        <p class="text-[11px] text-slate-400 font-medium leading-relaxed">Dữ liệu nhân sự lớn. Hãy bấm nút <span class="font-bold text-emerald-600">"UPLOAD EXCEL"</span> phía trên để nạp hàng loạt tệp sẵn có.</p>
                     </div>
                 </div>
             </div>
